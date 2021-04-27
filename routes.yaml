@@ -1,0 +1,6 @@
+app_name: confirmation-statement-api
+group: internalapi
+
+weight: 900
+routes:
+  1: ^/confirmation-statement/*
