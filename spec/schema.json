@@ -1,0 +1,219 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "An API to allow digital filing of a confirmation statement",
+    "version": "1.0.0",
+    "title": "Companies House - Confirmation Statement API"
+  },
+  "host": "internalapi.companieshouse.gov.uk",
+  "basePath": "/confirmation-statement",
+  "schemes": [
+    "https"
+  ],
+  "tags": [
+    {
+      "name": "Confirmation Statement"
+    }
+  ],
+  "paths": {
+    "/": {
+      "parameters": [
+        {
+          "name": "CompanyNumber",
+          "in": "body",
+          "schema": {
+            "$ref" : "#/definitions/ConfirmationStatementPostBody"
+          }
+        }
+      ],
+      "post": {
+        "summary": "Create a new Confirmation Statement Submission",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Confirmation Statement"
+        ],
+        "responses": {
+          "201": {
+            "description": "A Confirmation Statement Submission has been created.",
+            "schema": {
+              "$ref": "#/definitions/ConfirmationStatementCreated"
+            }
+          },
+          "400": {
+            "description": "The provided Company Number failed validation",
+            "schema": {
+              "$ref": "#/definitions/CompanyValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/{transactionId}": {
+      "parameters": [
+        {
+          "name": "transactionId",
+          "in": "path",
+          "required": true,
+          "description": "ID of the Confirmation Statement Submission",
+          "type": "string"
+        },
+        {
+          "name": "confirmationStatementFields",
+          "in": "body",
+          "schema": {
+            "$ref" : "#/definitions/ConfirmationStatementFields"
+          }
+        }
+      ],
+      "put": {
+        "summary": "Update a Confirmation Statement Submission",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Confirmation Statement"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Confirmation Statement Submission has been updated",
+            "schema": {
+              "$ref": "#/definitions/ConfirmationStatementSubmission"
+            }
+          }
+        }
+      }
+    },
+    "/{transactionId}/submit": {
+      "parameters": [
+        {
+          "name": "transactionId",
+          "in": "path",
+          "required": true,
+          "description": "ID of the Confirmation Statement Submission",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "summary": "Finalise and Submit a Confirmation Statement Submission",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Confirmation Statement"
+        ],
+        "responses": {
+          "202": {
+            "description": "The Confirmation Statement Submission has been submitted",
+            "schema": {
+              "$ref": "#/definitions/ConfirmationStatementSubmission"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ConfirmationStatementCreated": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "ConfirmationStatementPostBody": {
+      "type": "object",
+      "properties": {
+        "company_number": {
+          "type": "string",
+          "format": "string"
+        }
+      }
+    },
+    "ConfirmationStatementFields": {
+      "type": "object",
+      "properties": {
+        "sic_codes": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "statement_of_capital": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "officers": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "people_with_significant_controle": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "shareholders": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "registered_office_address": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "register_locations": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        }
+      }
+    },
+    "ConfirmationStatementSubmission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "created_by": {
+          "$ref": "#/definitions/CreatedBy"
+        },
+        "company_number": {
+          "type": "string",
+          "format": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/ConfirmationStatementFields"
+        }
+      }
+    },
+    "CompanyValidationError": {
+      "type": "object",
+      "properties": {
+        "validation_error": {
+          "$ref": "#/definitions/ValidationErrors"
+        }
+      }
+    },
+    "ValidationErrors": {
+      "type": "string",
+      "enum": [
+        "COMPANY_NOT_FOUND",
+        "INVALID_COMPANY_STATUS",
+        "INVALID_COMPANY_TYPE",
+        "INVALID_OFFICER_COUNT"
+      ]
+    },
+    "ConfirmationStatementFieldsValues": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED",
+        "NOT_CONFIRMED",
+        "UPDATED_FORM_RECENTLY_SUBMITTED"
+      ]
+    },
+    "CreatedBy": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      }
+    }
+  }
+}
