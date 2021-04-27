@@ -11,6 +11,7 @@ public class ConfirmationStatementController {
 
     @PostMapping("/")
     public ResponseEntity<String> createNewSubmission() {
+        System.out.println("Testing pr decoration");
         return ResponseEntity.ok().body("hello world");
     }
 }
