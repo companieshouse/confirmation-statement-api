@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class ConfirmationStatmentController {
+public class ConfirmationStatementController {
 
     @PostMapping("/")
     public ResponseEntity<String> createNewSubmission() {
