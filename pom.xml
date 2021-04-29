@@ -15,6 +15,7 @@
         <java.version>11</java.version>
         <spring-boot-dependencies.version>2.2.10.RELEASE</spring-boot-dependencies.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <spring-boot-maven-plugin.version>2.2.10.RELEASE</spring-boot-maven-plugin.version>
         <structured-logging.version>1.9.7</structured-logging.version>
     </properties>
@@ -116,6 +117,11 @@
                         <expandClasspathDependencies>true</expandClasspathDependencies>
                     </container>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
