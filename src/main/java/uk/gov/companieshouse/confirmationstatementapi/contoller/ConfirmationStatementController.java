@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.confirmationstatementapi.common.ApiLogger;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/confirmation-statement")
 public class ConfirmationStatementController {
