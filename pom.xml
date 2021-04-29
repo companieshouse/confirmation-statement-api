@@ -16,6 +16,7 @@
 		<spring-boot-dependencies.version>2.2.10.RELEASE</spring-boot-dependencies.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<spring-boot-maven-plugin.version>2.2.10.RELEASE</spring-boot-maven-plugin.version>
+		<structured-logging.version>1.9.7</structured-logging.version>
 	</properties>
 	<profiles>
 		<profile>
@@ -48,6 +49,21 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<!-- Without this exclusion, SLF4J warns about multiple bindings at start-up and we want
                  to ensure that only the one directly embedded in the 'structured-logging' library is
+                 present and used -->
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>uk.gov.companieshouse</groupId>
+			<artifactId>structured-logging</artifactId>
+			<version>${structured-logging.version}</version>
+			<!-- Without this exclusion, SLF4J warns about multiple bindings at start-up and we want
+                 to ensure that only the one directly embedded in the 'structured-logging' JAR is
                  present and used -->
 			<exclusions>
 				<exclusion>
