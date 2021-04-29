@@ -13,7 +13,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-public class ApiLoggerTest {
+class ApiLoggerTest {
 
     private static final String CONTEXT = "CONTEXT";
     private static final String TEST_MESSAGE = "TEST";
