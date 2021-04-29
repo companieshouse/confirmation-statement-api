@@ -1,120 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>uk.gov.companieshouse</groupId>
-		<artifactId>companies-house-parent</artifactId>
-		<version>1.3.0</version> <!-- lookup parent from repository -->
-	</parent>
-	<artifactId>confirmation-statement-api</artifactId>
-	<version>unversioned</version>
-	<name>confirmation-statement-api</name>
-	<description>API for confirmation statement service</description>
-	<properties>
-		<java.version>11</java.version>
-		<spring-boot-dependencies.version>2.2.10.RELEASE</spring-boot-dependencies.version>
-		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<spring-boot-maven-plugin.version>2.2.10.RELEASE</spring-boot-maven-plugin.version>
-		<structured-logging.version>1.9.7</structured-logging.version>
-	</properties>
-	<profiles>
-		<profile>
-			<id>sonar-pr-analysis</id>
-			<properties>
-				<sonar.pullrequest.base>main</sonar.pullrequest.base>
-			</properties>
-		</profile>
-	</profiles>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${spring-boot-dependencies.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>uk.gov.companieshouse</groupId>
+        <artifactId>companies-house-parent</artifactId>
+        <version>1.3.0</version> <!-- lookup parent from repository -->
+    </parent>
+    <artifactId>confirmation-statement-api</artifactId>
+    <version>unversioned</version>
+    <name>confirmation-statement-api</name>
+    <description>API for confirmation statement service</description>
+    <properties>
+        <java.version>11</java.version>
+        <spring-boot-dependencies.version>2.2.10.RELEASE</spring-boot-dependencies.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <spring-boot-maven-plugin.version>2.2.10.RELEASE</spring-boot-maven-plugin.version>
+        <structured-logging.version>1.9.7</structured-logging.version>
+    </properties>
+    <profiles>
+        <profile>
+            <id>sonar-pr-analysis</id>
+            <properties>
+                <sonar.pullrequest.base>main</sonar.pullrequest.base>
+            </properties>
+        </profile>
+    </profiles>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<!-- Without this exclusion, SLF4J warns about multiple bindings at start-up and we want
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!-- Without this exclusion, SLF4J warns about multiple bindings at start-up and we want
                  to ensure that only the one directly embedded in the 'structured-logging' library is
                  present and used -->
-			<exclusions>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<dependency>
-			<groupId>uk.gov.companieshouse</groupId>
-			<artifactId>structured-logging</artifactId>
-			<version>${structured-logging.version}</version>
-			<!-- Without this exclusion, SLF4J warns about multiple bindings at start-up and we want
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>structured-logging</artifactId>
+            <version>${structured-logging.version}</version>
+            <!-- Without this exclusion, SLF4J warns about multiple bindings at start-up and we want
                  to ensure that only the one directly embedded in the 'structured-logging' JAR is
                  present and used -->
-			<exclusions>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${spring-boot-maven-plugin.version}</version>
-				<configuration>
-					<mainClass>uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication</mainClass>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.google.cloud.tools</groupId>
-				<artifactId>jib-maven-plugin</artifactId>
-				<version>2.7.0</version>
-				<configuration>
-					<container>
-						<expandClasspathDependencies>true</expandClasspathDependencies>
-					</container>
-				</configuration>
-			</plugin>
-			<plugin>
-			<groupId>org.jacoco</groupId>
-			<artifactId>jacoco-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-maven-plugin.version}</version>
+                <configuration>
+                    <mainClass>uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication
+                    </mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>2.7.0</version>
+                <configuration>
+                    <container>
+                        <expandClasspathDependencies>true</expandClasspathDependencies>
+                    </container>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
