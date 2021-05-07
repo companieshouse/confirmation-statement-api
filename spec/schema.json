@@ -16,14 +16,13 @@
     }
   ],
   "paths": {
-    "/": {
+    "/transactions/{transaction_id}/confirmation-statement": {
       "parameters": [
         {
-          "name": "CompanyNumber",
-          "in": "body",
-          "schema": {
-            "$ref" : "#/definitions/ConfirmationStatementPostBody"
-          }
+          "name": "transaction_id",
+          "in": "path",
+          "required" : true,
+          "type" : string
         }
       ],
       "post": {
@@ -36,10 +35,7 @@
         ],
         "responses": {
           "201": {
-            "description": "A Confirmation Statement Submission has been created.",
-            "schema": {
-              "$ref": "#/definitions/ConfirmationStatementCreated"
-            }
+            "description": "A Confirmation Statement Submission has been created."
           },
           "400": {
             "description": "The provided Company Number failed validation",
@@ -50,53 +46,17 @@
         }
       }
     },
-    "/{transactionId}": {
+    "/transactions/{transaction_id}/confirmation-statement/submit": {
       "parameters": [
         {
-          "name": "transactionId",
+          "name": "transaction_id",
           "in": "path",
-          "required": true,
-          "description": "ID of the Confirmation Statement Submission",
-          "type": "string"
-        },
-        {
-          "name": "confirmationStatementFields",
-          "in": "body",
-          "schema": {
-            "$ref" : "#/definitions/ConfirmationStatementFields"
-          }
-        }
-      ],
-      "put": {
-        "summary": "Update a Confirmation Statement Submission",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Confirmation Statement"
-        ],
-        "responses": {
-          "200": {
-            "description": "The Confirmation Statement Submission has been updated",
-            "schema": {
-              "$ref": "#/definitions/ConfirmationStatementSubmission"
-            }
-          }
-        }
-      }
-    },
-    "/{transactionId}/submit": {
-      "parameters": [
-        {
-          "name": "transactionId",
-          "in": "path",
-          "required": true,
-          "description": "ID of the Confirmation Statement Submission",
-          "type": "string"
+          "required" : true,
+          "type" : string
         }
       ],
       "post": {
-        "summary": "Finalise and Submit a Confirmation Statement Submission",
+        "summary": "Finalise and Submit a Confirmation Statement Submission WIP",
         "produces": [
           "application/json"
         ],
@@ -121,15 +81,6 @@
         "id": {
           "type": "string",
           "format": "uuid"
-        }
-      }
-    },
-    "ConfirmationStatementPostBody": {
-      "type": "object",
-      "properties": {
-        "company_number": {
-          "type": "string",
-          "format": "string"
         }
       }
     },
@@ -212,8 +163,8 @@
         "email": {
           "type": "string",
           "format": "email"
-        }
+        },
       }
-    }
+    },
   }
 }
