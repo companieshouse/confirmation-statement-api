@@ -6,7 +6,7 @@
     "title": "Companies House - Confirmation Statement API"
   },
   "host": "internalapi.companieshouse.gov.uk",
-  "basePath": "/confirmation-statement",
+  "basePath": "/transactions/{transaction_id}",
   "schemes": [
     "https"
   ],
@@ -16,7 +16,7 @@
     }
   ],
   "paths": {
-    "/transactions/{transaction_id}/confirmation-statement": {
+    "/confirmation-statement": {
       "parameters": [
         {
           "name": "transaction_id",
@@ -46,7 +46,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/submit": {
+    "/confirmation-statement/submit": {
       "parameters": [
         {
           "name": "transaction_id",
