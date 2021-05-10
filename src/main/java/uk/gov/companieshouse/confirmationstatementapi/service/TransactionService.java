@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiKeyClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -12,24 +12,24 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
-public class CompanyProfileService {
+public class TransactionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementApiApplication.APP_NAME);
 
-    private final ApiKeyClient apiKeyClient;
+    private ApiKeyClient apiKeyClient;
 
     @Autowired
-    public CompanyProfileService(ApiKeyClient apiKeyClient) {
+    public TransactionService(ApiKeyClient apiKeyClient) {
         this.apiKeyClient = apiKeyClient;
     }
 
-    public CompanyProfileApi getCompanyProfile(String companyNumber) throws ServiceException {
+    public Transaction getTransaction(String transaction) throws ServiceException {
         try {
-            var uri = "/company/" + companyNumber;
-            return apiKeyClient.getApiKeyAuthenticatedClient().company().get(uri).execute().getData();
+            var uri = "/transactions/" + transaction;
+            return apiKeyClient.getApiKeyAuthenticatedClient().transactions().get(uri).execute().getData();
         } catch (URIValidationException | ApiErrorResponseException e) {
             LOGGER.error(e);
-            throw new ServiceException("Error Retrieving Company Profile");
+            throw new ServiceException("Error Retrieving Transaction");
         }
     }
 }
