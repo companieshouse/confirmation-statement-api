@@ -15,7 +15,10 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiKeyClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,7 +44,7 @@ class CompanyProfileServiceTest {
     private CompanyProfileService companyProfileService;
 
     @Test
-    void companyProfileApi() throws ServiceException, ApiErrorResponseException, URIValidationException {
+    void getCompanyProfile() throws ServiceException, ApiErrorResponseException, URIValidationException {
         CompanyProfileApi companyProfile = new CompanyProfileApi();
         companyProfile.setCompanyName("COMPANY NAME");
 
@@ -55,5 +58,29 @@ class CompanyProfileServiceTest {
 
         assertEquals(companyProfile, response);
 
+    }
+
+    @Test
+    void getCompanyProfileURIValidationException() throws ServiceException, ApiErrorResponseException, URIValidationException {
+        when(apiKeyClient.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClient.company()).thenReturn(companyResourceHandler);
+        when(companyResourceHandler.get("/company/" + COMPANY_NUMBER)).thenReturn(companyGet);
+        when(companyGet.execute()).thenThrow(new URIValidationException("ERROR"));
+
+        assertThrows(ServiceException.class, () -> {
+            companyProfileService.getCompanyProfile(COMPANY_NUMBER);
+        });
+    }
+
+    @Test
+    void getCompanyProfileApiErrorResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
+        when(apiKeyClient.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClient.company()).thenReturn(companyResourceHandler);
+        when(companyResourceHandler.get("/company/" + COMPANY_NUMBER)).thenReturn(companyGet);
+        when(companyGet.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
+
+        assertThrows(ServiceException.class, () -> {
+            companyProfileService.getCompanyProfile(COMPANY_NUMBER);
+        });
     }
 }
