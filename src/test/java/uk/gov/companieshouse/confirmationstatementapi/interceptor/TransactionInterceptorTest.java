@@ -5,12 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.confirmationstatementapi.client.ApiKeyClient;
 import uk.gov.companieshouse.confirmationstatementapi.service.TransactionService;
 
 import javax.servlet.http.HttpServletRequest;
