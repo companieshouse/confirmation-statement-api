@@ -46,6 +46,7 @@ public class ConfirmationStatementService {
 
         String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/";
 
+        LOGGER.info("Confirmation Statement created for transaction id: " + transaction.getId());
         return ResponseEntity.created(URI.create(createdUri)).body("Created");
     }
 }
