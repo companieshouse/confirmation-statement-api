@@ -37,7 +37,7 @@ public class TransactionInterceptor implements HandlerInterceptor {
         try {
             LOGGER.debug("Getting transaction for request");
             final var transaction = transactionService.getTransaction(transactionId, passthroughHeader);
-            LOGGER.debug("Transaction retrieved: " + transaction.getCompanyName());
+            LOGGER.debug("Transaction retrieved: " + transaction.toString());
             request.setAttribute("transaction", transaction);
             return true;
         } catch (ServiceException ex) {
