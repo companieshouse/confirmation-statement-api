@@ -16,9 +16,9 @@ import java.util.List;
 @Service
 public class ConfirmationStatementService {
 
-    private CompanyProfileService companyProfileService;
+    private final CompanyProfileService companyProfileService;
 
-    private List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
+    private final List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
 
     @Autowired
     public ConfirmationStatementService(CompanyProfileService companyProfileService) {
@@ -32,8 +32,7 @@ public class ConfirmationStatementService {
         var companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
 
         try {
-            for (EligibilityRule<CompanyProfileApi> eligibilityRule :
-                    eligibilityRules) {
+            for (EligibilityRule<CompanyProfileApi> eligibilityRule : eligibilityRules) {
                 eligibilityRule.validate(companyProfile);
             }
         } catch (EligibilityException e) {
