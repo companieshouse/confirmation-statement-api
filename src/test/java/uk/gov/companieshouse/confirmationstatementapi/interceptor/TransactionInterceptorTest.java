@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 class TransactionInterceptorTest {
 
     private static final String TRANSACTION_ID = "12345678";
+    private static final String PASSTHROUGH_HEADER = "passthrough";
 
     @Mock
     private TransactionService transactionService;
@@ -41,8 +42,9 @@ class TransactionInterceptorTest {
         var pathParams = new HashMap<String, String>();
         pathParams.put("transaction_id", TRANSACTION_ID);
 
-        when(transactionService.getTransaction(TRANSACTION_ID)).thenReturn(dummyTransaction);
+        when(transactionService.getTransaction(TRANSACTION_ID, PASSTHROUGH_HEADER)).thenReturn(dummyTransaction);
         when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
+        when(mockHttpServletRequest.getHeader("ERIC-Access-Token")).thenReturn(PASSTHROUGH_HEADER);
 
         assertTrue(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
         verify(mockHttpServletRequest, times(1)).setAttribute("transaction", dummyTransaction);
