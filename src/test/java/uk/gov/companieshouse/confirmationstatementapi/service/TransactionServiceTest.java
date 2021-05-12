@@ -25,6 +25,8 @@ import static org.mockito.Mockito.when;
 class TransactionServiceTest {
 
     private static final String TRANSACTION_ID = "12345678";
+    private static final String PASSTHROUGH_HEADER = "passthrough";
+
     @Mock
     private ApiClientService apiClientService;
 
@@ -44,43 +46,43 @@ class TransactionServiceTest {
     private TransactionService transactionService;
 
     @Test
-    void getTransaction() throws ServiceException, ApiErrorResponseException, URIValidationException {
+    void getTransaction() throws ServiceException, IOException, URIValidationException {
         Transaction transaction = new Transaction();
         transaction.setId(TRANSACTION_ID);
 
-        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
         when(transactionsResourceHandler.get("/transactions/" + TRANSACTION_ID)).thenReturn(transactionsGet);
         when(transactionsGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(transaction);
 
-        var response = transactionService.getTransaction(TRANSACTION_ID);
+        var response = transactionService.getTransaction(TRANSACTION_ID, PASSTHROUGH_HEADER);
 
         assertEquals(transaction, response);
 
     }
 
     @Test
-    void getTransactionURIValidationException() throws ServiceException, ApiErrorResponseException, URIValidationException {
-        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+    void getTransactionURIValidationException() throws IOException, URIValidationException {
+        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
         when(transactionsResourceHandler.get("/transactions/" + TRANSACTION_ID)).thenReturn(transactionsGet);
         when(transactionsGet.execute()).thenThrow(new URIValidationException("ERROR"));
 
         assertThrows(ServiceException.class, () -> {
-            transactionService.getTransaction(TRANSACTION_ID);
+            transactionService.getTransaction(TRANSACTION_ID, PASSTHROUGH_HEADER);
         });
     }
 
     @Test
-    void getTransactionProfileApiErrorResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
-        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+    void getTransactionProfileApiErrorResponse() throws IOException, URIValidationException {
+        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
         when(transactionsResourceHandler.get("/transactions/" + TRANSACTION_ID)).thenReturn(transactionsGet);
         when(transactionsGet.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
 
         assertThrows(ServiceException.class, () -> {
-            transactionService.getTransaction(TRANSACTION_ID);
+            transactionService.getTransaction(TRANSACTION_ID, PASSTHROUGH_HEADER);
         });
     }
 }

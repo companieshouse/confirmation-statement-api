@@ -11,6 +11,8 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
+import java.io.IOException;
+
 @Service
 public class TransactionService {
 
@@ -23,11 +25,11 @@ public class TransactionService {
         this.apiClientService = apiClientService;
     }
 
-    public Transaction getTransaction(String transactionId) throws ServiceException {
+    public Transaction getTransaction(String transactionId, String passthroughHeader) throws ServiceException {
         try {
             var uri = "/transactions/" + transactionId;
-            return apiClientService.getApiKeyAuthenticatedClient().transactions().get(uri).execute().getData();
-        } catch (URIValidationException | ApiErrorResponseException e) {
+            return apiClientService.getOauthAuthenticatedClient(passthroughHeader).transactions().get(uri).execute().getData();
+        } catch (URIValidationException | IOException e) {
             LOGGER.error(e);
             throw new ServiceException("Error Retrieving Transaction", e);
         }
