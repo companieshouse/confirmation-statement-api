@@ -9,6 +9,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.service.TransactionService;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,13 +29,15 @@ public class TransactionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        LOGGER.info("intercepted request");
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var transactionId = pathVariables.get("transaction_id");
+        String passthroughHeader = request
+                .getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
         try {
-            LOGGER.info("Attempting to retrieve transaction: " + transactionId);
-            final var transaction = transactionService.getTransaction(transactionId);
+            LOGGER.debug("Getting transaction for request");
+            final var transaction = transactionService.getTransaction(transactionId, passthroughHeader);
+            LOGGER.debug("Transaction retrieved: " + transaction.getCompanyName());
             request.setAttribute("transaction", transaction);
             return true;
         } catch (ServiceException ex) {
