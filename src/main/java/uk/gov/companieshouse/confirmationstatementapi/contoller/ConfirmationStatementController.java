@@ -3,8 +3,8 @@ package uk.gov.companieshouse.confirmationstatementapi.contoller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -28,7 +28,7 @@ public class ConfirmationStatementController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> createNewSubmission(@ModelAttribute("transaction") Transaction transaction) {
+    public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction) {
         LOGGER.debug("Start Handling request  POST '/' for transaction: " + transaction.getId() + " and company: " + transaction.getCompanyNumber());
         try {
             return confirmationStatementService.createConfirmationStatement(transaction);
