@@ -32,7 +32,9 @@ public class TransactionInterceptor implements HandlerInterceptor {
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var transactionId = pathVariables.get("transaction_id");
         try {
+            LOGGER.debug("Getting transaction for request");
             final var transaction = transactionService.getTransaction(transactionId);
+            LOGGER.info("Transaction retrieved: " + transaction.getCompanyName());
             request.setAttribute("transaction", transaction);
             return true;
         } catch (ServiceException ex) {
