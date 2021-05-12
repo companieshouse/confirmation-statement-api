@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import org.springframework.beans.factory.annotation.Value;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
@@ -10,8 +9,11 @@ import java.util.Set;
 
 public class CompanyStatusValidation implements EligibilityRule<CompanyProfileApi> {
 
-    @Value("${ALLOWED_COMPANY_STATUSES}")
-    private Set<String> allowedStatuses;
+    private final Set<String> allowedStatuses;
+
+    public CompanyStatusValidation(Set<String> allowedStatuses) {
+        this.allowedStatuses = allowedStatuses;
+    }
 
     @Override
     public void validate(CompanyProfileApi input) throws EligibilityException {
