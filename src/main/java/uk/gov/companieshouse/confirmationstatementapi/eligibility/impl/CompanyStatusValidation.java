@@ -16,8 +16,8 @@ public class CompanyStatusValidation implements EligibilityRule<CompanyProfileAp
     }
 
     @Override
-    public void validate(CompanyProfileApi input) throws EligibilityException {
-        var status = input.getCompanyStatus();
+    public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
+        var status = profileToValidate.getCompanyStatus();
 
         if (!allowedStatuses.contains(status)) {
             throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_STATUS);
