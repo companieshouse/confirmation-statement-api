@@ -33,9 +33,21 @@ class CompanyStatusValidationTest {
     }
 
     @Test
-    void validateThrowsOnDisallowedValue() throws EligibilityException {
+    void validateThrowsOnDisallowedValue() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("Disallowed_Value");
+
+        var ex = assertThrows(EligibilityException.class, () -> {
+            companyStatusValidation.validate(companyProfileApi);
+        });
+
+        assertEquals(EligibilityFailureReason.INVALID_COMPANY_STATUS, ex.getEligibilityFailureReason());
+    }
+
+    @Test
+    void validateThrowsOnNullStatus() {
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
+        companyProfileApi.setCompanyStatus(null);
 
         var ex = assertThrows(EligibilityException.class, () -> {
             companyStatusValidation.validate(companyProfileApi);
