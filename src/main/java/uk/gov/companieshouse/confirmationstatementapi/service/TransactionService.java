@@ -6,7 +6,7 @@ import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
-import uk.gov.companieshouse.confirmationstatementapi.client.ApiKeyClient;
+import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -16,20 +16,20 @@ public class TransactionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementApiApplication.APP_NAME);
 
-    private ApiKeyClient apiKeyClient;
+    private final ApiClientService apiClientService;
 
     @Autowired
-    public TransactionService(ApiKeyClient apiKeyClient) {
-        this.apiKeyClient = apiKeyClient;
+    public TransactionService(ApiClientService apiClientService) {
+        this.apiClientService = apiClientService;
     }
 
-    public Transaction getTransaction(String transaction) throws ServiceException {
+    public Transaction getTransaction(String transactionId) throws ServiceException {
         try {
-            var uri = "/transactions/" + transaction;
-            return apiKeyClient.getApiKeyAuthenticatedClient().transactions().get(uri).execute().getData();
+            var uri = "/transactions/" + transactionId;
+            return apiClientService.getApiKeyAuthenticatedClient().transactions().get(uri).execute().getData();
         } catch (URIValidationException | ApiErrorResponseException e) {
             LOGGER.error(e);
-            throw new ServiceException("Error Retrieving Transaction");
+            throw new ServiceException("Error Retrieving Transaction", e);
         }
     }
 }

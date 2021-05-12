@@ -12,7 +12,7 @@ import uk.gov.companieshouse.api.handler.transaction.TransactionsResourceHandler
 import uk.gov.companieshouse.api.handler.transaction.request.TransactionsGet;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.confirmationstatementapi.client.ApiKeyClient;
+import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ class TransactionServiceTest {
 
     private static final String TRANSACTION_ID = "12345678";
     @Mock
-    private ApiKeyClient apiKeyClient;
+    private ApiClientService apiClientService;
 
     @Mock
     private ApiClient apiClient;
@@ -48,7 +48,7 @@ class TransactionServiceTest {
         Transaction transaction = new Transaction();
         transaction.setId(TRANSACTION_ID);
 
-        when(apiKeyClient.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
         when(transactionsResourceHandler.get("/transactions/" + TRANSACTION_ID)).thenReturn(transactionsGet);
         when(transactionsGet.execute()).thenReturn(apiResponse);
@@ -62,7 +62,7 @@ class TransactionServiceTest {
 
     @Test
     void getTransactionURIValidationException() throws ServiceException, ApiErrorResponseException, URIValidationException {
-        when(apiKeyClient.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
         when(transactionsResourceHandler.get("/transactions/" + TRANSACTION_ID)).thenReturn(transactionsGet);
         when(transactionsGet.execute()).thenThrow(new URIValidationException("ERROR"));
@@ -74,7 +74,7 @@ class TransactionServiceTest {
 
     @Test
     void getTransactionProfileApiErrorResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
-        when(apiKeyClient.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
         when(transactionsResourceHandler.get("/transactions/" + TRANSACTION_ID)).thenReturn(transactionsGet);
         when(transactionsGet.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
