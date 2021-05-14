@@ -18,7 +18,9 @@ public class ConfirmationStatementServiceEligibilityConfig {
 
     @Value("${ALLOWED_COMPANY_STATUSES}")
     Set<String> allowedCompanyStatuses;
-    Set<String> allowedCompanyTypesForWebFiling;
+
+    @Value("${WEB_FILING_COMPANY_TYPES}")
+    Set<String> webFilingCompanyTypes;
 
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
@@ -26,7 +28,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var listOfRules = new ArrayList<EligibilityRule<CompanyProfileApi>>();
 
         var companyStatusValidation = new CompanyStatusValidation(allowedCompanyStatuses);
-        var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(allowedCompanyTypesForWebFiling);
+        var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidationForWebFiling);

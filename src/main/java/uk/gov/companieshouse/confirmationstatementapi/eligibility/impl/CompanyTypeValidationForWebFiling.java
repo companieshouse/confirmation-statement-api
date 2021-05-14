@@ -9,18 +9,17 @@ import java.util.Set;
 
 public class CompanyTypeValidationForWebFiling implements EligibilityRule<CompanyProfileApi> {
 
-    private final Set<String> allowedTypes;
+    private final Set<String> webFilingTypes;
 
-    public CompanyTypeValidationForWebFiling(Set<String> allowedTypes) {
-        this.allowedTypes = allowedTypes;
+    public CompanyTypeValidationForWebFiling(Set<String> webFilingTypes) {
+        this.webFilingTypes = webFilingTypes;
     }
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
-        var status = profileToValidate.getType();
 
-        if (!allowedTypes.contains(status)) {
-            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_TYPE_FOR_WEB_FILING);
+        if (webFilingTypes.contains(profileToValidate.getType())) {
+            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_TYPE_USE_WEB_FILING);
         }
     }
 }
