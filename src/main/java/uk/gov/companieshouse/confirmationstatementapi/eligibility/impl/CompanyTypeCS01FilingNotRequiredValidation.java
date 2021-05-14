@@ -7,20 +7,20 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFai
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
-public class CompanyTypeValidation implements EligibilityRule<CompanyProfileApi> {
+public class CompanyTypeCS01FilingNotRequiredValidation implements EligibilityRule<CompanyProfileApi> {
 
-    private final Set<String> allowedTypes;
+    private final Set<String> companyTypesNotRequiredToFile;
 
-    public CompanyTypeValidation(Set<String> allowedTypes) {
-        this.allowedTypes = allowedTypes;
+    public CompanyTypeCS01FilingNotRequiredValidation(Set<String> companyTypesNotRequiredToFile) {
+        this.companyTypesNotRequiredToFile = companyTypesNotRequiredToFile;
     }
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
         var type = profileToValidate.getType();
 
-        if(!allowedTypes.contains(type)) {
-            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_TYPE);
+        if(companyTypesNotRequiredToFile.contains(type)) {
+            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED);
         }
     }
 }

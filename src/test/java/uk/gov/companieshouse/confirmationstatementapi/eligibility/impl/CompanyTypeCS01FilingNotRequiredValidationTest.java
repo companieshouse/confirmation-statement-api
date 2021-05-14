@@ -13,47 +13,43 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
-public class CompanyTypeValidationTest {
+class CompanyTypeCS01FilingNotRequiredValidationTest {
     
-    private static final String ALLOWED_TYPE = "AllowedType";
-    private static final Set<String> ALLOWED_LIST = Collections.singleton(ALLOWED_TYPE);
+    private static final String NOT_REQUIRED_TYPE = "Not-required-type";
+    private static final Set<String> NOT_REQUIRED_LIST = Collections.singleton(NOT_REQUIRED_TYPE);
 
-    private CompanyTypeValidation companyTypeValidation;
+    private CompanyTypeCS01FilingNotRequiredValidation companyTypeValidation;
 
     @BeforeEach
     void init() {
-        companyTypeValidation = new CompanyTypeValidation(ALLOWED_LIST);
+        companyTypeValidation = new CompanyTypeCS01FilingNotRequiredValidation(NOT_REQUIRED_LIST);
     }
 
     @Test
-    void validateDoesNotThrowOnAllowedType() throws EligibilityException {
+    void validateDoesNotThrowOnARequiredType() throws EligibilityException {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        companyProfileApi.setType(ALLOWED_TYPE);
+        companyProfileApi.setType("required-type");
 
         companyTypeValidation.validate(companyProfileApi);
     }
 
     @Test
-    void validateThrowsOnDisallowedType() {
+    void validateThrowsOnANotRequiredType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        companyProfileApi.setType("Disallowed_Type");
+        companyProfileApi.setType(NOT_REQUIRED_TYPE);
 
         var ex = assertThrows(EligibilityException.class, () -> {
             companyTypeValidation.validate(companyProfileApi);
         });
 
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE, ex.getEligibilityFailureReason());
+        assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED, ex.getEligibilityFailureReason());
     }
 
     @Test
-    void validateThrowsOnNullType() {
+    void validateDoesNotThrowOnNullType() throws EligibilityException {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(null);
 
-        var ex = assertThrows(EligibilityException.class, () -> {
-            companyTypeValidation.validate(companyProfileApi);
-        });
-
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE, ex.getEligibilityFailureReason());
+        companyTypeValidation.validate(companyProfileApi);
     }
 }

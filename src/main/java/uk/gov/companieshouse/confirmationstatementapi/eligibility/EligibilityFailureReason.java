@@ -2,5 +2,5 @@ package uk.gov.companieshouse.confirmationstatementapi.eligibility;
 
 public enum EligibilityFailureReason {
     INVALID_COMPANY_STATUS,
-    INVALID_COMPANY_TYPE
+    INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED
 }
