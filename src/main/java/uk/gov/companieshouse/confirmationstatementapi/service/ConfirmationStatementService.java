@@ -10,6 +10,7 @@ import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiAp
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.EligibilityFailureResponse;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -41,7 +42,9 @@ public class ConfirmationStatementService {
             }
         } catch (EligibilityException e) {
             LOGGER.info(String.format("Company %s ineligible to use the service because %s", transaction.getCompanyNumber(), e.getEligibilityFailureReason().toString()));
-            return ResponseEntity.badRequest().body(e.getEligibilityFailureReason());
+
+            var responseBody = new EligibilityFailureResponse(e.getEligibilityFailureReason());
+            return ResponseEntity.badRequest().body(responseBody);
         }
 
         String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/";
