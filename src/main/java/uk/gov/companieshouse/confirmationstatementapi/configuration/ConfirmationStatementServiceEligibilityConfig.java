@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +19,19 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${ALLOWED_COMPANY_STATUSES}")
     Set<String> allowedCompanyStatuses;
 
+    @Value("${ALLOWED_COMPANY_TYPES}")
+    Set<String> allowedCompanyTypes;
+
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules() {
         var listOfRules = new ArrayList<EligibilityRule<CompanyProfileApi>>();
 
         var companyStatusValidation = new CompanyStatusValidation(allowedCompanyStatuses);
+        var companyTypeValidation = new CompanyTypeValidation(allowedCompanyTypes);
 
         listOfRules.add(companyStatusValidation);
+        listOfRules.add(companyTypeValidation);
 
         return listOfRules;
     }
