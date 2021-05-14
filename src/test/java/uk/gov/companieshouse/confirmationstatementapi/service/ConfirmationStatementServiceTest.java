@@ -12,11 +12,13 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFai
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.EligibilityFailureResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -66,8 +68,10 @@ class ConfirmationStatementServiceTest {
         doThrow(new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_STATUS)).when(eligibilityRule).validate(companyProfileApi);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction);
+        var responseBody = (EligibilityFailureResponse) response.getBody();
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_STATUS, response.getBody());
+        assertNotNull(responseBody);
+        assertEquals(EligibilityFailureReason.INVALID_COMPANY_STATUS, responseBody.getValidationError());
     }
 }
