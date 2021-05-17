@@ -8,6 +8,7 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeCS01FilingNotRequiredValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationForWebFiling;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationPaperOnly;
 
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${PAPER_ONLY_COMPANY_TYPES}")
     Set<String> paperOnlyCompanyTypes;
 
+    @Value("${WEB_FILING_COMPANY_TYPES}")
+    Set<String> webFilingCompanyTypes;
+
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules() {
@@ -33,10 +37,12 @@ public class ConfirmationStatementServiceEligibilityConfig {
 
         var companyStatusValidation = new CompanyStatusValidation(allowedCompanyStatuses);
         var companyTypeValidation = new CompanyTypeCS01FilingNotRequiredValidation(companyTypesNotRequiredToFileCS01);
+        var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidation);
+        listOfRules.add(companyTypeValidationForWebFiling);
         listOfRules.add(companyTypeValidationPaperOnly);
 
         return listOfRules;
