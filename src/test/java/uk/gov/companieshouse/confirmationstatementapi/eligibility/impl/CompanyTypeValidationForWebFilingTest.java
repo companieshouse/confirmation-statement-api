@@ -9,6 +9,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityExcep
 import java.util.Collections;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -29,26 +30,25 @@ class CompanyTypeValidationForWebFilingTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(WEB_FILING_TYPE);
 
-        var ex = assertThrows(EligibilityException.class, () -> {
-            CompanyTypeValidationForWebFiling.validate(companyProfileApi);
-        });
+        var ex = assertThrows(EligibilityException.class, () ->
+                CompanyTypeValidationForWebFiling.validate(companyProfileApi));
 
         assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_USE_WEB_FILING, ex.getEligibilityFailureReason());
     }
 
     @Test
-    void validateDoesNotThrowOnNotWebFilingType() throws EligibilityException {
+    void validateDoesNotThrowOnNotWebFilingType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType("Not_Web_Filing_Type");
 
-        CompanyTypeValidationForWebFiling.validate(companyProfileApi);
+        assertDoesNotThrow(() -> CompanyTypeValidationForWebFiling.validate(companyProfileApi));
     }
 
     @Test
-    void validateThrowsOnNullStatus() throws EligibilityException {
+    void validateThrowsOnNullStatus() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(null);
 
-        CompanyTypeValidationForWebFiling.validate(companyProfileApi);
+        assertDoesNotThrow(() -> CompanyTypeValidationForWebFiling.validate(companyProfileApi));
     }
 }

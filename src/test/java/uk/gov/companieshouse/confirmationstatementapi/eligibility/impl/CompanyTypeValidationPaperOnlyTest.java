@@ -9,6 +9,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityExcep
 import java.util.Collections;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -17,11 +18,11 @@ class CompanyTypeValidationPaperOnlyTest {
     private static final String PAPER_TYPE = "PaperType";
     private static final Set<String> PAPER_ONLY_LIST = Collections.singleton(PAPER_TYPE);
 
-    private CompanyTypeValidationPaperOnly CompanyTypeValidationPaperOnly;
+    private CompanyTypeValidationPaperOnly companyTypeValidationPaperOnly;
 
     @BeforeEach
     void init() {
-        CompanyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(PAPER_ONLY_LIST);
+        companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(PAPER_ONLY_LIST);
     }
 
     @Test
@@ -29,26 +30,25 @@ class CompanyTypeValidationPaperOnlyTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(PAPER_TYPE);
 
-        var ex = assertThrows(EligibilityException.class, () -> {
-            CompanyTypeValidationPaperOnly.validate(companyProfileApi);
-        });
+        var ex = assertThrows(EligibilityException.class, () ->
+            companyTypeValidationPaperOnly.validate(companyProfileApi));
 
         assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY, ex.getEligibilityFailureReason());
     }
 
     @Test
-    void validateDoesNotThrowOnNonPaperType() throws EligibilityException {
+    void validateDoesNotThrowOnNonPaperType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType("Non_Paper_Type");
 
-        CompanyTypeValidationPaperOnly.validate(companyProfileApi);
+        assertDoesNotThrow(() -> companyTypeValidationPaperOnly.validate(companyProfileApi));
     }
 
     @Test
-    void validateThrowsOnNullStatus() throws EligibilityException {
+    void validateDoesNotThrowOnNullType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(null);
 
-        CompanyTypeValidationPaperOnly.validate(companyProfileApi);
+        assertDoesNotThrow(() -> companyTypeValidationPaperOnly.validate(companyProfileApi));
     }
 }

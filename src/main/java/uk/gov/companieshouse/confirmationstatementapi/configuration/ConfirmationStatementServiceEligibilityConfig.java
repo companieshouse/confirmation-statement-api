@@ -36,12 +36,12 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var listOfRules = new ArrayList<EligibilityRule<CompanyProfileApi>>();
 
         var companyStatusValidation = new CompanyStatusValidation(allowedCompanyStatuses);
-        var companyTypeValidation = new CompanyTypeCS01FilingNotRequiredValidation(companyTypesNotRequiredToFileCS01);
+        var companyTypeValidationNoCS01Required = new CompanyTypeCS01FilingNotRequiredValidation(companyTypesNotRequiredToFileCS01);
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
 
         listOfRules.add(companyStatusValidation);
-        listOfRules.add(companyTypeValidation);
+        listOfRules.add(companyTypeValidationNoCS01Required);
         listOfRules.add(companyTypeValidationForWebFiling);
         listOfRules.add(companyTypeValidationPaperOnly);
 
