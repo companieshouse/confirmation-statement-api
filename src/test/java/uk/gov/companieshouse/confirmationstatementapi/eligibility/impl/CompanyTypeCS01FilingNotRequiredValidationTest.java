@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,11 +27,11 @@ class CompanyTypeCS01FilingNotRequiredValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnARequiredType() throws EligibilityException {
+    void validateDoesNotThrowOnARequiredType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType("required-type");
 
-        companyTypeValidation.validate(companyProfileApi);
+        assertDoesNotThrow(() -> companyTypeValidation.validate(companyProfileApi));
     }
 
     @Test
@@ -38,9 +39,8 @@ class CompanyTypeCS01FilingNotRequiredValidationTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(NOT_REQUIRED_TYPE);
 
-        var ex = assertThrows(EligibilityException.class, () -> {
-            companyTypeValidation.validate(companyProfileApi);
-        });
+        var ex = assertThrows(EligibilityException.class, () ->
+            companyTypeValidation.validate(companyProfileApi));
 
         assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED, ex.getEligibilityFailureReason());
     }
@@ -50,6 +50,6 @@ class CompanyTypeCS01FilingNotRequiredValidationTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(null);
 
-        companyTypeValidation.validate(companyProfileApi);
+        assertDoesNotThrow(() -> companyTypeValidation.validate(companyProfileApi));
     }
 }

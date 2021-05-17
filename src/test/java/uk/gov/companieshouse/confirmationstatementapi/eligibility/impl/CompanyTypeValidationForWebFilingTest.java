@@ -9,6 +9,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityExcep
 import java.util.Collections;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -17,11 +18,11 @@ class CompanyTypeValidationForWebFilingTest {
     private static final String WEB_FILING_TYPE = "WebFilingType";
     private static final Set<String> WEB_FILING_LIST = Collections.singleton(WEB_FILING_TYPE);
 
-    private CompanyTypeValidationForWebFiling CompanyTypeValidationForWebFiling;
+    private CompanyTypeValidationForWebFiling companyTypeValidationForWebFiling;
 
     @BeforeEach
     void init() {
-        CompanyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(WEB_FILING_LIST);
+        companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(WEB_FILING_LIST);
     }
 
     @Test
@@ -29,26 +30,25 @@ class CompanyTypeValidationForWebFilingTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(WEB_FILING_TYPE);
 
-        var ex = assertThrows(EligibilityException.class, () -> {
-            CompanyTypeValidationForWebFiling.validate(companyProfileApi);
-        });
+        var ex = assertThrows(EligibilityException.class, () ->
+                companyTypeValidationForWebFiling.validate(companyProfileApi));
 
         assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_USE_WEB_FILING, ex.getEligibilityFailureReason());
     }
 
     @Test
-    void validateDoesNotThrowOnNotWebFilingType() throws EligibilityException {
+    void validateDoesNotThrowOnNotWebFilingType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType("Not_Web_Filing_Type");
 
-        CompanyTypeValidationForWebFiling.validate(companyProfileApi);
+        assertDoesNotThrow(() -> companyTypeValidationForWebFiling.validate(companyProfileApi));
     }
 
     @Test
-    void validateThrowsOnNullStatus() throws EligibilityException {
+    void validateDoesNotThrowOnNullType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(null);
 
-        CompanyTypeValidationForWebFiling.validate(companyProfileApi);
+        assertDoesNotThrow(() -> companyTypeValidationForWebFiling.validate(companyProfileApi));
     }
 }
