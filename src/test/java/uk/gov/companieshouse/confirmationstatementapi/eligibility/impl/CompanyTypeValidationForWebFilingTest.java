@@ -18,11 +18,11 @@ class CompanyTypeValidationForWebFilingTest {
     private static final String WEB_FILING_TYPE = "WebFilingType";
     private static final Set<String> WEB_FILING_LIST = Collections.singleton(WEB_FILING_TYPE);
 
-    private CompanyTypeValidationForWebFiling CompanyTypeValidationForWebFiling;
+    private CompanyTypeValidationForWebFiling companyTypeValidationForWebFiling;
 
     @BeforeEach
     void init() {
-        CompanyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(WEB_FILING_LIST);
+        companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(WEB_FILING_LIST);
     }
 
     @Test
@@ -31,7 +31,7 @@ class CompanyTypeValidationForWebFilingTest {
         companyProfileApi.setType(WEB_FILING_TYPE);
 
         var ex = assertThrows(EligibilityException.class, () ->
-                CompanyTypeValidationForWebFiling.validate(companyProfileApi));
+                companyTypeValidationForWebFiling.validate(companyProfileApi));
 
         assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_USE_WEB_FILING, ex.getEligibilityFailureReason());
     }
@@ -41,14 +41,14 @@ class CompanyTypeValidationForWebFilingTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType("Not_Web_Filing_Type");
 
-        assertDoesNotThrow(() -> CompanyTypeValidationForWebFiling.validate(companyProfileApi));
+        assertDoesNotThrow(() -> companyTypeValidationForWebFiling.validate(companyProfileApi));
     }
 
     @Test
-    void validateThrowsOnNullStatus() {
+    void validateDoesNotThrowOnNullType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(null);
 
-        assertDoesNotThrow(() -> CompanyTypeValidationForWebFiling.validate(companyProfileApi));
+        assertDoesNotThrow(() -> companyTypeValidationForWebFiling.validate(companyProfileApi));
     }
 }
