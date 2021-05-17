@@ -33,7 +33,7 @@ class CompanyTypeValidationPaperOnlyTest {
             CompanyTypeValidationPaperOnly.validate(companyProfileApi);
         });
 
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_PAPER_ONLY, ex.getEligibilityFailureReason());
+        assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY, ex.getEligibilityFailureReason());
     }
 
     @Test

@@ -20,7 +20,7 @@ public class CompanyTypeValidationPaperOnly implements EligibilityRule<CompanyPr
         var companyType = profileToValidate.getType();
 
         if (paperOnlyCompanyTypes.contains(companyType)) {
-            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_TYPE_PAPER_ONLY);
+            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY);
         }
     }
 }
