@@ -8,11 +8,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.TransactionService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,5 +51,21 @@ class TransactionInterceptorTest {
 
         assertTrue(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
         verify(mockHttpServletRequest, times(1)).setAttribute("transaction", dummyTransaction);
+    }
+
+    @Test
+    void exceptionPreHandle() throws Exception {
+        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+        Object mockHandler = new Object();
+
+        var pathParams = new HashMap<String, String>();
+        pathParams.put("transaction_id", TRANSACTION_ID);
+
+        when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
+        when(mockHttpServletRequest.getHeader("ERIC-Access-Token")).thenReturn(PASSTHROUGH_HEADER);
+        when(transactionService.getTransaction(TRANSACTION_ID, PASSTHROUGH_HEADER)).thenThrow(ServiceException.class);
+
+        assertFalse(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
+        assertEquals(500,  mockHttpServletResponse.getStatus());
     }
 }
