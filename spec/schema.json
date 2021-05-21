@@ -140,6 +140,7 @@
     "ValidationErrors": {
       "type": "string",
       "enum": [
+        "COMPANY_HAS_MULTIPLE_PSCS",
         "COMPANY_NOT_FOUND",
         "INVALID_COMPANY_STATUS",
         "INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED",
