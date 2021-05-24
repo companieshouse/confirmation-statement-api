@@ -6,7 +6,6 @@
     "title": "Companies House - Confirmation Statement API"
   },
   "host": "internalapi.companieshouse.gov.uk",
-  "basePath": "/transactions/{transaction_id}",
   "schemes": [
     "https"
   ],
@@ -16,13 +15,13 @@
     }
   ],
   "paths": {
-    "/confirmation-statement": {
+    "/transactions/{transaction_id}/confirmation-statement": {
       "parameters": [
         {
           "name": "transaction_id",
           "in": "path",
           "required" : true,
-          "type" : string
+          "type" : "string"
         }
       ],
       "post": {
@@ -40,19 +39,19 @@
           "400": {
             "description": "The provided Company Number failed validation",
             "schema": {
-              "$ref": "#/definitions/CompanyValidationError"
+              "$ref": "#/definitions/CompanyValidationResponse"
             }
           }
         }
       }
     },
-    "/confirmation-statement/submit": {
+    "/transactions/{transaction_id}/confirmation-statement/submit": {
       "parameters": [
         {
           "name": "transaction_id",
           "in": "path",
           "required" : true,
-          "type" : string
+          "type" : "string"
         }
       ],
       "post": {
@@ -68,6 +67,39 @@
             "description": "The Confirmation Statement Submission has been submitted",
             "schema": {
               "$ref": "#/definitions/ConfirmationStatementSubmission"
+            }
+          }
+        }
+      }
+    },
+    "/confirmation-statement/company/{company_number}/eligibility": {
+      "parameters": [
+        {
+          "name": "company_number",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        }
+      ],
+      "get": {
+        "summary": "Checks if a Company is Eligible to use this API",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Confirmation Statement"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Company can use this service to file a Confirmation Statement",
+            "schema": {
+              "$ref": "#/definitions/CompanyValidationResponse"
+            }
+          },
+          "400": {
+            "description": "The Company can not use this service to file a Confirmation Statement",
+            "schema": {
+              "$ref": "#/definitions/CompanyValidationResponse"
             }
           }
         }
@@ -129,18 +161,19 @@
         }
       }
     },
-    "CompanyValidationError": {
+    "CompanyValidationResponse": {
       "type": "object",
       "properties": {
-        "validation_error": {
-          "$ref": "#/definitions/ValidationErrors"
+        "eligibility_status_code": {
+          "$ref": "#/definitions/EligibilityStatusCode"
         }
       }
     },
-    "ValidationErrors": {
+    "EligibilityStatusCode": {
       "type": "string",
       "enum": [
         "COMPANY_NOT_FOUND",
+        "COMPANY_VALID_FOR_SERVICE",
         "INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC",
         "INVALID_COMPANY_STATUS",
         "INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED",
