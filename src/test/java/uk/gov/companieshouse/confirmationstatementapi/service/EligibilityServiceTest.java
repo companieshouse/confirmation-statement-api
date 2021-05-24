@@ -9,6 +9,7 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 
 import java.util.ArrayList;
@@ -46,14 +47,14 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void testInvalidCompanyStatus() throws EligibilityException {
+    void testInvalidCompanyStatus() throws EligibilityException, ServiceException {
         var responseBody = getValidationErrorResponse(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         assertNotNull(responseBody);
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getValidationError());
     }
 
     @Test
-    void testCS01filingNotRequired() throws EligibilityException {
+    void testCS01filingNotRequired() throws EligibilityException, ServiceException {
         var responseBody = getValidationErrorResponse(EligibilityStatusCode.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED);
         assertNotNull(responseBody);
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED, responseBody.getValidationError());
@@ -61,7 +62,7 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void testPaperFilingOnly() throws EligibilityException {
+    void testPaperFilingOnly() throws EligibilityException, ServiceException {
         var responseBody = getValidationErrorResponse(EligibilityStatusCode.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY);
         assertNotNull(responseBody);
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY, responseBody.getValidationError());
@@ -69,14 +70,14 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void testUseWebFiling() throws EligibilityException {
+    void testUseWebFiling() throws EligibilityException, ServiceException {
         var responseBody = getValidationErrorResponse(EligibilityStatusCode.INVALID_COMPANY_TYPE_USE_WEB_FILING);
         assertNotNull(responseBody);
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_USE_WEB_FILING, responseBody.getValidationError());
 
     }
 
-    private CompanyValidationResponse getValidationErrorResponse(EligibilityStatusCode reason) throws EligibilityException {
+    private CompanyValidationResponse getValidationErrorResponse(EligibilityStatusCode reason) throws EligibilityException, ServiceException {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("FailureValue");
         doThrow(new EligibilityException(reason)).when(eligibilityRule).validate(companyProfileApi);

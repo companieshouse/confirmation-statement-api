@@ -7,12 +7,12 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EligibilityService {
@@ -36,6 +36,8 @@ public class EligibilityService {
             LOGGER.info(String.format("Company %s ineligible to use the service because %s", companyProfile.getCompanyNumber(), e.getEligibilityStatusCode().toString()));
             response.setValidationError(e.getEligibilityStatusCode());
             return response;
+        } catch (ServiceException e) {
+            e.printStackTrace();
         }
         return response;
     }
