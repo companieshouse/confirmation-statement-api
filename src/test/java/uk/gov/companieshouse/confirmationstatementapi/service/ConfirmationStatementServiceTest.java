@@ -8,18 +8,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.EligibilityFailureResponse;
-
-import java.util.ArrayList;
-import java.util.List;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,19 +25,16 @@ class ConfirmationStatementServiceTest {
     @Mock
     private CompanyProfileService companyProfileService;
 
-    private List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
-
-    @Mock EligibilityRule<CompanyProfileApi> eligibilityRule;
+    @Mock
+    private EligibilityService eligibilityService;
 
     private ConfirmationStatementService confirmationStatementService;
 
     @BeforeEach
     void init() {
-        eligibilityRules = new ArrayList<>();
-        eligibilityRules.add(eligibilityRule);
-
-        confirmationStatementService = new ConfirmationStatementService(companyProfileService, eligibilityRules);
+        confirmationStatementService = new ConfirmationStatementService(companyProfileService, eligibilityService);
     }
+
     @Test
     void createConfirmationStatement() throws ServiceException {
         Transaction transaction = new Transaction();
@@ -51,6 +43,7 @@ class ConfirmationStatementServiceTest {
         companyProfileApi.setCompanyStatus("AcceptValue");
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(new CompanyValidationResponse());
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction);
 
@@ -65,13 +58,17 @@ class ConfirmationStatementServiceTest {
         companyProfileApi.setCompanyStatus("FailureValue");
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        doThrow(new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_STATUS)).when(eligibilityRule).validate(companyProfileApi);
+
+        CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
+        companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.INVALID_COMPANY_STATUS);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi))
+                .thenReturn(companyValidationResponse);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction);
-        var responseBody = (EligibilityFailureResponse) response.getBody();
+        CompanyValidationResponse responseBody = (CompanyValidationResponse)response.getBody();
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(responseBody);
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_STATUS, responseBody.getValidationError());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getEligibilityStatusCode());
     }
 }

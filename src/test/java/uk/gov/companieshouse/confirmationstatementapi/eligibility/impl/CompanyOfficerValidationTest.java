@@ -10,7 +10,7 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.officers.CompanyOfficerApi;
 import uk.gov.companieshouse.api.model.officers.OfficerRoleApi;
 import uk.gov.companieshouse.api.model.officers.OfficersApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
@@ -71,7 +71,7 @@ class CompanyOfficerValidationTest {
         var ex = assertThrows(EligibilityException.class, () ->
                 companyOfficerValidation.validate(companyProfileApi));
 
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_OFFICER,ex.getEligibilityFailureReason() );
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_OFFICER,ex.getEligibilityStatusCode() );
     }
 
     @Test

@@ -3,7 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
 import java.util.Collections;
@@ -41,7 +41,7 @@ class CompanyStatusValidationTest {
         var ex = assertThrows(EligibilityException.class, () ->
                 companyStatusValidation.validate(companyProfileApi));
 
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_STATUS, ex.getEligibilityFailureReason());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, ex.getEligibilityStatusCode());
     }
 
     @Test
@@ -52,6 +52,6 @@ class CompanyStatusValidationTest {
         var ex = assertThrows(EligibilityException.class, () ->
                 companyStatusValidation.validate(companyProfileApi));
 
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_STATUS, ex.getEligibilityFailureReason());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, ex.getEligibilityStatusCode());
     }
 }

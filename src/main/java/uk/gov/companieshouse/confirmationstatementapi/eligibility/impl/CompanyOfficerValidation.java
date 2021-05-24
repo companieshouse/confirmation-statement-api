@@ -3,7 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.officers.CompanyOfficerApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -25,7 +25,7 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
         var officerCount = getOfficerCount(officers.getItems(), officers.getActiveCount());
         if (officerCount != null && officerCount > 1) {
-            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_OFFICER);
+            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_OFFICER);
         }
     }
 

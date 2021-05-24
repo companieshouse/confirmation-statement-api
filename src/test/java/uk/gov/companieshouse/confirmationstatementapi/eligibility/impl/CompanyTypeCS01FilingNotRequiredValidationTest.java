@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
 class CompanyTypeCS01FilingNotRequiredValidationTest {
@@ -42,7 +42,7 @@ class CompanyTypeCS01FilingNotRequiredValidationTest {
         var ex = assertThrows(EligibilityException.class, () ->
             companyTypeValidation.validate(companyProfileApi));
 
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED, ex.getEligibilityFailureReason());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED, ex.getEligibilityStatusCode());
     }
 
     @Test
