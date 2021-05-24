@@ -21,7 +21,7 @@
           "name": "transaction_id",
           "in": "path",
           "required" : true,
-          "type" : string
+          "type" : "string"
         }
       ],
       "post": {
@@ -51,7 +51,7 @@
           "name": "transaction_id",
           "in": "path",
           "required" : true,
-          "type" : string
+          "type" : "string"
         }
       ],
       "post": {
@@ -78,7 +78,7 @@
           "name": "company_number",
           "in": "path",
           "required" : true,
-          "type" : string
+          "type" : "string"
         }
       ],
       "get": {
