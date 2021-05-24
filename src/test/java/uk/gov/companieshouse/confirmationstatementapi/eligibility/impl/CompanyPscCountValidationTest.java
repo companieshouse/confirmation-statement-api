@@ -65,7 +65,7 @@ class CompanyPscCountValidationTest {
         var ex = assertThrows(EligibilityException.class, () ->
         companyPscCountValidation.validate(companyProfileApi));
 
-        assertEquals(EligibilityFailureReason.COMPANY_HAS_MULTIPLE_PSCS, ex.getEligibilityFailureReason());
+        assertEquals(EligibilityFailureReason.MULTIPLE_PSCS_FOUND, ex.getEligibilityFailureReason());
  
     }
     

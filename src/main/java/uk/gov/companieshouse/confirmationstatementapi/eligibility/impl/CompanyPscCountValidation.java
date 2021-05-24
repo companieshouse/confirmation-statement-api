@@ -18,7 +18,7 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
         var count = pscService.getPscs(profileToValidate.getCompanyNumber()).getActiveCount();
         if(count != null && count > 1) {
-            throw new EligibilityException(EligibilityFailureReason.COMPANY_HAS_MULTIPLE_PSCS);
+            throw new EligibilityException(EligibilityFailureReason.MULTIPLE_PSCS_FOUND);
         }
         
     }
