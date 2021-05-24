@@ -27,7 +27,7 @@ public class EligibilityService {
         this.eligibilityRules = eligibilityRules;
     }
 
-    public CompanyValidationResponse checkCompanyEligibility(CompanyProfileApi companyProfile) {
+    public CompanyValidationResponse checkCompanyEligibility(CompanyProfileApi companyProfile) throws ServiceException {
         CompanyValidationResponse response = new CompanyValidationResponse();
         try {
             for (EligibilityRule<CompanyProfileApi> eligibilityRule : eligibilityRules) {
@@ -37,8 +37,6 @@ public class EligibilityService {
             LOGGER.info(String.format("Company %s ineligible to use the service because %s", companyProfile.getCompanyNumber(), e.getEligibilityStatusCode().toString()));
             response.setEligibilityStatusCode(e.getEligibilityStatusCode());
             return response;
-        } catch (ServiceException e) {
-            e.printStackTrace();
         }
         response.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
         return response;

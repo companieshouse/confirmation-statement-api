@@ -38,7 +38,7 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void tesWithNoErrors() {
+    void tesWithNoErrors() throws ServiceException {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("AcceptValue");
         var responseBody = eligibilityService.checkCompanyEligibility(companyProfileApi);
