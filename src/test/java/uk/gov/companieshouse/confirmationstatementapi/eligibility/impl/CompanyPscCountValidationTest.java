@@ -59,14 +59,15 @@ class CompanyPscCountValidationTest {
     }
 
     @Test
-    void validateThrowsOnMultiplePSCsTest(){
+    void validateThrowsOnMultiplePSCsTest() {
         pscsApi.setActiveCount(2L);
 
-        var ex = assertThrows(EligibilityException.class, () ->
-        companyPscCountValidation.validate(companyProfileApi));
+        var ex = assertThrows(EligibilityException.class, 
+                () -> companyPscCountValidation.validate(companyProfileApi));
 
-        assertEquals(EligibilityFailureReason.MULTIPLE_PSCS_FOUND, ex.getEligibilityFailureReason());
- 
+        assertEquals(EligibilityFailureReason.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC,
+                ex.getEligibilityFailureReason());
+
     }
-    
+
 }

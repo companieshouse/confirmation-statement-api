@@ -6,6 +6,7 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRul
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
+
 public class CompanyPscCountValidation implements EligibilityRule<CompanyProfileApi> {
 
     private final PscService pscService;
@@ -17,10 +18,10 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
         var count = pscService.getPscs(profileToValidate.getCompanyNumber()).getActiveCount();
-        if(count != null && count > 1) {
-            throw new EligibilityException(EligibilityFailureReason.MULTIPLE_PSCS_FOUND);
+        if (count != null && count > 1) {
+            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC);
         }
-        
+
     }
-    
+
 }
