@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
@@ -20,7 +20,7 @@ public class CompanyStatusValidation implements EligibilityRule<CompanyProfileAp
         var status = profileToValidate.getCompanyStatus();
 
         if (!allowedStatuses.contains(status)) {
-            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_STATUS);
+            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         }
     }
 }

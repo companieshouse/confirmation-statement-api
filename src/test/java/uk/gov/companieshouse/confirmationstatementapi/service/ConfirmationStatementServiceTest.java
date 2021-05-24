@@ -8,10 +8,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.EligibilityFailureResponse;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 
 import java.util.Optional;
 
@@ -45,7 +45,7 @@ class ConfirmationStatementServiceTest {
         companyProfileApi.setCompanyStatus("AcceptValue");
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        when(eligibilityService.checkCompanyEligibility(companyProfileApi, transaction)).thenReturn(Optional.empty());
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(new CompanyValidationResponse());
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction);
 
@@ -61,16 +61,16 @@ class ConfirmationStatementServiceTest {
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
 
-        EligibilityFailureResponse eligibilityFailureResponse = new EligibilityFailureResponse();
-        eligibilityFailureResponse.setValidationError(EligibilityFailureReason.INVALID_COMPANY_STATUS);
-        when(eligibilityService.checkCompanyEligibility(companyProfileApi, transaction))
-                .thenReturn(Optional.of(eligibilityFailureResponse));
+        CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
+        companyValidationResponse.setValidationError(EligibilityStatusCode.INVALID_COMPANY_STATUS);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi))
+                .thenReturn(companyValidationResponse);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction);
-        EligibilityFailureResponse responseBody = (EligibilityFailureResponse)response.getBody();
+        CompanyValidationResponse responseBody = (CompanyValidationResponse)response.getBody();
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(responseBody);
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_STATUS, responseBody.getValidationError());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getValidationError());
     }
 }

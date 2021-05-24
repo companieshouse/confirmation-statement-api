@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.EligibilityFailureResponse;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -30,9 +30,9 @@ public class ConfirmationStatementService {
 
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction) throws ServiceException {
         var companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
-        Optional<EligibilityFailureResponse> validationErrorResponseBody = eligibilityService.checkCompanyEligibility(companyProfile, transaction) ;
-        if(validationErrorResponseBody.isPresent()) {
-            return ResponseEntity.badRequest().body(validationErrorResponseBody.get());
+        CompanyValidationResponse companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
+        if(companyValidationResponse.getValidationError() != null) {
+            return ResponseEntity.badRequest().body(companyValidationResponse);
         }
 
         String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/";

@@ -1,15 +1,15 @@
 package uk.gov.companieshouse.confirmationstatementapi.exception;
 
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 
 public class EligibilityException extends Exception {
-    private final EligibilityFailureReason eligibilityFailureReason;
+    private final EligibilityStatusCode eligibilityStatusCode;
 
-    public EligibilityException(EligibilityFailureReason eligibilityFailureReason) {
-        this.eligibilityFailureReason = eligibilityFailureReason;
+    public EligibilityException(EligibilityStatusCode eligibilityStatusCode) {
+        this.eligibilityStatusCode = eligibilityStatusCode;
     }
 
-    public EligibilityFailureReason getEligibilityFailureReason() {
-        return eligibilityFailureReason;
+    public EligibilityStatusCode getEligibilityStatusCode() {
+        return eligibilityStatusCode;
     }
 }

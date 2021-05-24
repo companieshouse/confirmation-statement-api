@@ -7,9 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.EligibilityFailureResponse;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.service.CompanyProfileService;
 import uk.gov.companieshouse.confirmationstatementapi.service.EligibilityService;
 
@@ -40,8 +40,8 @@ class EligibilityControllerTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("AcceptValue");
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(Optional.empty());
-        ResponseEntity<Object> response = eligibilityController.getEligibility(COMPANY_NUMBER);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(new CompanyValidationResponse());
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER);
         assertEquals(200, response.getStatusCodeValue());
     }
 
@@ -50,17 +50,17 @@ class EligibilityControllerTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("FailureValue");
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        EligibilityFailureResponse eligibilityFailureResponse = new EligibilityFailureResponse();
-        eligibilityFailureResponse.setValidationError(EligibilityFailureReason.INVALID_COMPANY_STATUS);
-        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(Optional.of(eligibilityFailureResponse));
-        ResponseEntity<Object> response = eligibilityController.getEligibility(COMPANY_NUMBER);
+        CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
+        companyValidationResponse.setValidationError(EligibilityStatusCode.INVALID_COMPANY_STATUS);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(companyValidationResponse);
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER);
         assertEquals(400, response.getStatusCodeValue());
     }
 
     @Test
     void testServiceExceptionGetEligibility() throws ServiceException {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new ServiceException("", new Exception()));
-        ResponseEntity<Object> response = eligibilityController.getEligibility(COMPANY_NUMBER);
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER);
         assertEquals(500, response.getStatusCodeValue());
     }
 

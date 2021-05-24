@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.EligibilityFailureResponse;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.service.CompanyProfileService;
 import uk.gov.companieshouse.confirmationstatementapi.service.EligibilityService;
 import uk.gov.companieshouse.logging.Logger;
@@ -29,18 +29,18 @@ public class EligibilityController {
     private EligibilityService eligibilityService;
 
     @GetMapping("/confirmation-statement/company/{company-number}/eligibility")
-    public ResponseEntity<Object> getEligibility(@PathVariable("company-number") String companyNumber){
+    public ResponseEntity<CompanyValidationResponse> getEligibility(@PathVariable("company-number") String companyNumber){
         LOGGER.debug("Start Handling request  GET '/' for eligibility");
         try {
             CompanyProfileApi companyProfile =
                     companyProfileService.getCompanyProfile(companyNumber);
-            Optional<EligibilityFailureResponse> validationErrorResponseBody =
+           CompanyValidationResponse companyValidationResponse =
                     eligibilityService.checkCompanyEligibility(companyProfile);
 
-            if(validationErrorResponseBody.isPresent()) {
-                return ResponseEntity.badRequest().body(validationErrorResponseBody.get());
+            if(companyValidationResponse.getValidationError() != null) {
+                return ResponseEntity.badRequest().body(companyValidationResponse);
             }
-            return ResponseEntity.ok("ok");
+            return ResponseEntity.ok().body(companyValidationResponse);
         } catch (ServiceException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

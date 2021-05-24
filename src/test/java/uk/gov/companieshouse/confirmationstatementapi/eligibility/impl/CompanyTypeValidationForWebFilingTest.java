@@ -3,7 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityFailureReason;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ class CompanyTypeValidationForWebFilingTest {
         var ex = assertThrows(EligibilityException.class, () ->
                 companyTypeValidationForWebFiling.validate(companyProfileApi));
 
-        assertEquals(EligibilityFailureReason.INVALID_COMPANY_TYPE_USE_WEB_FILING, ex.getEligibilityFailureReason());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_USE_WEB_FILING, ex.getEligibilityStatusCode());
     }
 
     @Test
