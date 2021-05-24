@@ -11,7 +11,6 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 @Service

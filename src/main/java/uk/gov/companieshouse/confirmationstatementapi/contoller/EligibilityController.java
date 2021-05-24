@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
@@ -29,11 +29,11 @@ public class EligibilityController {
     private EligibilityService eligibilityService;
 
     @GetMapping("/confirmation-statement/company/{company-number}/eligibility")
-    public ResponseEntity<Object> getEligibility(@RequestAttribute("company-number") String companyNumber){
+    public ResponseEntity<Object> getEligibility(@PathVariable("company-number") String companyNumber){
         LOGGER.debug("Start Handling request  GET '/' for eligibility");
-        CompanyProfileApi companyProfile = null;
         try {
-            companyProfile = companyProfileService.getCompanyProfile(companyNumber);
+            CompanyProfileApi companyProfile =
+                    companyProfileService.getCompanyProfile(companyNumber);
             Optional<EligibilityFailureResponse> validationErrorResponseBody =
                     eligibilityService.checkCompanyEligibility(companyProfile);
 
