@@ -25,13 +25,15 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
         var officerCount = getOfficerCount(officers.getItems(), officers.getActiveCount());
         if (officerCount != null && officerCount > 1) {
-            throw new EligibilityException(EligibilityFailureReason.INVALID_OFFICER_COUNT);
+            throw new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_OFFICER);
         }
     }
 
     public Long getOfficerCount(List<CompanyOfficerApi> officers, Long activeCount) {
         for(CompanyOfficerApi i: officers) {
-            if (i.getOfficerRole().getOfficerRole().contains("secretary")) activeCount--;
+            if (i.getOfficerRole().getOfficerRole().contains("secretary")) {
+                activeCount--;
+            }
         }
         return activeCount;
     }
