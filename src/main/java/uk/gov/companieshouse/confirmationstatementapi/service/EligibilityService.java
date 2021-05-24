@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
@@ -34,11 +35,12 @@ public class EligibilityService {
             }
         } catch (EligibilityException e) {
             LOGGER.info(String.format("Company %s ineligible to use the service because %s", companyProfile.getCompanyNumber(), e.getEligibilityStatusCode().toString()));
-            response.setValidationError(e.getEligibilityStatusCode());
+            response.setEligibilityStatusCode(e.getEligibilityStatusCode());
             return response;
         } catch (ServiceException e) {
             e.printStackTrace();
         }
+        response.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
         return response;
     }
 }

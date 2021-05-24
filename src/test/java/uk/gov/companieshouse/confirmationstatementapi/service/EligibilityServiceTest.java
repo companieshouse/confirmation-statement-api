@@ -43,21 +43,21 @@ class EligibilityServiceTest {
         companyProfileApi.setCompanyStatus("AcceptValue");
         var responseBody = eligibilityService.checkCompanyEligibility(companyProfileApi);
         assertNotNull(responseBody);
-        assertNull(responseBody.getValidationError());
+        assertEquals(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE, responseBody.getEligibilityStatusCode());
     }
 
     @Test
     void testInvalidCompanyStatus() throws EligibilityException, ServiceException {
         var responseBody = getValidationErrorResponse(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         assertNotNull(responseBody);
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getValidationError());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getEligibilityStatusCode());
     }
 
     @Test
     void testCS01filingNotRequired() throws EligibilityException, ServiceException {
         var responseBody = getValidationErrorResponse(EligibilityStatusCode.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED);
         assertNotNull(responseBody);
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED, responseBody.getValidationError());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED, responseBody.getEligibilityStatusCode());
 
     }
 
@@ -65,7 +65,7 @@ class EligibilityServiceTest {
     void testPaperFilingOnly() throws EligibilityException, ServiceException {
         var responseBody = getValidationErrorResponse(EligibilityStatusCode.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY);
         assertNotNull(responseBody);
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY, responseBody.getValidationError());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY, responseBody.getEligibilityStatusCode());
 
     }
 
@@ -73,7 +73,7 @@ class EligibilityServiceTest {
     void testUseWebFiling() throws EligibilityException, ServiceException {
         var responseBody = getValidationErrorResponse(EligibilityStatusCode.INVALID_COMPANY_TYPE_USE_WEB_FILING);
         assertNotNull(responseBody);
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_USE_WEB_FILING, responseBody.getValidationError());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE_USE_WEB_FILING, responseBody.getEligibilityStatusCode());
 
     }
 

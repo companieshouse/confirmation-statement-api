@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.service.CompanyProfileService;
@@ -37,10 +38,12 @@ public class EligibilityController {
            CompanyValidationResponse companyValidationResponse =
                     eligibilityService.checkCompanyEligibility(companyProfile);
 
-            if(companyValidationResponse.getValidationError() != null) {
+            if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE
+                    == companyValidationResponse.getEligibilityStatusCode()) {
+                return ResponseEntity.ok().body(companyValidationResponse);
+            } else {
                 return ResponseEntity.badRequest().body(companyValidationResponse);
             }
-            return ResponseEntity.ok().body(companyValidationResponse);
         } catch (ServiceException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

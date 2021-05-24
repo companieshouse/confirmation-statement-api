@@ -5,21 +5,21 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 
 public class CompanyValidationResponse {
 
-    @JsonProperty("validation_error")
-    private EligibilityStatusCode validationError;
+    @JsonProperty("eligibility_status_code")
+    private EligibilityStatusCode eligibilityStatusCode;
 
     public CompanyValidationResponse() {
     }
 
-    public CompanyValidationResponse(EligibilityStatusCode validationError) {
-        this.validationError = validationError;
+    public CompanyValidationResponse(EligibilityStatusCode eligibilityStatusCode) {
+        this.eligibilityStatusCode = eligibilityStatusCode;
     }
 
-    public EligibilityStatusCode getValidationError() {
-        return validationError;
+    public EligibilityStatusCode getEligibilityStatusCode() {
+        return eligibilityStatusCode;
     }
 
-    public void setValidationError(EligibilityStatusCode validationError) {
-        this.validationError = validationError;
+    public void setEligibilityStatusCode(EligibilityStatusCode eligibilityStatusCode) {
+        this.eligibilityStatusCode = eligibilityStatusCode;
     }
 }

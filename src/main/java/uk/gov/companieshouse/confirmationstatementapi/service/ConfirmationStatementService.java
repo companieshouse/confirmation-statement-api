@@ -11,7 +11,6 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.net.URI;
-import java.util.Optional;
 
 @Service
 public class ConfirmationStatementService {
@@ -31,7 +30,7 @@ public class ConfirmationStatementService {
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction) throws ServiceException {
         var companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
         CompanyValidationResponse companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
-        if(companyValidationResponse.getValidationError() != null) {
+        if(companyValidationResponse.getEligibilityStatusCode() != null) {
             return ResponseEntity.badRequest().body(companyValidationResponse);
         }
 

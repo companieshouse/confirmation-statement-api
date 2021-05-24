@@ -38,7 +38,9 @@ class EligibilityControllerTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("AcceptValue");
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(new CompanyValidationResponse());
+        CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
+        companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(companyValidationResponse);
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER);
         assertEquals(200, response.getStatusCodeValue());
     }
@@ -49,7 +51,7 @@ class EligibilityControllerTest {
         companyProfileApi.setCompanyStatus("FailureValue");
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
-        companyValidationResponse.setValidationError(EligibilityStatusCode.INVALID_COMPANY_STATUS);
+        companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(companyValidationResponse);
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER);
         assertEquals(400, response.getStatusCodeValue());

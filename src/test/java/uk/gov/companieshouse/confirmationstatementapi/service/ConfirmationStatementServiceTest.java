@@ -13,8 +13,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityExcep
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -62,7 +60,7 @@ class ConfirmationStatementServiceTest {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
 
         CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
-        companyValidationResponse.setValidationError(EligibilityStatusCode.INVALID_COMPANY_STATUS);
+        companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi))
                 .thenReturn(companyValidationResponse);
 
@@ -71,6 +69,6 @@ class ConfirmationStatementServiceTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(responseBody);
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getValidationError());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getEligibilityStatusCode());
     }
 }
