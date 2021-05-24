@@ -16,6 +16,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.response.Eligibility
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,19 +31,16 @@ class ConfirmationStatementServiceTest {
     @Mock
     private CompanyProfileService companyProfileService;
 
-    private List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
-
-    @Mock EligibilityRule<CompanyProfileApi> eligibilityRule;
+    @Mock
+    private EligibilityService eligibilityService;
 
     private ConfirmationStatementService confirmationStatementService;
 
     @BeforeEach
     void init() {
-        eligibilityRules = new ArrayList<>();
-        eligibilityRules.add(eligibilityRule);
-
-        confirmationStatementService = new ConfirmationStatementService(companyProfileService, eligibilityRules);
+        confirmationStatementService = new ConfirmationStatementService(companyProfileService, eligibilityService);
     }
+
     @Test
     void createConfirmationStatement() throws ServiceException {
         Transaction transaction = new Transaction();
@@ -51,6 +49,7 @@ class ConfirmationStatementServiceTest {
         companyProfileApi.setCompanyStatus("AcceptValue");
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi, transaction)).thenReturn(Optional.empty());
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction);
 
@@ -65,10 +64,14 @@ class ConfirmationStatementServiceTest {
         companyProfileApi.setCompanyStatus("FailureValue");
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        doThrow(new EligibilityException(EligibilityFailureReason.INVALID_COMPANY_STATUS)).when(eligibilityRule).validate(companyProfileApi);
+
+        EligibilityFailureResponse eligibilityFailureResponse = new EligibilityFailureResponse();
+        eligibilityFailureResponse.setValidationError(EligibilityFailureReason.INVALID_COMPANY_STATUS);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi, transaction))
+                .thenReturn(Optional.of(eligibilityFailureResponse));
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction);
-        var responseBody = (EligibilityFailureResponse) response.getBody();
+        EligibilityFailureResponse responseBody = (EligibilityFailureResponse)response.getBody();
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(responseBody);

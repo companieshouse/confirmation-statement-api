@@ -1,14 +1,10 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
-import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.EligibilityFailureResponse;
 import uk.gov.companieshouse.logging.Logger;
@@ -16,6 +12,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ConfirmationStatementService {
@@ -23,28 +20,20 @@ public class ConfirmationStatementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementApiApplication.APP_NAME);
 
     private final CompanyProfileService companyProfileService;
-
-    private final List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
+    private final EligibilityService eligibilityService;
 
     @Autowired
     public ConfirmationStatementService(CompanyProfileService companyProfileService,
-                                        @Qualifier("confirmation-statement-eligibility-rules") List<EligibilityRule<CompanyProfileApi>> eligibilityRules) {
+                                        EligibilityService eligibilityService) {
         this.companyProfileService = companyProfileService;
-        this.eligibilityRules = eligibilityRules;
+        this.eligibilityService = eligibilityService;
     }
 
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction) throws ServiceException {
         var companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
-
-        try {
-            for (EligibilityRule<CompanyProfileApi> eligibilityRule : eligibilityRules) {
-                eligibilityRule.validate(companyProfile);
-            }
-        } catch (EligibilityException e) {
-            LOGGER.info(String.format("Company %s ineligible to use the service because %s", transaction.getCompanyNumber(), e.getEligibilityFailureReason().toString()));
-
-            var responseBody = new EligibilityFailureResponse(e.getEligibilityFailureReason());
-            return ResponseEntity.badRequest().body(responseBody);
+        Optional<EligibilityFailureResponse> validationErrorResponseBody = eligibilityService.checkCompanyEligibility(companyProfile, transaction) ;
+        if(validationErrorResponseBody.isPresent()) {
+            return ResponseEntity.badRequest().body(validationErrorResponseBody.get());
         }
 
         String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/";
