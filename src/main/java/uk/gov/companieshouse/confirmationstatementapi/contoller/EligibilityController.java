@@ -16,8 +16,6 @@ import uk.gov.companieshouse.confirmationstatementapi.service.EligibilityService
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-import java.util.Optional;
-
 @RestController
 public class EligibilityController {
 
