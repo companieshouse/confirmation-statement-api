@@ -1,0 +1,18 @@
+{
+  "type": "Service",
+  "name": "confirmation-statement-api",
+  "description": "API service for handling confirmation statements digitally submitted by eligible companies",
+  "owned_by": "Team Toro Loco, Synergy",
+  "calls_via": "Eric",
+  "documentation": "TO BE ADDED",
+  "git_repo": "https://github.com/companieshouse/confirmation-statement-api",
+  "specification": "https://github.com/companieshouse/confirmation-statement-api/blob/main/spec/schema.json",
+  "public": false,
+  "users": "internal - API",
+  "code_analysis_link": "http://code-analysis.platform.aws.chdev.org:9000/dashboard?id=uk.gov.companieshouse%3Aconfirmation-statement-api",
+  "test_automation_repo": "https://github.com/companieshouse/taf-api-karate",
+  "language": "Java",
+  "integration_outgoing": [
+    "confirmation-statement-web,GETS_DATA_FROM"
+  ]
+}
