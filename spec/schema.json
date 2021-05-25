@@ -34,7 +34,10 @@
         ],
         "responses": {
           "201": {
-            "description": "A Confirmation Statement Submission has been created."
+            "description": "A Confirmation Statement Submission has been created.",
+            "schema": {
+              "$ref": "#/definitions/ConfirmationStatementCreated"
+            }
           },
           "400": {
             "description": "The provided Company Number failed validation",
@@ -199,8 +202,8 @@
         "email": {
           "type": "string",
           "format": "email"
-        },
+        }
       }
-    },
+    }
   }
 }
