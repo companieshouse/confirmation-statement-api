@@ -9,12 +9,13 @@ import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
-import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +37,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void createConfirmationStatement() throws ServiceException {
+    void createConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         Transaction transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
@@ -51,7 +52,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void createConfirmationStatementFailingStatusValidation() throws ServiceException, EligibilityException {
+    void createConfirmationStatementFailingStatusValidation() throws ServiceException, CompanyNotFoundException {
         Transaction transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
@@ -70,5 +71,17 @@ class ConfirmationStatementServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(responseBody);
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getEligibilityStatusCode());
+    }
+
+    @Test
+    void createConfirmationStatementCompanyNotFound() throws ServiceException, CompanyNotFoundException {
+        Transaction transaction = new Transaction();
+        transaction.setCompanyNumber(COMPANY_NUMBER);
+
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
+
+        assertThrows(ServiceException.class, () -> {
+            this.confirmationStatementService.createConfirmationStatement(transaction);
+        });
     }
 }

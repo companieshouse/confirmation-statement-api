@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
+import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.service.CompanyProfileService;
@@ -42,6 +43,10 @@ public class EligibilityController {
             } else {
                 return ResponseEntity.badRequest().body(companyValidationResponse);
             }
+        } catch (CompanyNotFoundException e) {
+            var companyNotFoundResponse = new CompanyValidationResponse();
+            companyNotFoundResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_NOT_FOUND);
+            return ResponseEntity.badRequest().body(companyNotFoundResponse);
         } catch (ServiceException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

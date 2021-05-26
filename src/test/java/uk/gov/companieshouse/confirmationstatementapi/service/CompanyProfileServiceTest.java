@@ -13,6 +13,7 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
+import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ class CompanyProfileServiceTest {
     private CompanyProfileService companyProfileService;
 
     @Test
-    void getCompanyProfile() throws ServiceException, ApiErrorResponseException, URIValidationException {
+    void getCompanyProfile() throws ServiceException, ApiErrorResponseException, URIValidationException, CompanyNotFoundException {
         CompanyProfileApi companyProfile = new CompanyProfileApi();
         companyProfile.setCompanyName("COMPANY NAME");
 
