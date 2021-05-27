@@ -29,7 +29,6 @@ public class ConfirmationStatementController {
 
     @PostMapping("/")
     public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction) {
-        LOGGER.debug("Start Handling request  POST '/' for transaction: " + transaction.getId() + " and company: " + transaction.getCompanyNumber());
         try {
             return confirmationStatementService.createConfirmationStatement(transaction);
         } catch (ServiceException e) {
