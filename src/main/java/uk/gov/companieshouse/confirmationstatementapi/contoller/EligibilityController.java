@@ -31,6 +31,7 @@ public class EligibilityController {
     @GetMapping("/confirmation-statement/company/{company-number}/eligibility")
     public ResponseEntity<CompanyValidationResponse> getEligibility(@PathVariable("company-number") String companyNumber){
         LOGGER.debug("Start Handling request  GET '/' for eligibility");
+        HttpStatus responseStatus = null;
         try {
             CompanyProfileApi companyProfile =
                     companyProfileService.getCompanyProfile(companyNumber);
@@ -39,16 +40,22 @@ public class EligibilityController {
 
             if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE
                     == companyValidationResponse.getEligibilityStatusCode()) {
+                responseStatus = HttpStatus.OK;
                 return ResponseEntity.ok().body(companyValidationResponse);
             } else {
+                responseStatus = HttpStatus.BAD_REQUEST;
                 return ResponseEntity.badRequest().body(companyValidationResponse);
             }
         } catch (CompanyNotFoundException e) {
             var companyNotFoundResponse = new CompanyValidationResponse();
             companyNotFoundResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_NOT_FOUND);
+            responseStatus = HttpStatus.BAD_REQUEST;
             return ResponseEntity.badRequest().body(companyNotFoundResponse);
         } catch (ServiceException e) {
+            responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            LOGGER.debug("Finished Handling request  GET '/' for eligibility response status sent: " + responseStatus);
         }
     }
 
