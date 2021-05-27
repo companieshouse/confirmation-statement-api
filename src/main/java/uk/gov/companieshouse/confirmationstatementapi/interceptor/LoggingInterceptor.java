@@ -6,9 +6,6 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-import uk.gov.companieshouse.logging.util.LogContext;
-import uk.gov.companieshouse.logging.util.LogContextProperties;
-import uk.gov.companieshouse.logging.util.LogHelper;
 import uk.gov.companieshouse.logging.util.RequestLogger;
 
 import javax.servlet.http.HttpServletRequest;

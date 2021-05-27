@@ -18,8 +18,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement")
 public class ConfirmationStatementController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementApiApplication.APP_NAME);
-
     private final ConfirmationStatementService confirmationStatementService;
 
     @Autowired
