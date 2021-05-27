@@ -18,8 +18,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement")
 public class ConfirmationStatementController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementApiApplication.APP_NAME);
-
     private final ConfirmationStatementService confirmationStatementService;
 
     @Autowired
@@ -29,7 +27,6 @@ public class ConfirmationStatementController {
 
     @PostMapping("/")
     public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction) {
-        LOGGER.debug("Start Handling request  POST '/' for transaction: " + transaction.getId() + " and company: " + transaction.getCompanyNumber());
         try {
             return confirmationStatementService.createConfirmationStatement(transaction);
         } catch (ServiceException e) {
