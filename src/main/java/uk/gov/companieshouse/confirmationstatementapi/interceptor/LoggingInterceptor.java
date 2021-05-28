@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +38,8 @@ public class LoggingInterceptor implements HandlerInterceptor{
     }
 
     private String requestPath(HttpServletRequest request) {
-        return request.getRequestURI();
+        return (String) request
+                .getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
     }
 
     private String requestMethod(HttpServletRequest request) {
