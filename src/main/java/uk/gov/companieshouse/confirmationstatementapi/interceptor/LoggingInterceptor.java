@@ -45,8 +45,4 @@ public class LoggingInterceptor implements HandlerInterceptor{
     private String requestMethod(HttpServletRequest request) {
         return request.getMethod();
     }
-
-    private String requestId(HttpServletRequest request) {
-        return request.getHeader("X-Request-Id");
-    }
 }
