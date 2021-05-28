@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSSZ} %-5level --- [%thread] [%X{context}] %X{namespace}  %logger{36} : %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="uk.gov.companieshouse.confirmationstatementapi" level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </logger>
+</configuration>
