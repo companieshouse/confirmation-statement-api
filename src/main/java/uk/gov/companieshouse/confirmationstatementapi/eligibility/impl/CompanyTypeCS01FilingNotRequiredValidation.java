@@ -1,13 +1,13 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import java.util.Set;
-
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
-import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
+import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+
+import java.util.Set;
 
 public class CompanyTypeCS01FilingNotRequiredValidation implements EligibilityRule<CompanyProfileApi> {
 
