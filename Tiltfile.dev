@@ -1,11 +1,11 @@
 local_resource(
   name = 'dev:confirmation-statement-api-build',
-  cmd = 'mvn compile',
+  cmd = 'mvn clean compile',
   deps = ['src']
 )
 custom_build(
   ref = '169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/confirmation-statement-api',
-  command = 'mvn compile jib:dockerBuild -Dimage=$EXPECTED_REF',
+  command = 'mvn clean compile jib:dockerBuild -Dimage=$EXPECTED_REF',
   live_update = [
     sync(
       local_path = './target/classes',
