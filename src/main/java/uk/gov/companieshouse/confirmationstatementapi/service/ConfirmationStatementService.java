@@ -9,15 +9,15 @@ import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiAp
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
 @Service
 public class ConfirmationStatementService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementApiApplication.APP_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementService.class);
 
     private final CompanyProfileService companyProfileService;
     private final EligibilityService eligibilityService;
@@ -34,7 +34,6 @@ public class ConfirmationStatementService {
         try {
             companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
         } catch (CompanyNotFoundException e) {
-            LOGGER.error(e);
             throw new ServiceException("Error retrieving company profile", e);
         }
         CompanyValidationResponse companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
@@ -44,7 +43,7 @@ public class ConfirmationStatementService {
 
         String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/";
 
-        LOGGER.info("Confirmation Statement created for transaction id: " + transaction.getId());
+        LOGGER.info("Confirmation Statement created for transaction id: {}", transaction.getId());
         return ResponseEntity.created(URI.create(createdUri)).body("Created");
     }
 }
