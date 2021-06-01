@@ -16,6 +16,8 @@ import java.util.List;
 
 public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileApi> {
 
+    public Boolean officer_validation_flag;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyOfficerValidation.class);
 
     private final OfficerService officerService;
@@ -28,6 +30,10 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
     @Override
     public void validate(CompanyProfileApi companyProfileApi) throws EligibilityException, ServiceException {
         LOGGER.info("Validating Company Officers for: {}", companyProfileApi.getCompanyNumber());
+        if (!officer_validation_flag) {
+            LOGGER.debug("OFFICER VALIDATION FEATURE FLAG off skipping validation");
+            return;
+        }
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
         var officerCount = getOfficerCount(officers.getItems());
         if (officerCount != null && officerCount > 1) {
@@ -39,12 +45,16 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
 
     public Long getOfficerCount(List<CompanyOfficerApi> officers) {
         Long officerCount = 0L;
-        for(CompanyOfficerApi i: officers) {
-            var role = i.getOfficerRole();
+        for(CompanyOfficerApi officer: officers) {
+            var role = officer.getOfficerRole();
             if (role == OfficerRoleApi.DIRECTOR || role == OfficerRoleApi.NOMINEE_DIRECTOR || role == OfficerRoleApi.CORPORATE_DIRECTOR) {
                 officerCount++;
             }
         }
         return officerCount;
+    }
+
+    public void setOfficer_validation_flag(Boolean officer_validation_flag) {
+        this.officer_validation_flag = officer_validation_flag;
     }
 }

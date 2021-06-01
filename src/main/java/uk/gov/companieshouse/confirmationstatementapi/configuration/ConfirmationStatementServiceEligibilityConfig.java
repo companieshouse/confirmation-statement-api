@@ -33,8 +33,11 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${WEB_FILING_COMPANY_TYPES}")
     Set<String> webFilingCompanyTypes;
 
+    @Value("${FEATURE_FLAG_OFFICER_VALIDATION_01062021}")
+    Boolean officer_validation_flag;
+
     @Autowired
-    private OfficerService officerService;
+    public OfficerService officerService;
 
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
@@ -46,6 +49,8 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
         var companyOfficerValidation = new CompanyOfficerValidation(officerService);
+
+        companyOfficerValidation.setOfficer_validation_flag(officer_validation_flag);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidationNoCS01Required);

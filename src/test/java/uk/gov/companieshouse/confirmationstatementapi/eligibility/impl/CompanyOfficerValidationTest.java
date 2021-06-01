@@ -46,6 +46,7 @@ class CompanyOfficerValidationTest {
         MOCK_OFFICER.setOfficerRole(OfficerRoleApi.DIRECTOR);
         OFFICER_LIST.add(MOCK_OFFICER);
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
+        companyOfficerValidation.setOfficer_validation_flag(true);
     }
 
     @Test
