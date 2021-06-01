@@ -16,7 +16,7 @@ import java.util.List;
 
 public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileApi> {
 
-    public Boolean officer_validation_flag;
+    Boolean officerValidationFlag;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyOfficerValidation.class);
 
@@ -30,7 +30,7 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
     @Override
     public void validate(CompanyProfileApi companyProfileApi) throws EligibilityException, ServiceException {
         LOGGER.info("Validating Company Officers for: {}", companyProfileApi.getCompanyNumber());
-        if (!officer_validation_flag) {
+        if (!Boolean.TRUE.equals(officerValidationFlag)) {
             LOGGER.debug("OFFICER VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
@@ -54,7 +54,7 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
         return officerCount;
     }
 
-    public void setOfficer_validation_flag(Boolean officer_validation_flag) {
-        this.officer_validation_flag = officer_validation_flag;
+    public void setOfficerValidationFlag(Boolean officerValidationFlag) {
+        this.officerValidationFlag = officerValidationFlag;
     }
 }

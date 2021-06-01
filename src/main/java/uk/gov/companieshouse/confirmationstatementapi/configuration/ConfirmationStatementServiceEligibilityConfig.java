@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,14 +33,11 @@ public class ConfirmationStatementServiceEligibilityConfig {
     Set<String> webFilingCompanyTypes;
 
     @Value("${FEATURE_FLAG_OFFICER_VALIDATION_01062021}")
-    Boolean officer_validation_flag;
-
-    @Autowired
-    public OfficerService officerService;
+    Boolean officerValidationFlag;
 
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
-    List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules() {
+    List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService) {
         var listOfRules = new ArrayList<EligibilityRule<CompanyProfileApi>>();
 
         var companyStatusValidation = new CompanyStatusValidation(allowedCompanyStatuses);
@@ -50,7 +46,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
         var companyOfficerValidation = new CompanyOfficerValidation(officerService);
 
-        companyOfficerValidation.setOfficer_validation_flag(officer_validation_flag);
+        companyOfficerValidation.setOfficerValidationFlag(officerValidationFlag);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidationNoCS01Required);
