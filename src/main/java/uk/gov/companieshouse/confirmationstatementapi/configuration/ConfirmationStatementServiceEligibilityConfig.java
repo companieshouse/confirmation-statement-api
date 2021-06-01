@@ -1,15 +1,15 @@
 package uk.gov.companieshouse.confirmationstatementapi.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeCS01FilingNotRequiredValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationForWebFiling;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationPaperOnly;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.*;
+import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
+import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,9 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${WEB_FILING_COMPANY_TYPES}")
     Set<String> webFilingCompanyTypes;
 
+    @Autowired
+    private OfficerService officerService;
+
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules() {
@@ -39,11 +42,13 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationNoCS01Required = new CompanyTypeCS01FilingNotRequiredValidation(companyTypesNotRequiredToFileCS01);
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
+        var companyOfficerValidation = new CompanyOfficerValidation(officerService);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidationNoCS01Required);
         listOfRules.add(companyTypeValidationForWebFiling);
         listOfRules.add(companyTypeValidationPaperOnly);
+        listOfRules.add(companyOfficerValidation);
 
         return listOfRules;
     }

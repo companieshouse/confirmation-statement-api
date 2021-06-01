@@ -91,7 +91,7 @@ class CompanyOfficerValidationTest {
     void getOfficerCountReturnsNumberOfOfficersExcludingSecretaries() {
         CompanyOfficerApi director = new CompanyOfficerApi();
         CompanyOfficerApi secretary = new CompanyOfficerApi();
-        director.setOfficerRole(OfficerRoleApi.DIRECTOR);
+        director.setOfficerRole(OfficerRoleApi.NOMINEE_DIRECTOR);
         secretary.setOfficerRole(OfficerRoleApi.SECRETARY);
 
         OFFICER_LIST.add(director);
@@ -99,7 +99,7 @@ class CompanyOfficerValidationTest {
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
-        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems(), mockOfficers.getActiveCount());
+        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
         assertEquals(2L, result);
         assertNotEquals(OFFICER_LIST.size(), result);
     }
