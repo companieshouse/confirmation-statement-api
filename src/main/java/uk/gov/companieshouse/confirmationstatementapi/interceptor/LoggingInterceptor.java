@@ -2,10 +2,12 @@ package uk.gov.companieshouse.confirmationstatementapi.interceptor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
+import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +22,8 @@ public class LoggingInterceptor implements HandlerInterceptor{
         Long startTime = System.currentTimeMillis();
         request.getSession().setAttribute("start-time", startTime);
 
+        MDC.put("context", requestId(request));
+        MDC.put("namespace", ConfirmationStatementApiApplication.APP_NAME);
         if(LOGGER.isInfoEnabled()) {
             LOGGER.info("Start of request. Method: {} Path: {}", requestMethod(request), requestPath(request));
         }
@@ -35,6 +39,8 @@ public class LoggingInterceptor implements HandlerInterceptor{
             LOGGER.info("End of request. Method: {} Path: {} Duration: {}ms Status: {}",
                     requestMethod(request), requestPath(request), responseTime, response.getStatus());
         }
+
+        MDC.clear();
     }
 
     private String requestPath(HttpServletRequest request) {
@@ -44,5 +50,9 @@ public class LoggingInterceptor implements HandlerInterceptor{
 
     private String requestMethod(HttpServletRequest request) {
         return request.getMethod();
+    }
+
+    private String requestId(HttpServletRequest request) {
+        return request.getHeader("X-request-id");
     }
 }
