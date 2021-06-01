@@ -44,9 +44,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationNoCS01Required = new CompanyTypeCS01FilingNotRequiredValidation(companyTypesNotRequiredToFileCS01);
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
-        var companyOfficerValidation = new CompanyOfficerValidation(officerService);
-
-        companyOfficerValidation.setOfficerValidationFlag(officerValidationFlag);
+        var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidationNoCS01Required);

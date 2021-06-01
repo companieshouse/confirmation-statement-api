@@ -16,15 +16,16 @@ import java.util.List;
 
 public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileApi> {
 
-    Boolean officerValidationFlag;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyOfficerValidation.class);
 
     private final OfficerService officerService;
 
+    private Boolean officerValidationFlag;
+
     @Autowired
-    public CompanyOfficerValidation(OfficerService officerService){
+    public CompanyOfficerValidation(OfficerService officerService, Boolean officerValidationFlag){
         this.officerService = officerService;
+        this.officerValidationFlag = officerValidationFlag;
     }
 
     @Override
