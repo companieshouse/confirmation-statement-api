@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,18 +93,39 @@ class CompanyOfficerValidationTest {
     @Test
     void getOfficerCountReturnsNumberOfOfficersExcludingSecretaries() {
         CompanyOfficerApi director = new CompanyOfficerApi();
+        CompanyOfficerApi director2 = new CompanyOfficerApi();
         CompanyOfficerApi secretary = new CompanyOfficerApi();
         director.setOfficerRole(OfficerRoleApi.NOMINEE_DIRECTOR);
+        director2.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
         secretary.setOfficerRole(OfficerRoleApi.SECRETARY);
 
         OFFICER_LIST.add(director);
+        OFFICER_LIST.add(director2);
         OFFICER_LIST.add(secretary);
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
         var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
-        assertEquals(2L, result);
+        assertEquals(3L, result);
         assertNotEquals(OFFICER_LIST.size(), result);
+    }
+
+    @Test
+    void validateDoesNotCallOfficerServiceWhenOfficerValidationFeatureFlagFalse() throws ServiceException, EligibilityException {
+        companyOfficerValidation.setOfficerValidationFlag(false);
+        companyOfficerValidation.validate(companyProfileApi);
+        verify(officerService, times(0)).getOfficers(COMPANY_NUMBER);
+    }
+
+    @Test
+    void validateDoesNotThrowOnCompanyWithNullOfficers() throws ServiceException {
+        OFFICER_LIST.clear();
+        mockOfficers.setItems(OFFICER_LIST);
+        mockOfficers.setActiveCount((long) OFFICER_LIST.size());
+
+        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
+
+        assertDoesNotThrow(() -> companyOfficerValidation.validate(companyProfileApi));
     }
 
 }
