@@ -33,7 +33,7 @@ public class EligibilityService {
                 eligibilityRule.validate(companyProfile);
             }
         } catch (EligibilityException e) {
-            LOGGER.info(String.format("Company %s ineligible to use the service because %s", companyProfile.getCompanyNumber(), e.getEligibilityStatusCode().toString()));
+            LOGGER.info("Company {} ineligible to use the service because {}", companyProfile.getCompanyNumber(), e.getEligibilityStatusCode());
             response.setEligibilityStatusCode(e.getEligibilityStatusCode());
             return response;
         }
