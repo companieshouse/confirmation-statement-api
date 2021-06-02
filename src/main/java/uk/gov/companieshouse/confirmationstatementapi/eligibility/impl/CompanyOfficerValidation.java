@@ -20,10 +20,10 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
 
     private final OfficerService officerService;
 
-    private Boolean officerValidationFlag;
+    private boolean officerValidationFlag;
 
     @Autowired
-    public CompanyOfficerValidation(OfficerService officerService, Boolean officerValidationFlag){
+    public CompanyOfficerValidation(OfficerService officerService, boolean officerValidationFlag){
         this.officerService = officerService;
         this.officerValidationFlag = officerValidationFlag;
     }
@@ -31,21 +31,21 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
     @Override
     public void validate(CompanyProfileApi companyProfileApi) throws EligibilityException, ServiceException {
         LOGGER.info("Validating Company Officers for: {}", companyProfileApi.getCompanyNumber());
-        if (!Boolean.TRUE.equals(officerValidationFlag)) {
+        if (!officerValidationFlag) {
             LOGGER.debug("OFFICER VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
         var officerCount = getOfficerCount(officers.getItems());
-        if (officerCount != null && officerCount > 1) {
+        if (officerCount > 1) {
             LOGGER.info("Company Officers validation failed for: {}", companyProfileApi.getCompanyNumber());
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_OFFICER);
         }
         LOGGER.info("Company Officers validation passed for: {}", companyProfileApi.getCompanyNumber());
     }
 
-    public Long getOfficerCount(List<CompanyOfficerApi> officers) {
-        Long officerCount = 0L;
+    public int getOfficerCount(List<CompanyOfficerApi> officers) {
+        int officerCount = 0;
         for(CompanyOfficerApi officer: officers) {
             var role = officer.getOfficerRole();
             if (role == OfficerRoleApi.DIRECTOR || role == OfficerRoleApi.NOMINEE_DIRECTOR || role == OfficerRoleApi.CORPORATE_DIRECTOR) {
@@ -53,9 +53,5 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
             }
         }
         return officerCount;
-    }
-
-    public void setOfficerValidationFlag(Boolean officerValidationFlag) {
-        this.officerValidationFlag = officerValidationFlag;
     }
 }

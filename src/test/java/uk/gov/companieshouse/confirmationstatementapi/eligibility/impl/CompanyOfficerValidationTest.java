@@ -38,17 +38,16 @@ class CompanyOfficerValidationTest {
     @Mock
     private OfficerService officerService;
 
-    @InjectMocks
     private CompanyOfficerValidation companyOfficerValidation;
 
     @BeforeEach
     void init() {
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,true );
         OFFICER_LIST.clear();
         CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
         MOCK_OFFICER.setOfficerRole(OfficerRoleApi.DIRECTOR);
         OFFICER_LIST.add(MOCK_OFFICER);
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-        companyOfficerValidation.setOfficerValidationFlag(true);
     }
 
     @Test
@@ -112,7 +111,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateDoesNotCallOfficerServiceWhenOfficerValidationFeatureFlagFalse() throws ServiceException, EligibilityException {
-        companyOfficerValidation.setOfficerValidationFlag(false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         companyOfficerValidation.validate(companyProfileApi);
         verify(officerService, times(0)).getOfficers(COMPANY_NUMBER);
     }

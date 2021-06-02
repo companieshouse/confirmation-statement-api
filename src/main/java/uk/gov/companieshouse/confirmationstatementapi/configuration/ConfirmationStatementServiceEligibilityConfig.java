@@ -32,8 +32,8 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${WEB_FILING_COMPANY_TYPES}")
     Set<String> webFilingCompanyTypes;
 
-    @Value("${FEATURE_FLAG_OFFICER_VALIDATION_01062021}")
-    Boolean officerValidationFlag;
+    @Value("${FEATURE_FLAG_OFFICER_VALIDATION_01062021:true}")
+    boolean officerValidationFlag;
 
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
