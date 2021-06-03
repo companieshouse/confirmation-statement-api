@@ -1,11 +1,15 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpResponseException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,7 +53,7 @@ class PscServiceTest {
     void getCompanyPscs() throws ApiErrorResponseException, URIValidationException, ServiceException {
 
         PscsApi pscsApi = new PscsApi();
-        pscsApi.setActiveCount((long) 3);
+        pscsApi.setActiveCount(3L);
 
         when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
         when(apiClient.pscs()).thenReturn(pscResourceHandler);
@@ -85,5 +89,25 @@ class PscServiceTest {
         assertThrows(ServiceException.class, () -> {
             pscService.getPscs(COMPANY_NUMBER);
         });
+    }
+
+    @Test
+    void getPscsProfileApiError404Response() throws IOException, URIValidationException, ServiceException {
+
+        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClient.pscs()).thenReturn(pscResourceHandler);
+        when(pscResourceHandler.list("/company/" + COMPANY_NUMBER + "/persons-with-significant-control")).thenReturn(pscsList);
+        var builder = new HttpResponseException.Builder(404, "String", new HttpHeaders());
+        when(pscsList.execute()).thenThrow(new ApiErrorResponseException(builder));
+
+        var response = pscService.getPscs(COMPANY_NUMBER);
+
+        assertNotNull(response);
+        assertNull(response.getActiveCount());
+        assertNull(response.getCeasedCount());
+        assertNull(response.getItemsPerPage());
+        assertNull(response.getEtag());
+        assertNull(response.getItems());
+        assertNull(response.getTotalResults());
     }
 }
