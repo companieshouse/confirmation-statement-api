@@ -30,11 +30,11 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
 
     @Override
     public void validate(CompanyProfileApi companyProfileApi) throws EligibilityException, ServiceException {
-        LOGGER.info("Validating Company Officers for: {}", companyProfileApi.getCompanyNumber());
         if (!officerValidationFlag) {
             LOGGER.debug("OFFICER VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
+        LOGGER.info("Validating Company Officers for: {}", companyProfileApi.getCompanyNumber());
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
         var officerCount = getOfficerCount(officers.getItems());
         if (officerCount > 1) {

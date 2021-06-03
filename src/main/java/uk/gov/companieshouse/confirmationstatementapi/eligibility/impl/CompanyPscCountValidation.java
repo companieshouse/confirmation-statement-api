@@ -24,11 +24,11 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
-        LOGGER.info("Validating Company PSCs for: {}", profileToValidate.getCompanyNumber());
         if (!companyPscCountValidationFeatureFlag) {
             LOGGER.debug("Company PSC Count FEATURE FLAG off skipping validation");
             return;
         }
+        LOGGER.info("Validating Company PSCs for: {}", profileToValidate.getCompanyNumber());
         var count = pscService.getPscs(profileToValidate.getCompanyNumber()).getActiveCount();
         if (count != null && count > 1) {
             LOGGER.info("Company PSCs validation failed for: {}", profileToValidate.getCompanyNumber());
