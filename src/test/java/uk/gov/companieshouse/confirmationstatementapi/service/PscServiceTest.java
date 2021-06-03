@@ -44,9 +44,6 @@ class PscServiceTest {
     private PscsResourceHandler pscResourceHandler;
 
     @Mock
-    private ApiErrorResponseException apiErrorResponseException;
-
-    @Mock
     private PscsList pscsList;
 
     @InjectMocks
