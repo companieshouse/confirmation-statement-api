@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,36 +31,44 @@ class CompanyPscCountValidationTest {
     PscService pscService;
 
     @BeforeEach
-    void setUp() throws ServiceException {
+    void setUp() {
         pscsApi = new PscsApi();
         companyProfileApi = new CompanyProfileApi();
-        when(pscService.getPscs(any())).thenReturn(pscsApi);
-
-        companyPscCountValidation = new CompanyPscCountValidation(pscService);
     }
 
     @Test
-    void validateDoesNotThrowOnSinglePSCTest() {
+    void validateDoesNotThrowOnSinglePSCTest() throws ServiceException {
+        when(pscService.getPscs(any())).thenReturn(pscsApi);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
         pscsApi.setActiveCount(1L);
 
         assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
     }
 
     @Test
-    void validateDoesNotThrowOnZeroPSCTest() {
+    void validateDoesNotThrowOnZeroPSCTest() throws ServiceException {
+        when(pscService.getPscs(any())).thenReturn(pscsApi);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
+
         pscsApi.setActiveCount(0L);
 
         assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
     }
 
     @Test
-    void validateDoesNotThrowOnNullPSCTest() {
+    void validateDoesNotThrowOnNullPSCTest() throws ServiceException {
+        when(pscService.getPscs(any())).thenReturn(pscsApi);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
+
         pscsApi.setActiveCount(null);
         assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
     }
 
     @Test
-    void validateThrowsOnMultiplePSCsTest() {
+    void validateThrowsOnMultiplePSCsTest() throws ServiceException {
+        when(pscService.getPscs(any())).thenReturn(pscsApi);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
+
         pscsApi.setActiveCount(2L);
 
         var ex = assertThrows(EligibilityException.class, 
@@ -68,6 +77,14 @@ class CompanyPscCountValidationTest {
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC,
                 ex.getEligibilityStatusCode());
 
+    }
+
+    @Test
+    void validateDoesNotExecuteWhenFlagIsOff() throws ServiceException, EligibilityException {
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, false);
+
+        companyPscCountValidation.validate(companyProfileApi);
+        verifyNoInteractions(pscService);
     }
 
 }

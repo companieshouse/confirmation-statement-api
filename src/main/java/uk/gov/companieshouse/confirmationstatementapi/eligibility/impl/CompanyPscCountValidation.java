@@ -15,13 +15,20 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
 
     private final PscService pscService;
 
-    public CompanyPscCountValidation(PscService pscService) {
+    private final boolean companyPscCountValidationFeatureFlag;
+
+    public CompanyPscCountValidation(PscService pscService, boolean companyPscCountValidationFeatureFlag) {
         this.pscService = pscService;
+        this.companyPscCountValidationFeatureFlag = companyPscCountValidationFeatureFlag;
     }
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
         LOGGER.info("Validating Company PSCs for: {}", profileToValidate.getCompanyNumber());
+        if (!companyPscCountValidationFeatureFlag) {
+            LOGGER.debug("Company PSC Count FEATURE FLAG off skipping validation");
+            return;
+        }
         var count = pscService.getPscs(profileToValidate.getCompanyNumber()).getActiveCount();
         if (count != null && count > 1) {
             LOGGER.info("Company PSCs validation failed for: {}", profileToValidate.getCompanyNumber());
