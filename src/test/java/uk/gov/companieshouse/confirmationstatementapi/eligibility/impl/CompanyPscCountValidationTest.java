@@ -35,7 +35,7 @@ class CompanyPscCountValidationTest {
         companyProfileApi = new CompanyProfileApi();
         when(pscService.getPscs(any())).thenReturn(pscsApi);
 
-        companyPscCountValidation = new CompanyPscCountValidation(pscService);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
     }
 
     @Test

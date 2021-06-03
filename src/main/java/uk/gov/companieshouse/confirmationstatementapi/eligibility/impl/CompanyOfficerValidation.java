@@ -20,7 +20,7 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
 
     private final OfficerService officerService;
 
-    private boolean officerValidationFlag;
+    private final boolean officerValidationFlag;
 
     @Autowired
     public CompanyOfficerValidation(OfficerService officerService, boolean officerValidationFlag){
