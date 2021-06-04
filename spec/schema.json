@@ -48,10 +48,84 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/submit": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}": {
       "parameters": [
         {
           "name": "transaction_id",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        },
+        {
+          "name": "confirmation_statement_submission_id",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        }
+      ],
+      "get": {
+        "summary": "Retrieve a Confirmation Statement Submission",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Confirmation Statement"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Specified Confirmation Statement Submission.",
+            "schema": {
+              "$ref": "#/definitions/ConfirmationStatementSubmission"
+            }
+          },
+          "401": {
+            "description": "You are unauthorised to retrieve this submisison",
+            "schema": {
+              "$ref": "#/definitions/UpdateSubmissionFieldsError"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update a Confirmation Statement Submission",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Confirmation Statement"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Specified Confirmation Statement Submission has been updated.",
+            "schema": {
+              "$ref": "#/definitions/ConfirmationStatementSubmission"
+            }
+          },
+          "400": {
+            "description": "There was an error updating the submission",
+            "schema": {
+              "$ref": "#/definitions/UpdateSubmissionFieldsError"
+            }
+          },
+          "401": {
+            "description": "You are unauthorised to update this submisison",
+            "schema": {
+              "$ref": "#/definitions/UpdateSubmissionFieldsError"
+            }
+          }
+        }
+      }
+    },
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/submit": {
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        },
+        {
+          "name": "confirmation_statement_submission_id",
           "in": "path",
           "required" : true,
           "type" : "string"
@@ -122,25 +196,28 @@
     "ConfirmationStatementFields": {
       "type": "object",
       "properties": {
-        "sic_codes": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "statement_of_capital": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
         "officers": {
           "$ref": "#/definitions/ConfirmationStatementFieldsValues"
         },
-        "people_with_significant_controle": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "shareholders": {
+        "persons_with_significant_control": {
           "$ref": "#/definitions/ConfirmationStatementFieldsValues"
         },
         "registered_office_address": {
           "$ref": "#/definitions/ConfirmationStatementFieldsValues"
         },
         "register_locations": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "shareholders": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "sic_codes": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "statement_of_capital": {
+          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
+        },
+        "traded_status": {
           "$ref": "#/definitions/ConfirmationStatementFieldsValues"
         }
       }
@@ -183,6 +260,24 @@
         "INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED",
         "INVALID_COMPANY_TYPE_PAPER_FILING_ONLY",
         "INVALID_COMPANY_TYPE_USE_WEB_FILING"
+      ]
+    },
+    "UpdateSubmissionFieldsError": {
+      "type": "object",
+      "properties": {
+        "update_submission_fields_error": {
+          "$ref": "#/definitions/UpdateSubmissionFieldsErrorTypes"
+        }
+      }
+    },
+    "UpdateSubmissionFieldsErrorTypes": {
+      "type": "string",
+      "enum": [
+        "TRANSACTION_NOT_FOUND",
+        "SUBMISSION_NOT_FOUND",
+        "SUBMISSION_NOT_RELATED_TO_TRANSACTION",
+        "TRANSACTION_ALREADY_CLOSED",
+        "USER_UNAUTHORISED_TO_UPDATE_SUBMISSION"
       ]
     },
     "ConfirmationStatementFieldsValues": {
