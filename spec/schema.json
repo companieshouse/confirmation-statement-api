@@ -91,6 +91,16 @@
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "name": "Confirmation Statement",
+            "in": "body",
+            "required" : true,
+            "schema": {
+              "$ref": "#/definitions/ConfirmationStatementFields"
+            }
+          }
+        ],
         "tags": [
           "Confirmation Statement"
         ],
