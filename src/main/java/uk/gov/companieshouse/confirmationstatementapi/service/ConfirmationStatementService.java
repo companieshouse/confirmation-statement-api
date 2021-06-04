@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
@@ -36,7 +37,8 @@ public class ConfirmationStatementService {
             throw new ServiceException("Error retrieving company profile", e);
         }
         CompanyValidationResponse companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
-        if(companyValidationResponse.getEligibilityStatusCode() != null) {
+
+        if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != companyValidationResponse.getEligibilityStatusCode()) {
             return ResponseEntity.badRequest().body(companyValidationResponse);
         }
 
