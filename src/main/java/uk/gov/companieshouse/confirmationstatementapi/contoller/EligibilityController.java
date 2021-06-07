@@ -15,6 +15,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.service.CompanyProfileService;
 import uk.gov.companieshouse.confirmationstatementapi.service.EligibilityService;
+import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
 
 @RestController
 public class EligibilityController {
@@ -25,18 +26,21 @@ public class EligibilityController {
     private CompanyProfileService companyProfileService;
 
     @Autowired
+    private ShareholderService shareholderService;
+
+    @Autowired
     private EligibilityService eligibilityService;
 
     @GetMapping("/confirmation-statement/company/{company-number}/eligibility")
-    public ResponseEntity<CompanyValidationResponse> getEligibility(@PathVariable("company-number") String companyNumber){
+    public ResponseEntity<CompanyValidationResponse> getEligibility(
+            @PathVariable("company-number") String companyNumber) {
         try {
-            CompanyProfileApi companyProfile =
-                    companyProfileService.getCompanyProfile(companyNumber);
-           CompanyValidationResponse companyValidationResponse =
-                    eligibilityService.checkCompanyEligibility(companyProfile);
+            CompanyProfileApi companyProfile = companyProfileService.getCompanyProfile(companyNumber);
+            CompanyValidationResponse companyValidationResponse = eligibilityService
+                    .checkCompanyEligibility(companyProfile);
 
-            if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE
-                    == companyValidationResponse.getEligibilityStatusCode()) {
+            if (EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE == companyValidationResponse
+                    .getEligibilityStatusCode()) {
                 return ResponseEntity.ok().body(companyValidationResponse);
             } else {
                 return ResponseEntity.badRequest().body(companyValidationResponse);
@@ -49,6 +53,12 @@ public class EligibilityController {
             LOGGER.error("Error checking eligibility of company", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/confirmation-statement/company/{company-number}/shareholder/count")
+    public ResponseEntity<Object> getShareholderCount(@PathVariable("company-number") String companyNumber) {
+        var response = shareholderService.getShareholderCount(companyNumber);
+        return ResponseEntity.ok().body(response);
     }
 
 }
