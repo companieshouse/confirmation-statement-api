@@ -10,6 +10,7 @@ import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.handler.transaction.TransactionsResourceHandler;
 import uk.gov.companieshouse.api.handler.transaction.request.TransactionsGet;
+import uk.gov.companieshouse.api.handler.transaction.request.TransactionsUpdate;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
@@ -17,8 +18,11 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,6 +42,9 @@ class TransactionServiceTest {
 
     @Mock
     private TransactionsGet transactionsGet;
+
+    @Mock
+    private TransactionsUpdate transactionsUpdate;
 
     @Mock
     private ApiResponse<Transaction> apiResponse;
@@ -84,5 +91,46 @@ class TransactionServiceTest {
         assertThrows(ServiceException.class, () -> {
             transactionService.getTransaction(TRANSACTION_ID, PASSTHROUGH_HEADER);
         });
+    }
+
+    @Test
+    void updateTransaction() throws IOException {
+        Transaction transaction = new Transaction();
+        transaction.setId(TRANSACTION_ID);
+
+        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
+        when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
+        when(transactionsResourceHandler.update("/transactions/" + TRANSACTION_ID, transaction)).thenReturn(transactionsUpdate);
+
+        assertDoesNotThrow(() -> transactionService.updateTransaction(transaction, PASSTHROUGH_HEADER));
+
+        verify(transactionsResourceHandler, times(1)).update("/transactions/" + TRANSACTION_ID, transaction);
+
+    }
+
+    @Test
+    void updateTransactionApiErrorResponse() throws IOException, URIValidationException {
+        Transaction transaction = new Transaction();
+        transaction.setId(TRANSACTION_ID);
+
+        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
+        when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
+        when(transactionsResourceHandler.update("/transactions/" + TRANSACTION_ID, transaction)).thenReturn(transactionsUpdate);
+        when(transactionsUpdate.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
+
+        assertThrows(ServiceException.class, () -> transactionService.updateTransaction(transaction, PASSTHROUGH_HEADER));
+    }
+
+    @Test
+    void updateTransactionUriValidationError() throws IOException, URIValidationException {
+        Transaction transaction = new Transaction();
+        transaction.setId(TRANSACTION_ID);
+
+        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
+        when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
+        when(transactionsResourceHandler.update("/transactions/" + TRANSACTION_ID, transaction)).thenReturn(transactionsUpdate);
+        when(transactionsUpdate.execute()).thenThrow(new URIValidationException("ERROR"));
+
+        assertThrows(ServiceException.class, () -> transactionService.updateTransaction(transaction, PASSTHROUGH_HEADER));
     }
 }
