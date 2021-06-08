@@ -6,13 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
+import uk.gov.companieshouse.confirmationstatementapi.model.ConfirmationStatementSubmission;
+import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
 
 @Service
 public class ConfirmationStatementService {
@@ -21,30 +25,57 @@ public class ConfirmationStatementService {
 
     private final CompanyProfileService companyProfileService;
     private final EligibilityService eligibilityService;
+    private final TransactionService transactionService;
+    private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
 
     @Autowired
-    public ConfirmationStatementService(CompanyProfileService companyProfileService,
-                                        EligibilityService eligibilityService) {
+    public ConfirmationStatementService(CompanyProfileService companyProfileService, EligibilityService eligibilityService, TransactionService transactionService, ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository) {
         this.companyProfileService = companyProfileService;
         this.eligibilityService = eligibilityService;
+        this.transactionService = transactionService;
+        this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
     }
 
-    public ResponseEntity<Object> createConfirmationStatement(Transaction transaction) throws ServiceException {
+    public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
         CompanyProfileApi companyProfile;
         try {
             companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
         } catch (CompanyNotFoundException e) {
             throw new ServiceException("Error retrieving company profile", e);
         }
-        CompanyValidationResponse companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
+        var companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
 
         if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != companyValidationResponse.getEligibilityStatusCode()) {
             return ResponseEntity.badRequest().body(companyValidationResponse);
         }
 
-        String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/";
+        var newSubmission = new ConfirmationStatementSubmission();
+        var insertedSubmission = confirmationStatementSubmissionsRepository.insert(newSubmission);
 
-        LOGGER.info("Confirmation Statement created for transaction id: {}", transaction.getId());
+        String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/" + insertedSubmission.getId();
+        insertedSubmission.setLinks(Collections.singletonMap("self", createdUri));
+
+        var updatedSubmission = confirmationStatementSubmissionsRepository.save(insertedSubmission);
+        var newResource = createResource(updatedSubmission);
+
+        var existingResources = transaction.getResources();
+        if(existingResources == null) {
+            existingResources = new HashMap<>();
+        }
+        existingResources.put("resource", newResource);
+        transaction.setResources(existingResources);
+
+        transactionService.updateTransaction(transaction, passthroughHeader);
+
+        LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), insertedSubmission.getId());
         return ResponseEntity.created(URI.create(createdUri)).body("Created");
+    }
+
+    private Resource createResource(ConfirmationStatementSubmission submission) {
+        var resource = new Resource();
+        resource.setKind("confirmation-statement-submission");
+        resource.setLinks(Collections.singletonMap("Resource", submission.getLinks().get("self")));
+
+        return resource;
     }
 }
