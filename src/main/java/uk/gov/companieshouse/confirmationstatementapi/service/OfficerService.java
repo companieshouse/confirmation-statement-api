@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
@@ -22,7 +23,12 @@ public class OfficerService {
         try {
             var uri = "/company/" + companyNumber + "/officers";
             return apiClientService.getApiKeyAuthenticatedClient().officers().list(uri).execute().getData();
-        } catch (URIValidationException | ApiErrorResponseException e) {
+        } catch (URIValidationException e) {
+            throw new ServiceException("Error Retrieving Officers", e);
+        } catch ( ApiErrorResponseException e) {
+            if (HttpStatus.NOT_FOUND.value() == e.getStatusCode()){
+                return new OfficersApi();
+            }
             throw new ServiceException("Error Retrieving Officers", e);
         }
     }

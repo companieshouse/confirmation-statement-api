@@ -137,14 +137,17 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnCompanyWithNullOfficers() throws ServiceException {
+    void validateDoesNotThrowOnCompanyWithZeroOfficers() throws ServiceException {
         OFFICER_LIST.clear();
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
         when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
 
+        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
+
         assertDoesNotThrow(() -> companyOfficerValidation.validate(companyProfileApi));
+        assertEquals(0L, result);
     }
 
 }
