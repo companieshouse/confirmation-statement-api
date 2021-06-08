@@ -26,7 +26,7 @@ public class CompanyTradedStatusValidation implements EligibilityRule<CompanyPro
 
         var companyTradedStatus = corporateBodyService.getCompanyTradedStatus(companyNumber);
 
-        if(companyTradedStatus != CompanyTradedStatusType.NOT_ADMITTED_TO_TRADING) {
+        if(CompanyTradedStatusType.NOT_ADMITTED_TO_TRADING != companyTradedStatus) {
             LOGGER.info("Company traded status validation failed for {} with value {}", companyNumber, companyTradedStatus);
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TRADED_STATUS_USE_WEBFILING);
         }
