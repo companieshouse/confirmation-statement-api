@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusType;
 
 @Service
 public class CorporateBodyService {
@@ -14,8 +15,8 @@ public class CorporateBodyService {
         this.oracleQueryClient = oracleQueryClient;
     }
 
-    //TODO Make enum for company traded status
-    public Long getCompanyTradedStatus(String companyNumber) {
-        return oracleQueryClient.getCompanyTradedStatus(companyNumber);
+    public CompanyTradedStatusType getCompanyTradedStatus(String companyNumber) {
+        var companyTradedStatus = oracleQueryClient.getCompanyTradedStatus(companyNumber);
+        return CompanyTradedStatusType.findByCompanyTradedStatusTypeId(companyTradedStatus);
     }
 }

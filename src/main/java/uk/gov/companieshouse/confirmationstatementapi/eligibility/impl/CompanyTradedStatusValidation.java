@@ -6,6 +6,7 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusType;
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
 
 public class CompanyTradedStatusValidation implements EligibilityRule<CompanyProfileApi> {
@@ -25,7 +26,7 @@ public class CompanyTradedStatusValidation implements EligibilityRule<CompanyPro
 
         var companyTradedStatus = corporateBodyService.getCompanyTradedStatus(companyNumber);
 
-        if(companyTradedStatus != 0) {
+        if(companyTradedStatus != CompanyTradedStatusType.NOT_ADMITTED_TO_TRADING) {
             LOGGER.info("Company traded status validation failed for {} with value {}", companyNumber, companyTradedStatus);
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TRADED_STATUS_USE_WEBFILING);
         }
