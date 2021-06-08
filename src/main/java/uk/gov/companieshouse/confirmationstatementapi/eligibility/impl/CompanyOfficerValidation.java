@@ -48,7 +48,7 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
         int officerCount = 0;
         for(CompanyOfficerApi officer: officers) {
             var role = officer.getOfficerRole();
-            if (role == OfficerRoleApi.DIRECTOR || role == OfficerRoleApi.NOMINEE_DIRECTOR || role == OfficerRoleApi.CORPORATE_DIRECTOR) {
+            if ((role == OfficerRoleApi.DIRECTOR || role == OfficerRoleApi.NOMINEE_DIRECTOR || role == OfficerRoleApi.CORPORATE_DIRECTOR) && officer.getResignedOn() == null) {
                 officerCount++;
             }
         }

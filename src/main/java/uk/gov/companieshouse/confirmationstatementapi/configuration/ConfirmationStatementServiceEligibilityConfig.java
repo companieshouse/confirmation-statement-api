@@ -9,10 +9,12 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRul
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyPscCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyShareholderCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTradedStatusValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeCS01FilingNotRequiredValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationForWebFiling;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationPaperOnly;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
+import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
@@ -44,8 +46,10 @@ public class ConfirmationStatementServiceEligibilityConfig {
 
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
-    List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService,
-            PscService pscService, ShareholderService shareholderService) {
+    List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(
+              OfficerService officerService,
+              ShareholderService shareholderService,
+              CorporateBodyService corporateBodyService) {
         var listOfRules = new ArrayList<EligibilityRule<CompanyProfileApi>>();
 
         var companyStatusValidation = new CompanyStatusValidation(allowedCompanyStatuses);
@@ -56,6 +60,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService);
+        var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidationNoCS01Required);
@@ -64,6 +69,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         listOfRules.add(companyOfficerValidation);
         listOfRules.add(companyShareholderValidation);
         listOfRules.add(companyPscCountValidation);
+        listOfRules.add(companyTradedStatusValidation);
 
         return listOfRules;
     }

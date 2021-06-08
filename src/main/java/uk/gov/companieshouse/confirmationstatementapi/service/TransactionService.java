@@ -24,7 +24,16 @@ public class TransactionService {
             var uri = "/transactions/" + transactionId;
             return apiClientService.getOauthAuthenticatedClient(passthroughHeader).transactions().get(uri).execute().getData();
         } catch (URIValidationException | IOException e) {
-            throw new ServiceException("Error Retrieving Transaction", e);
+            throw new ServiceException("Error Retrieving Transaction " + transactionId, e);
+        }
+    }
+
+    public void updateTransaction(Transaction transaction, String passthroughHeader) throws ServiceException {
+        try {
+            var uri = "/transactions/" + transaction.getId();
+            apiClientService.getOauthAuthenticatedClient(passthroughHeader).transactions().update(uri, transaction).execute();
+        } catch (URIValidationException | IOException e) {
+            throw new ServiceException("Error Updating Transaction " + transaction.getId(), e);
         }
     }
 }
