@@ -21,11 +21,11 @@ public class OracleQueryClient {
 
     public Long getCompanyTradedStatus(String companyNumber) {
         String getCompanyTradedStatusUrl = String.format("%s/company/%s/traded-status", oracleQueryApiUrl, companyNumber);
-        LOGGER.info("Calling Oracle Query API URL (get): " + getCompanyTradedStatusUrl);
+        LOGGER.info("Calling Oracle Query API URL (get): {}", getCompanyTradedStatusUrl);
 
         ResponseEntity<Long> response = restTemplate.getForEntity(getCompanyTradedStatusUrl, Long.class);
         var companyTradedStatus = response.getBody();
-        LOGGER.info("Received " + companyTradedStatus + " from Oracle Query API URL (get): " + getCompanyTradedStatusUrl);
+        LOGGER.info("Received {} from Oracle Query API URL (get): {}", companyTradedStatus, getCompanyTradedStatusUrl);
 
         return companyTradedStatus;
     }

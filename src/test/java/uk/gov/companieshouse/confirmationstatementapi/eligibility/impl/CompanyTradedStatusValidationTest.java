@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class CompanyTradedStatusValidationTest {
+class CompanyTradedStatusValidationTest {
 
     private static final String COMPANY_NUMBER = "12345678";
     @Mock

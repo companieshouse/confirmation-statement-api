@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class CorporateBodyServiceTest {
+class CorporateBodyServiceTest {
 
     private static final String COMPANY_NUMBER = "12345678";
     @Mock
