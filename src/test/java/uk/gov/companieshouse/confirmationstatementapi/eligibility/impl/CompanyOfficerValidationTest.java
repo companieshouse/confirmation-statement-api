@@ -137,12 +137,8 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateDoesNotThrowOnCompanyWithZeroOfficers() throws ServiceException {
-        OFFICER_LIST.clear();
-        mockOfficers.setItems(OFFICER_LIST);
-        mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
-        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
-
+        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(new OfficersApi());
         var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
 
         assertDoesNotThrow(() -> companyOfficerValidation.validate(companyProfileApi));
