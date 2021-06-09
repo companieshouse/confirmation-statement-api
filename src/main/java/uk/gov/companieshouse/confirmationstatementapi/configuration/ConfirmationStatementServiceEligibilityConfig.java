@@ -41,6 +41,9 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${FEATURE_FLAG_OFFICER_VALIDATION_01062021:true}")
     private boolean officerValidationFlag;
 
+    @Value("${FEATURE_FLAG_SHAREHOLDER_COUNT_VALIDATION_09062021:true}")
+    private boolean shareholderCountalidationFeatureFlag;
+
     @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
     private boolean pscValidationFeatureFlag;
 
@@ -58,19 +61,21 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService);
-        var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService);
+        var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidationNoCS01Required);
         listOfRules.add(companyTypeValidationForWebFiling);
         listOfRules.add(companyTypeValidationPaperOnly);
-        listOfRules.add(companyTradedStatusValidation);
 
-        /* Officer -> Shareholder -> PSC to run only if/after status & type eligibility pass.*/
-        listOfRules.add(companyOfficerValidation);
-        listOfRules.add(companyShareholderValidation);
-        listOfRules.add(companyPscCountValidation);
+                /* Check 3: Officer -> Shareholder -> PSC */
+                listOfRules.add(companyOfficerValidation);
+                listOfRules.add(companyShareholderValidation);
+                listOfRules.add(companyPscCountValidation);
 
-        return listOfRules;
-    }
+                /* Check 4: Company traded status */
+                listOfRules.add(companyTradedStatusValidation);
+
+                return listOfRules;
+        }
 }

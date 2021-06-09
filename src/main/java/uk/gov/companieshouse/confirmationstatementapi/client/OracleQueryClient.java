@@ -30,7 +30,7 @@ public class OracleQueryClient {
         return companyTradedStatus;
     }
 
-    public Integer getShareholderCount(String companyNumber) {
+    public int getShareholderCount(String companyNumber) {
         var shareholderCountUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
         LOGGER.info("Calling Oracle Query API URL (get): {}", shareholderCountUrl);
 

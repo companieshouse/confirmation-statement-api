@@ -13,13 +13,19 @@ public class CompanyShareholderCountValidation implements EligibilityRule<Compan
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyShareholderCountValidation.class);
 
     private final ShareholderService shareholderService;
+    private final boolean validationFlag;
 
-    public CompanyShareholderCountValidation(ShareholderService shareholderService) {
+    public CompanyShareholderCountValidation(ShareholderService shareholderService, boolean validationFlag) {
         this.shareholderService = shareholderService;
+        this.validationFlag = validationFlag;
     }
 
     @Override
     public void validate(CompanyProfileApi companyProfile) throws EligibilityException {
+        if (!validationFlag) {
+            LOGGER.debug("SHAREHOLDER COUNT VALIDATION FEATURE FLAG off skipping validation");
+            return;
+        }
 
         LOGGER.info("Validating Company shareholder count for: {}", companyProfile.getCompanyNumber());
 
