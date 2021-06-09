@@ -46,10 +46,8 @@ public class ConfirmationStatementServiceEligibilityConfig {
 
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
-    List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(
-              OfficerService officerService,
-              ShareholderService shareholderService,
-              CorporateBodyService corporateBodyService) {
+    List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService,
+            PscService pscService, CorporateBodyService corporateBodyService, ShareholderService shareholderService) {
         var listOfRules = new ArrayList<EligibilityRule<CompanyProfileApi>>();
 
         var companyStatusValidation = new CompanyStatusValidation(allowedCompanyStatuses);
@@ -59,17 +57,19 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag);
-        var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService);
+        var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService);
 
         listOfRules.add(companyStatusValidation);
         listOfRules.add(companyTypeValidationNoCS01Required);
         listOfRules.add(companyTypeValidationForWebFiling);
         listOfRules.add(companyTypeValidationPaperOnly);
+        listOfRules.add(companyTradedStatusValidation);
+
+        /* Officer -> Shareholder -> PSC to run only if/after status & type eligibility pass.*/
         listOfRules.add(companyOfficerValidation);
         listOfRules.add(companyShareholderValidation);
         listOfRules.add(companyPscCountValidation);
-        listOfRules.add(companyTradedStatusValidation);
 
         return listOfRules;
     }
