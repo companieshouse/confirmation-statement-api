@@ -29,4 +29,15 @@ public class OracleQueryClient {
 
         return companyTradedStatus;
     }
+
+    public int getShareholderCount(String companyNumber) {
+        var shareholderCountUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
+        LOGGER.info("Calling Oracle Query API URL (get): {}", shareholderCountUrl);
+
+        ResponseEntity<Integer> response = restTemplate.getForEntity(shareholderCountUrl, Integer.class);
+        var count = response.getBody();
+        LOGGER.info("Received {} from Oracle Query API URL (get): {}", count, shareholderCountUrl);
+
+        return count;
+    }
 }

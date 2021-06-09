@@ -41,4 +41,14 @@ class OracleQueryClientTest {
 
         assertEquals(tradedStatus, result);
     }
+
+    @Test
+    void testGetCompanyShareholdersCount() {
+        int expectedCount = 1;
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/shareholders/count", Integer.class))
+                .thenReturn(new ResponseEntity<>(expectedCount, HttpStatus.OK));
+
+        int result = oracleQueryClient.getShareholderCount(COMPANY_NUMBER);
+        assertEquals(expectedCount, result);
+    }
 }
