@@ -3,7 +3,6 @@ package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
@@ -137,14 +136,17 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnCompanyWithNullOfficers() throws ServiceException {
+    void validateDoesNotThrowOnCompanyWithZeroOfficers() throws ServiceException {
         OFFICER_LIST.clear();
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
         when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
 
+        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
+
         assertDoesNotThrow(() -> companyOfficerValidation.validate(companyProfileApi));
+        assertEquals(0L, result);
     }
 
 }

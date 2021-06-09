@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpResponseException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +21,8 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,5 +85,23 @@ class OfficerServiceTest {
         assertThrows(ServiceException.class, () -> {
             officerService.getOfficers(COMPANY_NUMBER);
         });
+    }
+
+    @Test
+    void getOfficersProfileApiError404Response() throws IOException, URIValidationException, ServiceException {
+
+        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClient.officers()).thenReturn(officersResourceHandler);
+        when(officersResourceHandler.list("/company/" + COMPANY_NUMBER + "/officers")).thenReturn(officersList);
+        var builder = new HttpResponseException.Builder(404, "String", new HttpHeaders());
+        when(officersList.execute()).thenThrow(new ApiErrorResponseException(builder));
+
+        var response = officerService.getOfficers(COMPANY_NUMBER);
+
+        assertNotNull(response);
+        assertNull(response.getActiveCount());
+        assertNull(response.getItemsPerPage());
+        assertNull(response.getEtag());
+        assertNull(response.getItems());
     }
 }
