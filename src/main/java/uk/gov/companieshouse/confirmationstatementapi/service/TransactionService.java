@@ -31,7 +31,9 @@ public class TransactionService {
     public void updateTransaction(Transaction transaction, String passthroughHeader) throws ServiceException {
         try {
             var uri = "/transactions/" + transaction.getId();
-            apiClientService.getOauthAuthenticatedClient(passthroughHeader).transactions().update(uri, transaction).execute();
+            // apiClientService.getOauthAuthenticatedClient(passthroughHeader).transactions().update(uri, transaction).execute();
+            // apiClientService.getApiKeyAuthenticatedClient().transactions().update(uri, transaction).execute();
+             apiClientService.getInternalOauthAuthenticatedClient(passthroughHeader).transactions().update(uri, transaction).execute();
         } catch (URIValidationException | IOException e) {
             throw new ServiceException("Error Updating Transaction " + transaction.getId(), e);
         }
