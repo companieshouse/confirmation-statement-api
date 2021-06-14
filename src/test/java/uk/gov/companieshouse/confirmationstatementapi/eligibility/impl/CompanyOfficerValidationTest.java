@@ -145,6 +145,20 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
+    void isOfficerDirectorReturnsFalseForCompanyWithOneSecretary() {
+
+        OFFICER_LIST.clear();
+        CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
+        MOCK_OFFICER.setOfficerRole(OfficerRoleApi.SECRETARY);
+        OFFICER_LIST.add(MOCK_OFFICER);
+        mockOfficers.setItems(OFFICER_LIST);
+        mockOfficers.setActiveCount((long) OFFICER_LIST.size());
+
+        var result = companyOfficerValidation.isOfficerDirector(mockOfficers.getItems(), mockOfficers.getActiveCount());
+        assertFalse(result);
+    }
+
+    @Test
     void validateDoesNotCallOfficerServiceWhenOfficerValidationFeatureFlagFalse() throws ServiceException, EligibilityException {
         companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         companyOfficerValidation.validate(companyProfileApi);
