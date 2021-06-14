@@ -36,24 +36,29 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
             return;
         }
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
-        var officerCount = getOfficerCount(officers.getItems());
-        if (officerCount > 1) {
+        var officerCheck = isOfficerDirector(officers.getItems(), officers.getActiveCount());
+        if (!officerCheck) {
             LOGGER.info("Company Officers validation failed for: {}", companyProfileApi.getCompanyNumber());
-            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_OFFICER);
+            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS);
         }
         LOGGER.info("Company Officers validation passed for: {}", companyProfileApi.getCompanyNumber());
     }
 
-    public int getOfficerCount(List<CompanyOfficerApi> officers) {
-        int officerCount = 0;
-        if (officers != null) {
+    public boolean isOfficerDirector(List<CompanyOfficerApi> officers, Long activeCount) {
+        // Check If Single Officer Company has Director
+        if (officers != null && activeCount == 1) {
             for(CompanyOfficerApi officer: officers) {
                 var role = officer.getOfficerRole();
                 if ((role == OfficerRoleApi.DIRECTOR || role == OfficerRoleApi.NOMINEE_DIRECTOR || role == OfficerRoleApi.CORPORATE_DIRECTOR) && officer.getResignedOn() == null) {
-                    officerCount++;
+                    // returns true if officer is DIRECTOR, NOMINEE_DIRECTOR or CORPORATE_DIRECTOR and active
+                    return true;
                 }
             }
+            // returns false is officer isn't DIRECTOR, NOMINEE_DIRECTOR or CORPORATE_DIRECTOR and  isn't active
+            return false;
+        } else {
+            return activeCount == null || activeCount <= 1;
+            // returns true for null or 0 officers, false for more than one officer
         }
-        return officerCount;
     }
 }
