@@ -57,7 +57,7 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
             // returns false is officer isn't DIRECTOR, NOMINEE_DIRECTOR or CORPORATE_DIRECTOR and  isn't active
             return false;
         } else {
-            return activeCount == null || activeCount <= 1;
+            return activeCount == null || activeCount < 1;
             // returns true for null or 0 officers, false for more than one officer
         }
     }
