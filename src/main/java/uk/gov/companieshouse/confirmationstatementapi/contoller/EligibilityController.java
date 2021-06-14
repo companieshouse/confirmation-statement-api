@@ -45,7 +45,7 @@ public class EligibilityController {
             var companyNotFoundResponse = new CompanyValidationResponse();
             companyNotFoundResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_NOT_FOUND);
             return ResponseEntity.badRequest().body(companyNotFoundResponse);
-        } catch (ServiceException e) {
+        } catch (Exception e) {
             LOGGER.error("Error checking eligibility of company", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
