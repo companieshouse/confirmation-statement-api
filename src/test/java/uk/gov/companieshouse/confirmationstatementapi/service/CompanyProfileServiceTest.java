@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpResponseException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -81,6 +83,21 @@ class CompanyProfileServiceTest {
         when(companyGet.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
 
         assertThrows(ServiceException.class, () -> {
+            companyProfileService.getCompanyProfile(COMPANY_NUMBER);
+        });
+    }
+
+    @Test
+    void getCompanyProfileApiCompanyNotFoundResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
+        when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
+        when(apiClient.company()).thenReturn(companyResourceHandler);
+        when(companyResourceHandler.get("/company/" + COMPANY_NUMBER)).thenReturn(companyGet);
+
+        HttpResponseException httpResponseException =
+                new HttpResponseException.Builder(404, "test", new HttpHeaders()).build();
+        when(companyGet.execute()).thenThrow(ApiErrorResponseException.fromHttpResponseException(httpResponseException));
+
+        assertThrows(CompanyNotFoundException.class, () -> {
             companyProfileService.getCompanyProfile(COMPANY_NUMBER);
         });
     }
