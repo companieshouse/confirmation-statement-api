@@ -47,6 +47,9 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
     private boolean pscValidationFeatureFlag;
 
+    @Value("${FEATURE_FLAG_TRADED_STATUS_VALIDATION_150621:true}")
+    private boolean tradedStatusFeatureFlag;
+
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService,
@@ -60,7 +63,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag);
-        var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService);
+        var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
 
         /* Check 1: Company Status */
