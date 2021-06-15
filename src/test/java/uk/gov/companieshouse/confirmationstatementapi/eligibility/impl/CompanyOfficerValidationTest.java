@@ -14,6 +14,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityExcep
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +110,25 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
+    void getOfficerCountReturnsNumberOfOfficersExcludingResignedOfficers() {
+
+        CompanyOfficerApi director = new CompanyOfficerApi();
+        CompanyOfficerApi director2 = new CompanyOfficerApi();
+        director.setOfficerRole(OfficerRoleApi.NOMINEE_DIRECTOR);
+        director2.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
+        director2.setResignedOn(LocalDate.now());
+
+        OFFICER_LIST.add(director);
+        OFFICER_LIST.add(director2);
+        mockOfficers.setItems(OFFICER_LIST);
+        mockOfficers.setActiveCount((long) OFFICER_LIST.size());
+
+        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
+        assertEquals(2L, result);
+        assertNotEquals(OFFICER_LIST.size(), result);
+    }
+
+    @Test
     void validateDoesNotCallOfficerServiceWhenOfficerValidationFeatureFlagFalse() throws ServiceException, EligibilityException {
         companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         companyOfficerValidation.validate(companyProfileApi);
@@ -116,14 +136,13 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnCompanyWithNullOfficers() throws ServiceException {
-        OFFICER_LIST.clear();
-        mockOfficers.setItems(OFFICER_LIST);
-        mockOfficers.setActiveCount((long) OFFICER_LIST.size());
+    void validateDoesNotThrowOnCompanyWithZeroOfficers() throws ServiceException {
 
-        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
+        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(new OfficersApi());
+        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
 
         assertDoesNotThrow(() -> companyOfficerValidation.validate(companyProfileApi));
+        assertEquals(0L, result);
     }
 
 }

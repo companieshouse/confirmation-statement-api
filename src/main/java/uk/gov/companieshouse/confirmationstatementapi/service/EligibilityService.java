@@ -27,7 +27,7 @@ public class EligibilityService {
     }
 
     public CompanyValidationResponse checkCompanyEligibility(CompanyProfileApi companyProfile) throws ServiceException {
-        CompanyValidationResponse response = new CompanyValidationResponse();
+        var response = new CompanyValidationResponse();
         try {
             for (EligibilityRule<CompanyProfileApi> eligibilityRule : eligibilityRules) {
                 eligibilityRule.validate(companyProfile);

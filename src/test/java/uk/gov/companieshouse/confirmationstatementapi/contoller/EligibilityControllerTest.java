@@ -32,9 +32,6 @@ class EligibilityControllerTest {
     @InjectMocks
     private EligibilityController eligibilityController;
 
-    private final ResponseEntity<Object> successResponse = ResponseEntity.ok("ok");
-    private final ResponseEntity<Object> validationFailedResponse = ResponseEntity.badRequest().body("BAD");
-
     @Test
     void testSuccessfulGetEligibility() throws ServiceException, CompanyNotFoundException {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
@@ -62,6 +59,13 @@ class EligibilityControllerTest {
     @Test
     void testServiceExceptionGetEligibility() throws ServiceException, CompanyNotFoundException {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new ServiceException("", new Exception()));
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER);
+        assertEquals(500, response.getStatusCodeValue());
+    }
+
+    @Test
+    void testUncheckedExceptionGetEligibility() throws ServiceException, CompanyNotFoundException {
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new RuntimeException("runtime exception"));
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER);
         assertEquals(500, response.getStatusCodeValue());
     }

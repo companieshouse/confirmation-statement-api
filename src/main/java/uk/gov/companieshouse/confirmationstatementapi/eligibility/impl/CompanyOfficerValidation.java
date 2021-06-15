@@ -45,11 +45,13 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
     }
 
     public int getOfficerCount(List<CompanyOfficerApi> officers) {
-        int officerCount = 0;
-        for(CompanyOfficerApi officer: officers) {
-            var role = officer.getOfficerRole();
-            if (role == OfficerRoleApi.DIRECTOR || role == OfficerRoleApi.NOMINEE_DIRECTOR || role == OfficerRoleApi.CORPORATE_DIRECTOR) {
-                officerCount++;
+        var officerCount = 0;
+        if (officers != null) {
+            for(CompanyOfficerApi officer: officers) {
+                var role = officer.getOfficerRole();
+                if ((role == OfficerRoleApi.DIRECTOR || role == OfficerRoleApi.NOMINEE_DIRECTOR || role == OfficerRoleApi.CORPORATE_DIRECTOR) && officer.getResignedOn() == null) {
+                    officerCount++;
+                }
             }
         }
         return officerCount;
