@@ -20,8 +20,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,7 +52,7 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnSingleOfficerCompany() throws ServiceException {
+    void validateDoesNotThrowOnSingleOfficerCompanyWithDirector() throws ServiceException {
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
@@ -61,9 +62,26 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
+    void validateDoesThrowOnSingleOfficerCompanyWithSecretary() throws ServiceException {
+        OFFICER_LIST.clear();
+        CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
+        MOCK_OFFICER.setOfficerRole(OfficerRoleApi.SECRETARY);
+        OFFICER_LIST.add(MOCK_OFFICER);
+        mockOfficers.setItems(OFFICER_LIST);
+        mockOfficers.setActiveCount((long) OFFICER_LIST.size());
+
+        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
+
+        var ex = assertThrows(EligibilityException.class, () ->
+                companyOfficerValidation.validate(companyProfileApi));
+
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS,ex.getEligibilityStatusCode() );
+    }
+
+    @Test
     void validateThrowsOnMultipleOfficerCompany() throws ServiceException {
         CompanyOfficerApi director = new CompanyOfficerApi();
-        director.setOfficerRole(OfficerRoleApi.DIRECTOR);
+        director.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
         OFFICER_LIST.add(director);
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
@@ -73,11 +91,11 @@ class CompanyOfficerValidationTest {
         var ex = assertThrows(EligibilityException.class, () ->
                 companyOfficerValidation.validate(companyProfileApi));
 
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_OFFICER,ex.getEligibilityStatusCode() );
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS,ex.getEligibilityStatusCode() );
     }
 
     @Test
-    void validateDoesNotThrowOnSingleOfficerCompanyWithSecretaries() throws ServiceException {
+    void validateThrowsOnSingleDirectorCompanyWithSecretaries() throws ServiceException {
         CompanyOfficerApi secretary = new CompanyOfficerApi();
         secretary.setOfficerRole(OfficerRoleApi.SECRETARY);
         OFFICER_LIST.add(secretary);
@@ -86,11 +104,14 @@ class CompanyOfficerValidationTest {
 
         when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
 
-        assertDoesNotThrow(() -> companyOfficerValidation.validate(companyProfileApi));
+        var ex = assertThrows(EligibilityException.class, () ->
+                companyOfficerValidation.validate(companyProfileApi));
+
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS,ex.getEligibilityStatusCode() );
     }
 
     @Test
-    void getOfficerCountReturnsNumberOfOfficersExcludingSecretaries() {
+    void isOfficerDirectorReturnsFalseForMultipleOfficerCompany() {
         CompanyOfficerApi director = new CompanyOfficerApi();
         CompanyOfficerApi director2 = new CompanyOfficerApi();
         CompanyOfficerApi secretary = new CompanyOfficerApi();
@@ -104,28 +125,37 @@ class CompanyOfficerValidationTest {
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
-        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
-        assertEquals(3L, result);
-        assertNotEquals(OFFICER_LIST.size(), result);
+        var result = companyOfficerValidation.isOfficerDirector(mockOfficers.getItems(), mockOfficers.getActiveCount());
+        assertFalse(result);
     }
 
     @Test
-    void getOfficerCountReturnsNumberOfOfficersExcludingResignedOfficers() {
+    void isOfficerDirectorReturnsTrueForCompanyWithTwoDirectorsOneRetired() {
 
         CompanyOfficerApi director = new CompanyOfficerApi();
-        CompanyOfficerApi director2 = new CompanyOfficerApi();
         director.setOfficerRole(OfficerRoleApi.NOMINEE_DIRECTOR);
-        director2.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
-        director2.setResignedOn(LocalDate.now());
+        director.setResignedOn(LocalDate.now());
 
         OFFICER_LIST.add(director);
-        OFFICER_LIST.add(director2);
+        mockOfficers.setItems(OFFICER_LIST);
+        mockOfficers.setActiveCount(1L);
+
+        var result = companyOfficerValidation.isOfficerDirector(mockOfficers.getItems(), mockOfficers.getActiveCount());
+        assertTrue(result);
+    }
+
+    @Test
+    void isOfficerDirectorReturnsFalseForCompanyWithOneSecretary() {
+
+        OFFICER_LIST.clear();
+        CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
+        MOCK_OFFICER.setOfficerRole(OfficerRoleApi.SECRETARY);
+        OFFICER_LIST.add(MOCK_OFFICER);
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
-        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
-        assertEquals(2L, result);
-        assertNotEquals(OFFICER_LIST.size(), result);
+        var result = companyOfficerValidation.isOfficerDirector(mockOfficers.getItems(), mockOfficers.getActiveCount());
+        assertFalse(result);
     }
 
     @Test
@@ -139,10 +169,10 @@ class CompanyOfficerValidationTest {
     void validateDoesNotThrowOnCompanyWithZeroOfficers() throws ServiceException {
 
         when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(new OfficersApi());
-        var result = companyOfficerValidation.getOfficerCount(mockOfficers.getItems());
+        var result = companyOfficerValidation.isOfficerDirector(mockOfficers.getItems(), mockOfficers.getActiveCount());
 
         assertDoesNotThrow(() -> companyOfficerValidation.validate(companyProfileApi));
-        assertEquals(0L, result);
+        assertTrue(result);
     }
 
 }
