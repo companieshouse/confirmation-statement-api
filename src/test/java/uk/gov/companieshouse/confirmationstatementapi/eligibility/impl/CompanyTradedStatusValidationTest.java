@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
@@ -15,6 +14,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyServi
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,8 +31,7 @@ class CompanyTradedStatusValidationTest {
 
     @BeforeEach
     void beforeEach() {
-        MockitoAnnotations.initMocks(this);
-        companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService);
+        companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, true);
     }
 
     @Test
@@ -41,6 +40,13 @@ class CompanyTradedStatusValidationTest {
         when(corporateBodyService.getCompanyTradedStatus(COMPANY_NUMBER))
                 .thenReturn(CompanyTradedStatusType.NOT_ADMITTED_TO_TRADING);
         assertDoesNotThrow(() -> companyTradedStatusValidation.validate(companyProfileApi));
+    }
+
+    @Test
+    void validateDoesNotRunWhenFlagOff() {
+        companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, false);
+        assertDoesNotThrow(() -> companyTradedStatusValidation.validate(companyProfileApi));
+        verifyNoInteractions(corporateBodyService);
     }
 
     @Test

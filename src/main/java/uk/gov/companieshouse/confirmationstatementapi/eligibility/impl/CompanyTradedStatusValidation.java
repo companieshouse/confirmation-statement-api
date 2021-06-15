@@ -14,15 +14,21 @@ public class CompanyTradedStatusValidation implements EligibilityRule<CompanyPro
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyTradedStatusValidation.class);
 
     private final CorporateBodyService corporateBodyService;
+    private final boolean tradedStatusEligibilityFlag;
 
-    public CompanyTradedStatusValidation(CorporateBodyService corporateBodyService) {
+    public CompanyTradedStatusValidation(CorporateBodyService corporateBodyService, boolean tradedStatusEligibilityFlag) {
         this.corporateBodyService = corporateBodyService;
+        this.tradedStatusEligibilityFlag = tradedStatusEligibilityFlag;
     }
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
         var companyNumber = profileToValidate.getCompanyNumber();
         LOGGER.info("Validating Company Traded Status for: {}", companyNumber);
+        if (!tradedStatusEligibilityFlag) {
+            LOGGER.debug("TRADED STATUS VALIDATION FEATURE FLAG off skipping validation");
+            return;
+        }
 
         var companyTradedStatus = corporateBodyService.getCompanyTradedStatus(companyNumber);
 
