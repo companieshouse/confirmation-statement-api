@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyPscCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyShareholderCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
@@ -13,7 +14,6 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTr
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeCS01FilingNotRequiredValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationForWebFiling;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationPaperOnly;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;

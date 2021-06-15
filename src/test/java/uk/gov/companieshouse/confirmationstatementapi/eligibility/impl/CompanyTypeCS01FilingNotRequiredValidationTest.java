@@ -1,18 +1,17 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
+import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
-import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CompanyTypeCS01FilingNotRequiredValidationTest {
     
