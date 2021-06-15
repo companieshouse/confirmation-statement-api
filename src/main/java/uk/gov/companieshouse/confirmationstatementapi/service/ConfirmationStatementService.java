@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
@@ -56,13 +55,5 @@ public class ConfirmationStatementService {
 
         LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), updatedSubmission.getId());
         return ResponseEntity.created(URI.create(createdUri)).body("Created");
-    }
-
-    private Resource createResource(ConfirmationStatementSubmission submission) {
-        var resource = new Resource();
-        resource.setKind("confirmation-statement-submission");
-        resource.setLinks(Collections.singletonMap("Resource", submission.getLinks().get("self")));
-
-        return resource;
     }
 }
