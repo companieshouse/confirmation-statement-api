@@ -63,19 +63,22 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
 
+        /* Check 1: Company Status */
         listOfRules.add(companyStatusValidation);
+
+        /* Check 2: Company Type */
         listOfRules.add(companyTypeValidationNoCS01Required);
         listOfRules.add(companyTypeValidationForWebFiling);
         listOfRules.add(companyTypeValidationPaperOnly);
 
-                /* Check 3: Officer -> Shareholder -> PSC */
-                listOfRules.add(companyOfficerValidation);
-                listOfRules.add(companyShareholderValidation);
-                listOfRules.add(companyPscCountValidation);
+        /* Check 3: Officer -> Shareholder -> PSC */
+        listOfRules.add(companyOfficerValidation);
+        listOfRules.add(companyShareholderValidation);
+        listOfRules.add(companyPscCountValidation);
 
-                /* Check 4: Company traded status */
-                listOfRules.add(companyTradedStatusValidation);
+        /* Check 4: Company traded status */
+        listOfRules.add(companyTradedStatusValidation);
 
-                return listOfRules;
+        return listOfRules;
         }
 }
