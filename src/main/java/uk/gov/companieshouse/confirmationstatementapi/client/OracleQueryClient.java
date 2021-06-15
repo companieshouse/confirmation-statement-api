@@ -20,7 +20,7 @@ public class OracleQueryClient {
     private String oracleQueryApiUrl;
 
     public Long getCompanyTradedStatus(String companyNumber) {
-        String getCompanyTradedStatusUrl = String.format("%s/company/%s/traded-status", oracleQueryApiUrl, companyNumber);
+        var getCompanyTradedStatusUrl = String.format("%s/company/%s/traded-status", oracleQueryApiUrl, companyNumber);
         LOGGER.info("Calling Oracle Query API URL (get): {}", getCompanyTradedStatusUrl);
 
         ResponseEntity<Long> response = restTemplate.getForEntity(getCompanyTradedStatusUrl, Long.class);
@@ -30,7 +30,7 @@ public class OracleQueryClient {
         return companyTradedStatus;
     }
 
-    public int getShareholderCount(String companyNumber) {
+    public Integer getShareholderCount(String companyNumber) {
         var shareholderCountUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
         LOGGER.info("Calling Oracle Query API URL (get): {}", shareholderCountUrl);
 

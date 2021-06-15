@@ -45,7 +45,7 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
     }
 
     public int getOfficerCount(List<CompanyOfficerApi> officers) {
-        int officerCount = 0;
+        var officerCount = 0;
         if (officers != null) {
             for(CompanyOfficerApi officer: officers) {
                 var role = officer.getOfficerRole();
