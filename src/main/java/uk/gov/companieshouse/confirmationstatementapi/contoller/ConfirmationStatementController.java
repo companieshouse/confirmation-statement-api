@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
-import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement")
