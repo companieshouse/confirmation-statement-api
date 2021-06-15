@@ -16,7 +16,6 @@ import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationSta
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.HashMap;
 
 @Service
 public class ConfirmationStatementService {
@@ -25,18 +24,16 @@ public class ConfirmationStatementService {
 
     private final CompanyProfileService companyProfileService;
     private final EligibilityService eligibilityService;
-    private final TransactionService transactionService;
     private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
 
     @Autowired
-    public ConfirmationStatementService(CompanyProfileService companyProfileService, EligibilityService eligibilityService, TransactionService transactionService, ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository) {
+    public ConfirmationStatementService(CompanyProfileService companyProfileService, EligibilityService eligibilityService, ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository) {
         this.companyProfileService = companyProfileService;
         this.eligibilityService = eligibilityService;
-        this.transactionService = transactionService;
         this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
     }
 
-    public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
+    public ResponseEntity<Object> createConfirmationStatement(Transaction transaction) throws ServiceException {
         CompanyProfileApi companyProfile;
         try {
             companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
@@ -56,18 +53,8 @@ public class ConfirmationStatementService {
         insertedSubmission.setLinks(Collections.singletonMap("self", createdUri));
 
         var updatedSubmission = confirmationStatementSubmissionsRepository.save(insertedSubmission);
-        var newResource = createResource(updatedSubmission);
 
-        var existingResources = transaction.getResources();
-        if(existingResources == null) {
-            existingResources = new HashMap<>();
-        }
-        existingResources.put("resource", newResource);
-        transaction.setResources(existingResources);
-
-        transactionService.updateTransaction(transaction, passthroughHeader);
-
-        LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), insertedSubmission.getId());
+        LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), updatedSubmission.getId());
         return ResponseEntity.created(URI.create(createdUri)).body("Created");
     }
 

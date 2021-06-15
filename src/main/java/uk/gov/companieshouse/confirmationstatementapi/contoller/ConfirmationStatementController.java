@@ -30,12 +30,9 @@ public class ConfirmationStatementController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction, HttpServletRequest request) {
-
-        String passthroughHeader = request
-                .getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
+    public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction) {
         try {
-            return confirmationStatementService.createConfirmationStatement(transaction, passthroughHeader);
+            return confirmationStatementService.createConfirmationStatement(transaction);
         } catch (ServiceException e) {
             LOGGER.error("Error Creating Confirmation Statement", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
