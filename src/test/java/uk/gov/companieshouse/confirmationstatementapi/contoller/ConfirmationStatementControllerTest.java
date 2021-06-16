@@ -20,6 +20,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ConfirmationStatementControllerTest {
 
+    private static final ResponseEntity<Object> SUCCESS_RESPONSE = ResponseEntity.created(URI.create("URI")).body("Created");
+    private static final ResponseEntity<Object> VALIDATION_FAILED_RESPONSE = ResponseEntity.badRequest().body("BAD");
+
     @Mock
     private ConfirmationStatementService confirmationStatementService;
 
@@ -29,23 +32,20 @@ class ConfirmationStatementControllerTest {
     @InjectMocks
     private ConfirmationStatementController confirmationStatementController;
 
-    private final ResponseEntity<Object> successResponse = ResponseEntity.created(URI.create("URI")).body("Created");
-    private final ResponseEntity<Object> validationFailedResponse = ResponseEntity.badRequest().body("BAD");
-
     @Test
     void createNewSubmission() throws ServiceException {
-        when(confirmationStatementService.createConfirmationStatement(transaction)).thenReturn(successResponse);
+        when(confirmationStatementService.createConfirmationStatement(transaction)).thenReturn(SUCCESS_RESPONSE);
         var response = confirmationStatementController.createNewSubmission(transaction);
 
-        assertEquals(successResponse, response);
+        assertEquals(SUCCESS_RESPONSE, response);
     }
 
     @Test
     void createNewSubmissionValidationFailedResponse() throws ServiceException {
-        when(confirmationStatementService.createConfirmationStatement(transaction)).thenReturn(validationFailedResponse);
+        when(confirmationStatementService.createConfirmationStatement(transaction)).thenReturn(VALIDATION_FAILED_RESPONSE);
         var response = confirmationStatementController.createNewSubmission(transaction);
 
-        assertEquals(validationFailedResponse, response);
+        assertEquals(VALIDATION_FAILED_RESPONSE, response);
     }
 
     @Test

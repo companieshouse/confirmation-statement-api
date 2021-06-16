@@ -10,9 +10,11 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
+import uk.gov.companieshouse.confirmationstatementapi.model.ConfirmationStatementSubmission;
+import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.net.URI;
+import java.util.Collections;
 
 @Service
 public class ConfirmationStatementService {
@@ -21,12 +23,16 @@ public class ConfirmationStatementService {
 
     private final CompanyProfileService companyProfileService;
     private final EligibilityService eligibilityService;
+    private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
 
     @Autowired
     public ConfirmationStatementService(CompanyProfileService companyProfileService,
-                                        EligibilityService eligibilityService) {
+                                        EligibilityService eligibilityService,
+                                        ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository
+    ) {
         this.companyProfileService = companyProfileService;
         this.eligibilityService = eligibilityService;
+        this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
     }
 
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction) throws ServiceException {
@@ -36,15 +42,21 @@ public class ConfirmationStatementService {
         } catch (CompanyNotFoundException e) {
             throw new ServiceException("Error retrieving company profile", e);
         }
-        CompanyValidationResponse companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
+        var companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
 
         if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != companyValidationResponse.getEligibilityStatusCode()) {
             return ResponseEntity.badRequest().body(companyValidationResponse);
         }
 
-        String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/";
+        var newSubmission = new ConfirmationStatementSubmission();
+        var insertedSubmission = confirmationStatementSubmissionsRepository.insert(newSubmission);
 
-        LOGGER.info("Confirmation Statement created for transaction id: {}", transaction.getId());
+        String createdUri = "/transactions/" + transaction.getId() + "/confirmation-statement/" + insertedSubmission.getId();
+        insertedSubmission.setLinks(Collections.singletonMap("self", createdUri));
+
+        var updatedSubmission = confirmationStatementSubmissionsRepository.save(insertedSubmission);
+
+        LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), updatedSubmission.getId());
         return ResponseEntity.created(URI.create(createdUri)).body("Created");
     }
 }

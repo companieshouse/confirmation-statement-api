@@ -11,11 +11,14 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.ConfirmationStatementSubmission;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
+import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,11 +32,15 @@ class ConfirmationStatementServiceTest {
     @Mock
     private EligibilityService eligibilityService;
 
+    @Mock
+    private ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
+
     private ConfirmationStatementService confirmationStatementService;
 
     @BeforeEach
     void init() {
-        confirmationStatementService = new ConfirmationStatementService(companyProfileService, eligibilityService);
+        confirmationStatementService =
+                new ConfirmationStatementService(companyProfileService, eligibilityService, confirmationStatementSubmissionsRepository);
     }
 
     @Test
@@ -44,9 +51,13 @@ class ConfirmationStatementServiceTest {
         companyProfileApi.setCompanyStatus("AcceptValue");
         var eligibilityResponse = new CompanyValidationResponse();
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmission();
+        confirmationStatementSubmission.setId("ID");
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
+        when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmission.class))).thenReturn(confirmationStatementSubmission);
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmission.class))).thenReturn(confirmationStatementSubmission);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction);
 
