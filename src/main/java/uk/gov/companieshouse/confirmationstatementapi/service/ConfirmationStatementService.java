@@ -26,7 +26,10 @@ public class ConfirmationStatementService {
     private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
 
     @Autowired
-    public ConfirmationStatementService(CompanyProfileService companyProfileService, EligibilityService eligibilityService, ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository) {
+    public ConfirmationStatementService(CompanyProfileService companyProfileService,
+                                        EligibilityService eligibilityService,
+                                        ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository
+    ) {
         this.companyProfileService = companyProfileService;
         this.eligibilityService = eligibilityService;
         this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
