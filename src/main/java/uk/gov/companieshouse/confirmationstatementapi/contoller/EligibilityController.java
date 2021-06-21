@@ -30,10 +30,10 @@ public class EligibilityController {
         try {
             var companyProfile =
                     companyProfileService.getCompanyProfile(companyNumber);
-           var companyValidationResponse =
+            var companyValidationResponse =
                     eligibilityService.checkCompanyEligibility(companyProfile);
 
-            if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE
+            if (EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE
                     == companyValidationResponse.getEligibilityStatusCode()) {
                 return ResponseEntity.ok().body(companyValidationResponse);
             } else {
@@ -44,9 +44,8 @@ public class EligibilityController {
             companyNotFoundResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_NOT_FOUND);
             return ResponseEntity.badRequest().body(companyNotFoundResponse);
         } catch (Exception e) {
-            LOGGER.error("Error checking eligibility of company", e);
+            LOGGER.error(String.format("Error checking eligibility of company number %s", companyNumber), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }
