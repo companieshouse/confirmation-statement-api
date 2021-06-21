@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,35 +61,33 @@ class CompanyProfileServiceTest {
         var response = companyProfileService.getCompanyProfile(COMPANY_NUMBER);
 
         assertEquals(companyProfile, response);
-
     }
 
     @Test
-    void getCompanyProfileURIValidationException() throws ServiceException, ApiErrorResponseException, URIValidationException {
+    void getCompanyProfileURIValidationException() throws ApiErrorResponseException, URIValidationException {
         when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
         when(apiClient.company()).thenReturn(companyResourceHandler);
         when(companyResourceHandler.get("/company/" + COMPANY_NUMBER)).thenReturn(companyGet);
         when(companyGet.execute()).thenThrow(new URIValidationException("ERROR"));
 
-        assertThrows(ServiceException.class, () -> {
-            companyProfileService.getCompanyProfile(COMPANY_NUMBER);
-        });
+        ServiceException se = assertThrows(ServiceException.class, () -> companyProfileService.getCompanyProfile(COMPANY_NUMBER));
+        assertTrue(se.getMessage().contains(COMPANY_NUMBER));
     }
 
     @Test
-    void getCompanyProfileApiErrorResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
+    void getCompanyProfileApiErrorResponse() throws ApiErrorResponseException, URIValidationException {
         when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
         when(apiClient.company()).thenReturn(companyResourceHandler);
         when(companyResourceHandler.get("/company/" + COMPANY_NUMBER)).thenReturn(companyGet);
         when(companyGet.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
 
-        assertThrows(ServiceException.class, () -> {
-            companyProfileService.getCompanyProfile(COMPANY_NUMBER);
-        });
+        ServiceException se = assertThrows(ServiceException.class, () -> companyProfileService.getCompanyProfile(COMPANY_NUMBER));
+        assertTrue(se.getMessage().contains(COMPANY_NUMBER));
+        assertTrue(se.getMessage().contains("500"));
     }
 
     @Test
-    void getCompanyProfileApiCompanyNotFoundResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
+    void getCompanyProfileApiCompanyNotFoundResponse() throws ApiErrorResponseException, URIValidationException {
         when(apiClientService.getApiKeyAuthenticatedClient()).thenReturn(apiClient);
         when(apiClient.company()).thenReturn(companyResourceHandler);
         when(companyResourceHandler.get("/company/" + COMPANY_NUMBER)).thenReturn(companyGet);
@@ -97,8 +96,6 @@ class CompanyProfileServiceTest {
                 new HttpResponseException.Builder(404, "test", new HttpHeaders()).build();
         when(companyGet.execute()).thenThrow(ApiErrorResponseException.fromHttpResponseException(httpResponseException));
 
-        assertThrows(CompanyNotFoundException.class, () -> {
-            companyProfileService.getCompanyProfile(COMPANY_NUMBER);
-        });
+        assertThrows(CompanyNotFoundException.class, () -> companyProfileService.getCompanyProfile(COMPANY_NUMBER));
     }
 }

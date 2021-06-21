@@ -13,6 +13,9 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 @Service
 public class CompanyProfileService {
 
+    private static final String EXCEPTION_MESSAGE = "Error Retrieving Company Profile for company number %s";
+    private static final String EXCEPTION_MESSAGE_WITH_HTTP_CODE = EXCEPTION_MESSAGE + ", http status code %s";
+
     private final ApiClientService apiClientService;
 
     @Autowired
@@ -25,13 +28,16 @@ public class CompanyProfileService {
             var uri = "/company/" + companyNumber;
             return apiClientService.getApiKeyAuthenticatedClient().company().get(uri).execute().getData();
         } catch (URIValidationException e) {
-            throw new ServiceException("Error Retrieving Company Profile", e);
+            throw new ServiceException(String.format(EXCEPTION_MESSAGE, companyNumber), e);
         } catch (ApiErrorResponseException e) {
             if (HttpStatus.NOT_FOUND.value() == e.getStatusCode()) {
                 throw new CompanyNotFoundException();
             }
-
-            throw new ServiceException("Error Retrieving Company Profile", e);
+            String message = String.format(
+                    EXCEPTION_MESSAGE_WITH_HTTP_CODE,
+                    companyNumber,
+                    e.getStatusCode());
+            throw new ServiceException(message, e);
         }
     }
 }
