@@ -10,14 +10,8 @@ import java.io.IOException;
 @Component
 public class ApiClientService {
 
-    private final ApiClient apiKeyAuthenticatedClient;
-
-    public ApiClientService() {
-        apiKeyAuthenticatedClient = ApiSdkManager.getSDK();
-    }
-
     public ApiClient getApiKeyAuthenticatedClient() {
-        return apiKeyAuthenticatedClient;
+        return ApiSdkManager.getSDK();
     }
 
     public ApiClient getOauthAuthenticatedClient(String ericPassThroughHeader) throws IOException {
