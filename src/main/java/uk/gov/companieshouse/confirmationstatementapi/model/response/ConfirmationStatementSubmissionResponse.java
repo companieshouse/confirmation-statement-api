@@ -12,9 +12,6 @@ public class ConfirmationStatementSubmissionResponse {
     @JsonProperty
     private Map<String, String> links;
 
-    public ConfirmationStatementSubmissionResponse() {
-    }
-
     public String getId() {
         return id;
     }
