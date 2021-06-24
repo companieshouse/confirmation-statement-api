@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
+import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement")
@@ -27,9 +30,12 @@ public class ConfirmationStatementController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction) {
+    public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction, HttpServletRequest request) {
+
+        String passthroughHeader = request
+                .getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
         try {
-            return confirmationStatementService.createConfirmationStatement(transaction);
+            return confirmationStatementService.createConfirmationStatement(transaction, passthroughHeader);
         } catch (ServiceException e) {
             LOGGER.error("Error Creating Confirmation Statement", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

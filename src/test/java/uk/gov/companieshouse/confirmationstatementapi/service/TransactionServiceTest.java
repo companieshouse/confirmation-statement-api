@@ -6,11 +6,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.ApiClient;
+import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.handler.privatetransaction.PrivateTransactionResourceHandler;
+import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTransactionPatch;
 import uk.gov.companieshouse.api.handler.transaction.TransactionsResourceHandler;
 import uk.gov.companieshouse.api.handler.transaction.request.TransactionsGet;
-import uk.gov.companieshouse.api.handler.transaction.request.TransactionsUpdate;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
@@ -44,7 +46,13 @@ class TransactionServiceTest {
     private TransactionsGet transactionsGet;
 
     @Mock
-    private TransactionsUpdate transactionsUpdate;
+    private InternalApiClient internalApiClient;
+
+    @Mock
+    private PrivateTransactionResourceHandler privateTransactionResourceHandler;
+
+    @Mock
+    private PrivateTransactionPatch privateTransactionPatch;
 
     @Mock
     private ApiResponse<Transaction> apiResponse;
@@ -94,17 +102,18 @@ class TransactionServiceTest {
     }
 
     @Test
-    void updateTransaction() throws IOException {
+    void updateTransaction() throws IOException, URIValidationException {
         Transaction transaction = new Transaction();
         transaction.setId(TRANSACTION_ID);
 
-        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
-        when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
-        when(transactionsResourceHandler.update("/transactions/" + TRANSACTION_ID, transaction)).thenReturn(transactionsUpdate);
+        when(apiClientService.getInternalOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(internalApiClient);
+        when(internalApiClient.privateTransaction()).thenReturn(privateTransactionResourceHandler);
+        when(privateTransactionResourceHandler.patch("/private/transactions/" + TRANSACTION_ID, transaction)).thenReturn(privateTransactionPatch);
+        when(privateTransactionPatch.execute()).thenReturn(new ApiResponse<>(204, null));
 
         assertDoesNotThrow(() -> transactionService.updateTransaction(transaction, PASSTHROUGH_HEADER));
 
-        verify(transactionsResourceHandler, times(1)).update("/transactions/" + TRANSACTION_ID, transaction);
+        verify(privateTransactionPatch, times(1)).execute();
 
     }
 
@@ -113,10 +122,10 @@ class TransactionServiceTest {
         Transaction transaction = new Transaction();
         transaction.setId(TRANSACTION_ID);
 
-        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
-        when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
-        when(transactionsResourceHandler.update("/transactions/" + TRANSACTION_ID, transaction)).thenReturn(transactionsUpdate);
-        when(transactionsUpdate.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
+        when(apiClientService.getInternalOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(internalApiClient);
+        when(internalApiClient.privateTransaction()).thenReturn(privateTransactionResourceHandler);
+        when(privateTransactionResourceHandler.patch("/private/transactions/" + TRANSACTION_ID, transaction)).thenReturn(privateTransactionPatch);
+        when(privateTransactionPatch.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
 
         assertThrows(ServiceException.class, () -> transactionService.updateTransaction(transaction, PASSTHROUGH_HEADER));
     }
@@ -126,10 +135,10 @@ class TransactionServiceTest {
         Transaction transaction = new Transaction();
         transaction.setId(TRANSACTION_ID);
 
-        when(apiClientService.getOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
-        when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
-        when(transactionsResourceHandler.update("/transactions/" + TRANSACTION_ID, transaction)).thenReturn(transactionsUpdate);
-        when(transactionsUpdate.execute()).thenThrow(new URIValidationException("ERROR"));
+        when(apiClientService.getInternalOauthAuthenticatedClient(PASSTHROUGH_HEADER)).thenReturn(internalApiClient);
+        when(internalApiClient.privateTransaction()).thenReturn(privateTransactionResourceHandler);
+        when(privateTransactionResourceHandler.patch("/private/transactions/" + TRANSACTION_ID, transaction)).thenReturn(privateTransactionPatch);
+        when(privateTransactionPatch.execute()).thenThrow(new URIValidationException("ERROR"));
 
         assertThrows(ServiceException.class, () -> transactionService.updateTransaction(transaction, PASSTHROUGH_HEADER));
     }
