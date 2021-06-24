@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ConfirmationStatementSubmission;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.ConfirmationStatementSubmissionResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.net.URI;
@@ -24,18 +26,17 @@ public class ConfirmationStatementService {
     private final CompanyProfileService companyProfileService;
     private final EligibilityService eligibilityService;
     private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
+    private final TransactionService transactionService;
 
     @Autowired
-    public ConfirmationStatementService(CompanyProfileService companyProfileService,
-                                        EligibilityService eligibilityService,
-                                        ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository
-    ) {
+    public ConfirmationStatementService(CompanyProfileService companyProfileService, EligibilityService eligibilityService, ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository, TransactionService transactionService) {
         this.companyProfileService = companyProfileService;
         this.eligibilityService = eligibilityService;
         this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
+        this.transactionService = transactionService;
     }
 
-    public ResponseEntity<Object> createConfirmationStatement(Transaction transaction) throws ServiceException {
+    public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
         CompanyProfileApi companyProfile;
         try {
             companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
@@ -56,7 +57,24 @@ public class ConfirmationStatementService {
 
         var updatedSubmission = confirmationStatementSubmissionsRepository.save(insertedSubmission);
 
+        var csResource = new Resource();
+        csResource.setKind("confirmation-statement");
+        csResource.setLinks(Collections.singletonMap("resource", createdUri));
+
+        transaction.setResources(Collections.singletonMap(createdUri, csResource));
+
+        transactionService.updateTransaction(transaction, passthroughHeader);
         LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), updatedSubmission.getId());
-        return ResponseEntity.created(URI.create(createdUri)).body("Created");
+
+        var responseObject = daoToJson(updatedSubmission);
+        return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
+    }
+
+    public ConfirmationStatementSubmissionResponse daoToJson(ConfirmationStatementSubmission confirmationStatementSubmission) {
+        var responseObject = new ConfirmationStatementSubmissionResponse();
+        responseObject.setId(confirmationStatementSubmission.getId());
+        responseObject.setLinks(confirmationStatementSubmission.getLinks());
+
+        return responseObject;
     }
 }

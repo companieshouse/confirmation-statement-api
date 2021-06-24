@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 class ConfirmationStatementServiceTest {
 
     private static final String COMPANY_NUMBER = "12345678";
+    private static final String PASSTHROUGH = "13456";
 
     @Mock
     private CompanyProfileService companyProfileService;
@@ -35,12 +36,16 @@ class ConfirmationStatementServiceTest {
     @Mock
     private ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
 
+    @Mock
+    private TransactionService transactionService;
+
     private ConfirmationStatementService confirmationStatementService;
 
     @BeforeEach
     void init() {
         confirmationStatementService =
-                new ConfirmationStatementService(companyProfileService, eligibilityService, confirmationStatementSubmissionsRepository);
+                new ConfirmationStatementService(companyProfileService, eligibilityService,
+                        confirmationStatementSubmissionsRepository, transactionService);
     }
 
     @Test
@@ -59,7 +64,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmission.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmission.class))).thenReturn(confirmationStatementSubmission);
 
-        var response = this.confirmationStatementService.createConfirmationStatement(transaction);
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
@@ -78,7 +83,7 @@ class ConfirmationStatementServiceTest {
         when(eligibilityService.checkCompanyEligibility(companyProfileApi))
                 .thenReturn(companyValidationResponse);
 
-        var response = this.confirmationStatementService.createConfirmationStatement(transaction);
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH);
         CompanyValidationResponse responseBody = (CompanyValidationResponse)response.getBody();
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -94,7 +99,7 @@ class ConfirmationStatementServiceTest {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
 
         assertThrows(ServiceException.class, () -> {
-            this.confirmationStatementService.createConfirmationStatement(transaction);
+            this.confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH);
         });
     }
 }
