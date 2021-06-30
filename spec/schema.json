@@ -97,7 +97,7 @@
             "in": "body",
             "required" : true,
             "schema": {
-              "$ref": "#/definitions/ConfirmationStatementFields"
+              "$ref": "#/definitions/ConfirmationStatementSubmission"
             }
           }
         ],
@@ -203,35 +203,6 @@
         }
       }
     },
-    "ConfirmationStatementFields": {
-      "type": "object",
-      "properties": {
-        "officers": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "persons_with_significant_control": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "registered_office_address": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "register_locations": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "shareholders": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "sic_codes": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "statement_of_capital": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        },
-        "traded_status": {
-          "$ref": "#/definitions/ConfirmationStatementFieldsValues"
-        }
-      }
-    },
     "ConfirmationStatementSubmission": {
       "type": "object",
       "properties": {
@@ -239,15 +210,14 @@
           "type": "string",
           "format": "uuid"
         },
-        "created_by": {
-          "$ref": "#/definitions/CreatedBy"
-        },
-        "company_number": {
-          "type": "string",
-          "format": "string"
-        },
-        "data": {
-          "$ref": "#/definitions/ConfirmationStatementFields"
+        "links": {
+          "type": "object",
+          "properties": {
+            "self": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         }
       }
     },
@@ -291,26 +261,6 @@
         "TRANSACTION_ALREADY_CLOSED",
         "USER_UNAUTHORISED_TO_UPDATE_SUBMISSION"
       ]
-    },
-    "ConfirmationStatementFieldsValues": {
-      "type": "string",
-      "enum": [
-        "CONFIRMED",
-        "NOT_CONFIRMED",
-        "UPDATED_FORM_RECENTLY_SUBMITTED"
-      ]
-    },
-    "CreatedBy": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string",
-          "format": "email"
-        }
-      }
     }
   }
 }
