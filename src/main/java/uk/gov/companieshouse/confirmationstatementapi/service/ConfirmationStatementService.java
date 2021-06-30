@@ -12,7 +12,7 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ConfirmationStatementSubmission;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.ConfirmationStatementSubmissionResponse;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.net.URI;
@@ -70,11 +70,36 @@ public class ConfirmationStatementService {
         return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
     }
 
-    public ConfirmationStatementSubmissionResponse daoToJson(ConfirmationStatementSubmission confirmationStatementSubmission) {
-        var responseObject = new ConfirmationStatementSubmissionResponse();
-        responseObject.setId(confirmationStatementSubmission.getId());
-        responseObject.setLinks(confirmationStatementSubmission.getLinks());
+    public ResponseEntity<Object> updateConfirmationStatement(String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) {
+        // Check Submission exists
+        LOGGER.info("About to update Confirmation Statement Submission id: {}", submissionId);
+        var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
-        return responseObject;
+        if (submission.isPresent()) {
+            // Save updated submission to database
+            var dao = jsonToDao(confirmationStatementSubmissionJson);
+            var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
+            LOGGER.info("Confirmation Statement updated with Submission id: {}", savedResponse.getId());
+            return ResponseEntity.ok(savedResponse);
+        } else {
+            LOGGER.info("Confirmation Statement not found with Submission id: {}", submissionId);
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmission confirmationStatementSubmission) {
+        var jsonObject = new ConfirmationStatementSubmissionJson();
+        jsonObject.setId(confirmationStatementSubmission.getId());
+        jsonObject.setLinks(confirmationStatementSubmission.getLinks());
+
+        return jsonObject;
+    }
+
+    public ConfirmationStatementSubmission jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) {
+        var daoObject = new ConfirmationStatementSubmission();
+        daoObject.setId(confirmationStatementSubmissionJson.getId());
+        daoObject.setLinks(confirmationStatementSubmissionJson.getLinks());
+
+        return daoObject;
     }
 }

@@ -12,8 +12,11 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ConfirmationStatementSubmission;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,6 +29,7 @@ class ConfirmationStatementServiceTest {
 
     private static final String COMPANY_NUMBER = "12345678";
     private static final String PASSTHROUGH = "13456";
+    private static final String SUBMISSION_ID = "abcdefg";
 
     @Mock
     private CompanyProfileService companyProfileService;
@@ -41,11 +45,16 @@ class ConfirmationStatementServiceTest {
 
     private ConfirmationStatementService confirmationStatementService;
 
+    private ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson;
+
     @BeforeEach
     void init() {
         confirmationStatementService =
                 new ConfirmationStatementService(companyProfileService, eligibilityService,
                         confirmationStatementSubmissionsRepository, transactionService);
+
+        confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
+        confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
     }
 
     @Test
@@ -101,5 +110,28 @@ class ConfirmationStatementServiceTest {
         assertThrows(ServiceException.class, () -> {
             this.confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH);
         });
+    }
+
+    @Test
+    void updateConfirmationSubmission() {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmission();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmission.class))).thenReturn(confirmationStatementSubmission);
+        var result = confirmationStatementService
+                .updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
+    void updateConfirmationSubmissionNotFound() {
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
+        var result = confirmationStatementService
+                .updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 }

@@ -1,10 +1,10 @@
-package uk.gov.companieshouse.confirmationstatementapi.model.response;
+package uk.gov.companieshouse.confirmationstatementapi.model.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
-public class ConfirmationStatementSubmissionResponse {
+public class ConfirmationStatementSubmissionJson {
 
     @JsonProperty
     private String id;
