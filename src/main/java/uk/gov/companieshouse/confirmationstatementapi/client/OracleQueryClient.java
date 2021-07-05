@@ -4,9 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
 
 @Component
 public class OracleQueryClient {
@@ -39,5 +42,23 @@ public class OracleQueryClient {
         LOGGER.info("Received {} from Oracle Query API URL (get): {}", count, shareholderCountUrl);
 
         return count;
+    }
+
+    public StatementOfCapital getStatmentOfCapitalData(String companyNumber) throws ServiceException {
+        var statementOfCapitalUrl = String.format("%s/company/%s/statement-of-capital", oracleQueryApiUrl, companyNumber);
+        LOGGER.info("Calling Oracle Query API URL (get): {}", statementOfCapitalUrl);
+
+        ResponseEntity<StatementOfCapital> response = restTemplate.getForEntity(statementOfCapitalUrl, StatementOfCapital.class);
+        if(response.getStatusCode() == HttpStatus.OK) {
+            StatementOfCapital statementOfCapital = response.getBody();
+            if (statementOfCapital != null) {
+                LOGGER.info("Received {} from Oracle Query API URL (get): {}", statementOfCapital.toString(), statementOfCapitalUrl);
+                return statementOfCapital;
+            } else {
+                throw new ServiceException("Oracle query api returned no data");
+            }
+        } else {
+            throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
+        }
     }
 }
