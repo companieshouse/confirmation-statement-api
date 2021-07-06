@@ -29,7 +29,7 @@ public class StatementOfCapitalController {
     @GetMapping("/{companyNumber}/statement-of-capital")
     public ResponseEntity<StatementOfCapital> getStatementOfCapital(@PathVariable String companyNumber) {
         try {
-            LOGGER.info("Calling service to retrieve statement of capital for company number " + companyNumber);
+            LOGGER.info("Calling service to retrieve statement of capital data");
             StatementOfCapital statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
         } catch (ServiceException e) {
