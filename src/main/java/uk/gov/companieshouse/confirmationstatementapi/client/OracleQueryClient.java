@@ -54,7 +54,7 @@ public class OracleQueryClient {
         if(response.getStatusCode() == HttpStatus.OK) {
             StatementOfCapital statementOfCapital = response.getBody();
             if (statementOfCapital != null) {
-                LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, statementOfCapital.toString(), statementOfCapitalUrl);
+                LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, statementOfCapital, statementOfCapitalUrl);
                 return statementOfCapital;
             } else {
                 throw new ServiceException("Oracle query api returned no data");
