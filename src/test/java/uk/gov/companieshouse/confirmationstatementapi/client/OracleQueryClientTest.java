@@ -10,8 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,5 +54,27 @@ class OracleQueryClientTest {
 
         int result = oracleQueryClient.getShareholderCount(COMPANY_NUMBER);
         assertEquals(expectedCount, result);
+    }
+
+    @Test
+    void testGetStatementOfCapitalData() throws ServiceException {
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapital.class))
+                .thenReturn(new ResponseEntity<>(new StatementOfCapital(), HttpStatus.OK));
+        StatementOfCapital result = oracleQueryClient.getStatmentOfCapitalData(COMPANY_NUMBER);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetStatementOfCapitalDataNullResponse() {
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapital.class))
+                .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatmentOfCapitalData(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetStatementOfCapitalDataNotOkStatusResponse() {
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapital.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatmentOfCapitalData(COMPANY_NUMBER));
     }
 }

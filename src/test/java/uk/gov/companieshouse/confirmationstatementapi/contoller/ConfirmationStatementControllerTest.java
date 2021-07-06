@@ -29,6 +29,7 @@ class ConfirmationStatementControllerTest {
     private static final ResponseEntity<Object> UPDATED_SUBMISSION_NOT_FOUND = ResponseEntity.notFound().build();
     private static final String PASSTHROUGH = "13456";
     private static final String SUBMISSION_ID = "ABCDEFG";
+    private static final String COMPANY_NUMBER = "11111111";
 
     @Mock
     private ConfirmationStatementService confirmationStatementService;
