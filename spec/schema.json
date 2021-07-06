@@ -159,6 +159,45 @@
         }
       }
     },
+    "/transactions/{transaction_id}/confirmation-statement/{company_number}/statement-of-capital": {
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        },
+        {
+          "name": "company_number",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        }
+      ],
+      "get": {
+        "summary": "Get Statement of capital data",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Statement of capital"
+        ],
+        "responses": {
+          "200": {
+            "description": "Statement of capital data",
+            "schema": {
+              "$ref": "#/definitions/StatementOfCapitalResponse"
+            }
+          },
+          "404": {
+            "description": "Statement of capital data not found",
+            "schema": {
+              "$ref": "#/definitions/StatementOfCapitalResponse"
+            }
+          }
+        }
+      }
+    },
     "/confirmation-statement/company/{company_number}/eligibility": {
       "parameters": [
         {
@@ -261,6 +300,38 @@
         "TRANSACTION_ALREADY_CLOSED",
         "USER_UNAUTHORISED_TO_UPDATE_SUBMISSION"
       ]
+    },
+    "StatementOfCapitalResponse": {
+      "type": "object",
+      "properties": {
+        "classOfShares":  {
+          "type": "string"
+        },
+        "currency":  {
+          "type": "string"
+        },
+        "numberAllotted":  {
+          "type": "integer"
+        },
+        "aggregateNominalValue":  {
+          "type": "integer"
+        },
+        "prescribedParticulars":  {
+          "type": "string"
+        },
+        "totalCurrency":  {
+          "type": "string"
+        },
+        "totalNumberOfShares":  {
+          "type": "integer"
+        },
+        "totalAggregateNominalValue":  {
+          "type": "integer"
+        },
+        "totalAmountUnpaidForCurrency":  {
+          "type": "integer"
+        }
+      }
     }
   }
 }
