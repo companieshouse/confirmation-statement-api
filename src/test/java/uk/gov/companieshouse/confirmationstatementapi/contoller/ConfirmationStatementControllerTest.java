@@ -11,10 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
-import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapitalService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,9 +33,6 @@ class ConfirmationStatementControllerTest {
 
     @Mock
     private ConfirmationStatementService confirmationStatementService;
-
-    @Mock
-    private StatementOfCapitalService statementOfCapitalService;
 
     @Mock
     private Transaction transaction;
@@ -99,19 +94,5 @@ class ConfirmationStatementControllerTest {
         var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID);
 
         assertEquals(UPDATED_SUBMISSION_NOT_FOUND, response);
-    }
-
-    @Test
-    void getStatementOfCapital() throws ServiceException {
-        when(statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER)).thenReturn(new StatementOfCapital());
-        var response = confirmationStatementController.getStatementOfCapital(COMPANY_NUMBER);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    void getStatementOfCapitalServiceException() throws ServiceException {
-        when(statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER)).thenThrow(ServiceException.class);
-        var response = confirmationStatementController.getStatementOfCapital(COMPANY_NUMBER);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }

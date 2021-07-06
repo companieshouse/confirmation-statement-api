@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
-import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapitalService;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,14 +28,11 @@ public class ConfirmationStatementController {
 
     private final ConfirmationStatementService confirmationStatementService;
 
-    private final StatementOfCapitalService statementOfCapitalService;
-
     @Autowired
-    public ConfirmationStatementController(ConfirmationStatementService confirmationStatementService,
-                                           StatementOfCapitalService statementOfCapitalService) {
+    public ConfirmationStatementController(ConfirmationStatementService confirmationStatementService) {
         this.confirmationStatementService = confirmationStatementService;
-        this.statementOfCapitalService = statementOfCapitalService;
     }
+
 
     @PostMapping("/")
     public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction, HttpServletRequest request) {
@@ -56,17 +51,5 @@ public class ConfirmationStatementController {
     public ResponseEntity<Object> updateSubmission(@RequestBody ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson,
                                                    @PathVariable("confirmation_statement_id") String submissionId) {
         return confirmationStatementService.updateConfirmationStatement(submissionId, confirmationStatementSubmissionJson);
-    }
-
-    @GetMapping("/{companyNumber}/statement-of-capital")
-    public ResponseEntity<StatementOfCapital> getStatementOfCapital(@PathVariable String companyNumber) {
-        try {
-            LOGGER.info("Calling service to retrieve statement of capital for company number " + companyNumber);
-            StatementOfCapital statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);
-            return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
-        } catch (ServiceException e) {
-            LOGGER.error("Error retreiving statment of capital data ", e);
-            return ResponseEntity.notFound().build();
-        }
     }
 }
