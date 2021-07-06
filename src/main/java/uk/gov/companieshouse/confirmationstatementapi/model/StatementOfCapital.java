@@ -102,4 +102,19 @@ public class StatementOfCapital {
     public void setTotalAmountUnpaidForCurrency(Integer totalAmountUnpaidForCurrency) {
         this.totalAmountUnpaidForCurrency = totalAmountUnpaidForCurrency;
     }
+
+    @Override
+    public String toString() {
+        return "StatementOfCapital{" +
+                "classOfShares='" + classOfShares + '\'' +
+                ", currency='" + currency + '\'' +
+                ", numberAllotted=" + numberAllotted +
+                ", aggregateNominalValue=" + aggregateNominalValue +
+                ", prescribedParticulars='" + prescribedParticulars + '\'' +
+                ", totalCurrency='" + totalCurrency + '\'' +
+                ", totalNumberOfShares=" + totalNumberOfShares +
+                ", totalAggregateNominalValue=" + totalAggregateNominalValue +
+                ", totalAmountUnpaidForCurrency=" + totalAmountUnpaidForCurrency +
+                '}';
+    }
 }

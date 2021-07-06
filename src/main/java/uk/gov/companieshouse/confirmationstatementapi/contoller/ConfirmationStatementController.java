@@ -32,7 +32,6 @@ public class ConfirmationStatementController {
         this.confirmationStatementService = confirmationStatementService;
     }
 
-
     @PostMapping("/")
     public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction, HttpServletRequest request) {
 
