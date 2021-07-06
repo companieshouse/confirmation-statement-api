@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class StatementOfCapitalServiceTest {
+class StatementOfCapitalServiceTest {
 
     private static final String COMPANY_NUMBER = "11111111";
 

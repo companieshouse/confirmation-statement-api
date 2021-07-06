@@ -17,7 +17,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapital
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement")
 public class StatementOfCapitalController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatementOfCapitalController.class);
 
     private final StatementOfCapitalService statementOfCapitalService;
 
