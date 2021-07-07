@@ -46,7 +46,7 @@ public class OracleQueryClient {
         return count;
     }
 
-    public StatementOfCapital getStatmentOfCapitalData(String companyNumber) throws ServiceException {
+    public StatementOfCapital getStatementOfCapitalData(String companyNumber) throws ServiceException {
         var statementOfCapitalUrl = String.format("%s/company/%s/statement-of-capital", oracleQueryApiUrl, companyNumber);
         LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, statementOfCapitalUrl);
 
