@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
@@ -29,10 +28,10 @@ public class StatementOfCapitalController {
     public ResponseEntity<StatementOfCapital> getStatementOfCapital(@PathVariable String companyNumber) {
         try {
             LOGGER.info("Calling service to retrieve statement of capital data");
-            StatementOfCapital statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);
+            var statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
         } catch (ServiceException e) {
-            LOGGER.error("Error retreiving statment of capital data ", e);
+            LOGGER.error("Error retrieving statement of capital data ", e);
             return ResponseEntity.notFound().build();
         }
     }
