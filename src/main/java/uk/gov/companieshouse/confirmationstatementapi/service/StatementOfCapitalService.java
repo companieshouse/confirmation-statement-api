@@ -13,6 +13,6 @@ public class StatementOfCapitalService {
     private OracleQueryClient oracleQueryClient;
 
     public StatementOfCapital getStatementOfCapital(String companyNumber) throws ServiceException {
-        return oracleQueryClient.getStatmentOfCapitalData(companyNumber);
+        return oracleQueryClient.getStatementOfCapitalData(companyNumber);
     }
 }

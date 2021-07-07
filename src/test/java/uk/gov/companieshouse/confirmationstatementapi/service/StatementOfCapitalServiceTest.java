@@ -25,14 +25,14 @@ class StatementOfCapitalServiceTest {
     private StatementOfCapitalService statementOfCapitalService;
 
     @Test
-    void testGetStatmentOfCapitalData() throws ServiceException {
-        when(oracleQueryClient.getStatmentOfCapitalData(COMPANY_NUMBER)).thenReturn(new StatementOfCapital());
+    void testGetStatementOfCapitalData() throws ServiceException {
+        when(oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER)).thenReturn(new StatementOfCapital());
         assertNotNull(statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER));
     }
 
     @Test
-    void testGetStatmentOfCapitalDataServiceException() throws ServiceException {
-        when(oracleQueryClient.getStatmentOfCapitalData(COMPANY_NUMBER)).thenThrow(ServiceException.class);
+    void testGetStatementOfCapitalDataServiceException() throws ServiceException {
+        when(oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER)).thenThrow(ServiceException.class);
         assertThrows(ServiceException.class, () -> statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER));
     }
 }

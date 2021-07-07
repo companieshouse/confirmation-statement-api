@@ -60,7 +60,7 @@ class OracleQueryClientTest {
     void testGetStatementOfCapitalData() throws ServiceException {
         when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapital.class))
                 .thenReturn(new ResponseEntity<>(new StatementOfCapital(), HttpStatus.OK));
-        StatementOfCapital result = oracleQueryClient.getStatmentOfCapitalData(COMPANY_NUMBER);
+        StatementOfCapital result = oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER);
         assertNotNull(result);
     }
 
@@ -68,13 +68,13 @@ class OracleQueryClientTest {
     void testGetStatementOfCapitalDataNullResponse() {
         when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapital.class))
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
-        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatmentOfCapitalData(COMPANY_NUMBER));
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
     }
 
     @Test
     void testGetStatementOfCapitalDataNotOkStatusResponse() {
         when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapital.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatmentOfCapitalData(COMPANY_NUMBER));
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
     }
 }
