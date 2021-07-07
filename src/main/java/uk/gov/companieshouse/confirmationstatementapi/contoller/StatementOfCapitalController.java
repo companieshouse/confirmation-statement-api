@@ -14,7 +14,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
 import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapitalService;
 
 @RestController
-@RequestMapping("/transactions/{transaction_id}/confirmation-statement")
 public class StatementOfCapitalController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatementOfCapitalController.class);
@@ -26,7 +25,7 @@ public class StatementOfCapitalController {
         this.statementOfCapitalService = statementOfCapitalService;
     }
 
-    @GetMapping("/{companyNumber}/statement-of-capital")
+    @GetMapping("/confirmation-statement/company/{companyNumber}/statement-of-capital")
     public ResponseEntity<StatementOfCapital> getStatementOfCapital(@PathVariable String companyNumber) {
         try {
             LOGGER.info("Calling service to retrieve statement of capital data");

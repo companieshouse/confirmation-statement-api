@@ -159,7 +159,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{company_number}/statement-of-capital": {
+    "/confirmation-statement/company/{company_number}/statement-of-capital": {
       "parameters": [
         {
           "name": "transaction_id",
