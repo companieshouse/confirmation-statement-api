@@ -11,25 +11,22 @@ public class StatementOfCapital {
     private String currency;
 
     @JsonProperty("number_allotted")
-    private Integer numberAllotted;
+    private String numberAllotted;
 
     @JsonProperty("aggregate_nominal_value")
-    private Integer aggregateNominalValue;
+    private String aggregateNominalValue;
 
     @JsonProperty("prescribed_particulars")
     private String prescribedParticulars;
 
-    @JsonProperty("total_currency")
-    private String totalCurrency;
-
     @JsonProperty("total_number_of_shares")
-    private Integer totalNumberOfShares;
+    private String totalNumberOfShares;
 
     @JsonProperty("total_aggregate_nominal_value")
-    private Integer totalAggregateNominalValue;
+    private String totalAggregateNominalValue;
 
     @JsonProperty("total_amount_unpaid_for_currency")
-    private Integer totalAmountUnpaidForCurrency;
+    private String totalAmountUnpaidForCurrency;
 
     public String getClassOfShares() {
         return classOfShares;
@@ -47,19 +44,19 @@ public class StatementOfCapital {
         this.currency = currency;
     }
 
-    public Integer getNumberAllotted() {
+    public String getNumberAllotted() {
         return numberAllotted;
     }
 
-    public void setNumberAllotted(Integer numberAllotted) {
+    public void setNumberAllotted(String numberAllotted) {
         this.numberAllotted = numberAllotted;
     }
 
-    public Integer getAggregateNominalValue() {
+    public String getAggregateNominalValue() {
         return aggregateNominalValue;
     }
 
-    public void setAggregateNominalValue(Integer aggregateNominalValue) {
+    public void setAggregateNominalValue(String aggregateNominalValue) {
         this.aggregateNominalValue = aggregateNominalValue;
     }
 
@@ -71,35 +68,27 @@ public class StatementOfCapital {
         this.prescribedParticulars = prescribedParticulars;
     }
 
-    public String getTotalCurrency() {
-        return totalCurrency;
-    }
-
-    public void setTotalCurrency(String totalCurrency) {
-        this.totalCurrency = totalCurrency;
-    }
-
-    public Integer getTotalNumberOfShares() {
+    public String getTotalNumberOfShares() {
         return totalNumberOfShares;
     }
 
-    public void setTotalNumberOfShares(Integer totalNumberOfShares) {
+    public void setTotalNumberOfShares(String totalNumberOfShares) {
         this.totalNumberOfShares = totalNumberOfShares;
     }
 
-    public Integer getTotalAggregateNominalValue() {
+    public String getTotalAggregateNominalValue() {
         return totalAggregateNominalValue;
     }
 
-    public void setTotalAggregateNominalValue(Integer totalAggregateNominalValue) {
+    public void setTotalAggregateNominalValue(String totalAggregateNominalValue) {
         this.totalAggregateNominalValue = totalAggregateNominalValue;
     }
 
-    public Integer getTotalAmountUnpaidForCurrency() {
+    public String getTotalAmountUnpaidForCurrency() {
         return totalAmountUnpaidForCurrency;
     }
 
-    public void setTotalAmountUnpaidForCurrency(Integer totalAmountUnpaidForCurrency) {
+    public void setTotalAmountUnpaidForCurrency(String totalAmountUnpaidForCurrency) {
         this.totalAmountUnpaidForCurrency = totalAmountUnpaidForCurrency;
     }
 
@@ -111,7 +100,6 @@ public class StatementOfCapital {
                 ", numberAllotted=" + numberAllotted +
                 ", aggregateNominalValue=" + aggregateNominalValue +
                 ", prescribedParticulars='" + prescribedParticulars + '\'' +
-                ", totalCurrency='" + totalCurrency + '\'' +
                 ", totalNumberOfShares=" + totalNumberOfShares +
                 ", totalAggregateNominalValue=" + totalAggregateNominalValue +
                 ", totalAmountUnpaidForCurrency=" + totalAmountUnpaidForCurrency +
