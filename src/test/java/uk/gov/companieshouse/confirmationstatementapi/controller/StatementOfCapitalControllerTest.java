@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.confirmationstatementapi.contoller;
+package uk.gov.companieshouse.confirmationstatementapi.controller;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
