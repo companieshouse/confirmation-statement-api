@@ -11,6 +11,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -21,6 +22,8 @@ import static org.mockito.Mockito.when;
 class UserAuthInterceptorTest {
 
     private static final String CREATED_BY_ID = "12345";
+    private static final String FAILED_RESPONSE_BODY = "{\n    \"error\" : \"USER_NOT_AUTHORISED_TO_ACCESS_SUBMISSION\"\n}";
+
     @Mock
     private HttpServletRequest mockHttpServletRequest;
 
@@ -35,7 +38,7 @@ class UserAuthInterceptorTest {
     }
 
     @Test
-    void preHandle() {
+    void preHandle() throws IOException {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 
@@ -46,7 +49,7 @@ class UserAuthInterceptorTest {
     }
 
     @Test
-    void preHandleIdsDoNotMatch() {
+    void preHandleIdsDoNotMatch() throws IOException {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 
@@ -55,10 +58,11 @@ class UserAuthInterceptorTest {
 
         assertFalse(result);
         assertEquals(401, mockHttpServletResponse.getStatus());
+        assertEquals(FAILED_RESPONSE_BODY, mockHttpServletResponse.getContentAsString());
     }
 
     @Test
-    void preHandleNoIdOnTransaction() {
+    void preHandleNoIdOnTransaction() throws IOException {
         var transaction = new Transaction();
         transaction.setCreatedBy(new HashMap<>());
         when(mockHttpServletRequest.getAttribute("transaction")).thenReturn(transaction);
@@ -71,5 +75,6 @@ class UserAuthInterceptorTest {
 
         assertFalse(result);
         assertEquals(401, mockHttpServletResponse.getStatus());
+        assertEquals(FAILED_RESPONSE_BODY, mockHttpServletResponse.getContentAsString());
     }
 }
