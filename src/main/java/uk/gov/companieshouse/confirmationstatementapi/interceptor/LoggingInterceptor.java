@@ -6,7 +6,6 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.ModelAndView;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +30,7 @@ public class LoggingInterceptor implements HandlerInterceptor{
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         Long startTime = (Long) request.getSession().getAttribute("start-time");
         long responseTime = System.currentTimeMillis() - startTime;
 
