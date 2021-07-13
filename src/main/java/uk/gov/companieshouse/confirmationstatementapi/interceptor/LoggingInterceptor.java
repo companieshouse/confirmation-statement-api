@@ -6,7 +6,6 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.ModelAndView;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,11 +27,6 @@ public class LoggingInterceptor implements HandlerInterceptor{
             LOGGER.info("Start of request. Method: {} Path: {}", requestMethod(request), requestPath(request));
         }
         return true;
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-
     }
 
     @Override
