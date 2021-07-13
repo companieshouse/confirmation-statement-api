@@ -149,7 +149,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void testJsontoDao() {
+    void testJsonToDao() {
         ConfirmationStatementSubmission dao =
                 confirmationStatementService.jsonToDao(confirmationStatementSubmissionJson);
         assertEquals(data, dao.getData());
