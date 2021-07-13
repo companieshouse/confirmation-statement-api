@@ -10,6 +10,9 @@ public class ConfirmationStatementSubmissionJson {
     private String id;
 
     @JsonProperty
+    private String data;
+
+    @JsonProperty
     private Map<String, String> links;
 
     public String getId() {
@@ -18,6 +21,14 @@ public class ConfirmationStatementSubmissionJson {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 
     public Map<String, String> getLinks() {

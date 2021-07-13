@@ -16,6 +16,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationSta
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,6 +48,8 @@ class ConfirmationStatementServiceTest {
 
     private ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson;
 
+    private String data = "{ example_task: { field1: The quick brown fox, field2: jumps over the lazy dog }}";
+
     @BeforeEach
     void init() {
         confirmationStatementService =
@@ -55,6 +58,7 @@ class ConfirmationStatementServiceTest {
 
         confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
+        confirmationStatementSubmissionJson.setData(data);
     }
 
     @Test
@@ -133,5 +137,21 @@ class ConfirmationStatementServiceTest {
                 .updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson);
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+    }
+
+    @Test
+    void testDaoToJson() {
+        ConfirmationStatementSubmission dao =
+                new ConfirmationStatementSubmission(SUBMISSION_ID, data, new HashMap<String, String>());
+        ConfirmationStatementSubmissionJson json =
+                confirmationStatementService.daoToJson(dao);
+        assertEquals(data, json.getData());
+    }
+
+    @Test
+    void testJsontoDao() {
+        ConfirmationStatementSubmission dao =
+                confirmationStatementService.jsonToDao(confirmationStatementSubmissionJson);
+        assertEquals(data, dao.getData());
     }
 }

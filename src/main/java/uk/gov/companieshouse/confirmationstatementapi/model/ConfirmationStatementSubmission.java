@@ -12,14 +12,18 @@ public class ConfirmationStatementSubmission {
     @Id
     private String id;
 
+    @Field("data")
+    private String data;
+
     @Field("links")
     private Map<String, String> links;
 
     public ConfirmationStatementSubmission() {
     }
 
-    public ConfirmationStatementSubmission(String id, Map<String, String> links) {
+    public ConfirmationStatementSubmission(String id, String data, Map<String, String> links) {
         this.id = id;
+        this.data = data;
         this.links = links;
     }
 
@@ -29,6 +33,14 @@ public class ConfirmationStatementSubmission {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 
     public Map<String, String> getLinks() {

@@ -89,6 +89,7 @@ public class ConfirmationStatementService {
     public ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmission confirmationStatementSubmission) {
         var jsonObject = new ConfirmationStatementSubmissionJson();
         jsonObject.setId(confirmationStatementSubmission.getId());
+        jsonObject.setData(confirmationStatementSubmission.getData());
         jsonObject.setLinks(confirmationStatementSubmission.getLinks());
 
         return jsonObject;
@@ -97,6 +98,7 @@ public class ConfirmationStatementService {
     public ConfirmationStatementSubmission jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) {
         var daoObject = new ConfirmationStatementSubmission();
         daoObject.setId(confirmationStatementSubmissionJson.getId());
+        daoObject.setData(confirmationStatementSubmissionJson.getData());
         daoObject.setLinks(confirmationStatementSubmissionJson.getLinks());
 
         return daoObject;
