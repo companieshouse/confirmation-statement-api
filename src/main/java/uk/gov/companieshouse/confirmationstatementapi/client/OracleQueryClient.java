@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
 
 @Component
@@ -62,5 +64,25 @@ public class OracleQueryClient {
         } else {
             throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
         }
+    }
+
+
+    public ActiveOfficerDetails getActiveOfficerDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
+        var directorDetailsUrl = String.format("%s/company/%s/officer/active", oracleQueryApiUrl, companyNumber);
+        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl);
+
+        ResponseEntity<ActiveOfficerDetails> response = restTemplate.getForEntity(directorDetailsUrl, ActiveOfficerDetails.class);
+
+        switch (response.getStatusCode()) {
+        case OK:
+            var directorDetails = response.getBody();
+            LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, directorDetails, directorDetailsUrl);
+            return directorDetails;
+        case NOT_FOUND:
+            throw new ActiveOfficerNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
+        default:
+            throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
+        }
+
     }
 }
