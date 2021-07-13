@@ -29,14 +29,6 @@ public class StatementOfCapitalController {
         try {
             LOGGER.info("Calling service to retrieve statement of capital data");
             var statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);
-            statementOfCapital.setClassOfShares("ORDINARY");
-            statementOfCapital.setCurrency("GBP");
-            statementOfCapital.setNumberAllotted("10000000");
-            statementOfCapital.setPrescribedParticulars("Goosey goosey gander");
-            statementOfCapital.setTotalNumberOfShares("20000000");
-            statementOfCapital.setAggregateNominalValue("30.00");
-            statementOfCapital.setTotalAmountUnpaidForCurrency("250.00");
-            statementOfCapital.setTotalAggregateNominalValue("20000000.00");
             return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
         } catch (ServiceException e) {
             LOGGER.error("Error retrieving statement of capital data ", e);
