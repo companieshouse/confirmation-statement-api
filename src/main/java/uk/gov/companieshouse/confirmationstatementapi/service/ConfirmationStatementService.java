@@ -13,6 +13,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundE
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ConfirmationStatementSubmission;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.net.URI;
@@ -27,13 +28,15 @@ public class ConfirmationStatementService {
     private final EligibilityService eligibilityService;
     private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
     private final TransactionService transactionService;
+    private final ConfirmationStatementJsonDaoMapper confirmationStatementJsonDaoMapper;
 
     @Autowired
-    public ConfirmationStatementService(CompanyProfileService companyProfileService, EligibilityService eligibilityService, ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository, TransactionService transactionService) {
+    public ConfirmationStatementService(CompanyProfileService companyProfileService, EligibilityService eligibilityService, ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository, TransactionService transactionService, ConfirmationStatementJsonDaoMapper confirmationStatementJsonDaoMapper) {
         this.companyProfileService = companyProfileService;
         this.eligibilityService = eligibilityService;
         this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
         this.transactionService = transactionService;
+        this.confirmationStatementJsonDaoMapper = confirmationStatementJsonDaoMapper;
     }
 
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
@@ -66,7 +69,7 @@ public class ConfirmationStatementService {
         transactionService.updateTransaction(transaction, passthroughHeader);
         LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), updatedSubmission.getId());
 
-        var responseObject = daoToJson(updatedSubmission);
+        var responseObject = confirmationStatementJsonDaoMapper.daoToJson(updatedSubmission);
         return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
     }
 
@@ -77,30 +80,12 @@ public class ConfirmationStatementService {
         if (submission.isPresent()) {
             // Save updated submission to database
             LOGGER.info("{}: Confirmation Statement Submission found. About to update", submission.get().getId());
-            var dao = jsonToDao(confirmationStatementSubmissionJson);
+            var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             LOGGER.info("{}: Confirmation Statement Submission updated", savedResponse.getId());
             return ResponseEntity.ok(savedResponse);
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    public ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmission confirmationStatementSubmission) {
-        var jsonObject = new ConfirmationStatementSubmissionJson();
-        jsonObject.setId(confirmationStatementSubmission.getId());
-        jsonObject.setData(confirmationStatementSubmission.getData());
-        jsonObject.setLinks(confirmationStatementSubmission.getLinks());
-
-        return jsonObject;
-    }
-
-    public ConfirmationStatementSubmission jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) {
-        var daoObject = new ConfirmationStatementSubmission();
-        daoObject.setId(confirmationStatementSubmissionJson.getId());
-        daoObject.setData(confirmationStatementSubmissionJson.getData());
-        daoObject.setLinks(confirmationStatementSubmissionJson.getLinks());
-
-        return daoObject;
     }
 }

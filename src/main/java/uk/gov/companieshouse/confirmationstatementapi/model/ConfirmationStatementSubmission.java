@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class ConfirmationStatementSubmission {
     private String id;
 
     @Field("data")
-    private String data;
+    private ConfirmationStatementSubmissionDataDao data;
 
     @Field("links")
     private Map<String, String> links;
@@ -21,7 +22,7 @@ public class ConfirmationStatementSubmission {
     public ConfirmationStatementSubmission() {
     }
 
-    public ConfirmationStatementSubmission(String id, String data, Map<String, String> links) {
+    public ConfirmationStatementSubmission(String id, ConfirmationStatementSubmissionDataDao data, Map<String, String> links) {
         this.id = id;
         this.data = data;
         this.links = links;
@@ -35,11 +36,11 @@ public class ConfirmationStatementSubmission {
         this.id = id;
     }
 
-    public String getData() {
+    public ConfirmationStatementSubmissionDataDao getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(ConfirmationStatementSubmissionDataDao data) {
         this.data = data;
     }
 

@@ -12,7 +12,10 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ConfirmationStatementSubmission;
+import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
@@ -44,21 +47,25 @@ class ConfirmationStatementServiceTest {
     @Mock
     private TransactionService transactionService;
 
+    @Mock
+    private ConfirmationStatementJsonDaoMapper confirmationStatementJsonDaoMapper;
+
     private ConfirmationStatementService confirmationStatementService;
 
     private ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson;
 
-    private String data = "{ example_task: { field1: The quick brown fox, field2: jumps over the lazy dog }}";
-
     @BeforeEach
     void init() {
+        ConfirmationStatementSubmissionDataJson confirmationStatementSubmissionDataJson =
+                MockConfirmationStatementSubmissionData.GetMockJsonData();
         confirmationStatementService =
                 new ConfirmationStatementService(companyProfileService, eligibilityService,
-                        confirmationStatementSubmissionsRepository, transactionService);
+                        confirmationStatementSubmissionsRepository, transactionService,
+                        confirmationStatementJsonDaoMapper);
 
         confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
-        confirmationStatementSubmissionJson.setData(data);
+        confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
     }
 
     @Test
@@ -121,6 +128,7 @@ class ConfirmationStatementServiceTest {
         var confirmationStatementSubmission = new ConfirmationStatementSubmission();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
 
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmission.class))).thenReturn(confirmationStatementSubmission);
         var result = confirmationStatementService
@@ -139,19 +147,4 @@ class ConfirmationStatementServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 
-    @Test
-    void testDaoToJson() {
-        ConfirmationStatementSubmission dao =
-                new ConfirmationStatementSubmission(SUBMISSION_ID, data, new HashMap<String, String>());
-        ConfirmationStatementSubmissionJson json =
-                confirmationStatementService.daoToJson(dao);
-        assertEquals(data, json.getData());
-    }
-
-    @Test
-    void testJsonToDao() {
-        ConfirmationStatementSubmission dao =
-                confirmationStatementService.jsonToDao(confirmationStatementSubmissionJson);
-        assertEquals(data, dao.getData());
-    }
 }
