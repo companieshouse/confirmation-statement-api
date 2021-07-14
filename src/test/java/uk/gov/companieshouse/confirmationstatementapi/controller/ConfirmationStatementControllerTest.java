@@ -16,6 +16,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatem
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -98,17 +99,17 @@ class ConfirmationStatementControllerTest {
     @Test
     void getSubmission() {
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
-                .thenReturn(UPDATED_SUCCESS_RESPONSE);
+                .thenReturn(Optional.of(new ConfirmationStatementSubmissionJson()));
 
         var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
 
-        assertEquals(UPDATED_SUCCESS_RESPONSE, response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     void getSubmissionIdNotFound() {
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
-                .thenReturn(UPDATED_SUBMISSION_NOT_FOUND);
+                .thenReturn(Optional.empty());
 
         var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
 

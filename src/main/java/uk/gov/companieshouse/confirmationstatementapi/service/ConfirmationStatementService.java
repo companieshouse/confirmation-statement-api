@@ -17,6 +17,7 @@ import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationSta
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class ConfirmationStatementService {
@@ -86,18 +87,17 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ResponseEntity<Object> getConfirmationStatement(String submissionId) {
+    public Optional<ConfirmationStatementSubmissionJson> getConfirmationStatement(String submissionId) {
         // Check Submission exists
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
         if (submission.isPresent()) {
-            // Save updated submission to database
             LOGGER.info("{}: Confirmation Statement Submission found. About to return", submission.get().getId());
 
             var json = daoToJson(submission.get());
-            return ResponseEntity.ok(json);
+            return Optional.of(json);
         } else {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
     }
 

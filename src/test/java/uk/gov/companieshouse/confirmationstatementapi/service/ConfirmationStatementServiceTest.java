@@ -19,8 +19,10 @@ import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationSta
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -143,7 +145,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         var result = confirmationStatementService.getConfirmationStatement(SUBMISSION_ID);
 
-        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertTrue(result.isPresent());
     }
 
     @Test
@@ -151,6 +153,6 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
         var result = confirmationStatementService.getConfirmationStatement(SUBMISSION_ID);
 
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        assertFalse(result.isPresent());
     }
 }

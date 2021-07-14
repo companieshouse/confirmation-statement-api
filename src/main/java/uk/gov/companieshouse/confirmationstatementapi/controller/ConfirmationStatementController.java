@@ -54,6 +54,8 @@ public class ConfirmationStatementController {
 
     @GetMapping("/{confirmation_statement_id}")
     public ResponseEntity<Object> getSubmission(@PathVariable("confirmation_statement_id") String submissionId) {
-        return confirmationStatementService.getConfirmationStatement(submissionId);
+        var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
+        return serviceResponse.<ResponseEntity<Object>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
