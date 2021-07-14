@@ -92,7 +92,7 @@ public class ConfirmationStatementService {
 
         if (submission.isPresent()) {
             // Save updated submission to database
-            LOGGER.info("{}: Confirmation Statement Submission found. About to update", submission.get().getId());
+            LOGGER.info("{}: Confirmation Statement Submission found. About to return", submission.get().getId());
 
             var json = daoToJson(submission.get());
             return ResponseEntity.ok(json);
