@@ -363,10 +363,10 @@
     "ActiveOfficerDetailsResponse": {
       "type": "object",
       "properties": {
-        "foreName1":  {
+        "fore_name_1":  {
           "type": "string"
         },
-        "foreName2":  {
+        "fore_name_2":  {
           "type": "string"
         },
         "surname":  {
@@ -378,28 +378,28 @@
         "nationality":  {
           "type": "string"
         },
-        "dateOfBirth":  {
+        "date_of_birth":  {
           "type": "date-time"
         },
-        "serviceAddressLine1":  {
+        "service_address_line_1":  {
           "type": "string"
         },
-        "serviceAddressPostTown":  {
+        "service_address_post_town":  {
           "type": "string"
         },
-        "serviceAddressPostCode":  {
+        "service_address_post_code":  {
           "type": "string"
         },
-        "uraLine1":  {
+        "ura_line_1":  {
           "type": "string"
         },
-        "uraPostTown":  {
+        "ura_post_town":  {
           "type": "string"
         },
-        "uraPostCode":  {
+        "ura_post_code":  {
           "type": "string"
         },
-        "secureIndicator":  {
+        "secure_indicator":  {
           "type": "string"
         }
       }

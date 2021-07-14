@@ -1,23 +1,32 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
-@JsonInclude(JsonInclude.Include.ALWAYS)
 public class ActiveOfficerDetails {
+    @JsonProperty("fore_name_1")
     private String foreName1;
+    @JsonProperty("fore_name_2")
     private String foreName2;
     private String surname;
     private String occupation;
     private String nationality;
+    @JsonProperty("date_of_birth")
     private Date dateOfBirth;
+    @JsonProperty("service_address_line_1")
     private String serviceAddressLine1;
+    @JsonProperty("service_address_post_town")
     private String serviceAddressPostTown;
+    @JsonProperty("service_address_post_code")
     private String serviceAddressPostCode;
+    @JsonProperty("ura_line_1")
     private String uraLine1;
+    @JsonProperty("ura_post_town")
     private String uraPostTown;
+    @JsonProperty("ura_post_code")
     private String uraPostCode;
+    @JsonProperty("secure_indicator")
     private String secureIndicator;
 
     public String getForeName1() {

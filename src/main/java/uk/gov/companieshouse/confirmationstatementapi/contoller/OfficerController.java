@@ -23,16 +23,16 @@ public class OfficerController {
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/active-officer-details")
     public ResponseEntity<ActiveOfficerDetails> getActiveDirectorDetails(@PathVariable String companyNumber) {
-        try{
+        try {
             LOGGER.info("Calling service to retrieve the active officer details.");
             var directorDetails = officerService.getActiveDirectorDetails(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(directorDetails);
-        } catch (ActiveOfficerNotFoundException | ServiceException e) {
+        } catch (ActiveOfficerNotFoundException e) {
             LOGGER.error("Error retrieving active officer details.", e);
-            return ResponseEntity.status(e.getClass() == ServiceException.class ?
-                    HttpStatus.INTERNAL_SERVER_ERROR :
-                    HttpStatus.NOT_FOUND)
-                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ServiceException e) {
+            LOGGER.error("Error retrieving active officer details.", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
