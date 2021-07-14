@@ -134,4 +134,23 @@ class ConfirmationStatementServiceTest {
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
+
+    @Test
+    void getConfirmationSubmission() {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmission();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        var result = confirmationStatementService.getConfirmationStatement(SUBMISSION_ID);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
+    void getConfirmationSubmissionNotFound() {
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
+        var result = confirmationStatementService.getConfirmationStatement(SUBMISSION_ID);
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+    }
 }

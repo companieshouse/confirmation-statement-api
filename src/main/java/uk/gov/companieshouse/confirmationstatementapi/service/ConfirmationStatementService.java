@@ -86,6 +86,21 @@ public class ConfirmationStatementService {
         }
     }
 
+    public ResponseEntity<Object> getConfirmationStatement(String submissionId) {
+        // Check Submission exists
+        var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
+
+        if (submission.isPresent()) {
+            // Save updated submission to database
+            LOGGER.info("{}: Confirmation Statement Submission found. About to update", submission.get().getId());
+
+            var json = daoToJson(submission.get());
+            return ResponseEntity.ok(json);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     public ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmission confirmationStatementSubmission) {
         var jsonObject = new ConfirmationStatementSubmissionJson();
         jsonObject.setId(confirmationStatementSubmission.getId());

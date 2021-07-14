@@ -29,7 +29,6 @@ class ConfirmationStatementControllerTest {
     private static final ResponseEntity<Object> UPDATED_SUBMISSION_NOT_FOUND = ResponseEntity.notFound().build();
     private static final String PASSTHROUGH = "13456";
     private static final String SUBMISSION_ID = "ABCDEFG";
-    private static final String COMPANY_NUMBER = "11111111";
 
     @Mock
     private ConfirmationStatementService confirmationStatementService;
@@ -92,6 +91,26 @@ class ConfirmationStatementControllerTest {
                 .thenReturn(UPDATED_SUBMISSION_NOT_FOUND);
 
         var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID);
+
+        assertEquals(UPDATED_SUBMISSION_NOT_FOUND, response);
+    }
+
+    @Test
+    void getSubmission() {
+        when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
+                .thenReturn(UPDATED_SUCCESS_RESPONSE);
+
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
+
+        assertEquals(UPDATED_SUCCESS_RESPONSE, response);
+    }
+
+    @Test
+    void getSubmissionIdNotFound() {
+        when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
+                .thenReturn(UPDATED_SUBMISSION_NOT_FOUND);
+
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
 
         assertEquals(UPDATED_SUBMISSION_NOT_FOUND, response);
     }
