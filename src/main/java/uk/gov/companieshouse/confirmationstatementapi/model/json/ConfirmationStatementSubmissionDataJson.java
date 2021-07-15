@@ -3,7 +3,8 @@ package uk.gov.companieshouse.confirmationstatementapi.model.json;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConfirmationStatementSubmissionDataJson {
-    @JsonProperty
+
+    @JsonProperty("statement_of_capital_data")
     private StatementOfCapitalDataJson statementOfCapitalData;
 
     public StatementOfCapitalDataJson getStatementOfCapitalData() {

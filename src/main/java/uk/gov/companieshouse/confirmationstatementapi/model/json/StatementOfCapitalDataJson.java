@@ -6,10 +6,10 @@ import uk.gov.companieshouse.confirmationstatementapi.model.tasks.TaskStatus;
 
 public class StatementOfCapitalDataJson {
 
-    @JsonProperty
+    @JsonProperty("task_status")
     private TaskStatus taskStatus;
 
-    @JsonProperty
+    @JsonProperty("statement_of_capital")
     private StatementOfCapital statementOfCapital;
 
     public TaskStatus getTaskStatus() {
