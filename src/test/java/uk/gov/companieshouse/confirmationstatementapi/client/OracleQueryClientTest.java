@@ -6,11 +6,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,5 +79,31 @@ class OracleQueryClientTest {
         when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapital.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
         assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetActiveOfficerDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException {
+
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/officer/active", ActiveOfficerDetails.class))
+                .thenReturn(new ResponseEntity<>(new ActiveOfficerDetails(), HttpStatus.OK));
+
+        var result = oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetActiveOfficerDetailsStatus400Response() {
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/officer/active", ActiveOfficerDetails.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+        assertThrows(ActiveOfficerNotFoundException.class, () -> oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetActiveOfficerDetailsNotOkStatusResponse() {
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/officer/active", ActiveOfficerDetails.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER));
     }
 }

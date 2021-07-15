@@ -162,12 +162,6 @@
     "/confirmation-statement/company/{company_number}/statement-of-capital": {
       "parameters": [
         {
-          "name": "transaction_id",
-          "in": "path",
-          "required" : true,
-          "type" : "string"
-        },
-        {
           "name": "company_number",
           "in": "path",
           "required" : true,
@@ -226,6 +220,39 @@
             "description": "The Company can not use this service to file a Confirmation Statement",
             "schema": {
               "$ref": "#/definitions/CompanyValidationResponse"
+            }
+          }
+        }
+      }
+    },
+    "/confirmation-statement/company/{company_number}/active-officer-details": {
+      "parameters": [
+        {
+          "name": "company_number",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        }
+      ],
+      "get": {
+        "summary": "Get the active officer details",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Active officer details"
+        ],
+        "responses": {
+          "200": {
+            "description": "Active officer details",
+            "schema": {
+              "$ref": "#/definitions/ActiveOfficerDetailsResponse"
+            }
+          },
+          "404": {
+            "description": "Active officer details not found",
+            "schema": {
+              "$ref": "#/definitions/ActiveOfficerDetailsResponse"
             }
           }
         }
@@ -330,6 +357,50 @@
         },
         "totalAmountUnpaidForCurrency":  {
           "type": "integer"
+        }
+      }
+    },
+    "ActiveOfficerDetailsResponse": {
+      "type": "object",
+      "properties": {
+        "fore_name_1":  {
+          "type": "string"
+        },
+        "fore_name_2":  {
+          "type": "string"
+        },
+        "surname":  {
+          "type": "string"
+        },
+        "occupation":  {
+          "type": "string"
+        },
+        "nationality":  {
+          "type": "string"
+        },
+        "date_of_birth":  {
+          "type": "date-time"
+        },
+        "service_address_line_1":  {
+          "type": "string"
+        },
+        "service_address_post_town":  {
+          "type": "string"
+        },
+        "service_address_post_code":  {
+          "type": "string"
+        },
+        "ura_line_1":  {
+          "type": "string"
+        },
+        "ura_post_town":  {
+          "type": "string"
+        },
+        "ura_post_code":  {
+          "type": "string"
+        },
+        "secure_indicator":  {
+          "type": "string"
         }
       }
     }

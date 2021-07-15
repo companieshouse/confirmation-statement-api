@@ -15,7 +15,10 @@ import uk.gov.companieshouse.api.handler.officers.request.OfficersList;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.officers.OfficersApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
+import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 
 import java.io.IOException;
 
@@ -35,6 +38,9 @@ class OfficerServiceTest {
 
     @Mock
     private ApiClient apiClient;
+
+    @Mock
+    private OracleQueryClient oracleQueryClient;
 
     @Mock
     private OfficersResourceHandler officersResourceHandler;
@@ -103,5 +109,17 @@ class OfficerServiceTest {
         assertNull(response.getItemsPerPage());
         assertNull(response.getEtag());
         assertNull(response.getItems());
+    }
+
+    @Test
+    void getActiveDirectorDetailsTest() throws ServiceException, ActiveOfficerNotFoundException {
+        ActiveOfficerDetails details = new ActiveOfficerDetails();
+        details.setForeName1("John");
+        details.setSurname("Doe");
+        when(oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER)).thenReturn(details);
+
+        var response = officerService.getActiveDirectorDetails(COMPANY_NUMBER);
+
+        assertEquals(response, details);
     }
 }
