@@ -7,16 +7,22 @@ import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.officers.OfficersApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
+import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 
 @Service
 public class OfficerService {
 
     private final ApiClientService apiClientService;
 
+    private final OracleQueryClient oracleQueryClient;
+
     @Autowired
-    public OfficerService(ApiClientService apiClientService) {
+    public OfficerService(ApiClientService apiClientService, OracleQueryClient oracleQueryClient) {
         this.apiClientService = apiClientService;
+        this.oracleQueryClient = oracleQueryClient;
     }
 
     public OfficersApi getOfficers(String companyNumber) throws ServiceException {
@@ -31,5 +37,9 @@ public class OfficerService {
             }
             throw new ServiceException("Error Retrieving Officers", e);
         }
+    }
+
+    public ActiveOfficerDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
+        return oracleQueryClient.getActiveOfficerDetails(companyNumber);
     }
 }
