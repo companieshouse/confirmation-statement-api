@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.tasks;
 
 public enum TaskStatus {
-    NOT_CHECKED,
+    NOT_STARTED,
     IN_PROGRESS,
-    CHECKED
+    COMPLETED
 }
