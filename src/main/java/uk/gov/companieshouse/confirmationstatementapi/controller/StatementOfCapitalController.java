@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapitalService;
 
 @RestController
@@ -25,7 +25,7 @@ public class StatementOfCapitalController {
     }
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/statement-of-capital")
-    public ResponseEntity<StatementOfCapital> getStatementOfCapital(@PathVariable String companyNumber) {
+    public ResponseEntity<StatementOfCapitalJson> getStatementOfCapital(@PathVariable String companyNumber) {
         try {
             LOGGER.info("Calling service to retrieve statement of capital data");
             var statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);

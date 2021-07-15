@@ -1,25 +1,28 @@
-package uk.gov.companieshouse.confirmationstatementapi.model;
+package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
 import java.util.Map;
 
 @Document(collection = "confirmation_statement_submissions")
-public class ConfirmationStatementSubmission {
+public class ConfirmationStatementSubmissionDao {
 
     @Id
     private String id;
 
+    @Field("data")
+    private ConfirmationStatementSubmissionDataDao data;
+
     @Field("links")
     private Map<String, String> links;
 
-    public ConfirmationStatementSubmission() {
+    public ConfirmationStatementSubmissionDao() {
     }
 
-    public ConfirmationStatementSubmission(String id, Map<String, String> links) {
+    public ConfirmationStatementSubmissionDao(String id, ConfirmationStatementSubmissionDataDao data, Map<String, String> links) {
         this.id = id;
+        this.data = data;
         this.links = links;
     }
 
@@ -29,6 +32,14 @@ public class ConfirmationStatementSubmission {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public ConfirmationStatementSubmissionDataDao getData() {
+        return data;
+    }
+
+    public void setData(ConfirmationStatementSubmissionDataDao data) {
+        this.data = data;
     }
 
     public Map<String, String> getLinks() {

@@ -1,8 +1,8 @@
-package uk.gov.companieshouse.confirmationstatementapi.model;
+package uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class StatementOfCapital {
+public class StatementOfCapitalJson {
 
     @JsonProperty("class_of_shares")
     private String classOfShares;

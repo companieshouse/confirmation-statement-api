@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 @Service
 public class StatementOfCapitalService {
@@ -12,7 +12,7 @@ public class StatementOfCapitalService {
     @Autowired
     private OracleQueryClient oracleQueryClient;
 
-    public StatementOfCapital getStatementOfCapital(String companyNumber) throws ServiceException {
+    public StatementOfCapitalJson getStatementOfCapital(String companyNumber) throws ServiceException {
         return oracleQueryClient.getStatementOfCapitalData(companyNumber);
     }
 }
