@@ -25,11 +25,11 @@ public class JsonDaoMppingTest {
     void init() {
         confirmationStatementJsonDaoMapper = new ConfirmationStatementJsonDaoMapperImpl();
     }
-/*
+
     @Test
     void testDaoToJson() {
         ConfirmationStatementSubmissionDataDao data =
-                MockConfirmationStatementSubmissionData.GetMockSubmissionData();
+                MockConfirmationStatementSubmissionData.GetMockDaoData();
         ConfirmationStatementSubmission dao =
                 new ConfirmationStatementSubmission(SUBMISSION_ID, data, new HashMap<String, String>());
         ConfirmationStatementSubmissionJson json =
@@ -60,5 +60,5 @@ public class JsonDaoMppingTest {
         assertEquals(statmentOfCapitalJson.getTotalNumberOfShares(), statementOfSubmissionCapital.getTotalNumberOfShares());
         assertEquals(statmentOfCapitalJson.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
         assertEquals(statmentOfCapitalJson.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
-    }*/
+    }
 }
