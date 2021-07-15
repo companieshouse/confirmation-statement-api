@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -49,5 +50,12 @@ public class ConfirmationStatementController {
     public ResponseEntity<Object> updateSubmission(@RequestBody ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson,
                                                    @PathVariable("confirmation_statement_id") String submissionId) {
         return confirmationStatementService.updateConfirmationStatement(submissionId, confirmationStatementSubmissionJson);
+    }
+
+    @GetMapping("/{confirmation_statement_id}")
+    public ResponseEntity<Object> getSubmission(@PathVariable("confirmation_statement_id") String submissionId) {
+        var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
+        return serviceResponse.<ResponseEntity<Object>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

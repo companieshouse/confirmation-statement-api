@@ -16,6 +16,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatem
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -29,7 +30,6 @@ class ConfirmationStatementControllerTest {
     private static final ResponseEntity<Object> UPDATED_SUBMISSION_NOT_FOUND = ResponseEntity.notFound().build();
     private static final String PASSTHROUGH = "13456";
     private static final String SUBMISSION_ID = "ABCDEFG";
-    private static final String COMPANY_NUMBER = "11111111";
 
     @Mock
     private ConfirmationStatementService confirmationStatementService;
@@ -92,6 +92,26 @@ class ConfirmationStatementControllerTest {
                 .thenReturn(UPDATED_SUBMISSION_NOT_FOUND);
 
         var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID);
+
+        assertEquals(UPDATED_SUBMISSION_NOT_FOUND, response);
+    }
+
+    @Test
+    void getSubmission() {
+        when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
+                .thenReturn(Optional.of(new ConfirmationStatementSubmissionJson()));
+
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void getSubmissionIdNotFound() {
+        when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
+                .thenReturn(Optional.empty());
+
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
 
         assertEquals(UPDATED_SUBMISSION_NOT_FOUND, response);
     }
