@@ -166,13 +166,14 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnCompanyWithZeroOfficers() throws ServiceException {
-
+    void validateDoesThrowOnCompanyWithZeroOfficers() throws ServiceException {
         when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(new OfficersApi());
         var result = companyOfficerValidation.isOfficerDirector(mockOfficers.getItems(), mockOfficers.getActiveCount());
+        var ex = assertThrows(EligibilityException.class, () ->
+                companyOfficerValidation.validate(companyProfileApi));
 
-        assertDoesNotThrow(() -> companyOfficerValidation.validate(companyProfileApi));
-        assertTrue(result);
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS,ex.getEligibilityStatusCode() );
+        assertFalse(result);
     }
 
 }
