@@ -1,31 +1,32 @@
-package uk.gov.companieshouse.confirmationstatementapi.model;
+package uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class StatementOfCapital {
+import org.springframework.data.mongodb.core.mapping.Field;
 
-    @JsonProperty("class_of_shares")
+public class StatementOfCapitalDao {
+
+    @Field("class_of_shares")
     private String classOfShares;
 
-    @JsonProperty("currency")
+    @Field("currency")
     private String currency;
 
-    @JsonProperty("number_allotted")
+    @Field("number_allotted")
     private String numberAllotted;
 
-    @JsonProperty("aggregate_nominal_value")
+    @Field("aggregate_nominal_value")
     private String aggregateNominalValue;
 
-    @JsonProperty("prescribed_particulars")
+    @Field("prescribed_particulars")
     private String prescribedParticulars;
 
-    @JsonProperty("total_number_of_shares")
+    @Field("total_number_of_shares")
     private String totalNumberOfShares;
 
-    @JsonProperty("total_aggregate_nominal_value")
+    @Field("total_aggregate_nominal_value")
     private String totalAggregateNominalValue;
 
-    @JsonProperty("total_amount_unpaid_for_currency")
+    @Field("total_amount_unpaid_for_currency")
     private String totalAmountUnpaidForCurrency;
 
     public String getClassOfShares() {
@@ -90,19 +91,4 @@ public class StatementOfCapital {
 
     public void setTotalAmountUnpaidForCurrency(String totalAmountUnpaidForCurrency) {
         this.totalAmountUnpaidForCurrency = totalAmountUnpaidForCurrency;
-    }
-
-    @Override
-    public String toString() {
-        return "StatementOfCapital{" +
-                "classOfShares='" + classOfShares + '\'' +
-                ", currency='" + currency + '\'' +
-                ", numberAllotted=" + numberAllotted +
-                ", aggregateNominalValue=" + aggregateNominalValue +
-                ", prescribedParticulars='" + prescribedParticulars + '\'' +
-                ", totalNumberOfShares=" + totalNumberOfShares +
-                ", totalAggregateNominalValue=" + totalAggregateNominalValue +
-                ", totalAmountUnpaidForCurrency=" + totalAmountUnpaidForCurrency +
-                '}';
-    }
-}
+    }}

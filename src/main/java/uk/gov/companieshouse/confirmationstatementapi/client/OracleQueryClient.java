@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
-import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 @Component
 public class OracleQueryClient {
@@ -48,16 +48,16 @@ public class OracleQueryClient {
         return count;
     }
 
-    public StatementOfCapital getStatementOfCapitalData(String companyNumber) throws ServiceException {
+    public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException {
         var statementOfCapitalUrl = String.format("%s/company/%s/statement-of-capital", oracleQueryApiUrl, companyNumber);
         LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, statementOfCapitalUrl);
 
-        ResponseEntity<StatementOfCapital> response = restTemplate.getForEntity(statementOfCapitalUrl, StatementOfCapital.class);
+        ResponseEntity<StatementOfCapitalJson> response = restTemplate.getForEntity(statementOfCapitalUrl, StatementOfCapitalJson.class);
         if(response.getStatusCode() == HttpStatus.OK) {
-            StatementOfCapital statementOfCapital = response.getBody();
-            if (statementOfCapital != null) {
-                LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, statementOfCapital, statementOfCapitalUrl);
-                return statementOfCapital;
+            StatementOfCapitalJson statementOfCapitalJson = response.getBody();
+            if (statementOfCapitalJson != null) {
+                LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, statementOfCapitalJson, statementOfCapitalUrl);
+                return statementOfCapitalJson;
             } else {
                 throw new ServiceException("Oracle query api returned no data");
             }

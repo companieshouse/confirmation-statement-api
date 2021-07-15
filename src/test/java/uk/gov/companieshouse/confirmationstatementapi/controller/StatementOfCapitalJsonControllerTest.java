@@ -7,14 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.StatementOfCapital;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapitalService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class StatementOfCapitalControllerTest {
+class StatementOfCapitalJsonControllerTest {
 
     @Mock
     private StatementOfCapitalService statementOfCapitalService;
@@ -26,7 +26,7 @@ class StatementOfCapitalControllerTest {
 
     @Test
     void getStatementOfCapital() throws ServiceException {
-        when(statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER)).thenReturn(new StatementOfCapital());
+        when(statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER)).thenReturn(new StatementOfCapitalJson());
         var response = statementOfCapitalController.getStatementOfCapital(COMPANY_NUMBER);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
