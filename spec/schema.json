@@ -184,10 +184,7 @@
             }
           },
           "404": {
-            "description": "Statement of capital data not found",
-            "schema": {
-              "$ref": "#/definitions/StatementOfCapitalResponse"
-            }
+            "description": "Statement of capital data not found"
           }
         }
       }
