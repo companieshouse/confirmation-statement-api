@@ -9,7 +9,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapi
 
 public class MockConfirmationStatementSubmissionData {
 
-    public static ConfirmationStatementSubmissionDataJson GetMockJsonData() {
+    public static ConfirmationStatementSubmissionDataJson getMockJsonData() {
         ConfirmationStatementSubmissionDataJson data = new ConfirmationStatementSubmissionDataJson();
         data.setStatementOfCapitalData(getStatementOfCapitalJsonData());
         return data;
@@ -31,7 +31,7 @@ public class MockConfirmationStatementSubmissionData {
         return statementOfCapitalData;
     }
 
-    public static ConfirmationStatementSubmissionDataDao GetMockDaoData() {
+    static ConfirmationStatementSubmissionDataDao getMockDaoData() {
         ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
         data.setStatementOfCapitalData(getStatementOfCapitalDaoData());
         return data;

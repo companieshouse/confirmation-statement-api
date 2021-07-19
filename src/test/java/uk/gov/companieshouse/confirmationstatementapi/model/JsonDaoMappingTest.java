@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class JsonDaoMppingTest {
+class JsonDaoMappingTest {
 
     private static final String SUBMISSION_ID = "abcdefg";
 
@@ -31,9 +31,9 @@ class JsonDaoMppingTest {
     @Test
     void testDaoToJson() {
         ConfirmationStatementSubmissionDataDao data =
-                MockConfirmationStatementSubmissionData.GetMockDaoData();
+                MockConfirmationStatementSubmissionData.getMockDaoData();
         ConfirmationStatementSubmissionDao dao =
-                new ConfirmationStatementSubmissionDao(SUBMISSION_ID, data, new HashMap<String, String>());
+                new ConfirmationStatementSubmissionDao(SUBMISSION_ID, data, new HashMap<>());
         ConfirmationStatementSubmissionJson json =
                 confirmationStatementJsonDaoMapper.daoToJson(dao);
         testContentIsEqual(json, dao);
@@ -42,7 +42,7 @@ class JsonDaoMppingTest {
     @Test
     void testJsonToDao() {
         ConfirmationStatementSubmissionJson json = new ConfirmationStatementSubmissionJson();
-        json.setData(MockConfirmationStatementSubmissionData.GetMockJsonData());
+        json.setData(MockConfirmationStatementSubmissionData.getMockJsonData());
         ConfirmationStatementSubmissionDao dao =
                 confirmationStatementJsonDaoMapper.jsonToDao(json);
         testContentIsEqual(json, dao);
@@ -52,15 +52,15 @@ class JsonDaoMppingTest {
         StatementOfCapitalDataJson socJson = json.getData().getStatementOfCapitalData();
         StatementOfCapitalDataDao socDao = dao.getData().getStatementOfCapitalData();
         assertEquals(socJson.getSectionStatus(), socDao.getSectionStatus());
-        StatementOfCapitalJson statmentOfCapitalJson = socJson.getStatementOfCapital();
+        StatementOfCapitalJson statementOfCapital = socJson.getStatementOfCapital();
         StatementOfCapitalDao statementOfSubmissionCapital = socDao.getStatementOfCapital();
-        assertEquals(statmentOfCapitalJson.getClassOfShares(), statementOfSubmissionCapital.getClassOfShares());
-        assertEquals(statmentOfCapitalJson.getCurrency(), statementOfSubmissionCapital.getCurrency());
-        assertEquals(statmentOfCapitalJson.getNumberAllotted(), statementOfSubmissionCapital.getNumberAllotted());
-        assertEquals(statmentOfCapitalJson.getAggregateNominalValue(), statementOfSubmissionCapital.getAggregateNominalValue());
-        assertEquals(statmentOfCapitalJson.getPrescribedParticulars(), statementOfSubmissionCapital.getPrescribedParticulars());
-        assertEquals(statmentOfCapitalJson.getTotalNumberOfShares(), statementOfSubmissionCapital.getTotalNumberOfShares());
-        assertEquals(statmentOfCapitalJson.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
-        assertEquals(statmentOfCapitalJson.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
+        assertEquals(statementOfCapital.getClassOfShares(), statementOfSubmissionCapital.getClassOfShares());
+        assertEquals(statementOfCapital.getCurrency(), statementOfSubmissionCapital.getCurrency());
+        assertEquals(statementOfCapital.getNumberAllotted(), statementOfSubmissionCapital.getNumberAllotted());
+        assertEquals(statementOfCapital.getAggregateNominalValue(), statementOfSubmissionCapital.getAggregateNominalValue());
+        assertEquals(statementOfCapital.getPrescribedParticulars(), statementOfSubmissionCapital.getPrescribedParticulars());
+        assertEquals(statementOfCapital.getTotalNumberOfShares(), statementOfSubmissionCapital.getTotalNumberOfShares());
+        assertEquals(statementOfCapital.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
+        assertEquals(statementOfCapital.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
     }
 }
