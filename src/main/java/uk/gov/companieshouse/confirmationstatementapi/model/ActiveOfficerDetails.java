@@ -13,7 +13,7 @@ public class ActiveOfficerDetails {
     private String occupation;
     private String nationality;
     @JsonProperty("date_of_birth")
-    private Date dateOfBirth;
+    private String dateOfBirth;
     @JsonProperty("service_address_line_1")
     private String serviceAddressLine1;
     @JsonProperty("service_address_post_town")
@@ -69,11 +69,11 @@ public class ActiveOfficerDetails {
         this.nationality = nationality;
     }
 
-    public Date getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

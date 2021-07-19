@@ -376,7 +376,7 @@
           "type": "string"
         },
         "date_of_birth":  {
-          "type": "date-time"
+          "type": "string"
         },
         "service_address_line_1":  {
           "type": "string"
