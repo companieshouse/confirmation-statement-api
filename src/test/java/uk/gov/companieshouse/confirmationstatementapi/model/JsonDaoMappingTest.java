@@ -52,15 +52,15 @@ class JsonDaoMappingTest {
         StatementOfCapitalDataJson socJson = json.getData().getStatementOfCapitalData();
         StatementOfCapitalDataDao socDao = dao.getData().getStatementOfCapitalData();
         assertEquals(socJson.getSectionStatus(), socDao.getSectionStatus());
-        StatementOfCapitalJson statementOfCapital = socJson.getStatementOfCapital();
+        StatementOfCapitalJson statementOfCapitalJson = socJson.getStatementOfCapital();
         StatementOfCapitalDao statementOfSubmissionCapital = socDao.getStatementOfCapital();
-        assertEquals(statementOfCapital.getClassOfShares(), statementOfSubmissionCapital.getClassOfShares());
-        assertEquals(statementOfCapital.getCurrency(), statementOfSubmissionCapital.getCurrency());
-        assertEquals(statementOfCapital.getNumberAllotted(), statementOfSubmissionCapital.getNumberAllotted());
-        assertEquals(statementOfCapital.getAggregateNominalValue(), statementOfSubmissionCapital.getAggregateNominalValue());
-        assertEquals(statementOfCapital.getPrescribedParticulars(), statementOfSubmissionCapital.getPrescribedParticulars());
-        assertEquals(statementOfCapital.getTotalNumberOfShares(), statementOfSubmissionCapital.getTotalNumberOfShares());
-        assertEquals(statementOfCapital.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
-        assertEquals(statementOfCapital.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
+        assertEquals(statementOfCapitalJson.getClassOfShares(), statementOfSubmissionCapital.getClassOfShares());
+        assertEquals(statementOfCapitalJson.getCurrency(), statementOfSubmissionCapital.getCurrency());
+        assertEquals(statementOfCapitalJson.getNumberAllotted(), statementOfSubmissionCapital.getNumberAllotted());
+        assertEquals(statementOfCapitalJson.getAggregateNominalValue(), statementOfSubmissionCapital.getAggregateNominalValue());
+        assertEquals(statementOfCapitalJson.getPrescribedParticulars(), statementOfSubmissionCapital.getPrescribedParticulars());
+        assertEquals(statementOfCapitalJson.getTotalNumberOfShares(), statementOfSubmissionCapital.getTotalNumberOfShares());
+        assertEquals(statementOfCapitalJson.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
+        assertEquals(statementOfCapitalJson.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
     }
 }
