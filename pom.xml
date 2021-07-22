@@ -13,7 +13,7 @@
     <description>API for confirmation statement service</description>
     <properties>
         <java.version>11</java.version>
-        <spring-boot-dependencies.version>2.4.7</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>2.5.3</spring-boot-dependencies.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <spring-boot-maven-plugin.version>2.4.7</spring-boot-maven-plugin.version>
