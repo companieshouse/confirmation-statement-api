@@ -11,14 +11,15 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.UsualResidentialAddress;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 @Component
 public class OracleQueryClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OracleQueryClient.class);
-    public static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL (get): {}";
-    public static final String RECEIVED_FROM_ORACLE_QUERY_API_URL_GET = "Received {} from Oracle Query API URL (get): {}";
+    private static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL (get): {}";
+    private static final String RECEIVED_FROM_ORACLE_QUERY_API_URL_GET = "Received {} from Oracle Query API URL (get): {}";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -83,6 +84,18 @@ public class OracleQueryClient {
         default:
             throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
         }
+    }
 
+    public UsualResidentialAddress getUsualResidentialAddress(String corpBodyAppointmentId) throws ServiceException {
+        // TODO get url
+        var uraUrl = String.format("%s/company/%s/TBC", oracleQueryApiUrl, corpBodyAppointmentId);
+        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, uraUrl);
+
+        ResponseEntity<UsualResidentialAddress> response = restTemplate.getForEntity(uraUrl, UsualResidentialAddress.class);
+        LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, uraUrl);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new ServiceException(String.format("Oracle query api returned with status = %s, corpBodyAppointmentId = %s", response.getStatusCode(), corpBodyAppointmentId));
+        }
+        return response.getBody();
     }
 }

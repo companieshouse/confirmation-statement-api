@@ -13,11 +13,13 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.UsualResidentialAddress;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +35,7 @@ class OracleQueryClientTest {
     private OracleQueryClient oracleQueryClient;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         ReflectionTestUtils.setField(oracleQueryClient, "oracleQueryApiUrl", DUMMY_URL);
     }
 
@@ -104,5 +106,49 @@ class OracleQueryClientTest {
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetUsualResidentialAddressResponse() throws ServiceException {
+        var AREA = "north england";
+        var COUNTRY_NAME = "england";
+        var HOUSE_NAME_NUMBER = "12 house name";
+        var POST_TOWN = "leeds";
+        var REGION = "yorkshire";
+        var STREET = "far close";
+
+        var ura = new UsualResidentialAddress();
+        ura.setArea(AREA);
+        ura.setCountryName(COUNTRY_NAME);
+        ura.setHouseNameNumber(HOUSE_NAME_NUMBER);
+        ura.setPostTown(POST_TOWN);
+        ura.setRegion(REGION);
+        ura.setStreet(STREET);
+
+        var corpBodyAppointmentId = "123213";
+
+        //TODO use correct url
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + corpBodyAppointmentId + "/TBC", UsualResidentialAddress.class))
+                .thenReturn(new ResponseEntity<>(ura, HttpStatus.OK));
+
+        var result = oracleQueryClient.getUsualResidentialAddress(corpBodyAppointmentId);
+        assertEquals(AREA, result.getArea());
+        assertEquals(COUNTRY_NAME, result.getCountryName());
+        assertEquals(HOUSE_NAME_NUMBER, result.getHouseNameNumber());
+        assertEquals(POST_TOWN, result.getPostTown());
+        assertEquals(REGION, result.getRegion());
+        assertEquals(STREET, result.getStreet());
+    }
+
+    @Test
+    void testGetUsualResidentialAddressNotOkStatusResponse() {
+        var corpBodyAppointmentId = "123213";
+        //TODO use correct url
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + corpBodyAppointmentId + "/TBC", UsualResidentialAddress.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+
+        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getUsualResidentialAddress(corpBodyAppointmentId));
+        assertTrue(serviceException.getMessage().contains(corpBodyAppointmentId));
+        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
     }
 }
