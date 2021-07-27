@@ -20,21 +20,26 @@ class UsualResidentialAddressController {
     private CorporateBodyAppointmentService corporateBodyAppointmentService;
 
     @GetMapping("/confirmation-statement/corporate-body-appointment/{corpBodyAppointmentId}/usual-residential-address")
-    ResponseEntity<UsualResidentialAddress> getUsualResidentialAddress(@PathVariable String corpBodyAppointmentId) {
+    public ResponseEntity<UsualResidentialAddress> getUsualResidentialAddress(@PathVariable String corpBodyAppointmentId) {
+        String sanitizedIdForLogging = null;
+        if (corpBodyAppointmentId != null) {
+            sanitizedIdForLogging = corpBodyAppointmentId.replaceAll("[\n|\r|\t]", "_");
+        }
+
         try {
-            LOGGER.info("Calling CorporateBodyAppointment service to retrieve usual residential address data for corporateBodyAppointment id {}", corpBodyAppointmentId);
+            LOGGER.info("Calling CorporateBodyAppointment service to retrieve usual residential address data for corporateBodyAppointment id {}", sanitizedIdForLogging);
             var usualResidentialAddress = corporateBodyAppointmentService.getUsualResidentialAddress(corpBodyAppointmentId);
             return ResponseEntity.status(HttpStatus.OK).body(usualResidentialAddress);
         } catch (ServiceException e) {
-            logErrorMessage(corpBodyAppointmentId, e);
+            logErrorMessage(sanitizedIdForLogging, e);
             return ResponseEntity.internalServerError().build();
         } catch (Exception e) {
-            logErrorMessage(corpBodyAppointmentId, e);
+            logErrorMessage(sanitizedIdForLogging, e);
             throw e;
         }
     }
 
-    private void logErrorMessage(String corpBodyAppointmentId, Exception e) {
-        LOGGER.error("Error retrieving usual residential address for corporateBodyAppointmentId {}", corpBodyAppointmentId, e);
+    private void logErrorMessage(String sanitizedIdForLogging, Exception e) {
+        LOGGER.error("Error retrieving usual residential address for corporateBodyAppointmentId {}", sanitizedIdForLogging, e);
     }
 }
