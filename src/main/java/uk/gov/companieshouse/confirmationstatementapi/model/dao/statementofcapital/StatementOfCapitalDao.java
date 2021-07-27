@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital;
 
-
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class StatementOfCapitalDao {

@@ -1,29 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 
-public class StatementOfCapitalDataJson {
-
-    @JsonProperty("section_status")
-    private SectionStatus sectionStatus;
+public class StatementOfCapitalDataJson extends SectionDataJson {
 
     @JsonProperty("statement_of_capital")
-    private StatementOfCapitalJson statementOfCapitalJson;
-
-    public SectionStatus getSectionStatus() {
-        return sectionStatus;
-    }
-
-    public void setSectionStatus(SectionStatus sectionStatus) {
-        this.sectionStatus = sectionStatus;
-    }
+    private StatementOfCapitalJson statementOfCapital;
 
     public StatementOfCapitalJson getStatementOfCapital() {
-        return statementOfCapitalJson;
+        return statementOfCapital;
     }
 
-    public void setStatementOfCapital(StatementOfCapitalJson statementOfCapitalJsonData) {
-        this.statementOfCapitalJson = statementOfCapitalJsonData;
+    public void setStatementOfCapital(StatementOfCapitalJson statementOfCapital) {
+        this.statementOfCapital = statementOfCapital;
     }
 }
