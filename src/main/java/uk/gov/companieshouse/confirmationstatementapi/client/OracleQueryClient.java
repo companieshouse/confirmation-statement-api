@@ -87,8 +87,7 @@ public class OracleQueryClient {
     }
 
     public UsualResidentialAddress getUsualResidentialAddress(String corpBodyAppointmentId) throws ServiceException {
-        // TODO get url
-        var uraUrl = String.format("%s/company/%s/TBC", oracleQueryApiUrl, corpBodyAppointmentId);
+        var uraUrl = String.format("%s/corporate-body-appointment/%s/usual-residential-address", oracleQueryApiUrl, corpBodyAppointmentId);
         LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, uraUrl);
 
         ResponseEntity<UsualResidentialAddress> response = restTemplate.getForEntity(uraUrl, UsualResidentialAddress.class);

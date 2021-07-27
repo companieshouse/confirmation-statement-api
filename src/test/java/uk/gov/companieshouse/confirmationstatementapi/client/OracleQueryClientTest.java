@@ -127,8 +127,7 @@ class OracleQueryClientTest {
 
         var corpBodyAppointmentId = "123213";
 
-        //TODO use correct url
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + corpBodyAppointmentId + "/TBC", UsualResidentialAddress.class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/corporate-body-appointment/" + corpBodyAppointmentId + "/usual-residential-address", UsualResidentialAddress.class))
                 .thenReturn(new ResponseEntity<>(ura, HttpStatus.OK));
 
         var result = oracleQueryClient.getUsualResidentialAddress(corpBodyAppointmentId);
@@ -143,8 +142,7 @@ class OracleQueryClientTest {
     @Test
     void testGetUsualResidentialAddressNotOkStatusResponse() {
         var corpBodyAppointmentId = "123213";
-        //TODO use correct url
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + corpBodyAppointmentId + "/TBC", UsualResidentialAddress.class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/corporate-body-appointment/" + corpBodyAppointmentId + "/usual-residential-address", UsualResidentialAddress.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getUsualResidentialAddress(corpBodyAppointmentId));
