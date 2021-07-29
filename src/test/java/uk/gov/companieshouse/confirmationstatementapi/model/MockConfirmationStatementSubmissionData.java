@@ -3,11 +3,15 @@ package uk.gov.companieshouse.confirmationstatementapi.model;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonSignificantControlDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -20,6 +24,7 @@ public class MockConfirmationStatementSubmissionData {
         ConfirmationStatementSubmissionDataJson data = new ConfirmationStatementSubmissionDataJson();
         data.setStatementOfCapitalData(getStatementOfCapitalJsonData());
         data.setPersonsSignificantControlData(getPersonsSignificantControlJsonData());
+        data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressJsonData());
         return data;
     }
 
@@ -55,10 +60,31 @@ public class MockConfirmationStatementSubmissionData {
         return personsSignificantControlDataJson;
     }
 
+    private static RegisteredOfficeAddressDataJson getRegisteredOfficeAddressJsonData() {
+        var registeredOfficeAddressData = new RegisteredOfficeAddressDataJson();
+        registeredOfficeAddressData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        var registeredOfficeAddress = new RegisteredOfficeAddressJson();
+        registeredOfficeAddress.setAddressLineOne("line1");
+        registeredOfficeAddress.setAddressLineTwo("line2");
+        registeredOfficeAddress.setCareOf("careOf");
+        registeredOfficeAddress.setCountry("uk");
+        registeredOfficeAddress.setLocality("locality");
+        registeredOfficeAddress.setPoBox("123");
+        registeredOfficeAddress.setPostalCode("post code");
+        registeredOfficeAddress.setPremises("premises");
+        registeredOfficeAddress.setRegion("region");
+
+        registeredOfficeAddressData.setRegisteredOfficeAddressJson(registeredOfficeAddress);
+
+        return registeredOfficeAddressData;
+    }
+
     static ConfirmationStatementSubmissionDataDao getMockDaoData() {
         ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
         data.setStatementOfCapitalData(getStatementOfCapitalDaoData());
         data.setPersonsSignificantControlData(getPersonsSignificantControlDaoData());
+        data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressDaoData());
         return data;
     }
 
@@ -92,5 +118,25 @@ public class MockConfirmationStatementSubmissionData {
         personsSignificantControlDataDao.setPersonsSignificantControl(personsSignificantControlDao);
 
         return personsSignificantControlDataDao;
+    }
+
+    private static RegisteredOfficeAddressDataDao getRegisteredOfficeAddressDaoData() {
+        var registeredOfficeAddressData = new RegisteredOfficeAddressDataDao();
+        registeredOfficeAddressData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        var registeredOfficeAddress = new RegisteredOfficeAddressDao();
+        registeredOfficeAddress.setAddressLineOne("line1");
+        registeredOfficeAddress.setAddressLineTwo("line2");
+        registeredOfficeAddress.setCareOf("careOf");
+        registeredOfficeAddress.setCountry("uk");
+        registeredOfficeAddress.setLocality("locality");
+        registeredOfficeAddress.setPoBox("123");
+        registeredOfficeAddress.setPostalCode("post code");
+        registeredOfficeAddress.setPremises("premises");
+        registeredOfficeAddress.setRegion("region");
+
+        registeredOfficeAddressData.setRegisteredOfficeAddressDao(registeredOfficeAddress);
+
+        return registeredOfficeAddressData;
     }
 }
