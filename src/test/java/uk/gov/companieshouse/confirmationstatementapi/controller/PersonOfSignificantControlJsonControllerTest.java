@@ -30,12 +30,12 @@ class PersonOfSignificantControlJsonControllerTest {
 
     @Test
     void testGetPersonsOfSignificantControlOKResponse() throws ServiceException {
-        var pSCs = Arrays.asList(new PersonOfSignificantControlJson(), new PersonOfSignificantControlJson());
-        when(pscService.getPSCsFromOracle(COMPANY_NUMBER)).thenReturn(pSCs);
+        var pscs = Arrays.asList(new PersonOfSignificantControlJson(), new PersonOfSignificantControlJson());
+        when(pscService.getPSCsFromOracle(COMPANY_NUMBER)).thenReturn(pscs);
         var response = personsOfSignificantControlController.getPersonsOfSignificantControl(COMPANY_NUMBER);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(pSCs, response.getBody());
+        assertEquals(pscs, response.getBody());
     }
 
     @Test

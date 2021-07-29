@@ -43,7 +43,7 @@ public class PscService {
     }
 
     public List<PersonOfSignificantControlJson> getPSCsFromOracle(String companyNumber) throws ServiceException {
-        List<PersonOfSignificantControl> pSCs = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
+        List<PersonOfSignificantControl> pscs = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
         // TODO MAPPING - create mapper to do the work
         var pscJson = new PersonOfSignificantControlJson();
         return Arrays.asList(pscJson);

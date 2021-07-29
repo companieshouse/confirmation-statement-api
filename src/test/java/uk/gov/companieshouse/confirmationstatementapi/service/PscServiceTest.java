@@ -123,9 +123,9 @@ class PscServiceTest {
         var psc2 = new PersonOfSignificantControl();
         psc2.setServiceAddressLine1("else");
 
-        PersonOfSignificantControl[] pSCs = { psc1, psc2 };
+        PersonOfSignificantControl[] pscs = { psc1, psc2 };
 
-        when(oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER)).thenReturn(Arrays.asList(pSCs));
+        when(oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER)).thenReturn(Arrays.asList(pscs));
         var response = pscService.getPSCsFromOracle(COMPANY_NUMBER);
 
         // TODO change asserts for proper values once mapping completed
