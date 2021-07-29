@@ -13,7 +13,7 @@ public class ConfirmationStatementSubmissionDataDao {
     @Field("persons_significant_control_data")
     private PersonsSignificantControlDataDao personsSignificantControlData;
 
-    @Field("sic_code")
+    @Field("sic_code_data")
     private SicCodeDataDao sicCodeData;
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {

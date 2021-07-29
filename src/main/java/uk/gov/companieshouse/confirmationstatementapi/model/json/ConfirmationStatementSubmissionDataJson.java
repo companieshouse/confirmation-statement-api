@@ -13,7 +13,7 @@ public class ConfirmationStatementSubmissionDataJson {
     @JsonProperty("persons_significant_control_data")
     private PersonsSignificantControlDataJson personsSignificantControlData;
 
-    @JsonProperty("sic_code")
+    @JsonProperty("sic_code_data")
     private SicCodeDataJson sicCodeData;
 
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
