@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
-import uk.gov.companieshouse.confirmationstatementapi.model.UsualResidentialAddress;
+import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -109,44 +109,37 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetUsualResidentialAddressResponse() throws ServiceException {
-        var AREA = "north england";
-        var COUNTRY_NAME = "england";
-        var HOUSE_NAME_NUMBER = "12 house name";
-        var POST_TOWN = "leeds";
-        var REGION = "yorkshire";
-        var STREET = "far close";
+    void testGetPersonsOfSignificantControlResponse() throws ServiceException {
+        var psc1 = new PersonOfSignificantControl();
+        psc1.setAppointmentTypeId("1");
+        psc1.setServiceAddressLine1("1 some street");
+        psc1.setServiceAddressPostCode("post code");
 
-        var ura = new UsualResidentialAddress();
-        ura.setArea(AREA);
-        ura.setCountryName(COUNTRY_NAME);
-        ura.setHouseNameNumber(HOUSE_NAME_NUMBER);
-        ura.setPostTown(POST_TOWN);
-        ura.setRegion(REGION);
-        ura.setStreet(STREET);
 
-        var corpBodyAppointmentId = "123213";
+        var psc2 = new PersonOfSignificantControl();
+        psc2.setAppointmentTypeId("1");
+        psc2.setServiceAddressLine1("1 some street");
+        psc2.setServiceAddressPostCode("post code");
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/corporate-body-appointment/" + corpBodyAppointmentId + "/usual-residential-address", UsualResidentialAddress.class))
-                .thenReturn(new ResponseEntity<>(ura, HttpStatus.OK));
+        PersonOfSignificantControl[] pscArray = { psc1, psc2 };
 
-        var result = oracleQueryClient.getUsualResidentialAddress(corpBodyAppointmentId);
-        assertEquals(AREA, result.getArea());
-        assertEquals(COUNTRY_NAME, result.getCountryName());
-        assertEquals(HOUSE_NAME_NUMBER, result.getHouseNameNumber());
-        assertEquals(POST_TOWN, result.getPostTown());
-        assertEquals(REGION, result.getRegion());
-        assertEquals(STREET, result.getStreet());
+        var companyNumber = "123213";
+
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-with-significant-control", PersonOfSignificantControl[].class))
+                .thenReturn(new ResponseEntity<>(pscArray, HttpStatus.OK));
+
+        var result = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
+        assertEquals(2, result.size());
     }
 
     @Test
-    void testGetUsualResidentialAddressNotOkStatusResponse() {
-        var corpBodyAppointmentId = "123213";
-        when(restTemplate.getForEntity(DUMMY_URL + "/corporate-body-appointment/" + corpBodyAppointmentId + "/usual-residential-address", UsualResidentialAddress.class))
+    void testGetPersonsOfSignificantControlNotOkStatusResponse() {
+        var companyNumber = "123213";
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-with-significant-control", PersonOfSignificantControl[].class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
-        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getUsualResidentialAddress(corpBodyAppointmentId));
-        assertTrue(serviceException.getMessage().contains(corpBodyAppointmentId));
+        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getPersonsOfSignificantControl(companyNumber));
+        assertTrue(serviceException.getMessage().contains(companyNumber));
         assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
     }
 }

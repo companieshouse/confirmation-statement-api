@@ -37,7 +37,7 @@ class CompanyPscCountValidationTest {
 
     @Test
     void validateDoesNotThrowOnSinglePSCTest() throws ServiceException {
-        when(pscService.getPscs(any())).thenReturn(pscsApi);
+        when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
         companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
         pscsApi.setActiveCount(1L);
 
@@ -46,7 +46,7 @@ class CompanyPscCountValidationTest {
 
     @Test
     void validateDoesNotThrowOnZeroPSCTest() throws ServiceException {
-        when(pscService.getPscs(any())).thenReturn(pscsApi);
+        when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
         companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
 
         pscsApi.setActiveCount(0L);
@@ -56,7 +56,7 @@ class CompanyPscCountValidationTest {
 
     @Test
     void validateDoesNotThrowOnNullPSCTest() throws ServiceException {
-        when(pscService.getPscs(any())).thenReturn(pscsApi);
+        when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
         companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
 
         pscsApi.setActiveCount(null);
@@ -65,7 +65,7 @@ class CompanyPscCountValidationTest {
 
     @Test
     void validateThrowsOnMultiplePSCsTest() throws ServiceException {
-        when(pscService.getPscs(any())).thenReturn(pscsApi);
+        when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
         companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
 
         pscsApi.setActiveCount(2L);

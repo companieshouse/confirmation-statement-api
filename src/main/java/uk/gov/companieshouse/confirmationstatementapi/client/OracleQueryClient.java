@@ -11,8 +11,12 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
-import uk.gov.companieshouse.confirmationstatementapi.model.UsualResidentialAddress;
+import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class OracleQueryClient {
@@ -86,15 +90,18 @@ public class OracleQueryClient {
         }
     }
 
-    public UsualResidentialAddress getUsualResidentialAddress(String corpBodyAppointmentId) throws ServiceException {
-        var uraUrl = String.format("%s/corporate-body-appointment/%s/usual-residential-address", oracleQueryApiUrl, corpBodyAppointmentId);
-        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, uraUrl);
+    public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
+        var pscUrl = String.format("%s/company/%s/corporate-body-appointments/persons-with-significant-control", oracleQueryApiUrl, companyNumber);
+        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl);
 
-        ResponseEntity<UsualResidentialAddress> response = restTemplate.getForEntity(uraUrl, UsualResidentialAddress.class);
-        LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, uraUrl);
+        ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
+        LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, pscUrl);
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new ServiceException(String.format("Oracle query api returned with status = %s, corpBodyAppointmentId = %s", response.getStatusCode(), corpBodyAppointmentId));
+            throw new ServiceException(String.format("Oracle query api returned with status = %s, companyNumber = %s", response.getStatusCode(), companyNumber));
         }
-        return response.getBody();
+        if (response.getBody() == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(response.getBody());
     }
 }

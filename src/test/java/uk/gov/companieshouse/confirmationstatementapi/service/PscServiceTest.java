@@ -15,9 +15,12 @@ import uk.gov.companieshouse.api.handler.psc.request.PscsList;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.psc.PscsApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
+import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -45,6 +48,9 @@ class PscServiceTest {
     @Mock
     private PscsList pscsList;
 
+    @Mock
+    private OracleQueryClient oracleQueryClient;
+
     @InjectMocks
     private PscService pscService;
 
@@ -60,7 +66,7 @@ class PscServiceTest {
         when(pscsList.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(pscsApi);
 
-        var response = pscService.getPscs(COMPANY_NUMBER);
+        var response = pscService.getPSCsFromCHS(COMPANY_NUMBER);
 
         assertEquals(pscsApi, response);
         assertEquals(3, response.getActiveCount());
@@ -74,7 +80,7 @@ class PscServiceTest {
         when(pscsList.execute()).thenThrow(new URIValidationException("ERROR"));
 
         assertThrows(ServiceException.class, () -> {
-            pscService.getPscs(COMPANY_NUMBER);
+            pscService.getPSCsFromCHS(COMPANY_NUMBER);
         });
     }
 
@@ -86,7 +92,7 @@ class PscServiceTest {
         when(pscsList.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException("ERROR")));
         
         assertThrows(ServiceException.class, () -> {
-            pscService.getPscs(COMPANY_NUMBER);
+            pscService.getPSCsFromCHS(COMPANY_NUMBER);
         });
     }
 
@@ -99,7 +105,7 @@ class PscServiceTest {
         var builder = new HttpResponseException.Builder(404, "String", new HttpHeaders());
         when(pscsList.execute()).thenThrow(new ApiErrorResponseException(builder));
 
-        var response = pscService.getPscs(COMPANY_NUMBER);
+        var response = pscService.getPSCsFromCHS(COMPANY_NUMBER);
 
         assertNotNull(response);
         assertNull(response.getActiveCount());
@@ -108,5 +114,31 @@ class PscServiceTest {
         assertNull(response.getEtag());
         assertNull(response.getItems());
         assertNull(response.getTotalResults());
+    }
+
+    @Test
+    void testGetPSCsFromOracle() throws ServiceException {
+        var psc1 = new PersonOfSignificantControl();
+        psc1.setServiceAddressLine1("something");
+        var psc2 = new PersonOfSignificantControl();
+        psc2.setServiceAddressLine1("else");
+
+        PersonOfSignificantControl[] pSCs = { psc1, psc2 };
+
+        when(oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER)).thenReturn(Arrays.asList(pSCs));
+        var response = pscService.getPSCsFromOracle(COMPANY_NUMBER);
+
+        // TODO change asserts for proper values once mapping completed
+        assertEquals(1, response.size());
+
+    }
+
+    @Test
+    void testGetPSCsFromOracleThrowsServiceException() throws ServiceException {
+        var se = new ServiceException("Message");
+        when(oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER)).thenThrow(se);
+
+        var exception = assertThrows(ServiceException.class, () -> pscService.getPSCsFromOracle(COMPANY_NUMBER));
+        assertEquals(se, exception);
     }
 }
