@@ -7,7 +7,7 @@ public class RegisteredOfficeAddressDao {
     @Field("address_line_one")
     private String addressLineOne;
 
-    @Field("address_line_twp")
+    @Field("address_line_two")
     private String addressLineTwo;
 
     @Field("care_of")
@@ -19,7 +19,7 @@ public class RegisteredOfficeAddressDao {
     @Field("locality")
     private String locality;
 
-    @Field("poBox")
+    @Field("po_box")
     private String poBox;
 
     @Field("postal_code")

@@ -7,7 +7,7 @@ public class RegisteredOfficeAddressJson {
     @JsonProperty("address_line_one")
     private String addressLineOne;
 
-    @JsonProperty("address_line_twp")
+    @JsonProperty("address_line_two")
     private String addressLineTwo;
 
     @JsonProperty("care_of")
@@ -19,7 +19,7 @@ public class RegisteredOfficeAddressJson {
     @JsonProperty("locality")
     private String locality;
 
-    @JsonProperty("poBox")
+    @JsonProperty("po_box")
     private String poBox;
 
     @JsonProperty("postal_code")
