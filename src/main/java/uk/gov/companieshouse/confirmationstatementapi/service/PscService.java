@@ -11,8 +11,7 @@ import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
-
-import java.util.Arrays;
+import uk.gov.companieshouse.confirmationstatementapi.model.mapping.PscsMapper;
 import java.util.List;
 
 @Service
@@ -20,12 +19,15 @@ public class PscService {
 
     private final ApiClientService apiClientService;
     private final OracleQueryClient oracleQueryClient;
+    private final PscsMapper pscsMapper;
 
     @Autowired
     public PscService(ApiClientService apiClientService,
-                      OracleQueryClient oracleQueryClient) {
+                      OracleQueryClient oracleQueryClient,
+                      PscsMapper pscsMapper) {
         this.apiClientService = apiClientService;
         this.oracleQueryClient = oracleQueryClient;
+        this.pscsMapper = pscsMapper;
     }
 
     public PscsApi getPSCsFromCHS(String companyNumber) throws ServiceException {
@@ -44,8 +46,6 @@ public class PscService {
 
     public List<PersonOfSignificantControlJson> getPSCsFromOracle(String companyNumber) throws ServiceException {
         List<PersonOfSignificantControl> pscs = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
-        // TODO MAPPING - create mapper to do the work
-        var pscJson = new PersonOfSignificantControlJson();
-        return Arrays.asList(pscJson);
+        return pscsMapper.mapToPscsApi(pscs);
     }
 }

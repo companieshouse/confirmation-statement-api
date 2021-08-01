@@ -6,7 +6,7 @@ import uk.gov.companieshouse.api.model.psc.PscApi;
 public class PersonOfSignificantControlJson extends PscApi {
 
     @JsonProperty("appointment_type")
-    private Integer appointmentType;
+    private String appointmentType;
 
     @JsonProperty("service_address_line_1")
     private String serviceAddressLine1;
@@ -17,11 +17,17 @@ public class PersonOfSignificantControlJson extends PscApi {
     @JsonProperty("service_address_post_town")
     private String serviceAddressPostTown;
 
-    public Integer getAppointmentType() {
+    @JsonProperty("secure_officer_ind")
+    private String secureOfficerInd;
+
+    @JsonProperty("company_name")
+    private String companyName;
+
+    public String getAppointmentType() {
         return appointmentType;
     }
 
-    public void setAppointmentType(Integer appointmentType) {
+    public void setAppointmentType(String appointmentType) {
         this.appointmentType = appointmentType;
     }
 
@@ -47,5 +53,21 @@ public class PersonOfSignificantControlJson extends PscApi {
 
     public void setServiceAddressPostTown(String serviceAddressPostTown) {
         this.serviceAddressPostTown = serviceAddressPostTown;
+    }
+
+    public String getSecureOfficerInd() {
+        return secureOfficerInd;
+    }
+
+    public void setSecureOfficerInd(String secureOfficerInd) {
+        this.secureOfficerInd = secureOfficerInd;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 }
