@@ -17,8 +17,8 @@ public class ConfirmationStatementSubmissionDataJson {
     @JsonProperty("sic_code_data")
     private SicCodeDataJson sicCodeData;
 
-    @JsonProperty("registered_office_address")
-    private RegisteredOfficeAddressDataJson registeredOfficeAddressDataJson;
+    @JsonProperty("registered_office_address_data")
+    private RegisteredOfficeAddressDataJson registeredOfficeAddressData;
 
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -45,10 +45,10 @@ public class ConfirmationStatementSubmissionDataJson {
     }
 
     public RegisteredOfficeAddressDataJson getRegisteredOfficeAddressData() {
-        return registeredOfficeAddressDataJson;
+        return registeredOfficeAddressData;
     }
 
     public void setRegisteredOfficeAddressData(RegisteredOfficeAddressDataJson registeredOfficeAddressDataJson) {
-        this.registeredOfficeAddressDataJson = registeredOfficeAddressDataJson;
+        this.registeredOfficeAddressData = registeredOfficeAddressDataJson;
     }
 }

@@ -81,9 +81,7 @@ public class ConfirmationStatementService {
         if (submission.isPresent()) {
             // Save updated submission to database
             LOGGER.info("{}: Confirmation Statement Submission found. About to update", submission.get().getId());
-            LOGGER.info("-------- JSON:" + confirmationStatementSubmissionJson.getData().toString());
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
-            LOGGER.info("-------- DAO:" + dao.toString());
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             LOGGER.info("{}: Confirmation Statement Submission updated", savedResponse.getId());
             return ResponseEntity.ok(savedResponse);

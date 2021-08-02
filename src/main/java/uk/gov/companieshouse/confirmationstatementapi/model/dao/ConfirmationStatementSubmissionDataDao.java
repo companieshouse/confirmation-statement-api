@@ -17,8 +17,8 @@ public class ConfirmationStatementSubmissionDataDao {
     @Field("sic_code_data")
     private SicCodeDataDao sicCodeData;
 
-    @Field("registered_office_address")
-    private RegisteredOfficeAddressDataDao registeredOfficeAddressDataDao;
+    @Field("registered_office_address_data")
+    private RegisteredOfficeAddressDataDao registeredOfficeAddressData;
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -45,10 +45,10 @@ public class ConfirmationStatementSubmissionDataDao {
     }
 
     public RegisteredOfficeAddressDataDao getRegisteredOfficeAddressData() {
-        return registeredOfficeAddressDataDao;
+        return registeredOfficeAddressData;
     }
 
     public void setRegisteredOfficeAddressData(RegisteredOfficeAddressDataDao registeredOfficeAddressDataDao) {
-        this.registeredOfficeAddressDataDao = registeredOfficeAddressDataDao;
+        this.registeredOfficeAddressData = registeredOfficeAddressDataDao;
     }
 }

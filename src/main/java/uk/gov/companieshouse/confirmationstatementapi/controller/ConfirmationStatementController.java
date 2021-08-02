@@ -49,7 +49,6 @@ public class ConfirmationStatementController {
     @PostMapping("/{confirmation_statement_id}")
     public ResponseEntity<Object> updateSubmission(@RequestBody ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson,
                                                    @PathVariable("confirmation_statement_id") String submissionId) {
-        LOGGER.info("CS SUBMISSION JSON:" + confirmationStatementSubmissionJson.getData().getRegisteredOfficeAddressData().getSectionStatus().toString());
         return confirmationStatementService.updateConfirmationStatement(submissionId, confirmationStatementSubmissionJson);
     }
 
