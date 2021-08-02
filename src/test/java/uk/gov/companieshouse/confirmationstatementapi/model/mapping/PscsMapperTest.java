@@ -13,26 +13,26 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class PscsMapperTest {
 
-    public static final String OFFICER_FORENAME_1 = "fred";
-    public static final String OFFICER_FORENAME_2 = "john";
-    public static final String OFFICER_SURNAME = "flintstone";
-    public static final String OFFICER_DATE_OF_BIRTH = "28/10/1968";
-    public static final String OFFICER_NATIONALITY = "BRITISH";
-    public static final String APPOINTMENT_TYPE_ID = "10";
-    public static final String SERV_ADDR_LINE_1 = "serv line 1";
-    public static final String SERVICE_ADDRESS_POST_TOWN = "cardiff";
-    public static final String SERVICE_ADDRESS_POST_CODE = "CF1 1AA";
-    public static final String SECURE_PSC_IND = "N";
-    public static final String HOUSE_NAME_NUMBER = "22";
-    public static final String STREET = "street";
-    public static final String AREA = "area";
-    public static final String POST_TOWN = "bridgend";
-    public static final String POST_CODE = "B1 1AA";
-    public static final String REGION = "region";
-    public static final String COUNTRY_NAME = "Wales";
-    public static final String PO_BOX = "po box";
-    public static final String SUPPLIED_COMPANY_NAME = "company name";
-    public static final String ADDRESS_LINE_1 = "address line 1";
+    private static final String OFFICER_FORENAME_1 = "fred";
+    private static final String OFFICER_FORENAME_2 = "john";
+    private static final String OFFICER_SURNAME = "flintstone";
+    private static final String OFFICER_DATE_OF_BIRTH = "1968-10-28 00:00:00";
+    private static final String OFFICER_NATIONALITY = "BRITISH";
+    private static final String APPOINTMENT_TYPE_ID = "10";
+    private static final String SERVICE_ADDRESS_LINE_1 = "serv line 1";
+    private static final String SERVICE_ADDRESS_POST_TOWN = "cardiff";
+    private static final String SERVICE_ADDRESS_POST_CODE = "CF1 1AA";
+    private static final String SECURE_PSC_IND = "N";
+    private static final String HOUSE_NAME_NUMBER = "22";
+    private static final String STREET = "street";
+    private static final String AREA = "area";
+    private static final String POST_TOWN = "bridgend";
+    private static final String POST_CODE = "B1 1AA";
+    private static final String REGION = "region";
+    private static final String COUNTRY_NAME = "Wales";
+    private static final String PO_BOX = "po box";
+    private static final String SUPPLIED_COMPANY_NAME = "company name";
+    private static final String ADDRESS_LINE_1 = "address line 1";
     private PscsMapper pscsMapper = new PscsMapper();
 
     @Test
@@ -71,7 +71,7 @@ class PscsMapperTest {
         assertEquals(OFFICER_NATIONALITY, pscJson1.getNationality());
 
         assertEquals(APPOINTMENT_TYPE_ID, pscJson1.getAppointmentType());
-        assertEquals(SERV_ADDR_LINE_1, pscJson1.getServiceAddressLine1());
+        assertEquals(SERVICE_ADDRESS_LINE_1, pscJson1.getServiceAddressLine1());
         assertEquals(SERVICE_ADDRESS_POST_TOWN, pscJson1.getServiceAddressPostTown());
         assertEquals(SERVICE_ADDRESS_POST_CODE, pscJson1.getServiceAddressPostCode());
 
@@ -106,16 +106,18 @@ class PscsMapperTest {
 
 
         var pscJson3 = pscsJson.get(2);
-        assertEquals("James Smith", pscJson2.getName());
-        assertEquals("James", pscJson2.getNameElements().getForename());
-        assertNull(pscJson2.getNameElements().getOtherForenames());
-        assertEquals("Smith", pscJson2.getNameElements().getSurname());
-        assertEquals("PSC2 ADD LINE1", pscJson2.getAddress().getAddressLine1());
+        assertEquals("Kevin Lloyd", pscJson3.getName());
+        assertEquals("Kevin", pscJson3.getNameElements().getForename());
+        assertNull(pscJson3.getNameElements().getOtherForenames());
+        assertEquals("Lloyd", pscJson3.getNameElements().getSurname());
+        assertEquals("PSC3 ADD LINE1", pscJson3.getAddress().getAddressLine1());
 
-        assertEquals(3, pscJson2.getNaturesOfControl().length);
-        assertEquals("ABC", pscJson2.getNaturesOfControl()[0]);
-        assertEquals("HH", pscJson2.getNaturesOfControl()[1]);
-        assertEquals("XC", pscJson2.getNaturesOfControl()[2]);
+        assertEquals(4, pscJson3.getNaturesOfControl().length);
+        assertEquals("55", pscJson3.getNaturesOfControl()[0]);
+        assertEquals("22", pscJson3.getNaturesOfControl()[1]);
+        assertEquals("88", pscJson3.getNaturesOfControl()[2]);
+        assertEquals("66", pscJson3.getNaturesOfControl()[3]);
+
     }
 
     @Test
@@ -138,7 +140,7 @@ class PscsMapperTest {
         psc.setOfficerDateOfBirth(OFFICER_DATE_OF_BIRTH);
         psc.setOfficerNationality(OFFICER_NATIONALITY);
         psc.setAppointmentTypeId(APPOINTMENT_TYPE_ID);
-        psc.setServiceAddressLine1(SERV_ADDR_LINE_1);
+        psc.setServiceAddressLine1(SERVICE_ADDRESS_LINE_1);
         psc.setServiceAddressPostTown(SERVICE_ADDRESS_POST_TOWN);
         psc.setServiceAddressPostCode(SERVICE_ADDRESS_POST_CODE);
         psc.setSuperSecurePscInd(SECURE_PSC_IND);
