@@ -18,9 +18,12 @@ import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.mapping.PscsMapper;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,6 +53,9 @@ class PscServiceTest {
 
     @Mock
     private OracleQueryClient oracleQueryClient;
+
+    @Mock
+    private PscsMapper pscsMapper;
 
     @InjectMocks
     private PscService pscService;
@@ -123,14 +129,20 @@ class PscServiceTest {
         var psc2 = new PersonOfSignificantControl();
         psc2.setServiceAddressLine1("else");
 
-        PersonOfSignificantControl[] pscs = { psc1, psc2 };
+        List<PersonOfSignificantControl> pscs = Arrays.asList(psc1, psc2);
 
-        when(oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER)).thenReturn(Arrays.asList(pscs));
+        var pscJson1 = new PersonOfSignificantControlJson();
+        var pscJson2 = new PersonOfSignificantControlJson();
+        var pscJsonList = Arrays.asList(pscJson1, pscJson2);
+
+
+        when(oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER)).thenReturn(pscs);
+        when(pscsMapper.mapToPscsApi(pscs)).thenReturn(pscJsonList);
+
         var response = pscService.getPSCsFromOracle(COMPANY_NUMBER);
 
-        // TODO change asserts for proper values once mapping completed
-        assertEquals(1, response.size());
-
+        assertEquals(pscJsonList, response);
+        assertEquals(2, response.size());
     }
 
     @Test
