@@ -1,22 +1,12 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital;
 
 import org.springframework.data.mongodb.core.mapping.Field;
-import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.SectionDataDao;
 
-public class StatementOfCapitalDataDao {
-    @Field("section_status")
-    private SectionStatus sectionStatus;
+public class StatementOfCapitalDataDao extends SectionDataDao {
 
     @Field("statement_of_capital")
     private StatementOfCapitalDao statementOfCapital;
-
-    public SectionStatus getSectionStatus() {
-        return sectionStatus;
-    }
-
-    public void setSectionStatus(SectionStatus sectionStatus) {
-        this.sectionStatus = sectionStatus;
-    }
 
     public StatementOfCapitalDao getStatementOfCapital() {
         return statementOfCapital;
