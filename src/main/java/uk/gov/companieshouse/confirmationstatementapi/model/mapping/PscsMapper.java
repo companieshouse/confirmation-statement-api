@@ -8,8 +8,8 @@ import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,14 +42,18 @@ public class PscsMapper {
         pscJson.setAddress(address);
         pscJson.setAppointmentType(psc.getAppointmentTypeId());
 
-        pscJson.setNaturesOfControl(psc.getNatureOfControl().split(";"));
+        if (StringUtils.isNotBlank(psc.getNatureOfControl())) {
+            pscJson.setNaturesOfControl(psc.getNatureOfControl().split(";"));
+        }
 
-        var dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate localDate = LocalDate.parse(psc.getOfficerDateOfBirth(), dateTimeFormatter);
-        DateOfBirth dob = new DateOfBirth();
-        dob.setMonth((long) localDate.getMonthValue());
-        dob.setYear((long) localDate.getYear());
-        pscJson.setDateOfBirth(dob);
+        if (StringUtils.isNotBlank(psc.getOfficerDateOfBirth())) {
+            Timestamp timestamp = Timestamp.valueOf(psc.getOfficerDateOfBirth());
+            LocalDate localDate = timestamp.toLocalDateTime().toLocalDate();
+            DateOfBirth dob = new DateOfBirth();
+            dob.setMonth((long) localDate.getMonthValue());
+            dob.setYear((long) localDate.getYear());
+            pscJson.setDateOfBirth(dob);
+        }
 
         mapNames(psc, pscJson);
 
