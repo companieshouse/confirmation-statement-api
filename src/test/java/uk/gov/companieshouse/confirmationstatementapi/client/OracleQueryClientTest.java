@@ -125,7 +125,7 @@ class OracleQueryClientTest {
 
         var companyNumber = "123213";
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-with-significant-control", PersonOfSignificantControl[].class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-of-significant-control", PersonOfSignificantControl[].class))
                 .thenReturn(new ResponseEntity<>(pscArray, HttpStatus.OK));
 
         var result = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
@@ -135,7 +135,7 @@ class OracleQueryClientTest {
     @Test
     void testGetPersonsOfSignificantControlNotOkStatusResponse() {
         var companyNumber = "123213";
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-with-significant-control", PersonOfSignificantControl[].class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-of-significant-control", PersonOfSignificantControl[].class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getPersonsOfSignificantControl(companyNumber));

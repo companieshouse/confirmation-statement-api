@@ -17,9 +17,6 @@ public class PersonOfSignificantControlJson extends PscApi {
     @JsonProperty("service_address_post_town")
     private String serviceAddressPostTown;
 
-    @JsonProperty("secure_officer_ind")
-    private String secureOfficerInd;
-
     @JsonProperty("company_name")
     private String companyName;
 
@@ -53,14 +50,6 @@ public class PersonOfSignificantControlJson extends PscApi {
 
     public void setServiceAddressPostTown(String serviceAddressPostTown) {
         this.serviceAddressPostTown = serviceAddressPostTown;
-    }
-
-    public String getSecureOfficerInd() {
-        return secureOfficerInd;
-    }
-
-    public void setSecureOfficerInd(String secureOfficerInd) {
-        this.secureOfficerInd = secureOfficerInd;
     }
 
     public String getCompanyName() {

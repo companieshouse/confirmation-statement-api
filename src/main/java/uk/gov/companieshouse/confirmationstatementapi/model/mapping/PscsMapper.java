@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.api.model.common.DateOfBirth;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class PscsMapper {
 
     public List<PersonOfSignificantControlJson> mapToPscsApi(List<PersonOfSignificantControl> pscList) {
@@ -57,8 +59,6 @@ public class PscsMapper {
         pscJson.setServiceAddressPostCode(psc.getServiceAddressPostCode());
         pscJson.setServiceAddressPostTown(psc.getServiceAddressPostTown());
 
-        // no company name or super secure ind or area
-        pscJson.setSecureOfficerInd(psc.getSuperSecurePscInd());
         pscJson.setCompanyName(psc.getSuppliedCompanyName());
 
         return pscJson;

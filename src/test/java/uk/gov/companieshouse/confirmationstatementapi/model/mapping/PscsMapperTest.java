@@ -85,7 +85,6 @@ class PscsMapperTest {
         assertEquals(PO_BOX, pscJson1.getAddress().getPoBox());
 
         assertEquals(SUPPLIED_COMPANY_NAME, pscJson1.getCompanyName());
-        assertEquals(SECURE_PSC_IND, pscJson1.getSecureOfficerInd());
 
         assertEquals(3, pscJson1.getNaturesOfControl().length);
         assertEquals("12", pscJson1.getNaturesOfControl()[0]);
