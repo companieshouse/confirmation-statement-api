@@ -91,7 +91,7 @@ public class OracleQueryClient {
     }
 
     public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
-        var pscUrl = String.format("%s/company/%s/corporate-body-appointments/persons-with-significant-control", oracleQueryApiUrl, companyNumber);
+        var pscUrl = String.format("%s/company/%s/corporate-body-appointments/persons-of-significant-control", oracleQueryApiUrl, companyNumber);
         LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl);
 
         ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
