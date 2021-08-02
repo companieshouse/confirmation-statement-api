@@ -3,12 +3,16 @@ package uk.gov.companieshouse.confirmationstatementapi.model;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonSignificantControlDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
@@ -22,6 +26,7 @@ public class MockConfirmationStatementSubmissionData {
         ConfirmationStatementSubmissionDataJson data = new ConfirmationStatementSubmissionDataJson();
         data.setStatementOfCapitalData(getStatementOfCapitalJsonData());
         data.setPersonsSignificantControlData(getPersonsSignificantControlJsonData());
+        data.setSicCodeData(getSicCodeJsonData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressJsonData());
         return data;
     }
@@ -58,6 +63,19 @@ public class MockConfirmationStatementSubmissionData {
         return personsSignificantControlDataJson;
     }
 
+    private static SicCodeDataJson getSicCodeJsonData() {
+        var sicCodeDataJson = new SicCodeDataJson();
+        sicCodeDataJson.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        var sicCode = new SicCodeJson();
+        sicCode.setCode("123");
+        sicCode.setDescription("TEST SIC CODE DETAILS");
+
+        sicCodeDataJson.setSicCode(sicCode);
+
+        return sicCodeDataJson;
+    }
+
     private static RegisteredOfficeAddressDataJson getRegisteredOfficeAddressJsonData() {
         var registeredOfficeAddressData = new RegisteredOfficeAddressDataJson();
         registeredOfficeAddressData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
@@ -69,6 +87,7 @@ public class MockConfirmationStatementSubmissionData {
         ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
         data.setStatementOfCapitalData(getStatementOfCapitalDaoData());
         data.setPersonsSignificantControlData(getPersonsSignificantControlDaoData());
+        data.setSicCodeData(getSicCodeDaoData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressDaoData());
         return data;
     }
@@ -103,6 +122,19 @@ public class MockConfirmationStatementSubmissionData {
         personsSignificantControlDataDao.setPersonsSignificantControl(personsSignificantControlDao);
 
         return personsSignificantControlDataDao;
+    }
+
+    private static SicCodeDataDao getSicCodeDaoData() {
+        var sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        var sicCode = new SicCodeDao();
+        sicCode.setCode("123");
+        sicCode.setDescription("TEST SIC CODE DETAILS");
+
+        sicCodeDataDao.setSicCode(sicCode);
+
+        return sicCodeDataDao;
     }
 
     private static RegisteredOfficeAddressDataDao getRegisteredOfficeAddressDaoData() {

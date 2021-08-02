@@ -29,7 +29,7 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
             LOGGER.debug("Company PSC Count FEATURE FLAG off skipping validation");
             return;
         }
-        var count = pscService.getPscs(profileToValidate.getCompanyNumber()).getActiveCount();
+        var count = pscService.getPSCsFromCHS(profileToValidate.getCompanyNumber()).getActiveCount();
         if (count != null && count > 1) {
             LOGGER.info("Company PSCs validation failed for: {}", profileToValidate.getCompanyNumber());
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC);

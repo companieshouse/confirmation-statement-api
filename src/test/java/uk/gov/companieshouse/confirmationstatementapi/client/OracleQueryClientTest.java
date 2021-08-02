@@ -13,11 +13,13 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +35,7 @@ class OracleQueryClientTest {
     private OracleQueryClient oracleQueryClient;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         ReflectionTestUtils.setField(oracleQueryClient, "oracleQueryApiUrl", DUMMY_URL);
     }
 
@@ -104,5 +106,40 @@ class OracleQueryClientTest {
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetPersonsOfSignificantControlResponse() throws ServiceException {
+        var psc1 = new PersonOfSignificantControl();
+        psc1.setAppointmentTypeId("1");
+        psc1.setServiceAddressLine1("1 some street");
+        psc1.setServiceAddressPostCode("post code");
+
+
+        var psc2 = new PersonOfSignificantControl();
+        psc2.setAppointmentTypeId("1");
+        psc2.setServiceAddressLine1("1 some street");
+        psc2.setServiceAddressPostCode("post code");
+
+        PersonOfSignificantControl[] pscArray = { psc1, psc2 };
+
+        var companyNumber = "123213";
+
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-with-significant-control", PersonOfSignificantControl[].class))
+                .thenReturn(new ResponseEntity<>(pscArray, HttpStatus.OK));
+
+        var result = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testGetPersonsOfSignificantControlNotOkStatusResponse() {
+        var companyNumber = "123213";
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-with-significant-control", PersonOfSignificantControl[].class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+
+        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getPersonsOfSignificantControl(companyNumber));
+        assertTrue(serviceException.getMessage().contains(companyNumber));
+        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
     }
 }

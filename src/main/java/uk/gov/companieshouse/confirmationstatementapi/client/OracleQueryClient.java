@@ -11,14 +11,19 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class OracleQueryClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OracleQueryClient.class);
-    public static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL (get): {}";
-    public static final String RECEIVED_FROM_ORACLE_QUERY_API_URL_GET = "Received {} from Oracle Query API URL (get): {}";
+    private static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL (get): {}";
+    private static final String RECEIVED_FROM_ORACLE_QUERY_API_URL_GET = "Received {} from Oracle Query API URL (get): {}";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -83,6 +88,20 @@ public class OracleQueryClient {
         default:
             throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
         }
+    }
 
+    public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
+        var pscUrl = String.format("%s/company/%s/corporate-body-appointments/persons-with-significant-control", oracleQueryApiUrl, companyNumber);
+        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl);
+
+        ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
+        LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, pscUrl);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new ServiceException(String.format("Oracle query api returned with status = %s, companyNumber = %s", response.getStatusCode(), companyNumber));
+        }
+        if (response.getBody() == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(response.getBody());
     }
 }
