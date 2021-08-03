@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model.json;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 
 public class ConfirmationStatementSubmissionDataJson {
@@ -15,6 +16,9 @@ public class ConfirmationStatementSubmissionDataJson {
 
     @JsonProperty("sic_code_data")
     private SicCodeDataJson sicCodeData;
+
+    @JsonProperty("registered_office_address_data")
+    private RegisteredOfficeAddressDataJson registeredOfficeAddressData;
 
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -38,5 +42,13 @@ public class ConfirmationStatementSubmissionDataJson {
 
     public void setSicCodeData(SicCodeDataJson sicCodeData) {
         this.sicCodeData = sicCodeData;
+    }
+
+    public RegisteredOfficeAddressDataJson getRegisteredOfficeAddressData() {
+        return registeredOfficeAddressData;
+    }
+
+    public void setRegisteredOfficeAddressData(RegisteredOfficeAddressDataJson registeredOfficeAddressDataJson) {
+        this.registeredOfficeAddressData = registeredOfficeAddressDataJson;
     }
 }

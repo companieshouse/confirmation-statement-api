@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 
 public class ConfirmationStatementSubmissionDataDao {
@@ -15,6 +16,9 @@ public class ConfirmationStatementSubmissionDataDao {
 
     @Field("sic_code_data")
     private SicCodeDataDao sicCodeData;
+
+    @Field("registered_office_address_data")
+    private RegisteredOfficeAddressDataDao registeredOfficeAddressData;
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -38,5 +42,13 @@ public class ConfirmationStatementSubmissionDataDao {
 
     public void setSicCodeData(SicCodeDataDao sicCodeData) {
         this.sicCodeData = sicCodeData;
+    }
+
+    public RegisteredOfficeAddressDataDao getRegisteredOfficeAddressData() {
+        return registeredOfficeAddressData;
+    }
+
+    public void setRegisteredOfficeAddressData(RegisteredOfficeAddressDataDao registeredOfficeAddressDataDao) {
+        this.registeredOfficeAddressData = registeredOfficeAddressDataDao;
     }
 }

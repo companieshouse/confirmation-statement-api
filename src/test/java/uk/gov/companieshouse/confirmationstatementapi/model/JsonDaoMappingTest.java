@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDao;
@@ -11,6 +12,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapit
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
@@ -68,9 +70,14 @@ class JsonDaoMappingTest {
         assertEquals(statementOfCapitalJson.getTotalNumberOfShares(), statementOfSubmissionCapital.getTotalNumberOfShares());
         assertEquals(statementOfCapitalJson.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
         assertEquals(statementOfCapitalJson.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
+
         SicCodeJson sicJson = sicDataJson.getSicCode();
         SicCodeDao sicDao = sicDataDao.getSicCode();
+        RegisteredOfficeAddressDataJson roaJson = json.getData().getRegisteredOfficeAddressData();
+        RegisteredOfficeAddressDataDao roaDao = dao.getData().getRegisteredOfficeAddressData();
+
         assertEquals(sicJson.getCode(), sicDao.getCode());
         assertEquals(sicJson.getDescription(), sicDao.getDescription());
+        assertEquals(roaJson.getSectionStatus(),roaDao.getSectionStatus());
     }
 }
