@@ -33,6 +33,10 @@ class PscsMapperTest {
     private static final String PO_BOX = "po box";
     private static final String SUPPLIED_COMPANY_NAME = "company name";
     private static final String ADDRESS_LINE_1 = "address line 1";
+    private static final String REGISTRATION_NUMBER = "123456";
+    private static final String LAW_GOVERED = "ENGLISH";
+    private static final String LEGAL_FORM = "LIMITED";
+    private static final String COUNTRY_OF_RESIDENCE = "UNITED KINGDOM";
     private PscsMapper pscsMapper = new PscsMapper();
 
     @Test
@@ -85,6 +89,11 @@ class PscsMapperTest {
         assertEquals(PO_BOX, pscJson1.getAddress().getPoBox());
 
         assertEquals(SUPPLIED_COMPANY_NAME, pscJson1.getCompanyName());
+
+        assertEquals(REGISTRATION_NUMBER, pscJson1.getRegistrationNumber());
+        assertEquals(LAW_GOVERED, pscJson1.getLawGoverned());
+        assertEquals(LEGAL_FORM, pscJson1.getLegalForm());
+        assertEquals(COUNTRY_OF_RESIDENCE, pscJson1.getCountryOfResidence());
 
         assertEquals(3, pscJson1.getNaturesOfControl().length);
         assertEquals("12", pscJson1.getNaturesOfControl()[0]);
@@ -154,6 +163,10 @@ class PscsMapperTest {
         psc.setPoBox(PO_BOX);
         psc.setSuppliedCompanyName(SUPPLIED_COMPANY_NAME);
         psc.setAddressLine1(ADDRESS_LINE_1);
+        psc.setRegistrationNumber(REGISTRATION_NUMBER);
+        psc.setLawGoverned(LAW_GOVERED);
+        psc.setLegalForm(LEGAL_FORM);
+        psc.setCountryOfResidence(COUNTRY_OF_RESIDENCE);
         return psc;
     }
 }
