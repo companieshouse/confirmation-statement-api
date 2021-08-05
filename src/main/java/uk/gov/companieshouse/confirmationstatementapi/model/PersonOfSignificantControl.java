@@ -23,6 +23,10 @@ public class PersonOfSignificantControl {
     private String poBox;
     private String addressLine1;
     private String natureOfControl;
+    private String registrationNumber;
+    private String lawGoverned;
+    private String legalForm;
+    private String countryOfResidence;
 
     public String getOfficerForename1() {
         return officerForename1;
@@ -192,4 +196,35 @@ public class PersonOfSignificantControl {
         this.natureOfControl = natureOfControl;
     }
 
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+
+    public String getLawGoverned() {
+        return lawGoverned;
+    }
+
+    public void setLawGoverned(String lawGoverned) {
+        this.lawGoverned = lawGoverned;
+    }
+
+    public String getLegalForm() {
+        return legalForm;
+    }
+
+    public void setLegalForm(String legalForm) {
+        this.legalForm = legalForm;
+    }
+
+    public String getCountryOfResidence() {
+        return countryOfResidence;
+    }
+
+    public void setCountryOfResidence(String countryOfResidence) {
+        this.countryOfResidence = countryOfResidence;
+    }
 }
