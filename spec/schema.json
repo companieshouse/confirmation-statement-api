@@ -254,6 +254,36 @@
           }
         }
       }
+    },
+    "/confirmation-statement/company/{company-number}/persons-of-significant-control": {
+      "parameters": [
+        {
+          "name": "company-number",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        }
+      ],
+      "get": {
+        "summary": "Get the details of the persons of significant control",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Persons of significant control"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of person of significant control",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PersonsOfSignificantControlResponse"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -397,6 +427,113 @@
           "type": "string"
         },
         "secure_indicator":  {
+          "type": "string"
+        }
+      }
+    },
+    "PersonsOfSignificantControlResponse": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "natures_of_control": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "date_of_birth": {
+          "$ref": "#/definitions/DateOfBirth"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nameElements": {
+          "$ref": "#/definitions/NameElements"
+        },
+        "nationality": {
+          "type": "string"
+        },
+        "appointment_type": {
+          "type": "string"
+        },
+        "service_address_line_1": {
+          "type": "string"
+        },
+        "service_address_post_code": {
+          "type": "string"
+        },
+        "service_address_post_town": {
+          "type": "string"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "registration_number": {
+          "type": "string"
+        },
+        "law_governed": {
+          "type": "string"
+        },
+        "legal_form": {
+          "type": "string"
+        },
+        "country_of_residence": {
+          "type": "string"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "address_line_1": {
+          "type": "string"
+        },
+        "address_line_2": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "locality": {
+          "type": "string"
+        },
+        "po_box": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "premises": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "DateOfBirth": {
+      "type": "object",
+      "properties": {
+        "month": {
+          "type": "string"
+        },
+        "year": {
+          "type": "string"
+        }
+      }
+    },
+    "NameElements": {
+      "type": "object",
+      "properties": {
+        "forename": {
+          "type": "string"
+        },
+        "other_forenames": {
+          "type": "string"
+        },
+        "surname": {
           "type": "string"
         }
       }
