@@ -6,9 +6,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,22 +26,22 @@ class OfficerControllerTest {
     private static final String COMPANY_NUMBER = "12345678";
 
     @Test
-    void testGetActiveDirectorDetails() throws ActiveOfficerNotFoundException, ServiceException {
-        when(officerService.getActiveDirectorDetails(COMPANY_NUMBER)).thenReturn(new ActiveOfficerDetails());
+    void testGetActiveDirectorDetails() throws ActiveDirectorNotFoundException, ServiceException {
+        when(officerService.getActiveDirectorDetails(COMPANY_NUMBER)).thenReturn(new ActiveDirectorDetails());
         var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void testGetActiveDirectorDetailsServiceException() throws ActiveOfficerNotFoundException, ServiceException {
+    void testGetActiveDirectorDetailsServiceException() throws ActiveDirectorNotFoundException, ServiceException {
         when(officerService.getActiveDirectorDetails(COMPANY_NUMBER)).thenThrow(ServiceException.class);
         var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
-    void testGetActiveDirectorDetailsOfficerNotFoundException() throws ActiveOfficerNotFoundException, ServiceException {
-        when(officerService.getActiveDirectorDetails(COMPANY_NUMBER)).thenThrow(ActiveOfficerNotFoundException.class);
+    void testGetActiveDirectorDetailsOfficerNotFoundException() throws ActiveDirectorNotFoundException, ServiceException {
+        when(officerService.getActiveDirectorDetails(COMPANY_NUMBER)).thenThrow(ActiveDirectorNotFoundException.class);
         var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

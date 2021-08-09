@@ -16,9 +16,9 @@ import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.officers.OfficersApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 
 import java.io.IOException;
 
@@ -112,11 +112,11 @@ class OfficerServiceTest {
     }
 
     @Test
-    void getActiveDirectorDetailsTest() throws ServiceException, ActiveOfficerNotFoundException {
-        ActiveOfficerDetails details = new ActiveOfficerDetails();
+    void getActiveDirectorDetailsTest() throws ServiceException, ActiveDirectorNotFoundException {
+        ActiveDirectorDetails details = new ActiveDirectorDetails();
         details.setForeName1("John");
         details.setSurname("Doe");
-        when(oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER)).thenReturn(details);
+        when(oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER)).thenReturn(details);
 
         var response = officerService.getActiveDirectorDetails(COMPANY_NUMBER);
 

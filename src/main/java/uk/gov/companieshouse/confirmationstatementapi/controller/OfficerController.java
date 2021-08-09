@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 
 @RestController
@@ -21,13 +21,13 @@ public class OfficerController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OfficerController.class);
 
-    @GetMapping("/confirmation-statement/company/{companyNumber}/active-officer-details")
-    public ResponseEntity<ActiveOfficerDetails> getActiveDirectorDetails(@PathVariable String companyNumber) {
+    @GetMapping("/confirmation-statement/company/{companyNumber}/active-director-details")
+    public ResponseEntity<ActiveDirectorDetails> getActiveDirectorDetails(@PathVariable String companyNumber) {
         try {
-            LOGGER.info("Calling service to retrieve the active officer details.");
+            LOGGER.info("Calling service to retrieve the active director details.");
             var directorDetails = officerService.getActiveDirectorDetails(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(directorDetails);
-        } catch (ActiveOfficerNotFoundException e) {
+        } catch (ActiveDirectorNotFoundException e) {
             LOGGER.error("Error retrieving active officer details.", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ServiceException e) {

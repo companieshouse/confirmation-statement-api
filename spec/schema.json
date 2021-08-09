@@ -222,7 +222,7 @@
         }
       }
     },
-    "/confirmation-statement/company/{company_number}/active-officer-details": {
+    "/confirmation-statement/company/{company_number}/active-director-details": {
       "parameters": [
         {
           "name": "company_number",
@@ -243,13 +243,13 @@
           "200": {
             "description": "Active officer details",
             "schema": {
-              "$ref": "#/definitions/ActiveOfficerDetailsResponse"
+              "$ref": "#/definitions/ActiveDirectorDetailsResponse"
             }
           },
           "404": {
             "description": "Active officer details not found",
             "schema": {
-              "$ref": "#/definitions/ActiveOfficerDetailsResponse"
+              "$ref": "#/definitions/ActiveDirectorDetailsResponse"
             }
           }
         }
@@ -387,7 +387,7 @@
         }
       }
     },
-    "ActiveOfficerDetailsResponse": {
+    "ActiveDirectorDetailsResponse": {
       "type": "object",
       "properties": {
         "fore_name_1":  {

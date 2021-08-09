@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -25,8 +25,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class OracleQueryClientTest {
 
-    private static final String DUMMY_URL = "http://test";
+    private static final String ACTIVE_DIRECTOR_PATH = "/director/active";
     private static final String COMPANY_NUMBER = "12345678";
+    private static final String DUMMY_URL = "http://test";
+    private static final String PSC_PATH = "/corporate-body-appointments/persons-of-significant-control";
+    private static final String SOC_PATH = "/statement-of-capital";
 
     @Mock
     private RestTemplate restTemplate;
@@ -62,7 +65,7 @@ class OracleQueryClientTest {
 
     @Test
     void testGetStatementOfCapitalData() throws ServiceException {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapitalJson.class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + SOC_PATH, StatementOfCapitalJson.class))
                 .thenReturn(new ResponseEntity<>(new StatementOfCapitalJson(), HttpStatus.OK));
         StatementOfCapitalJson result = oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER);
         assertNotNull(result);
@@ -70,42 +73,42 @@ class OracleQueryClientTest {
 
     @Test
     void testGetStatementOfCapitalDataNullResponse() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapitalJson.class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + SOC_PATH, StatementOfCapitalJson.class))
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
         assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
     }
 
     @Test
     void testGetStatementOfCapitalDataNotOkStatusResponse() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/statement-of-capital", StatementOfCapitalJson.class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + SOC_PATH, StatementOfCapitalJson.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
         assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
     }
 
     @Test
-    void testGetActiveOfficerDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException {
+    void testGetActiveDirectorDetailsOkStatusResponse() throws ServiceException, ActiveDirectorNotFoundException {
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/officer/active", ActiveOfficerDetails.class))
-                .thenReturn(new ResponseEntity<>(new ActiveOfficerDetails(), HttpStatus.OK));
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveDirectorDetails.class))
+                .thenReturn(new ResponseEntity<>(new ActiveDirectorDetails(), HttpStatus.OK));
 
-        var result = oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER);
+        var result = oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER);
         assertNotNull(result);
     }
 
     @Test
-    void testGetActiveOfficerDetailsStatus400Response() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/officer/active", ActiveOfficerDetails.class))
+    void testGetActiveDirectorDetailsStatus400Response() {
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveDirectorDetails.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-        assertThrows(ActiveOfficerNotFoundException.class, () -> oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER));
+        assertThrows(ActiveDirectorNotFoundException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));
     }
 
     @Test
-    void testGetActiveOfficerDetailsNotOkStatusResponse() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/officer/active", ActiveOfficerDetails.class))
+    void testGetActiveDirectorDetailsNotOkStatusResponse() {
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveDirectorDetails.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
-        assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveOfficerDetails(COMPANY_NUMBER));
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));
     }
 
     @Test
@@ -125,7 +128,7 @@ class OracleQueryClientTest {
 
         var companyNumber = "123213";
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-of-significant-control", PersonOfSignificantControl[].class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + PSC_PATH, PersonOfSignificantControl[].class))
                 .thenReturn(new ResponseEntity<>(pscArray, HttpStatus.OK));
 
         var result = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
@@ -135,7 +138,7 @@ class OracleQueryClientTest {
     @Test
     void testGetPersonsOfSignificantControlNotOkStatusResponse() {
         var companyNumber = "123213";
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + "/corporate-body-appointments/persons-of-significant-control", PersonOfSignificantControl[].class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + PSC_PATH, PersonOfSignificantControl[].class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getPersonsOfSignificantControl(companyNumber));
