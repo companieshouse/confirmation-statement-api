@@ -2,7 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ActiveOfficerDetails {
+public class ActiveDirectorDetails {
     @JsonProperty("fore_name_1")
     private String foreName1;
     @JsonProperty("fore_name_2")
@@ -24,8 +24,6 @@ public class ActiveOfficerDetails {
     private String uraPostTown;
     @JsonProperty("ura_post_code")
     private String uraPostCode;
-    @JsonProperty("secure_indicator")
-    private String secureIndicator;
 
     public String getForeName1() {
         return foreName1;
@@ -121,13 +119,5 @@ public class ActiveOfficerDetails {
 
     public void setUraPostCode(String uraPostCode) {
         this.uraPostCode = uraPostCode;
-    }
-
-    public String getSecureIndicator() {
-        return secureIndicator;
-    }
-
-    public void setSecureIndicator(String secureIndicator) {
-        this.secureIndicator = secureIndicator;
     }
 }

@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -72,11 +72,11 @@ public class OracleQueryClient {
     }
 
 
-    public ActiveOfficerDetails getActiveOfficerDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
-        var directorDetailsUrl = String.format("%s/company/%s/officer/active", oracleQueryApiUrl, companyNumber);
+    public ActiveDirectorDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveDirectorNotFoundException {
+        var directorDetailsUrl = String.format("%s/company/%s/director/active", oracleQueryApiUrl, companyNumber);
         LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl);
 
-        ResponseEntity<ActiveOfficerDetails> response = restTemplate.getForEntity(directorDetailsUrl, ActiveOfficerDetails.class);
+        ResponseEntity<ActiveDirectorDetails> response = restTemplate.getForEntity(directorDetailsUrl, ActiveDirectorDetails.class);
 
         switch (response.getStatusCode()) {
         case OK:
@@ -84,7 +84,7 @@ public class OracleQueryClient {
             LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, directorDetails, directorDetailsUrl);
             return directorDetails;
         case NOT_FOUND:
-            throw new ActiveOfficerNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
+            throw new ActiveDirectorNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
         default:
             throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
         }
