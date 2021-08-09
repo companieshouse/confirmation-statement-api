@@ -2,7 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ActiveOfficerDetails {
+public class ActiveDirectorDetails {
     @JsonProperty("fore_name_1")
     private String foreName1;
     @JsonProperty("fore_name_2")
