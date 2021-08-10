@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 
 import org.springframework.data.mongodb.core.mapping.Field;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
@@ -19,6 +20,9 @@ public class ConfirmationStatementSubmissionDataDao {
 
     @Field("registered_office_address_data")
     private RegisteredOfficeAddressDataDao registeredOfficeAddressData;
+
+    @Field("active_director_details_data")
+    private ActiveDirectorDetailsDataDao activeDirectorDetailsData;
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -50,5 +54,13 @@ public class ConfirmationStatementSubmissionDataDao {
 
     public void setRegisteredOfficeAddressData(RegisteredOfficeAddressDataDao registeredOfficeAddressDataDao) {
         this.registeredOfficeAddressData = registeredOfficeAddressDataDao;
+    }
+
+    public ActiveDirectorDetailsDataDao getActiveDirectorDetailsData() {
+        return activeDirectorDetailsData;
+    }
+
+    public void setActiveDirectorDetailsData(ActiveDirectorDetailsDataDao activeDirectorDetailsDataDao) {
+        this.activeDirectorDetailsData = activeDirectorDetailsDataDao;
     }
 }
