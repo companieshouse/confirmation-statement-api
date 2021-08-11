@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonSignificantControlDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
@@ -9,6 +10,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredoffice
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
@@ -28,6 +30,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setPersonsSignificantControlData(getPersonsSignificantControlJsonData());
         data.setSicCodeData(getSicCodeJsonData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressJsonData());
+        data.setActiveDirectorDetailsData(getActiveDirectorDetailsJsonData());
         return data;
     }
 
@@ -83,12 +86,20 @@ public class MockConfirmationStatementSubmissionData {
         return registeredOfficeAddressData;
     }
 
+    private static ActiveDirectorDetailsDataJson getActiveDirectorDetailsJsonData() {
+        var activeDirectorDetailsData = new ActiveDirectorDetailsDataJson();
+        activeDirectorDetailsData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        return activeDirectorDetailsData;
+    }
+
     static ConfirmationStatementSubmissionDataDao getMockDaoData() {
         ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
         data.setStatementOfCapitalData(getStatementOfCapitalDaoData());
         data.setPersonsSignificantControlData(getPersonsSignificantControlDaoData());
         data.setSicCodeData(getSicCodeDaoData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressDaoData());
+        data.setActiveDirectorDetailsData(getActiveDirectorDetailsDaoData());
         return data;
     }
 
@@ -142,5 +153,12 @@ public class MockConfirmationStatementSubmissionData {
         registeredOfficeAddressData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
 
         return registeredOfficeAddressData;
+    }
+
+    private static ActiveDirectorDetailsDataDao getActiveDirectorDetailsDaoData() {
+        var activeDirectorDetailsData = new ActiveDirectorDetailsDataDao();
+        activeDirectorDetailsData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        return activeDirectorDetailsData;
     }
 }

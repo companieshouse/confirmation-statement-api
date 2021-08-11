@@ -4,12 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
@@ -75,9 +77,12 @@ class JsonDaoMappingTest {
         SicCodeDao sicDao = sicDataDao.getSicCode();
         RegisteredOfficeAddressDataJson roaJson = json.getData().getRegisteredOfficeAddressData();
         RegisteredOfficeAddressDataDao roaDao = dao.getData().getRegisteredOfficeAddressData();
+        ActiveDirectorDetailsDataJson dirJson = json.getData().getActiveDirectorDetailsData();
+        ActiveDirectorDetailsDataDao dirDao = dao.getData().getActiveDirectorDetailsData();
 
         assertEquals(sicJson.getCode(), sicDao.getCode());
         assertEquals(sicJson.getDescription(), sicDao.getDescription());
-        assertEquals(roaJson.getSectionStatus(),roaDao.getSectionStatus());
+        assertEquals(roaJson.getSectionStatus(), roaDao.getSectionStatus());
+        assertEquals(dirJson.getSectionStatus(), dirDao.getSectionStatus());
     }
 }
