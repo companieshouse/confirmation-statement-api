@@ -284,6 +284,33 @@
           }
         }
       }
+    },
+    "/confirmation-statement/company/{company-number}/shareholders": {
+      "parameters": [
+        {
+          "name": "company-number",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        }
+      ],
+      "get": {
+        "summary": "Get the details of the shareholder",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Shareholders"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of shareholders",
+            "schema": {
+              "$ref": "#/definitions/ShareholdersResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -535,6 +562,29 @@
         },
         "surname": {
           "type": "string"
+        }
+      }
+    },
+    "ShareholderResponse": {
+      "type": "object",
+      "properties": {
+        "fore_name_1": {
+          "type": "string"
+        },
+        "fore_name_2": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "shares": {
+          "type": "long"
+        },
+        "share_class_type_id": {
+          "type": "long"
+        },
+        "currency_type_id": {
+          "type": "long"
         }
       }
     }

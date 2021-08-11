@@ -14,6 +14,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNo
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,6 +31,7 @@ class OracleQueryClientTest {
     private static final String DUMMY_URL = "http://test";
     private static final String PSC_PATH = "/corporate-body-appointments/persons-of-significant-control";
     private static final String SOC_PATH = "/statement-of-capital";
+    private static final String SHAREHOLDER_PATH = "/shareholders";
 
     @Mock
     private RestTemplate restTemplate;
@@ -142,6 +144,40 @@ class OracleQueryClientTest {
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getPersonsOfSignificantControl(companyNumber));
+        assertTrue(serviceException.getMessage().contains(companyNumber));
+        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
+    }
+
+    @Test
+    void testGetShareholderResponse() throws ServiceException {
+        var shareholder1 = new ShareholderJson();
+        shareholder1.setForename1("John");
+        shareholder1.setForename2("K");
+        shareholder1.setSurname("Lewis");
+
+
+        var shareholder2 = new ShareholderJson();
+        shareholder2.setForename1("James");
+        shareholder2.setSurname("Bond");
+
+        ShareholderJson[] shareholderArray = { shareholder1, shareholder2 };
+
+        var companyNumber = "123213";
+
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + SHAREHOLDER_PATH, ShareholderJson[].class))
+                .thenReturn(new ResponseEntity<>(shareholderArray, HttpStatus.OK));
+
+        var result = oracleQueryClient.getShareholders(companyNumber);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testGetShareholderNotOkStatusResponse() {
+        var companyNumber = "123213";
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + SHAREHOLDER_PATH, ShareholderJson[].class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+
+        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholders(companyNumber));
         assertTrue(serviceException.getMessage().contains(companyNumber));
         assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
     }
