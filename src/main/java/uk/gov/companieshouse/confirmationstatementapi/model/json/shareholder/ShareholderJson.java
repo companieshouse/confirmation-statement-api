@@ -3,11 +3,11 @@ package uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ShareholderJson {
-    @JsonProperty("forename1")
-    private String forename1;
+    @JsonProperty("fore_name_1")
+    private String foreName1;
 
-    @JsonProperty("forename2")
-    private String forename2;
+    @JsonProperty("fore_name_2")
+    private String foreName2;
 
     @JsonProperty("surname")
     private String surname;
@@ -21,20 +21,20 @@ public class ShareholderJson {
     @JsonProperty("currency_type_id")
     private String currencyTypeId;
 
-    public String getForename1() {
-        return forename1;
+    public String getForeName1() {
+        return foreName1;
     }
 
-    public void setForename1(String forename1) {
-        this.forename1 = forename1;
+    public void setForeName1(String foreName1) {
+        this.foreName1 = foreName1;
     }
 
-    public String getForename2() {
-        return forename2;
+    public String getForeName2() {
+        return foreName2;
     }
 
-    public void setForename2(String forename2) {
-        this.forename2 = forename2;
+    public void setForeName2(String foreName2) {
+        this.foreName2 = foreName2;
     }
 
     public String getSurname() {

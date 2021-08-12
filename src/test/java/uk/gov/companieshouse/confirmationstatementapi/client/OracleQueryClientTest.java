@@ -151,13 +151,13 @@ class OracleQueryClientTest {
     @Test
     void testGetShareholderResponse() throws ServiceException {
         var shareholder1 = new ShareholderJson();
-        shareholder1.setForename1("John");
-        shareholder1.setForename2("K");
+        shareholder1.setForeName1("John");
+        shareholder1.setForeName2("K");
         shareholder1.setSurname("Lewis");
 
 
         var shareholder2 = new ShareholderJson();
-        shareholder2.setForename1("James");
+        shareholder2.setForeName1("James");
         shareholder2.setSurname("Bond");
 
         ShareholderJson[] shareholderArray = { shareholder1, shareholder2 };
