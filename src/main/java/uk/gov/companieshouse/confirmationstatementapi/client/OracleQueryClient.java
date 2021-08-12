@@ -12,6 +12,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNo
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 import java.util.ArrayList;
@@ -96,6 +97,21 @@ public class OracleQueryClient {
 
         ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
         LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, pscUrl);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new ServiceException(String.format("Oracle query api returned with status = %s, companyNumber = %s", response.getStatusCode(), companyNumber));
+        }
+        if (response.getBody() == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(response.getBody());
+    }
+
+    public List<ShareholderJson> getShareholders(String companyNumber) throws ServiceException {
+        var shareholdersUrl = String.format("%s/company/%s/shareholders", oracleQueryApiUrl, companyNumber);
+        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, shareholdersUrl);
+
+        ResponseEntity<ShareholderJson[]> response = restTemplate.getForEntity(shareholdersUrl, ShareholderJson[].class);
+        LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, shareholdersUrl);
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new ServiceException(String.format("Oracle query api returned with status = %s, companyNumber = %s", response.getStatusCode(), companyNumber));
         }

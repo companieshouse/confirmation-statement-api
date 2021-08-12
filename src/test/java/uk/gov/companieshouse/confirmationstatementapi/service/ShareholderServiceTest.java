@@ -6,8 +6,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -20,6 +26,24 @@ class ShareholderServiceTest {
 
     @InjectMocks
     private ShareholderService shareholderService;
+
+    @Test
+    void testGetShareholderData() throws ServiceException {
+        var shareholder1 = new ShareholderJson();
+        shareholder1.setSurname("Smith");
+        var shareholder2 = new ShareholderJson();
+        shareholder2.setSurname("Bond");
+
+        List<ShareholderJson> shareholder = Arrays.asList(shareholder1, shareholder2);
+
+        when(oracleQueryClient.getShareholders(COMPANY_NUMBER)).thenReturn(shareholder);
+        var shareholderData = shareholderService.getShareholders(COMPANY_NUMBER);
+
+        assertNotNull(shareholderService.getShareholders(COMPANY_NUMBER));
+        assertEquals(shareholderData.get(0).getSurname(), "Smith");
+        assertEquals(shareholderData.get(1).getSurname(), "Bond");
+        assertEquals(2, shareholderData.size());
+    }
 
     @Test
     void getCompanyShareholdersCountTest() {
