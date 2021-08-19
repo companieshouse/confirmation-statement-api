@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model.json;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
@@ -23,6 +24,9 @@ public class ConfirmationStatementSubmissionDataJson {
 
     @JsonProperty("active_director_details_data")
     private ActiveDirectorDetailsDataJson activeDirectorDetailsData;
+
+    @JsonProperty("shareholder_data")
+    private ShareholderDataJson shareholderData;
 
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -62,5 +66,13 @@ public class ConfirmationStatementSubmissionDataJson {
 
     public void setActiveDirectorDetailsData(ActiveDirectorDetailsDataJson activeDirectorDetailsData) {
         this.activeDirectorDetailsData = activeDirectorDetailsData;
+    }
+
+    public ShareholderDataJson getShareholdersData() {
+        return shareholderData;
+    }
+
+    public void setShareholdersData(ShareholderDataJson shareholderData) {
+        this.shareholderData = shareholderData;
     }
 }
