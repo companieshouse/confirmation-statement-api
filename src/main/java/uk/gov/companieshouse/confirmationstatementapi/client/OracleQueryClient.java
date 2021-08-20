@@ -120,4 +120,19 @@ public class OracleQueryClient {
         }
         return Arrays.asList(response.getBody());
     }
+
+    public boolean isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
+       var paymentsUrl = String.format(
+               "%s/company/%s/confirmation-statement/paid/?payment_period_due_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
+
+        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, paymentsUrl);
+        ResponseEntity<Boolean> response = restTemplate.getForEntity(paymentsUrl, Boolean.class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new ServiceException(String.format("Oracle query api returned with status = %s, companyNumber = %s", response.getStatusCode(), companyNumber));
+        }
+        if (response.getBody() == null) {
+            throw new ServiceException("Oracle query api returned null, boolean values expected");
+        }
+        return response.getBody();
+    }
 }

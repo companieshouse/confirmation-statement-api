@@ -3,11 +3,15 @@ package uk.gov.companieshouse.confirmationstatementapi.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -19,14 +23,19 @@ import uk.gov.companieshouse.confirmationstatementapi.model.mapping.Confirmation
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,6 +60,12 @@ class ConfirmationStatementServiceTest {
     @Mock
     private ConfirmationStatementJsonDaoMapper confirmationStatementJsonDaoMapper;
 
+    @Mock
+    private OracleQueryClient oracleQueryClient;
+
+    @Captor
+    private ArgumentCaptor<Transaction> transactionCaptor;
+
     private ConfirmationStatementService confirmationStatementService;
 
     private ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson;
@@ -62,7 +77,8 @@ class ConfirmationStatementServiceTest {
         confirmationStatementService =
                 new ConfirmationStatementService(companyProfileService, eligibilityService,
                         confirmationStatementSubmissionsRepository, transactionService,
-                        confirmationStatementJsonDaoMapper);
+                        confirmationStatementJsonDaoMapper,
+                        oracleQueryClient);
 
         confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
@@ -72,9 +88,9 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         Transaction transaction = new Transaction();
+        transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        companyProfileApi.setCompanyStatus("AcceptValue");
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         var eligibilityResponse = new CompanyValidationResponse();
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -84,10 +100,45 @@ class ConfirmationStatementServiceTest {
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
+        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(false);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        verify(transactionService, times(1)).updateTransaction(transactionCaptor.capture(), any());
+
+        Transaction transactionSent = transactionCaptor.getValue();
+        Map<String, String> links = transactionSent.getResources().get("/transactions/abc/confirmation-statement/ID").getLinks();
+        String costs = links.get("costs");
+        assertNull(costs);
+    }
+
+    @Test
+    void createPayableResourceConfirmationStatement() throws ServiceException, CompanyNotFoundException {
+        Transaction transaction = new Transaction();
+        transaction.setId("abc");
+        transaction.setCompanyNumber(COMPANY_NUMBER);
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        var eligibilityResponse = new CompanyValidationResponse();
+        eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId("ID");
+
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
+        when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
+        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(true);
+
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        verify(transactionService, times(1)).updateTransaction(transactionCaptor.capture(), any());
+
+        Transaction transactionSent = transactionCaptor.getValue();
+        Map<String, String> links = transactionSent.getResources().get("/transactions/abc/confirmation-statement/ID").getLinks();
+        String costs = links.get("costs");
+        assertEquals("/confirmation-statement/ID/costs", costs);
     }
 
     @Test
@@ -163,5 +214,15 @@ class ConfirmationStatementServiceTest {
         var result = confirmationStatementService.getConfirmationStatement(SUBMISSION_ID);
 
         assertFalse(result.isPresent());
+    }
+
+    private CompanyProfileApi getTestCompanyProfileApi() {
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
+        companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
+        companyProfileApi.setCompanyStatus("AcceptValue");
+        ConfirmationStatementApi confirmationStatement = new ConfirmationStatementApi();
+        confirmationStatement.setNextDue(LocalDate.of(2022,1,1));
+        companyProfileApi.setConfirmationStatement(confirmationStatement);
+        return companyProfileApi;
     }
 }

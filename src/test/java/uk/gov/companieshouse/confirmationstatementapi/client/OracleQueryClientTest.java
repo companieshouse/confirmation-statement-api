@@ -18,6 +18,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.Sha
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,6 +33,7 @@ class OracleQueryClientTest {
     private static final String PSC_PATH = "/corporate-body-appointments/persons-of-significant-control";
     private static final String SOC_PATH = "/statement-of-capital";
     private static final String SHAREHOLDER_PATH = "/shareholders";
+
 
     @Mock
     private RestTemplate restTemplate;
@@ -180,5 +182,33 @@ class OracleQueryClientTest {
         var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholders(companyNumber));
         assertTrue(serviceException.getMessage().contains(companyNumber));
         assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
+    }
+
+    @Test
+    void testIsConfirmationStatementPaid() throws ServiceException {
+        ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(Boolean.TRUE);
+        when(restTemplate.getForEntity(
+                DUMMY_URL + "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid/?payment_period_due_date=2022-01-01",
+                 Boolean.class )).thenReturn(response);
+        assertTrue(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+    }
+
+    @Test
+    void testIsNotConfirmationStatementPaid() throws ServiceException {
+        ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(Boolean.FALSE);
+        when(restTemplate.getForEntity(
+                DUMMY_URL + "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid/?payment_period_due_date=2022-01-01",
+                Boolean.class )).thenReturn(response);
+        assertFalse(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+    }
+
+    @Test
+    void testIsNullConfirmationStatementPaid() {
+        ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(null);
+        when(restTemplate.getForEntity(
+                DUMMY_URL + "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid/?payment_period_due_date=2022-01-01",
+                Boolean.class )).thenReturn(response);
+        assertThrows(ServiceException.class, () ->
+                oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
 }
