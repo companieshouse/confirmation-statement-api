@@ -33,6 +33,7 @@ class OracleQueryClientTest {
     private static final String PSC_PATH = "/corporate-body-appointments/persons-of-significant-control";
     private static final String SOC_PATH = "/statement-of-capital";
     private static final String SHAREHOLDER_PATH = "/shareholders";
+    private static final String PAYMENT_PATH = "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid/?payment_period_due_date=2022-01-01";
 
 
     @Mock
@@ -188,7 +189,7 @@ class OracleQueryClientTest {
     void testIsConfirmationStatementPaid() throws ServiceException {
         ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(Boolean.TRUE);
         when(restTemplate.getForEntity(
-                DUMMY_URL + "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid/?payment_period_due_date=2022-01-01",
+                DUMMY_URL + PAYMENT_PATH,
                  Boolean.class )).thenReturn(response);
         assertTrue(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
@@ -197,7 +198,7 @@ class OracleQueryClientTest {
     void testIsNotConfirmationStatementPaid() throws ServiceException {
         ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(Boolean.FALSE);
         when(restTemplate.getForEntity(
-                DUMMY_URL + "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid/?payment_period_due_date=2022-01-01",
+                DUMMY_URL + PAYMENT_PATH,
                 Boolean.class )).thenReturn(response);
         assertFalse(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
@@ -206,7 +207,7 @@ class OracleQueryClientTest {
     void testIsNullConfirmationStatementPaid() {
         ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(null);
         when(restTemplate.getForEntity(
-                DUMMY_URL + "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid/?payment_period_due_date=2022-01-01",
+                DUMMY_URL + PAYMENT_PATH,
                 Boolean.class )).thenReturn(response);
         assertThrows(ServiceException.class, () ->
                 oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
