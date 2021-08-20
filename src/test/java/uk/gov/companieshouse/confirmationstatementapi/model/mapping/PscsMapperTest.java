@@ -16,7 +16,8 @@ class PscsMapperTest {
     private static final String OFFICER_FORENAME_1 = "fred";
     private static final String OFFICER_FORENAME_2 = "john";
     private static final String OFFICER_SURNAME = "flintstone";
-    private static final String OFFICER_DATE_OF_BIRTH = "1968-10-28 00:00:00";
+    private static final String OFFICER_DATE_OF_BIRTH = "1968-03-28 00:00:00";
+    private static final String OFFICER_DATE_OF_BIRTH_ISO = "1968-03-28";
     private static final String OFFICER_NATIONALITY = "BRITISH";
     private static final String APPOINTMENT_TYPE_ID = "10";
     private static final String SERVICE_ADDRESS_LINE_1 = "serv line 1";
@@ -34,7 +35,7 @@ class PscsMapperTest {
     private static final String SUPPLIED_COMPANY_NAME = "company name";
     private static final String ADDRESS_LINE_1 = "address line 1";
     private static final String REGISTRATION_NUMBER = "123456";
-    private static final String LAW_GOVERED = "ENGLISH";
+    private static final String LAW_GOVERNED = "ENGLISH";
     private static final String LEGAL_FORM = "LIMITED";
     private static final String COUNTRY_OF_RESIDENCE = "UNITED KINGDOM";
     private PscsMapper pscsMapper = new PscsMapper();
@@ -70,8 +71,10 @@ class PscsMapperTest {
         assertEquals(OFFICER_FORENAME_2, pscJson1.getNameElements().getOtherForenames());
         assertEquals(OFFICER_SURNAME, pscJson1.getNameElements().getSurname());
 
-        assertEquals(10L, pscJson1.getDateOfBirth().getMonth());
+        assertEquals(3L, pscJson1.getDateOfBirth().getMonth());
         assertEquals(1968L, pscJson1.getDateOfBirth().getYear());
+        assertEquals(OFFICER_DATE_OF_BIRTH_ISO, pscJson1.getDateOfBirthIso());
+
         assertEquals(OFFICER_NATIONALITY, pscJson1.getNationality());
 
         assertEquals(APPOINTMENT_TYPE_ID, pscJson1.getAppointmentType());
@@ -91,7 +94,7 @@ class PscsMapperTest {
         assertEquals(SUPPLIED_COMPANY_NAME, pscJson1.getCompanyName());
 
         assertEquals(REGISTRATION_NUMBER, pscJson1.getRegistrationNumber());
-        assertEquals(LAW_GOVERED, pscJson1.getLawGoverned());
+        assertEquals(LAW_GOVERNED, pscJson1.getLawGoverned());
         assertEquals(LEGAL_FORM, pscJson1.getLegalForm());
         assertEquals(COUNTRY_OF_RESIDENCE, pscJson1.getCountryOfResidence());
 
@@ -164,7 +167,7 @@ class PscsMapperTest {
         psc.setSuppliedCompanyName(SUPPLIED_COMPANY_NAME);
         psc.setAddressLine1(ADDRESS_LINE_1);
         psc.setRegistrationNumber(REGISTRATION_NUMBER);
-        psc.setLawGoverned(LAW_GOVERED);
+        psc.setLawGoverned(LAW_GOVERNED);
         psc.setLegalForm(LEGAL_FORM);
         psc.setCountryOfResidence(COUNTRY_OF_RESIDENCE);
         return psc;
