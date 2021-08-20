@@ -80,7 +80,7 @@ public class ConfirmationStatementService {
         Map<String, String> linksMap = new HashMap<>();
         linksMap.put("resource", createdUri);
 
-        makePayableResourceIfRequired(csInsertedSubmission, linksMap, companyProfile);
+        makePayableResourceIfUnpaid(csInsertedSubmission, linksMap, companyProfile);
 
         csResource.setLinks(linksMap);
         transaction.setResources(Collections.singletonMap(createdUri, csResource));
@@ -92,9 +92,9 @@ public class ConfirmationStatementService {
         return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
     }
 
-    private void makePayableResourceIfRequired(String csInsertedSubmission,
-                                               Map<String, String> linksMap,
-                                               CompanyProfileApi companyProfile) throws ServiceException {
+    private void makePayableResourceIfUnpaid(String csInsertedSubmission,
+                                             Map<String, String> linksMap,
+                                             CompanyProfileApi companyProfile) throws ServiceException {
 
         LocalDate nextDue = companyProfile.getConfirmationStatement().getNextDue();
         if (!oracleQueryClient.isConfirmationStatementPaid(companyProfile.getCompanyNumber(),
