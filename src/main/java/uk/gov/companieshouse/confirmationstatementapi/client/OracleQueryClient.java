@@ -129,10 +129,10 @@ public class OracleQueryClient {
         LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, paymentsUrl);
         ResponseEntity<Boolean> response = restTemplate.getForEntity(paymentsUrl, Boolean.class);
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE + " with due date %s", response.getStatusCode(), companyNumber, dueDate));
         }
         if (response.getBody() == null) {
-            throw new ServiceException("Oracle query api returned null, boolean values expected");
+            throw new ServiceException("Oracle query api returned null for " + companyNumber + " with due date " + dueDate + ", boolean values expected");
         }
         return response.getBody();
     }
