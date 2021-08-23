@@ -19,6 +19,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStat
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
@@ -96,11 +97,14 @@ class ConfirmationStatementServiceTest {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId("ID");
 
+        ConfirmationStatementPaymentJson confirmationStatementPaymentJson = new ConfirmationStatementPaymentJson();
+        confirmationStatementPaymentJson.setPaid(Boolean.TRUE);
+
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
-        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(true);
+        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(confirmationStatementPaymentJson);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
@@ -124,11 +128,14 @@ class ConfirmationStatementServiceTest {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId("ID");
 
+        ConfirmationStatementPaymentJson confirmationStatementPaymentJson = new ConfirmationStatementPaymentJson();
+        confirmationStatementPaymentJson.setPaid(Boolean.FALSE);
+
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
-        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(false);
+        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(confirmationStatementPaymentJson);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 

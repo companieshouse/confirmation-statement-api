@@ -14,6 +14,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNo
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -187,28 +188,34 @@ class OracleQueryClientTest {
 
     @Test
     void testIsConfirmationStatementPaid() throws ServiceException {
-        ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(Boolean.TRUE);
+        ConfirmationStatementPaymentJson confirmationStatementPaymentJson = new ConfirmationStatementPaymentJson();
+        confirmationStatementPaymentJson.setPaid(Boolean.TRUE);
+        ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(confirmationStatementPaymentJson);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                 Boolean.class )).thenReturn(response);
-        assertTrue(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+                ConfirmationStatementPaymentJson.class )).thenReturn(response);
+        ConfirmationStatementPaymentJson result = oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01");
+        assertTrue(result.isPaid());
     }
 
     @Test
     void testIsNotConfirmationStatementPaid() throws ServiceException {
-        ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(Boolean.FALSE);
+        ConfirmationStatementPaymentJson confirmationStatementPaymentJson = new ConfirmationStatementPaymentJson();
+        confirmationStatementPaymentJson.setPaid(Boolean.FALSE);
+        ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(confirmationStatementPaymentJson);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                Boolean.class )).thenReturn(response);
-        assertFalse(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+                ConfirmationStatementPaymentJson.class )).thenReturn(response);
+        ConfirmationStatementPaymentJson result = oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01");
+        assertFalse(result.isPaid());
     }
 
     @Test
     void testIsNullConfirmationStatementPaid() {
-        ResponseEntity<Boolean> response = ResponseEntity.status(HttpStatus.OK).body(null);
+        ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                Boolean.class )).thenReturn(response);
+                ConfirmationStatementPaymentJson.class )).thenReturn(response);
         assertThrows(ServiceException.class, () ->
                 oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }

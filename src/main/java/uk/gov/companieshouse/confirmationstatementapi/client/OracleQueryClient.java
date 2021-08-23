@@ -12,6 +12,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNo
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -122,12 +123,12 @@ public class OracleQueryClient {
         return Arrays.asList(response.getBody());
     }
 
-    public boolean isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
+    public ConfirmationStatementPaymentJson isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
        var paymentsUrl = String.format(
                "%s/company/%s/confirmation-statement/paid/?payment_period_due_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
 
         LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, paymentsUrl);
-        ResponseEntity<Boolean> response = restTemplate.getForEntity(paymentsUrl, Boolean.class);
+        ResponseEntity<ConfirmationStatementPaymentJson> response = restTemplate.getForEntity(paymentsUrl, ConfirmationStatementPaymentJson.class);
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE + " with due date %s", response.getStatusCode(), companyNumber, dueDate));
         }
