@@ -123,7 +123,7 @@ public class OracleQueryClient {
         return Arrays.asList(response.getBody());
     }
 
-    public ConfirmationStatementPaymentJson isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
+    public boolean isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
        var paymentsUrl = String.format(
                "%s/company/%s/confirmation-statement/paid/?payment_period_due_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
 
@@ -132,9 +132,10 @@ public class OracleQueryClient {
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE + " with due date %s", response.getStatusCode(), companyNumber, dueDate));
         }
-        if (response.getBody() == null) {
+        ConfirmationStatementPaymentJson confirmationStatementPaymentJson = response.getBody();
+        if (confirmationStatementPaymentJson == null || confirmationStatementPaymentJson.isPaid() == null) {
             throw new ServiceException("Oracle query api returned null for " + companyNumber + " with due date " + dueDate + ", boolean values expected");
         }
-        return response.getBody();
+        return response.getBody().isPaid();
     }
 }

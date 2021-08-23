@@ -98,9 +98,8 @@ public class ConfirmationStatementService {
                                              CompanyProfileApi companyProfile) throws ServiceException {
 
         LocalDate nextDue = companyProfile.getConfirmationStatement().getNextDue();
-        ConfirmationStatementPaymentJson confirmationStatementPaymentJson = oracleQueryClient.isConfirmationStatementPaid(companyProfile.getCompanyNumber(),
-              nextDue.format(dateTimeFormatter));
-        if (!confirmationStatementPaymentJson.isPaid()) {
+        if (!oracleQueryClient.isConfirmationStatementPaid(companyProfile.getCompanyNumber(),
+                nextDue.format(dateTimeFormatter))) {
             String costsLink = csInsertedSubmission + "/costs";
             linksMap.put("costs", costsLink);
         }

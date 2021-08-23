@@ -194,8 +194,7 @@ class OracleQueryClientTest {
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
                 ConfirmationStatementPaymentJson.class )).thenReturn(response);
-        ConfirmationStatementPaymentJson result = oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01");
-        assertTrue(result.isPaid());
+        assertTrue(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
 
     @Test
@@ -206,8 +205,7 @@ class OracleQueryClientTest {
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
                 ConfirmationStatementPaymentJson.class )).thenReturn(response);
-        ConfirmationStatementPaymentJson result = oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01");
-        assertFalse(result.isPaid());
+        assertFalse(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
 
     @Test
