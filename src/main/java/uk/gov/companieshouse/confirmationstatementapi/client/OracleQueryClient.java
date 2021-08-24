@@ -12,6 +12,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNo
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -25,6 +26,7 @@ public class OracleQueryClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(OracleQueryClient.class);
     private static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL (get): {}";
     private static final String RECEIVED_FROM_ORACLE_QUERY_API_URL_GET = "Received {} from Oracle Query API URL (get): {}";
+    public static final String ORACLE_QUERY_API_STATUS_MESSAGE = "Oracle query api returned with status = %s, companyNumber = %s";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -98,7 +100,7 @@ public class OracleQueryClient {
         ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
         LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, pscUrl);
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new ServiceException(String.format("Oracle query api returned with status = %s, companyNumber = %s", response.getStatusCode(), companyNumber));
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
         if (response.getBody() == null) {
             return new ArrayList<>();
@@ -113,11 +115,27 @@ public class OracleQueryClient {
         ResponseEntity<ShareholderJson[]> response = restTemplate.getForEntity(shareholdersUrl, ShareholderJson[].class);
         LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, shareholdersUrl);
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new ServiceException(String.format("Oracle query api returned with status = %s, companyNumber = %s", response.getStatusCode(), companyNumber));
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
         if (response.getBody() == null) {
             return new ArrayList<>();
         }
         return Arrays.asList(response.getBody());
+    }
+
+    public boolean isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
+       var paymentsUrl = String.format(
+               "%s/company/%s/confirmation-statement/paid?payment_period_due_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
+
+        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, paymentsUrl);
+        ResponseEntity<ConfirmationStatementPaymentJson> response = restTemplate.getForEntity(paymentsUrl, ConfirmationStatementPaymentJson.class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE + " with due date %s", response.getStatusCode(), companyNumber, dueDate));
+        }
+        ConfirmationStatementPaymentJson confirmationStatementPaymentJson = response.getBody();
+        if (confirmationStatementPaymentJson == null || confirmationStatementPaymentJson.isPaid() == null) {
+            throw new ServiceException("Oracle query api returned null for " + companyNumber + " with due date " + dueDate + ", boolean values expected");
+        }
+        return response.getBody().isPaid();
     }
 }
