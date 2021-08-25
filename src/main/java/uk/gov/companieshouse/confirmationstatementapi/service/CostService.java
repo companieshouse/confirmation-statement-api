@@ -10,13 +10,13 @@ import java.util.Collections;
 public class CostService {
 
     @Value("${CS01_COST}")
-    private String COST_AMOUNT;
+    private String costAmount;
     private static final String COST_DESC = "The amount to pay for filing a CS01";
     private static final String PAYMENT_ACCOUNT = "data-maintenance";
 
     public Cost getCosts() {
         var cost = new Cost();
-        cost.setAmount(COST_AMOUNT);
+        cost.setAmount(costAmount);
         cost.setAvailablePaymentMethods(Collections.singletonList("credit-card"));
         cost.setClassOfPayment(Collections.singletonList(PAYMENT_ACCOUNT));
         cost.setDescription(COST_DESC);
