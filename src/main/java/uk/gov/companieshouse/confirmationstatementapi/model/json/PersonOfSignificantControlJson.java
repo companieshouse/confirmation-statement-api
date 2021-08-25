@@ -29,8 +29,8 @@ public class PersonOfSignificantControlJson extends PscApi {
     @JsonProperty("legal_form")
     private String legalForm;
 
-    @JsonProperty("country_of_residence")
-    private String countryOfResidence;
+    @JsonProperty("date_of_birth_iso")
+    private String dateOfBirthIso;
 
     public String getAppointmentType() {
         return appointmentType;
@@ -96,13 +96,12 @@ public class PersonOfSignificantControlJson extends PscApi {
         this.legalForm = legalForm;
     }
 
-    @Override
-    public String getCountryOfResidence() {
-        return countryOfResidence;
+    public String getDateOfBirthIso() {
+        return dateOfBirthIso;
     }
 
-    @Override
-    public void setCountryOfResidence(String countryOfResidence) {
-        this.countryOfResidence = countryOfResidence;
+    public void setDateOfBirthIso(String dateOfBirthIso) {
+        this.dateOfBirthIso = dateOfBirthIso;
     }
+
 }
