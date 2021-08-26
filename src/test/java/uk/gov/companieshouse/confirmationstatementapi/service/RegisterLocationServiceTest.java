@@ -44,8 +44,8 @@ class RegisterLocationServiceTest {
         var regLocData = regLocService.getRegisterLocations(COMPANY_NUMBER);
 
         assertNotNull(regLocService.getRegisterLocations(COMPANY_NUMBER));
-        assertEquals(regLocData.get(0).getRegisterTypeDesc(), "desc1");
-        assertEquals(regLocData.get(1).getRegisterTypeDesc(), "desc2");
+        assertEquals("desc1", regLocData.get(0).getRegisterTypeDesc());
+        assertEquals("desc2", regLocData.get(1).getRegisterTypeDesc());
         assertEquals(2, regLocData.size());
     }
 }
