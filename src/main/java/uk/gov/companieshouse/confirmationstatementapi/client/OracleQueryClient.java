@@ -13,6 +13,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -99,6 +100,21 @@ public class OracleQueryClient {
 
         ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
         LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, pscUrl);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+        }
+        if (response.getBody() == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(response.getBody());
+    }
+
+    public List<RegisterLocationJson> getRegisterLocations(String companyNumber) throws ServiceException {
+        var regLocUrl = String.format("%s/company/%s/register/location", oracleQueryApiUrl, companyNumber);
+        LOGGER.info(CALLING_ORACLE_QUERY_API_URL_GET, regLocUrl);
+
+        ResponseEntity<RegisterLocationJson[]> response = restTemplate.getForEntity(regLocUrl, RegisterLocationJson[].class);
+        LOGGER.info(RECEIVED_FROM_ORACLE_QUERY_API_URL_GET, response, regLocUrl);
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
