@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -83,6 +84,8 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
         confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
+
+        ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", true);
     }
 
     @Test
@@ -139,6 +142,30 @@ class ConfirmationStatementServiceTest {
         Map<String, String> links = transactionSent.getResources().get("/transactions/abc/confirmation-statement/ID").getLinks();
         String costs = links.get("costs");
         assertEquals("/confirmation-statement/ID/costs", costs);
+    }
+
+    @Test
+    void doesNotCheckPaymentWhenFeatureFlaggedOff() throws ServiceException, CompanyNotFoundException {
+        ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", false);
+        Transaction transaction = new Transaction();
+        transaction.setId("abc");
+        transaction.setCompanyNumber(COMPANY_NUMBER);
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        var eligibilityResponse = new CompanyValidationResponse();
+        eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId("ID");
+
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
+        when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
+
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        verify(transactionService, times(1)).updateTransaction(any(), any());
+        verify(oracleQueryClient, times(0)).isConfirmationStatementPaid(any(),any());
     }
 
     @Test
