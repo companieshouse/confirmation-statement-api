@@ -86,12 +86,12 @@ public class ConfirmationStatementService {
 
         if (isPaymentCheckFeatureEnabled) {
             makePayableResourceIfUnpaid(csInsertedSubmission, linksMap, companyProfile);
-
-            csResource.setLinks(linksMap);
-            transaction.setResources(Collections.singletonMap(createdUri, csResource));
-
-            transactionService.updateTransaction(transaction, passthroughHeader);
         }
+
+        csResource.setLinks(linksMap);
+        transaction.setResources(Collections.singletonMap(createdUri, csResource));
+
+        transactionService.updateTransaction(transaction, passthroughHeader);
 
         LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), updatedSubmission.getId());
         var responseObject = confirmationStatementJsonDaoMapper.daoToJson(updatedSubmission);

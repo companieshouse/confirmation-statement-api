@@ -164,7 +164,7 @@ class ConfirmationStatementServiceTest {
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        verify(transactionService, times(0)).updateTransaction(any(), any());
+        verify(transactionService, times(1)).updateTransaction(any(), any());
         verify(oracleQueryClient, times(0)).isConfirmationStatementPaid(any(),any());
     }
 
