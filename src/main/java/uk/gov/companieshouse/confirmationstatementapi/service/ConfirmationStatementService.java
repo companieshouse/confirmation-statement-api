@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
@@ -30,6 +31,9 @@ public class ConfirmationStatementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementService.class);
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    @Value("${FEATURE_FLAG_ENABLE_PAYMENT_CHECK_26082021:true}")
+    private boolean isPaymentCheckFeatureEnabled;
 
     private final CompanyProfileService companyProfileService;
     private final EligibilityService eligibilityService;
@@ -80,14 +84,16 @@ public class ConfirmationStatementService {
         Map<String, String> linksMap = new HashMap<>();
         linksMap.put("resource", createdUri);
 
-        makePayableResourceIfUnpaid(csInsertedSubmission, linksMap, companyProfile);
+        if (isPaymentCheckFeatureEnabled) {
+            makePayableResourceIfUnpaid(csInsertedSubmission, linksMap, companyProfile);
 
-        csResource.setLinks(linksMap);
-        transaction.setResources(Collections.singletonMap(createdUri, csResource));
+            csResource.setLinks(linksMap);
+            transaction.setResources(Collections.singletonMap(createdUri, csResource));
 
-        transactionService.updateTransaction(transaction, passthroughHeader);
+            transactionService.updateTransaction(transaction, passthroughHeader);
+        }
+
         LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), updatedSubmission.getId());
-
         var responseObject = confirmationStatementJsonDaoMapper.daoToJson(updatedSubmission);
         return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
     }
