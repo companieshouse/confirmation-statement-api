@@ -10,11 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -34,6 +36,7 @@ class OracleQueryClientTest {
     private static final String PSC_PATH = "/corporate-body-appointments/persons-of-significant-control";
     private static final String SOC_PATH = "/statement-of-capital";
     private static final String SHAREHOLDER_PATH = "/shareholders";
+    private static final String REGISTER_LOCATIONS_PATH = "/register/location";
     private static final String PAYMENT_PATH = "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid?payment_period_due_date=2022-01-01";
 
 
@@ -182,6 +185,39 @@ class OracleQueryClientTest {
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholders(companyNumber));
+        assertTrue(serviceException.getMessage().contains(companyNumber));
+        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
+    }
+
+    @Test
+    void testGetRegisterLocationsResponse() throws ServiceException {
+        var regLoc1 = new RegisterLocationJson();
+        regLoc1.setRegisterTypeDesc("desc1");
+        regLoc1.setSailAddress(new Address());
+
+
+        var regLoc2 = new RegisterLocationJson();
+        regLoc2.setRegisterTypeDesc("desc2");
+        regLoc2.setSailAddress(new Address());
+
+        RegisterLocationJson[] registerLocationsArray = { regLoc1, regLoc2 };
+
+        var companyNumber = "123213";
+
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + REGISTER_LOCATIONS_PATH, RegisterLocationJson[].class))
+                .thenReturn(new ResponseEntity<>(registerLocationsArray, HttpStatus.OK));
+
+        var result = oracleQueryClient.getRegisterLocations(companyNumber);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testGetRegisterLocationsNotOkStatusResponse() {
+        var companyNumber = "123213";
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + REGISTER_LOCATIONS_PATH, RegisterLocationJson[].class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+
+        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getRegisterLocations(companyNumber));
         assertTrue(serviceException.getMessage().contains(companyNumber));
         assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
     }

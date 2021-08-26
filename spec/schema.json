@@ -311,6 +311,33 @@
           }
         }
       }
+    },
+    "/confirmation-statement/company/{company-number}/register-locations": {
+      "parameters": [
+        {
+          "name": "company-number",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        }
+      ],
+      "get": {
+        "summary": "Get the details of the register locations",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "RegisterLocations"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of register locations",
+            "schema": {
+              "$ref": "#/definitions/RegisterLocationResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -585,6 +612,43 @@
         },
         "currency_type_id": {
           "type": "long"
+        }
+      }
+    },
+    "RegisterLocationResponse": {
+      "type": "object",
+      "properties": {
+        "register_type_desc": {
+          "type": "string"
+        },
+        "sail_address": {
+          "type": "object",
+          "properties": {
+            "address_line_1": {
+              "type": "string"
+            },
+            "address_line_2": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            },
+            "locality": {
+              "type": "string"
+            },
+            "po_box": {
+              "type": "string"
+            },
+            "postal_code": {
+              "type": "string"
+            },
+            "premises": {
+              "type": "string"
+            },
+            "region": {
+              "type": "string"
+            }
+          }
         }
       }
     }
