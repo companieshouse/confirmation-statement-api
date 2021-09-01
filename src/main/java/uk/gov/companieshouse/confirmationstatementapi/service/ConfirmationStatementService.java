@@ -85,7 +85,7 @@ public class ConfirmationStatementService {
         linksMap.put("resource", createdUri);
 
         if (isPaymentCheckFeatureEnabled) {
-            makePayableResourceIfUnpaid(csInsertedSubmission, linksMap, companyProfile);
+            makePayableResourceIfUnpaid(createdUri, linksMap, companyProfile);
         }
 
         csResource.setLinks(linksMap);
@@ -98,14 +98,14 @@ public class ConfirmationStatementService {
         return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
     }
 
-    private void makePayableResourceIfUnpaid(String csInsertedSubmission,
+    private void makePayableResourceIfUnpaid(String createdUri,
                                              Map<String, String> linksMap,
                                              CompanyProfileApi companyProfile) throws ServiceException {
 
         LocalDate nextDue = companyProfile.getConfirmationStatement().getNextDue();
         if (!oracleQueryClient.isConfirmationStatementPaid(companyProfile.getCompanyNumber(),
                 nextDue.format(dateTimeFormatter))) {
-            String costsLink = csInsertedSubmission + "/costs";
+            String costsLink = createdUri + "/costs";
             linksMap.put("costs", costsLink);
         }
     }

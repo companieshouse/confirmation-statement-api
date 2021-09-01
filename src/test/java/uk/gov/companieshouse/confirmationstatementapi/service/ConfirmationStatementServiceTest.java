@@ -141,7 +141,7 @@ class ConfirmationStatementServiceTest {
         Transaction transactionSent = transactionCaptor.getValue();
         Map<String, String> links = transactionSent.getResources().get("/transactions/abc/confirmation-statement/ID").getLinks();
         String costs = links.get("costs");
-        assertEquals("/confirmation-statement/ID/costs", costs);
+        assertEquals("/transactions/abc/confirmation-statement/ID/costs", costs);
     }
 
     @Test
