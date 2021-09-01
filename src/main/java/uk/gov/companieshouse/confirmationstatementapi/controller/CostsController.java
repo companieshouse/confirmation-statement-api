@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.payment.Cost;
 import uk.gov.companieshouse.confirmationstatementapi.service.CostService;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation-statement-id}/costs")
 public class CostsController {
@@ -20,10 +23,10 @@ public class CostsController {
     }
 
     @GetMapping
-    public ResponseEntity<Cost> getCosts() {
+    public ResponseEntity<List<Cost>> getCosts() {
 
         var cost = costService.getCosts();
 
-        return ResponseEntity.ok(cost);
+        return ResponseEntity.ok(Collections.singletonList(cost));
     }
 }
