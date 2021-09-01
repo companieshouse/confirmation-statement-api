@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpMethod.GET;
 
 @ExtendWith(MockitoExtension.class)
 class UserAuthInterceptorTest {
@@ -43,6 +44,20 @@ class UserAuthInterceptorTest {
         Object mockHandler = new Object();
 
         when(mockHttpServletRequest.getHeader("eric-identity")).thenReturn(CREATED_BY_ID);
+        when(mockHttpServletRequest.getHeader("eric-identity-type")).thenReturn("oauth");
+        var result = userAuthInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void preHandleApiKey() throws IOException {
+        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+        Object mockHandler = new Object();
+
+        when(mockHttpServletRequest.getMethod()).thenReturn(GET.name());
+        when(mockHttpServletRequest.getHeader("eric-identity-type")).thenReturn("key");
+        when(mockHttpServletRequest.getHeader("ERIC-Authorised-Key-Roles")).thenReturn("*");
         var result = userAuthInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
 
         assertTrue(result);
@@ -54,6 +69,7 @@ class UserAuthInterceptorTest {
         Object mockHandler = new Object();
 
         when(mockHttpServletRequest.getHeader("eric-identity")).thenReturn("654321");
+        when(mockHttpServletRequest.getHeader("eric-identity-type")).thenReturn("oauth");
         var result = userAuthInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
 
         assertFalse(result);
@@ -71,6 +87,7 @@ class UserAuthInterceptorTest {
         Object mockHandler = new Object();
 
         when(mockHttpServletRequest.getHeader("eric-identity")).thenReturn("654321");
+        when(mockHttpServletRequest.getHeader("eric-identity-type")).thenReturn("oauth");
         var result = userAuthInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
 
         assertFalse(result);

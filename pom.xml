@@ -18,6 +18,7 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <spring-boot-maven-plugin.version>2.4.7</spring-boot-maven-plugin.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+        <api-security-java.version>0.3.5</api-security-java.version>
     </properties>
     <profiles>
         <profile>
@@ -59,6 +60,12 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-sdk-java</artifactId>
             <version>4.3.7</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>api-security-java</artifactId>
+            <version>${api-security-java.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
