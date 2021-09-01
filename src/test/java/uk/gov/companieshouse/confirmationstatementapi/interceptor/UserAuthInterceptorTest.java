@@ -18,6 +18,7 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @ExtendWith(MockitoExtension.class)
 class UserAuthInterceptorTest {
@@ -61,6 +62,19 @@ class UserAuthInterceptorTest {
         var result = userAuthInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
 
         assertTrue(result);
+    }
+
+    @Test
+    void preHandleApiKeyPOST() throws IOException {
+        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+        Object mockHandler = new Object();
+
+        when(mockHttpServletRequest.getMethod()).thenReturn(POST.name());
+        when(mockHttpServletRequest.getHeader("eric-identity-type")).thenReturn("key");
+        when(mockHttpServletRequest.getHeader("ERIC-Authorised-Key-Roles")).thenReturn("*");
+        var result = userAuthInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
+
+        assertFalse(result);
     }
 
     @Test
