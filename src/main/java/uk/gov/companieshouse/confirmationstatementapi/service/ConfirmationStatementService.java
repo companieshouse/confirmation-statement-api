@@ -35,6 +35,9 @@ public class ConfirmationStatementService {
     @Value("${FEATURE_FLAG_ENABLE_PAYMENT_CHECK_26082021:true}")
     private boolean isPaymentCheckFeatureEnabled;
 
+    @Value("${FEATURE_FLAG_VALIDATION_STATUS_02092021:true}")
+    private boolean isValidationStatusEnabled;
+
     private final CompanyProfileService companyProfileService;
     private final EligibilityService eligibilityService;
     private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
@@ -83,7 +86,10 @@ public class ConfirmationStatementService {
         csResource.setKind("confirmation-statement");
         Map<String, String> linksMap = new HashMap<>();
         linksMap.put("resource", createdUri);
-
+        if (isValidationStatusEnabled) {
+            String validationStatusLink = createdUri + "/validation-status";
+            linksMap.put("validation_status", validationStatusLink);
+        }
         if (isPaymentCheckFeatureEnabled) {
             makePayableResourceIfUnpaid(createdUri, linksMap, companyProfile);
         }
