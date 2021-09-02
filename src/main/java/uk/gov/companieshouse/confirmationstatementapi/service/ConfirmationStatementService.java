@@ -83,6 +83,8 @@ public class ConfirmationStatementService {
         csResource.setKind("confirmation-statement");
         Map<String, String> linksMap = new HashMap<>();
         linksMap.put("resource", createdUri);
+        String validationStatusLink = createdUri + "/validation-status";
+        linksMap.put("validation_status", validationStatusLink);
 
         if (isPaymentCheckFeatureEnabled) {
             makePayableResourceIfUnpaid(createdUri, linksMap, companyProfile);
