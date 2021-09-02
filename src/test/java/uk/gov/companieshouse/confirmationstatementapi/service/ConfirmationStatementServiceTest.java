@@ -90,6 +90,7 @@ class ConfirmationStatementServiceTest {
 
     @Test
     void createConfirmationStatement() throws ServiceException, CompanyNotFoundException {
+        ReflectionTestUtils.setField(confirmationStatementService, "isValidationStatusEnabled", true);
         Transaction transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
