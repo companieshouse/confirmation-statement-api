@@ -24,6 +24,7 @@ public class CostService {
         cost.setDescriptionValues(Collections.singletonMap("Key", "Value"));
         cost.setKind("payment-session#payment-session");
         cost.setResourceKind("resource-kind");
+        cost.setProductType("confirmation-statement");
 
         return cost;
     }
