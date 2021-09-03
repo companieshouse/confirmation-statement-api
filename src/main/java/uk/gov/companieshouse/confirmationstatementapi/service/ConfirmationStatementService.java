@@ -144,9 +144,11 @@ public class ConfirmationStatementService {
         if (submissionJsonOptional.isEmpty()) {
             throw new CompanyNotFoundException();
         }
+
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         ConfirmationStatementSubmissionJson submission = submissionJsonOptional.get();
         ConfirmationStatementSubmissionDataJson submissionData = submission.getData();
+
         if (submissionData == null) {
             validationStatus.setValid(false);
         } else {

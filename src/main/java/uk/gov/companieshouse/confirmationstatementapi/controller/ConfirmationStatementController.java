@@ -61,12 +61,13 @@ public class ConfirmationStatementController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/validation-status")
+    @GetMapping("/{confirmation_statement_id}/validation-status")
     public ResponseEntity<Object> getValidationStatus(@PathVariable("confirmation_statement_id") String submissionId) {
         try {
             ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (CompanyNotFoundException e) {
+            LOGGER.error("Could not find submission data for submission " + submissionId);
             return ResponseEntity.notFound().build();
         }
     }
