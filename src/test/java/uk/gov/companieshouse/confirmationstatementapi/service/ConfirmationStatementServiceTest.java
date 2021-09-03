@@ -282,6 +282,18 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
+    void areTasksCompleteWithSomeRecentFiling() throws CompanyNotFoundException {
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertTrue(validationStatusResponse.isValid());
+    }
+
+    @Test
     void areTasksCompleteNoSubmission() {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);

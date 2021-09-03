@@ -171,7 +171,9 @@ public class ConfirmationStatementService {
     }
 
     private boolean isConfirmed(SectionDataJson sectionData) {
-        return sectionData != null && sectionData.getSectionStatus() == SectionStatus.CONFIRMED;
+        return sectionData != null &&
+                (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
+                 sectionData.getSectionStatus() == SectionStatus.RECENT_FILING);
     }
 
     public Optional<ConfirmationStatementSubmissionJson> getConfirmationStatement(String submissionId) {
