@@ -12,7 +12,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
-import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
