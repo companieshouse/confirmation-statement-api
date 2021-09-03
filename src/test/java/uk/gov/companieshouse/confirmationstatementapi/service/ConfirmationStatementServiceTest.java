@@ -270,18 +270,6 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithSomeNotPresent() throws ServiceException {
-        makeAllMockTasksConfirmed();
-        confirmationStatementSubmissionJson.getData().setActiveDirectorDetailsData(null);
-        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
-        confirmationStatementSubmission.setId(SUBMISSION_ID);
-        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
-        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
-        assertFalse(validationStatusResponse.isValid());
-    }
-
-    @Test
     void areTasksCompleteWithSomeRecentFiling() throws ServiceException {
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
@@ -294,9 +282,30 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteNoSubmission() {
+    void areTasksCompleteWithSomeNotPresent() throws ServiceException {
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().setActiveDirectorDetailsData(null);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithNoSubmissionData() throws ServiceException {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        confirmationStatementSubmissionJson.setData(null);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteNoSubmission() {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
         assertThrows(ServiceException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
     }
