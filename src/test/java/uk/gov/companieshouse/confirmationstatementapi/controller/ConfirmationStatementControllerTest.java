@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
+import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
@@ -19,6 +22,7 @@ import java.net.URI;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +31,7 @@ class ConfirmationStatementControllerTest {
     private static final ResponseEntity<Object> CREATED_SUCCESS_RESPONSE = ResponseEntity.created(URI.create("URI")).body("Created");
     private static final ResponseEntity<Object> UPDATED_SUCCESS_RESPONSE = ResponseEntity.ok().build();
     private static final ResponseEntity<Object> VALIDATION_FAILED_RESPONSE = ResponseEntity.badRequest().body("BAD");
-    private static final ResponseEntity<Object> UPDATED_SUBMISSION_NOT_FOUND = ResponseEntity.notFound().build();
+    private static final ResponseEntity<Object> NOT_FOUND_RESPONSE = ResponseEntity.notFound().build();
     private static final String PASSTHROUGH = "13456";
     private static final String SUBMISSION_ID = "ABCDEFG";
 
@@ -89,11 +93,11 @@ class ConfirmationStatementControllerTest {
     @Test
     void updateSubmissionIdNotFound() {
         when(confirmationStatementService.updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson))
-                .thenReturn(UPDATED_SUBMISSION_NOT_FOUND);
+                .thenReturn(NOT_FOUND_RESPONSE);
 
         var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID);
 
-        assertEquals(UPDATED_SUBMISSION_NOT_FOUND, response);
+        assertEquals(NOT_FOUND_RESPONSE, response);
     }
 
     @Test
@@ -113,6 +117,39 @@ class ConfirmationStatementControllerTest {
 
         var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
 
-        assertEquals(UPDATED_SUBMISSION_NOT_FOUND, response);
+        assertEquals(NOT_FOUND_RESPONSE, response);
+    }
+
+    @Test
+    void getTrueValidationStatus() throws CompanyNotFoundException {
+        ValidationStatusResponse validationStatus = new ValidationStatusResponse();
+        validationStatus.setValid(true);
+        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenReturn(validationStatus);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
+        assertEquals(ResponseEntity.ok().body(validationStatus), response);
+    }
+
+    @Test
+    void getFalseValidationStatus() throws CompanyNotFoundException {
+        ValidationStatusResponse validationStatus = new ValidationStatusResponse();
+        validationStatus.setValid(false);
+        ValidationStatusError[] errors = new ValidationStatusError[1];
+        ValidationStatusError error = new ValidationStatusError();
+        error.setType("ch:validation");
+        errors[0] = error;
+        validationStatus.setValidationStatusError(errors);
+        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenReturn(validationStatus);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
+        assertEquals(ResponseEntity.ok().body(validationStatus), response);
+    }
+
+    @Test
+    void getValidationStatusNotFound() throws CompanyNotFoundException {
+        ValidationStatusResponse validationStatus = new ValidationStatusResponse();
+        validationStatus.setValid(true);
+        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenThrow(CompanyNotFoundException.class);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
+        assertThrows(CompanyNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+        assertEquals(NOT_FOUND_RESPONSE, response);
     }
 }

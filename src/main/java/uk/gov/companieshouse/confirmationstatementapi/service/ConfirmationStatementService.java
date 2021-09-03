@@ -9,20 +9,27 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -130,6 +137,41 @@ public class ConfirmationStatementService {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    public ValidationStatusResponse areTasksComplete(String submissionId) throws CompanyNotFoundException {
+        Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
+        if (submissionJsonOptional.isEmpty()) {
+            throw new CompanyNotFoundException();
+        }
+        ValidationStatusResponse validationStatus = new ValidationStatusResponse();
+        ConfirmationStatementSubmissionJson submission = submissionJsonOptional.get();
+        ConfirmationStatementSubmissionDataJson submissionData = submission.getData();
+        if (submissionData == null) {
+            validationStatus.setValid(false);
+        } else {
+
+           boolean isValid = isConfirmed(submissionData.getShareholdersData()) &&
+                    isConfirmed(submissionData.getSicCodeData()) &&
+                    isConfirmed(submissionData.getActiveDirectorDetailsData()) &&
+                    isConfirmed(submissionData.getStatementOfCapitalData()) &&
+                    isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
+                    isConfirmed(submissionData.getPersonsSignificantControlData());
+           validationStatus.setValid(isValid);
+        }
+        if (!validationStatus.isValid()) {
+            ValidationStatusError[] errors = new ValidationStatusError[1];
+            ValidationStatusError error = new ValidationStatusError();
+            error.setType("ch:validation");
+            errors[0] = error;
+            validationStatus.setValidationStatusError(errors);
+        }
+
+        return validationStatus;
+    }
+
+    private boolean isConfirmed(SectionDataJson sectionData) {
+        return sectionData != null && sectionData.getSectionStatus() == SectionStatus.CONFIRMED;
     }
 
     public Optional<ConfirmationStatementSubmissionJson> getConfirmationStatement(String submissionId) {

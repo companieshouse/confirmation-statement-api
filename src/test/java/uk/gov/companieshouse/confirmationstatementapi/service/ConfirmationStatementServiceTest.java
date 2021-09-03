@@ -12,10 +12,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
@@ -246,6 +248,47 @@ class ConfirmationStatementServiceTest {
         assertFalse(result.isPresent());
     }
 
+    @Test
+    void areTasksComplete() throws CompanyNotFoundException {
+        makeAllMockTasksConfirmed();
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertTrue(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithSomeNotConfirmed() throws CompanyNotFoundException {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithSomeNotPresent() throws CompanyNotFoundException {
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().setActiveDirectorDetailsData(null);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteNoSubmission() {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
+        assertThrows(CompanyNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+    }
+
     private CompanyProfileApi getTestCompanyProfileApi() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
@@ -254,5 +297,16 @@ class ConfirmationStatementServiceTest {
         confirmationStatement.setNextDue(LocalDate.of(2022,1,1));
         companyProfileApi.setConfirmationStatement(confirmationStatement);
         return companyProfileApi;
+    }
+
+    void makeAllMockTasksConfirmed() {
+        ConfirmationStatementSubmissionDataJson data = confirmationStatementSubmissionJson.getData();
+        data.getActiveDirectorDetailsData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getStatementOfCapitalData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getShareholdersData() .setSectionStatus(SectionStatus.CONFIRMED);
+        data.getRegisteredOfficeAddressData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getPersonsSignificantControlData().setSectionStatus(SectionStatus.CONFIRMED);
+
     }
 }
