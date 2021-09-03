@@ -15,6 +15,7 @@ import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
@@ -137,10 +138,10 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ValidationStatusResponse areTasksComplete(String submissionId) throws ServiceException {
+    public ValidationStatusResponse areTasksComplete(String submissionId) throws SubmissionNotFoundException {
         Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
         if (submissionJsonOptional.isEmpty()) {
-            throw new ServiceException(
+            throw new SubmissionNotFoundException(
                     String.format("Could not find submission data for submission %s", submissionId));
         }
 

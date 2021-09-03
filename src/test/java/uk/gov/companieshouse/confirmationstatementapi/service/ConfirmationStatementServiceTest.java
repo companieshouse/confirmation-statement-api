@@ -17,6 +17,7 @@ import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
@@ -249,7 +250,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksComplete() throws ServiceException {
+    void areTasksComplete() throws SubmissionNotFoundException {
         makeAllMockTasksConfirmed();
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
@@ -260,7 +261,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithSomeNotConfirmed() throws ServiceException {
+    void areTasksCompleteWithSomeNotConfirmed() throws SubmissionNotFoundException {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
@@ -270,7 +271,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithSomeRecentFiling() throws ServiceException {
+    void areTasksCompleteWithSomeRecentFiling() throws SubmissionNotFoundException {
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -282,7 +283,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithSomeNotPresent() throws ServiceException {
+    void areTasksCompleteWithSomeNotPresent() throws SubmissionNotFoundException {
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().setActiveDirectorDetailsData(null);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -294,7 +295,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithNoSubmissionData() throws ServiceException {
+    void areTasksCompleteWithNoSubmissionData() throws SubmissionNotFoundException {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         confirmationStatementSubmissionJson.setData(null);
@@ -307,7 +308,7 @@ class ConfirmationStatementServiceTest {
     @Test
     void areTasksCompleteNoSubmission() {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
-        assertThrows(ServiceException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
     }
 
     private CompanyProfileApi getTestCompanyProfileApi() {

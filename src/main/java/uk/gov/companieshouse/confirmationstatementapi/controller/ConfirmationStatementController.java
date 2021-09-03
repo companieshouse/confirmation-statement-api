@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
@@ -65,9 +66,12 @@ public class ConfirmationStatementController {
         try {
             ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
-        } catch (Exception e) {
+        } catch (SubmissionNotFoundException e) {
             LOGGER.error(e.getMessage(), e);
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

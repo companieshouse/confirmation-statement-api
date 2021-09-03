@@ -13,6 +13,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 
@@ -120,7 +121,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getTrueValidationStatus() throws ServiceException {
+    void getTrueValidationStatus() throws SubmissionNotFoundException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
         when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenReturn(validationStatus);
@@ -129,7 +130,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getFalseValidationStatus() throws ServiceException {
+    void getFalseValidationStatus() throws SubmissionNotFoundException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(false);
         ValidationStatusError[] errors = new ValidationStatusError[1];
@@ -143,12 +144,12 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getValidationStatusNotFound() throws ServiceException {
+    void getValidationStatusNotFound() throws SubmissionNotFoundException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
-        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenThrow(ServiceException.class);
+        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
         var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
-        assertThrows(ServiceException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
 }
