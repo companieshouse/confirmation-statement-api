@@ -13,10 +13,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
@@ -249,6 +252,68 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
+    void areTasksComplete() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertTrue(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithSomeNotConfirmed() throws SubmissionNotFoundException {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithSomeRecentFiling() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertTrue(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithSomeNotPresent() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().setActiveDirectorDetailsData(null);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithNoSubmissionData() throws SubmissionNotFoundException {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        confirmationStatementSubmissionJson.setData(null);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteNoSubmission() {
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
+        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+    }
+
+    @Test
     void getNextMadeUpToDateWhenFilingEarly() throws CompanyNotFoundException, ServiceException {
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
@@ -331,5 +396,16 @@ class ConfirmationStatementServiceTest {
         confirmationStatement.setNextMadeUpTo(LocalDate.of(2022, 2, 27));
         companyProfileApi.setConfirmationStatement(confirmationStatement);
         return companyProfileApi;
+    }
+
+    void makeAllMockTasksConfirmed() {
+        ConfirmationStatementSubmissionDataJson data = confirmationStatementSubmissionJson.getData();
+        data.getActiveDirectorDetailsData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getStatementOfCapitalData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getShareholdersData() .setSectionStatus(SectionStatus.CONFIRMED);
+        data.getRegisteredOfficeAddressData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getPersonsSignificantControlData().setSectionStatus(SectionStatus.CONFIRMED);
+
     }
 }
