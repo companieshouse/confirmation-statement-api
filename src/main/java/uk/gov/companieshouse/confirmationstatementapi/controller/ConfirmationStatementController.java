@@ -66,7 +66,7 @@ public class ConfirmationStatementController {
             ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             return ResponseEntity.notFound().build();
         }
     }
