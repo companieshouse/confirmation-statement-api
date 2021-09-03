@@ -67,7 +67,6 @@ public class ConfirmationStatementController {
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }
