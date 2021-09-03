@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStat
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
@@ -27,6 +29,7 @@ import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationSta
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -64,9 +67,13 @@ class ConfirmationStatementServiceTest {
     @Mock
     private OracleQueryClient oracleQueryClient;
 
+    @Mock
+    private Supplier<LocalDate> localDateSupplier;
+
     @Captor
     private ArgumentCaptor<Transaction> transactionCaptor;
 
+    @InjectMocks
     private ConfirmationStatementService confirmationStatementService;
 
     private ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson;
@@ -75,11 +82,6 @@ class ConfirmationStatementServiceTest {
     void init() {
         ConfirmationStatementSubmissionDataJson confirmationStatementSubmissionDataJson =
                 MockConfirmationStatementSubmissionData.getMockJsonData();
-        confirmationStatementService =
-                new ConfirmationStatementService(companyProfileService, eligibilityService,
-                        confirmationStatementSubmissionsRepository, transactionService,
-                        confirmationStatementJsonDaoMapper,
-                        oracleQueryClient);
 
         confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
@@ -246,12 +248,87 @@ class ConfirmationStatementServiceTest {
         assertFalse(result.isPresent());
     }
 
+    @Test
+    void getNextMadeUpToDateWhenFilingEarly() throws CompanyNotFoundException, ServiceException {
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        LocalDate beforeDate = LocalDate.of(2021, 1, 1);
+        when(localDateSupplier.get()).thenReturn(beforeDate);
+
+        NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER);
+
+        assertEquals("2022-02-27", nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
+        assertFalse(nextMadeUpToDateJson.isDue());
+        assertEquals("2021-01-01", nextMadeUpToDateJson.getNewNextMadeUpToDate());
+    }
+
+    @Test
+    void getNextMadeUpToDateWhenFilingLate() throws CompanyNotFoundException, ServiceException {
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        LocalDate afterDate = LocalDate.of(2022, 2, 28);
+        when(localDateSupplier.get()).thenReturn(afterDate);
+
+        NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER);
+
+        assertEquals("2022-02-27", nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
+        assertTrue(nextMadeUpToDateJson.isDue());
+        assertNull(nextMadeUpToDateJson.getNewNextMadeUpToDate());
+    }
+
+    @Test
+    void getNextMadeUpToDateWhenFilingOnNextMadeUpToDate() throws CompanyNotFoundException, ServiceException {
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        LocalDate sameDate = LocalDate.of(2022, 2, 27);
+        when(localDateSupplier.get()).thenReturn(sameDate);
+
+        NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER);
+
+        assertEquals("2022-02-27", nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
+        assertTrue(nextMadeUpToDateJson.isDue());
+        assertNull(nextMadeUpToDateJson.getNewNextMadeUpToDate());
+    }
+
+    @Test
+    void getNextMadeUpToDateThrowsExceptionWhenCompanyProfileNotFound() throws CompanyNotFoundException, ServiceException {
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
+
+        assertThrows(CompanyNotFoundException.class, () -> this.confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER));
+    }
+
+    @Test
+    void getNextMadeUpToDateThrowsExceptionWhenCompanyProfileIsNull() throws CompanyNotFoundException, ServiceException {
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(null);
+
+        assertThrows(ServiceException.class, () -> this.confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER));
+    }
+
+    @Test
+    void getNextMadeUpToDateThrowsExceptionWhenCompanyProfileConfirmationStatementIsNull() throws CompanyNotFoundException, ServiceException {
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        companyProfileApi.setConfirmationStatement(null);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        assertThrows(ServiceException.class, () -> this.confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER));
+    }
+
+    @Test
+    void getNextMadeUpToDateThrowsExceptionWhenCompanyProfileNextMadeUpToDateIsNull() throws CompanyNotFoundException, ServiceException {
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        companyProfileApi.getConfirmationStatement().setNextMadeUpTo(null);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        assertThrows(ServiceException.class, () -> this.confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER));
+    }
+
     private CompanyProfileApi getTestCompanyProfileApi() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
         companyProfileApi.setCompanyStatus("AcceptValue");
         ConfirmationStatementApi confirmationStatement = new ConfirmationStatementApi();
         confirmationStatement.setNextDue(LocalDate.of(2022,1,1));
+        confirmationStatement.setNextMadeUpTo(LocalDate.of(2022, 2, 27));
         companyProfileApi.setConfirmationStatement(confirmationStatement);
         return companyProfileApi;
     }

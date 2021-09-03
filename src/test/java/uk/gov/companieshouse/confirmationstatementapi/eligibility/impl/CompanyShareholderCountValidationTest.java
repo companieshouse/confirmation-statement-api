@@ -42,7 +42,7 @@ class CompanyShareholderCountValidationTest {
 
     @Test
     @Description("Should not throw exception on company with no shareholders")
-    void validateDoesNotThrowOnZeroShareholders() throws EligibilityException {
+    void validateDoesNotThrowOnZeroShareholders() {
         when(shareholderService.getShareholderCount(COMPANY_NUMBER)).thenReturn(0);
 
         assertDoesNotThrow(() -> validation.validate(profile));
