@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
@@ -57,5 +59,19 @@ public class ConfirmationStatementController {
         var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
         return serviceResponse.<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{confirmation_statement_id}/validation-status")
+    public ResponseEntity<Object> getValidationStatus(@PathVariable("confirmation_statement_id") String submissionId) {
+        try {
+            ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(submissionId);
+            return ResponseEntity.ok().body(validationStatusResponse);
+        } catch (SubmissionNotFoundException e) {
+            LOGGER.error(e.getMessage(), e);
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
