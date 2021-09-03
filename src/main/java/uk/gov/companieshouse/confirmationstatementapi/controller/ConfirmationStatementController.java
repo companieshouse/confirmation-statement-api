@@ -66,8 +66,9 @@ public class ConfirmationStatementController {
         try {
             ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
-        } catch (CompanyNotFoundException e) {
-            LOGGER.error(String.format("Could not find submission data for submission %s", submissionId));
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }

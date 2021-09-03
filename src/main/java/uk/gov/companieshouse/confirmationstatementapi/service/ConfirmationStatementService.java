@@ -137,10 +137,11 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ValidationStatusResponse areTasksComplete(String submissionId) throws CompanyNotFoundException {
+    public ValidationStatusResponse areTasksComplete(String submissionId) throws ServiceException {
         Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
         if (submissionJsonOptional.isEmpty()) {
-            throw new CompanyNotFoundException();
+            throw new ServiceException(
+                    String.format("Could not find submission data for submission %s", submissionId));
         }
 
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();

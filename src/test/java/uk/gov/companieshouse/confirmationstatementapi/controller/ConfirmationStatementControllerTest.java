@@ -121,7 +121,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getTrueValidationStatus() throws CompanyNotFoundException {
+    void getTrueValidationStatus() throws ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
         when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenReturn(validationStatus);
@@ -130,7 +130,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getFalseValidationStatus() throws CompanyNotFoundException {
+    void getFalseValidationStatus() throws ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(false);
         ValidationStatusError[] errors = new ValidationStatusError[1];
@@ -144,12 +144,12 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getValidationStatusNotFound() throws CompanyNotFoundException {
+    void getValidationStatusNotFound() throws ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
-        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenThrow(CompanyNotFoundException.class);
+        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenThrow(ServiceException.class);
         var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
-        assertThrows(CompanyNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+        assertThrows(ServiceException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
 }

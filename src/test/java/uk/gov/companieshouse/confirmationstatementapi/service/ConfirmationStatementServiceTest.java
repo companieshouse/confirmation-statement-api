@@ -249,7 +249,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksComplete() throws CompanyNotFoundException {
+    void areTasksComplete() throws ServiceException {
         makeAllMockTasksConfirmed();
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
@@ -260,7 +260,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithSomeNotConfirmed() throws CompanyNotFoundException {
+    void areTasksCompleteWithSomeNotConfirmed() throws ServiceException {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
@@ -270,7 +270,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithSomeNotPresent() throws CompanyNotFoundException {
+    void areTasksCompleteWithSomeNotPresent() throws ServiceException {
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().setActiveDirectorDetailsData(null);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -282,7 +282,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithSomeRecentFiling() throws CompanyNotFoundException {
+    void areTasksCompleteWithSomeRecentFiling() throws ServiceException {
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -298,7 +298,7 @@ class ConfirmationStatementServiceTest {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
-        assertThrows(CompanyNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+        assertThrows(ServiceException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
     }
 
     private CompanyProfileApi getTestCompanyProfileApi() {
