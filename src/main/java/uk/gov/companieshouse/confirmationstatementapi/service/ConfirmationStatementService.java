@@ -26,10 +26,8 @@ import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationSta
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
