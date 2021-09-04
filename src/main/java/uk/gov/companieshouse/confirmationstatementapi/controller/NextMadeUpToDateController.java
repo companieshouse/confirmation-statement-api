@@ -25,7 +25,7 @@ public class NextMadeUpToDateController {
             LOGGER.info("Calling service to retrieve the next made up to date.");
             NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(companyNumber);
             return ResponseEntity.ok().body(nextMadeUpToDateJson);
-        } catch( CompanyNotFoundException cnfe) {
+        } catch(CompanyNotFoundException cnfe) {
             LOGGER.error(String.format("Unable to find company %s", companyNumber), cnfe);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
