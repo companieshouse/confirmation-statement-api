@@ -200,17 +200,23 @@ public class ConfirmationStatementService {
     public NextMadeUpToDateJson getNextMadeUpToDate(String companyNumber) throws CompanyNotFoundException, ServiceException {
         CompanyProfileApi companyProfileApi = companyProfileService.getCompanyProfile(companyNumber);
 
-        if (companyProfileApi == null
-                || companyProfileApi.getConfirmationStatement() == null
-                || companyProfileApi.getConfirmationStatement().getNextMadeUpTo() == null) {
-            throw new ServiceException(String.format("Unable to read next made up to date from company profile for company %s", companyNumber));
+        if (companyProfileApi == null) {
+            throw new ServiceException(String.format("Unable to find company profile for company %s", companyNumber));
+        }
+
+        NextMadeUpToDateJson nextMadeUpToDateJson = new NextMadeUpToDateJson();
+
+        if (companyProfileApi.getConfirmationStatement() == null
+            || companyProfileApi.getConfirmationStatement().getNextMadeUpTo() == null) {
+                nextMadeUpToDateJson.setCurrentNextMadeUpToDate(null);
+                nextMadeUpToDateJson.setDue(null);
+                nextMadeUpToDateJson.setNewNextMadeUpToDate(null);
+                return nextMadeUpToDateJson;
         }
 
         LocalDate nextMadeUpToDate = companyProfileApi.getConfirmationStatement().getNextMadeUpTo();
-        LocalDate today = localDateNow.get();
-
-        NextMadeUpToDateJson nextMadeUpToDateJson = new NextMadeUpToDateJson();
         nextMadeUpToDateJson.setCurrentNextMadeUpToDate(nextMadeUpToDate.format(DateTimeFormatter.ISO_DATE));
+        LocalDate today = localDateNow.get();
 
         if (today.isBefore(nextMadeUpToDate)) {
             nextMadeUpToDateJson.setDue(false);

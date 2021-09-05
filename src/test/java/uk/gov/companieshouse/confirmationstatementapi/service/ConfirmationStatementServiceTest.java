@@ -356,6 +356,32 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
+    void getNextMadeUpToDateWhenCompanyProfileConfirmationStatementIsNull() throws CompanyNotFoundException, ServiceException {
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        companyProfileApi.setConfirmationStatement(null);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER);
+
+        assertNull(nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
+        assertNull(nextMadeUpToDateJson.isDue());
+        assertNull(nextMadeUpToDateJson.getNewNextMadeUpToDate());
+    }
+
+    @Test
+    void getNextMadeUpToDateWhenCompanyProfileNextMadeUpToDateIsNull() throws CompanyNotFoundException, ServiceException {
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        companyProfileApi.getConfirmationStatement().setNextMadeUpTo(null);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER);
+
+        assertNull(nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
+        assertNull(nextMadeUpToDateJson.isDue());
+        assertNull(nextMadeUpToDateJson.getNewNextMadeUpToDate());
+    }
+
+    @Test
     void getNextMadeUpToDateThrowsExceptionWhenCompanyProfileNotFound() throws CompanyNotFoundException, ServiceException {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
 
@@ -365,24 +391,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void getNextMadeUpToDateThrowsExceptionWhenCompanyProfileIsNull() throws CompanyNotFoundException, ServiceException {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(null);
-
-        assertThrows(ServiceException.class, () -> this.confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER));
-    }
-
-    @Test
-    void getNextMadeUpToDateThrowsExceptionWhenCompanyProfileConfirmationStatementIsNull() throws CompanyNotFoundException, ServiceException {
-        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
-        companyProfileApi.setConfirmationStatement(null);
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-
-        assertThrows(ServiceException.class, () -> this.confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER));
-    }
-
-    @Test
-    void getNextMadeUpToDateThrowsExceptionWhenCompanyProfileNextMadeUpToDateIsNull() throws CompanyNotFoundException, ServiceException {
-        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
-        companyProfileApi.getConfirmationStatement().setNextMadeUpTo(null);
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
 
         assertThrows(ServiceException.class, () -> this.confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER));
     }

@@ -3,15 +3,16 @@ package uk.gov.companieshouse.confirmationstatementapi.model.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NextMadeUpToDateJson {
 
     @JsonProperty("current_next_made_up_to_date")
     private String currentNextMadeUpToDate;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("is_due")
-    private boolean due;
+    private Boolean due;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("new_next_made_up_to_date")
     private String newNextMadeUpToDate;
 
@@ -24,11 +25,11 @@ public class NextMadeUpToDateJson {
         this.currentNextMadeUpToDate = currentNextMadeUpToDate;
     }
 
-    public boolean isDue() {
+    public Boolean isDue() {
         return due;
     }
 
-    public void setDue(boolean due) {
+    public void setDue(Boolean due) {
         this.due = due;
     }
 
