@@ -24,6 +24,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapi
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapperImpl;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,6 +88,8 @@ class JsonDaoMappingTest {
         ShareholderDataDao shareholderDao = dao.getData().getShareholdersData();
         RegisterLocationsDataJson rlJson = json.getData().getRegisterLocationsData();
         RegisterLocationsDataDao rlDao = dao.getData().getRegisterLocationsData();
+        LocalDate madeUpToDateDao = dao.getData().getMadeUpToDate();
+        LocalDate madeUpToDateJson = json.getData().getMadeUpToDate();
 
 
         assertEquals(sicJson.getCode(), sicDao.getCode());
@@ -95,5 +98,6 @@ class JsonDaoMappingTest {
         assertEquals(dirJson.getSectionStatus(), dirDao.getSectionStatus());
         assertEquals(shareholderJson.getSectionStatus(), shareholderDao.getSectionStatus());
         assertEquals(rlJson.getSectionStatus(), rlDao.getSectionStatus());
+        assertEquals(madeUpToDateJson, madeUpToDateDao);
     }
 }
