@@ -11,7 +11,7 @@ public class CostService {
 
     @Value("${CS01_COST}")
     private String costAmount;
-    private static final String COST_DESC = "The amount to pay for filing a CS01";
+    private static final String COST_DESC = "Annual confirmation statement fee";
     private static final String PAYMENT_ACCOUNT = "data-maintenance";
 
     public Cost getCosts() {
