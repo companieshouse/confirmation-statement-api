@@ -20,6 +20,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Service
 public class ConfirmationStatementService {
@@ -50,6 +52,7 @@ public class ConfirmationStatementService {
     private final TransactionService transactionService;
     private final ConfirmationStatementJsonDaoMapper confirmationStatementJsonDaoMapper;
     private final OracleQueryClient oracleQueryClient;
+    private final Supplier<LocalDate> localDateNow;
 
     @Autowired
     public ConfirmationStatementService(CompanyProfileService companyProfileService,
@@ -57,13 +60,15 @@ public class ConfirmationStatementService {
                                         ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository,
                                         TransactionService transactionService,
                                         ConfirmationStatementJsonDaoMapper confirmationStatementJsonDaoMapper,
-                                        OracleQueryClient oracleQueryClient) {
+                                        OracleQueryClient oracleQueryClient,
+                                        Supplier<LocalDate> localDateNow) {
         this.companyProfileService = companyProfileService;
         this.eligibilityService = eligibilityService;
         this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
         this.transactionService = transactionService;
         this.confirmationStatementJsonDaoMapper = confirmationStatementJsonDaoMapper;
         this.oracleQueryClient = oracleQueryClient;
+        this.localDateNow = localDateNow;
     }
 
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
@@ -191,4 +196,37 @@ public class ConfirmationStatementService {
             return Optional.empty();
         }
     }
+
+    public NextMadeUpToDateJson getNextMadeUpToDate(String companyNumber) throws CompanyNotFoundException, ServiceException {
+        CompanyProfileApi companyProfileApi = companyProfileService.getCompanyProfile(companyNumber);
+
+        if (companyProfileApi == null) {
+            throw new ServiceException(String.format("Unable to find company profile for company %s", companyNumber));
+        }
+
+        NextMadeUpToDateJson nextMadeUpToDateJson = new NextMadeUpToDateJson();
+
+        if (companyProfileApi.getConfirmationStatement() == null
+            || companyProfileApi.getConfirmationStatement().getNextMadeUpTo() == null) {
+                nextMadeUpToDateJson.setCurrentNextMadeUpToDate(null);
+                nextMadeUpToDateJson.setDue(null);
+                nextMadeUpToDateJson.setNewNextMadeUpToDate(null);
+                return nextMadeUpToDateJson;
+        }
+
+        LocalDate nextMadeUpToDate = companyProfileApi.getConfirmationStatement().getNextMadeUpTo();
+        nextMadeUpToDateJson.setCurrentNextMadeUpToDate(nextMadeUpToDate.format(DateTimeFormatter.ISO_DATE));
+        LocalDate today = localDateNow.get();
+
+        if (today.isBefore(nextMadeUpToDate)) {
+            nextMadeUpToDateJson.setDue(false);
+            nextMadeUpToDateJson.setNewNextMadeUpToDate(today.format(DateTimeFormatter.ISO_DATE));
+        } else {
+            nextMadeUpToDateJson.setDue(true);
+            nextMadeUpToDateJson.setNewNextMadeUpToDate(null);
+        }
+
+        return nextMadeUpToDateJson;
+    }
+
 }
