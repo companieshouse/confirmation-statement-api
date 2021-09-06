@@ -13,6 +13,9 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
@@ -32,8 +35,8 @@ class NextMadeUpToDateControllerTest {
     @BeforeAll
     static void beforeAll() {
         NEXT_MADE_UP_TO_DATE_JSON.setDue(false);
-        NEXT_MADE_UP_TO_DATE_JSON.setNewNextMadeUpToDate("2021-06-19");
-        NEXT_MADE_UP_TO_DATE_JSON.setCurrentNextMadeUpToDate("2021-07-21");
+        NEXT_MADE_UP_TO_DATE_JSON.setNewNextMadeUpToDate(LocalDate.parse("2021-06-19", DateTimeFormatter.ISO_DATE));
+        NEXT_MADE_UP_TO_DATE_JSON.setCurrentNextMadeUpToDate(LocalDate.parse("2021-07-21", DateTimeFormatter.ISO_DATE));
     }
 
     @Test

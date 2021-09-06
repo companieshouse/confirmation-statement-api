@@ -30,6 +30,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyVali
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -51,6 +52,7 @@ class ConfirmationStatementServiceTest {
     private static final String COMPANY_NUMBER = "12345678";
     private static final String PASS_THROUGH = "13456";
     private static final String SUBMISSION_ID = "abcdefg";
+    private static final LocalDate NEXT_MADE_UP_TO_DATE = LocalDate.of(2022, 2, 27);
 
     @Mock
     private CompanyProfileService companyProfileService;
@@ -75,6 +77,9 @@ class ConfirmationStatementServiceTest {
 
     @Captor
     private ArgumentCaptor<Transaction> transactionCaptor;
+
+    @Captor
+    private ArgumentCaptor<ConfirmationStatementSubmissionDao> submissionCaptor;
 
     @InjectMocks
     private ConfirmationStatementService confirmationStatementService;
@@ -110,6 +115,8 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(true);
+        LocalDate today = LocalDate.of(2021, 04, 14);
+        when(localDateSupplier.get()).thenReturn(today);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
@@ -140,6 +147,8 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(false);
+        LocalDate today = LocalDate.of(2021, 04, 14);
+        when(localDateSupplier.get()).thenReturn(today);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
@@ -150,6 +159,10 @@ class ConfirmationStatementServiceTest {
         Map<String, String> links = transactionSent.getResources().get("/transactions/abc/confirmation-statement/ID").getLinks();
         String costs = links.get("costs");
         assertEquals("/transactions/abc/confirmation-statement/ID/costs", costs);
+
+        verify(confirmationStatementSubmissionsRepository).save(submissionCaptor.capture());
+        var confirmationStatementSubmissionDao = submissionCaptor.getValue();
+        assertEquals(today, confirmationStatementSubmissionDao.getData().getMadeUpToDate());
     }
 
     @Test
@@ -168,6 +181,8 @@ class ConfirmationStatementServiceTest {
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
+        LocalDate today = LocalDate.of(2021, 04, 14);
+        when(localDateSupplier.get()).thenReturn(today);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
@@ -322,9 +337,9 @@ class ConfirmationStatementServiceTest {
 
         NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER);
 
-        assertEquals("2022-02-27", nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
+        assertEquals(LocalDate.parse("2022-02-27", DateTimeFormatter.ISO_DATE), nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
         assertFalse(nextMadeUpToDateJson.isDue());
-        assertEquals("2021-01-01", nextMadeUpToDateJson.getNewNextMadeUpToDate());
+        assertEquals(LocalDate.parse("2021-01-01", DateTimeFormatter.ISO_DATE), nextMadeUpToDateJson.getNewNextMadeUpToDate());
     }
 
     @Test
@@ -336,7 +351,7 @@ class ConfirmationStatementServiceTest {
 
         NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER);
 
-        assertEquals("2022-02-27", nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
+        assertEquals(LocalDate.parse("2022-02-27", DateTimeFormatter.ISO_DATE), nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
         assertTrue(nextMadeUpToDateJson.isDue());
         assertNull(nextMadeUpToDateJson.getNewNextMadeUpToDate());
     }
@@ -350,7 +365,7 @@ class ConfirmationStatementServiceTest {
 
         NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER);
 
-        assertEquals("2022-02-27", nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
+        assertEquals(LocalDate.parse("2022-02-27", DateTimeFormatter.ISO_DATE), nextMadeUpToDateJson.getCurrentNextMadeUpToDate());
         assertTrue(nextMadeUpToDateJson.isDue());
         assertNull(nextMadeUpToDateJson.getNewNextMadeUpToDate());
     }
@@ -401,7 +416,7 @@ class ConfirmationStatementServiceTest {
         companyProfileApi.setCompanyStatus("AcceptValue");
         ConfirmationStatementApi confirmationStatement = new ConfirmationStatementApi();
         confirmationStatement.setNextDue(LocalDate.of(2022,1,1));
-        confirmationStatement.setNextMadeUpTo(LocalDate.of(2022, 2, 27));
+        confirmationStatement.setNextMadeUpTo(NEXT_MADE_UP_TO_DATE);
         companyProfileApi.setConfirmationStatement(confirmationStatement);
         return companyProfileApi;
     }

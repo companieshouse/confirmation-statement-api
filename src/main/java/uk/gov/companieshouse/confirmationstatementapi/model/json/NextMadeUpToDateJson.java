@@ -1,12 +1,16 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.LocalDate;
 
 public class NextMadeUpToDateJson {
 
     @JsonProperty("current_next_made_up_to_date")
-    private String currentNextMadeUpToDate;
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDate currentNextMadeUpToDate;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("is_due")
@@ -14,14 +18,15 @@ public class NextMadeUpToDateJson {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("new_next_made_up_to_date")
-    private String newNextMadeUpToDate;
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDate newNextMadeUpToDate;
 
 
-    public String getCurrentNextMadeUpToDate() {
+    public LocalDate getCurrentNextMadeUpToDate() {
         return currentNextMadeUpToDate;
     }
 
-    public void setCurrentNextMadeUpToDate(String currentNextMadeUpToDate) {
+    public void setCurrentNextMadeUpToDate(LocalDate currentNextMadeUpToDate) {
         this.currentNextMadeUpToDate = currentNextMadeUpToDate;
     }
 
@@ -33,11 +38,11 @@ public class NextMadeUpToDateJson {
         this.due = due;
     }
 
-    public String getNewNextMadeUpToDate() {
+    public LocalDate getNewNextMadeUpToDate() {
         return newNextMadeUpToDate;
     }
 
-    public void setNewNextMadeUpToDate(String newNextMadeUpToDate) {
+    public void setNewNextMadeUpToDate(LocalDate newNextMadeUpToDate) {
         this.newNextMadeUpToDate = newNextMadeUpToDate;
     }
 }
