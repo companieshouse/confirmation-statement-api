@@ -338,6 +338,33 @@
           }
         }
       }
+    },
+    "/confirmation-statement/company/{company-number}/next-made-up-to-date": {
+      "parameters": [
+        {
+          "name": "company-number",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        }
+      ],
+      "get": {
+        "summary": "Gets the confirmation statement next made up to date information for the company",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Next Made Up To Date"
+        ],
+        "responses": {
+          "200": {
+            "description": "Next made up to date information",
+            "schema": {
+              "$ref": "#/definitions/NextMadeUpToDateResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -592,7 +619,7 @@
         }
       }
     },
-    "ShareholderResponse": {
+    "ShareholdersResponse": {
       "type": "object",
       "properties": {
         "fore_name_1": {
@@ -605,13 +632,13 @@
           "type": "string"
         },
         "shares": {
-          "type": "long"
+          "type": "number"
         },
         "share_class_type_id": {
-          "type": "long"
+          "type": "number"
         },
         "currency_type_id": {
-          "type": "long"
+          "type": "number"
         }
       }
     },
@@ -651,6 +678,25 @@
           }
         }
       }
+    },
+    "NextMadeUpToDateResponse": {
+      "type": "object",
+      "properties": {
+        "current_next_made_up_to_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "is_due": {
+          "type": "boolean"
+        },
+        "new_next_made_up_to_date": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "current_next_made_up_to_date"
+      ]
     }
   }
 }
