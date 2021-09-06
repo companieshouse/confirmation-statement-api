@@ -6,6 +6,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStat
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
@@ -14,6 +15,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapit
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
@@ -83,6 +85,8 @@ class JsonDaoMappingTest {
         ActiveDirectorDetailsDataDao dirDao = dao.getData().getActiveDirectorDetailsData();
         ShareholderDataJson shareholderJson = json.getData().getShareholdersData();
         ShareholderDataDao shareholderDao = dao.getData().getShareholdersData();
+        RegisterLocationsDataJson rlJson = json.getData().getRegisterLocationsData();
+        RegisterLocationsDataDao rlDao = dao.getData().getRegisterLocationsData();
 
 
         assertEquals(sicJson.getCode(), sicDao.getCode());
@@ -90,5 +94,6 @@ class JsonDaoMappingTest {
         assertEquals(roaJson.getSectionStatus(), roaDao.getSectionStatus());
         assertEquals(dirJson.getSectionStatus(), dirDao.getSectionStatus());
         assertEquals(shareholderJson.getSectionStatus(), shareholderDao.getSectionStatus());
+        assertEquals(rlJson.getSectionStatus(), rlDao.getSectionStatus());
     }
 }

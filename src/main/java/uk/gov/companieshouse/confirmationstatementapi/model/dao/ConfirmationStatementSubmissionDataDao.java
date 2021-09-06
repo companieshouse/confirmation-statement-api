@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
@@ -29,6 +30,9 @@ public class ConfirmationStatementSubmissionDataDao {
 
     @Field("shareholder_data")
     private ShareholderDataDao shareholderData;
+
+    @Field("register_locations_data")
+    private RegisterLocationsDataDao registerLocationsData;
 
     @Field("confirmation_statement_made_up_to_date")
     private LocalDate madeUpToDate;
@@ -79,6 +83,14 @@ public class ConfirmationStatementSubmissionDataDao {
 
     public void setShareholdersData(ShareholderDataDao shareholderDataDao) {
         this.shareholderData = shareholderDataDao;
+    }
+
+    public RegisterLocationsDataDao getRegisterLocationsData() {
+        return registerLocationsData;
+    }
+
+    public void setRegisterLocationsData(RegisterLocationsDataDao registerLocationsData) {
+        this.registerLocationsData = registerLocationsData;
     }
 
     public LocalDate getMadeUpToDate() {
