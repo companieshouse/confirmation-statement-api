@@ -59,7 +59,7 @@
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-sdk-java</artifactId>
-            <version>4.3.7</version>
+            <version>4.3.8</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
