@@ -145,37 +145,39 @@ public class ConfirmationStatementService {
 
     public ValidationStatusResponse areTasksComplete(String submissionId) throws SubmissionNotFoundException {
         Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
-        if (submissionJsonOptional.isEmpty()) {
+
+        if(submissionJsonOptional.isPresent()) {
+            ValidationStatusResponse validationStatus = new ValidationStatusResponse();
+            ConfirmationStatementSubmissionJson submission = submissionJsonOptional.get();
+            ConfirmationStatementSubmissionDataJson submissionData = submission.getData();
+
+            if (submissionData == null) {
+                validationStatus.setValid(false);
+            } else {
+
+                boolean isValid = isConfirmed(submissionData.getShareholdersData()) &&
+                        isConfirmed(submissionData.getSicCodeData()) &&
+                        isConfirmed(submissionData.getActiveDirectorDetailsData()) &&
+                        isConfirmed(submissionData.getStatementOfCapitalData()) &&
+                        isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
+                        isConfirmed(submissionData.getPersonsSignificantControlData()) &&
+                        isConfirmed(submissionData.getRegisterLocationsData());
+                validationStatus.setValid(isValid);
+            }
+            if (!validationStatus.isValid()) {
+                ValidationStatusError[] errors = new ValidationStatusError[1];
+                ValidationStatusError error = new ValidationStatusError();
+                error.setType("ch:validation");
+                errors[0] = error;
+                validationStatus.setValidationStatusError(errors);
+            }
+
+
+            return validationStatus;
+        } else  {
             throw new SubmissionNotFoundException(
-                    String.format("Could not find submission data for submission %s", submissionId));
+                String.format("Could not find submission data for submission %s", submissionId));
         }
-
-        ValidationStatusResponse validationStatus = new ValidationStatusResponse();
-        ConfirmationStatementSubmissionJson submission = submissionJsonOptional.get();
-        ConfirmationStatementSubmissionDataJson submissionData = submission.getData();
-
-        if (submissionData == null) {
-            validationStatus.setValid(false);
-        } else {
-
-           boolean isValid = isConfirmed(submissionData.getShareholdersData()) &&
-                    isConfirmed(submissionData.getSicCodeData()) &&
-                    isConfirmed(submissionData.getActiveDirectorDetailsData()) &&
-                    isConfirmed(submissionData.getStatementOfCapitalData()) &&
-                    isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
-                    isConfirmed(submissionData.getPersonsSignificantControlData()) &&
-                    isConfirmed(submissionData.getRegisterLocationsData());
-           validationStatus.setValid(isValid);
-        }
-        if (!validationStatus.isValid()) {
-            ValidationStatusError[] errors = new ValidationStatusError[1];
-            ValidationStatusError error = new ValidationStatusError();
-            error.setType("ch:validation");
-            errors[0] = error;
-            validationStatus.setValidationStatusError(errors);
-        }
-
-        return validationStatus;
     }
 
     private boolean isConfirmed(SectionDataJson sectionData) {
