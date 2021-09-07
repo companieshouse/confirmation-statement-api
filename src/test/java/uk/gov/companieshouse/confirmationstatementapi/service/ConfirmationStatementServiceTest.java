@@ -53,6 +53,7 @@ class ConfirmationStatementServiceTest {
     private static final String PASS_THROUGH = "13456";
     private static final String SUBMISSION_ID = "abcdefg";
     private static final LocalDate NEXT_MADE_UP_TO_DATE = LocalDate.of(2022, 2, 27);
+    private static final String NEXT_MADE_UP_TO_DATE_STRING = NEXT_MADE_UP_TO_DATE.format(DateTimeFormatter.ISO_DATE);
 
     @Mock
     private CompanyProfileService companyProfileService;
@@ -114,7 +115,7 @@ class ConfirmationStatementServiceTest {
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
-        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(true);
+        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2021-04-14")).thenReturn(true);
         LocalDate today = LocalDate.of(2021, 04, 14);
         when(localDateSupplier.get()).thenReturn(today);
 
@@ -146,8 +147,8 @@ class ConfirmationStatementServiceTest {
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
-        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01")).thenReturn(false);
-        LocalDate today = LocalDate.of(2021, 04, 14);
+        when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, NEXT_MADE_UP_TO_DATE_STRING)).thenReturn(false);
+        LocalDate today = LocalDate.of(2022, 04, 14);
         when(localDateSupplier.get()).thenReturn(today);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
@@ -162,7 +163,7 @@ class ConfirmationStatementServiceTest {
 
         verify(confirmationStatementSubmissionsRepository).save(submissionCaptor.capture());
         var confirmationStatementSubmissionDao = submissionCaptor.getValue();
-        assertEquals(today, confirmationStatementSubmissionDao.getData().getMadeUpToDate());
+        assertEquals(NEXT_MADE_UP_TO_DATE, confirmationStatementSubmissionDao.getData().getMadeUpToDate());
     }
 
     @Test

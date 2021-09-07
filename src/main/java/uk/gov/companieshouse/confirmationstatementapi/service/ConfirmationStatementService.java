@@ -74,8 +74,9 @@ public class ConfirmationStatementService {
 
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
         CompanyProfileApi companyProfile;
+        String companyNumber = transaction.getCompanyNumber();
         try {
-            companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
+            companyProfile = companyProfileService.getCompanyProfile(companyNumber);
         } catch (CompanyNotFoundException e) {
             throw new ServiceException("Error retrieving company profile", e);
         }
@@ -93,7 +94,8 @@ public class ConfirmationStatementService {
         insertedSubmission.setLinks(Collections.singletonMap("self", createdUri));
 
         ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
-        data.setMadeUpToDate(getMadeUpToDate(transaction.getCompanyNumber(), companyProfile));
+        LocalDate madeUpToDate = getMadeUpToDate(companyNumber, companyProfile);
+        data.setMadeUpToDate(madeUpToDate);
         insertedSubmission.setData(data);
 
         var updatedSubmission = confirmationStatementSubmissionsRepository.save(insertedSubmission);
@@ -107,7 +109,7 @@ public class ConfirmationStatementService {
             linksMap.put("validation_status", validationStatusLink);
         }
         if (isPaymentCheckFeatureEnabled) {
-            makePayableResourceIfUnpaid(createdUri, linksMap, companyProfile);
+            makePayableResourceIfUnpaid(createdUri, linksMap, madeUpToDate, companyNumber);
         }
 
         csResource.setLinks(linksMap);
@@ -132,11 +134,9 @@ public class ConfirmationStatementService {
 
     private void makePayableResourceIfUnpaid(String createdUri,
                                              Map<String, String> linksMap,
-                                             CompanyProfileApi companyProfile) throws ServiceException {
-
-        LocalDate nextDue = companyProfile.getConfirmationStatement().getNextDue();
-        if (!oracleQueryClient.isConfirmationStatementPaid(companyProfile.getCompanyNumber(),
-                nextDue.format(dateTimeFormatter))) {
+                                             LocalDate madeUpToDate, String companyNumber) throws ServiceException {
+        if (!oracleQueryClient.isConfirmationStatementPaid(companyNumber,
+                madeUpToDate.format(dateTimeFormatter))) {
             String costsLink = createdUri + "/costs";
             linksMap.put("costs", costsLink);
         }
