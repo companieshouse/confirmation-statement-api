@@ -1,25 +1,27 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.TradingStatusDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonSignificantControlDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
@@ -37,6 +39,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setActiveDirectorDetailsData(getActiveDirectorDetailsJsonData());
         data.setShareholdersData(getShareholdersJsonData());
         data.setRegisterLocationsData(getRegisterLocationsData());
+        data.setTradingStatusData(getTradingStatusData());
         return data;
     }
 
@@ -113,6 +116,13 @@ public class MockConfirmationStatementSubmissionData {
         return registerLocationsData;
     }
 
+    private static TradingStatusDataJson getTradingStatusData() {
+        var tradingStatusData = new TradingStatusDataJson();
+        tradingStatusData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        return tradingStatusData;
+    }
+
     static ConfirmationStatementSubmissionDataDao getMockDaoData() {
         ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
         data.setStatementOfCapitalData(getStatementOfCapitalDaoData());
@@ -122,6 +132,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setActiveDirectorDetailsData(getActiveDirectorDetailsDaoData());
         data.setShareholdersData(getShareholdersDaoData());
         data.setRegisterLocationsData(getRegisterLocationsDaoData());
+        data.setTradingStatusData(getTradingStatusDaoData());
         return data;
     }
 
@@ -196,5 +207,12 @@ public class MockConfirmationStatementSubmissionData {
         registerLocationsData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
 
         return registerLocationsData;
+    }
+
+    private static TradingStatusDataDao getTradingStatusDaoData() {
+        var tradingStatusData = new TradingStatusDataDao();
+        tradingStatusData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        return tradingStatusData;
     }
 }
