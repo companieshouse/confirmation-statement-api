@@ -37,7 +37,7 @@ class OracleQueryClientTest {
     private static final String SOC_PATH = "/statement-of-capital";
     private static final String SHAREHOLDER_PATH = "/shareholders";
     private static final String REGISTER_LOCATIONS_PATH = "/register/location";
-    private static final String PAYMENT_PATH = "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid?payment_period_due_date=2022-01-01";
+    private static final String PAYMENT_PATH = "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid?payment_period_made_up_to_date=2022-01-01";
 
 
     @Mock
