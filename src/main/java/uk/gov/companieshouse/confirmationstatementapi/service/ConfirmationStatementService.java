@@ -163,7 +163,8 @@ public class ConfirmationStatementService {
                     isConfirmed(submissionData.getActiveDirectorDetailsData()) &&
                     isConfirmed(submissionData.getStatementOfCapitalData()) &&
                     isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
-                    isConfirmed(submissionData.getPersonsSignificantControlData());
+                    isConfirmed(submissionData.getPersonsSignificantControlData()) &&
+                    isConfirmed(submissionData.getRegisterLocationsData());
            validationStatus.setValid(isValid);
         }
         if (!validationStatus.isValid()) {
