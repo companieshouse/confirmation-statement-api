@@ -414,6 +414,6 @@ class ConfirmationStatementServiceTest {
         data.getShareholdersData() .setSectionStatus(SectionStatus.CONFIRMED);
         data.getRegisteredOfficeAddressData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getPersonsSignificantControlData().setSectionStatus(SectionStatus.CONFIRMED);
-
+        data.getRegisterLocationsData().setSectionStatus(SectionStatus.CONFIRMED);
     }
 }
