@@ -18,6 +18,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
@@ -73,8 +74,9 @@ public class ConfirmationStatementService {
 
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
         CompanyProfileApi companyProfile;
+        String companyNumber = transaction.getCompanyNumber();
         try {
-            companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
+            companyProfile = companyProfileService.getCompanyProfile(companyNumber);
         } catch (CompanyNotFoundException e) {
             throw new ServiceException("Error retrieving company profile", e);
         }
@@ -91,6 +93,11 @@ public class ConfirmationStatementService {
         String createdUri = "/transactions/" + transaction.getId() + csInsertedSubmission;
         insertedSubmission.setLinks(Collections.singletonMap("self", createdUri));
 
+        ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
+        LocalDate madeUpToDate = getMadeUpToDate(companyNumber, companyProfile);
+        data.setMadeUpToDate(madeUpToDate);
+        insertedSubmission.setData(data);
+
         var updatedSubmission = confirmationStatementSubmissionsRepository.save(insertedSubmission);
 
         var csResource = new Resource();
@@ -102,7 +109,7 @@ public class ConfirmationStatementService {
             linksMap.put("validation_status", validationStatusLink);
         }
         if (isPaymentCheckFeatureEnabled) {
-            makePayableResourceIfUnpaid(createdUri, linksMap, companyProfile);
+            makePayableResourceIfUnpaid(createdUri, linksMap, madeUpToDate, companyNumber);
         }
 
         csResource.setLinks(linksMap);
@@ -115,13 +122,21 @@ public class ConfirmationStatementService {
         return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
     }
 
+    private LocalDate getMadeUpToDate(String companyNumber, CompanyProfileApi companyProfileApi) throws ServiceException {
+        NextMadeUpToDateJson nextMadeUpToDateJson = getNextMadeUpToDateJson(companyNumber, companyProfileApi);
+
+        if (nextMadeUpToDateJson.getNewNextMadeUpToDate() != null) {
+            return nextMadeUpToDateJson.getNewNextMadeUpToDate();
+        }
+
+        return nextMadeUpToDateJson.getCurrentNextMadeUpToDate();
+    }
+
     private void makePayableResourceIfUnpaid(String createdUri,
                                              Map<String, String> linksMap,
-                                             CompanyProfileApi companyProfile) throws ServiceException {
-
-        LocalDate nextDue = companyProfile.getConfirmationStatement().getNextDue();
-        if (!oracleQueryClient.isConfirmationStatementPaid(companyProfile.getCompanyNumber(),
-                nextDue.format(dateTimeFormatter))) {
+                                             LocalDate madeUpToDate, String companyNumber) throws ServiceException {
+        if (!oracleQueryClient.isConfirmationStatementPaid(companyNumber,
+                madeUpToDate.format(dateTimeFormatter))) {
             String costsLink = createdUri + "/costs";
             linksMap.put("costs", costsLink);
         }
@@ -200,9 +215,14 @@ public class ConfirmationStatementService {
         }
     }
 
+
     public NextMadeUpToDateJson getNextMadeUpToDate(String companyNumber) throws CompanyNotFoundException, ServiceException {
         CompanyProfileApi companyProfileApi = companyProfileService.getCompanyProfile(companyNumber);
 
+        return getNextMadeUpToDateJson(companyNumber, companyProfileApi);
+    }
+
+    private NextMadeUpToDateJson getNextMadeUpToDateJson(String companyNumber, CompanyProfileApi companyProfileApi) throws ServiceException {
         if (companyProfileApi == null) {
             throw new ServiceException(String.format("Unable to find company profile for company %s", companyNumber));
         }
@@ -218,12 +238,12 @@ public class ConfirmationStatementService {
         }
 
         LocalDate nextMadeUpToDate = companyProfileApi.getConfirmationStatement().getNextMadeUpTo();
-        nextMadeUpToDateJson.setCurrentNextMadeUpToDate(nextMadeUpToDate.format(DateTimeFormatter.ISO_DATE));
+        nextMadeUpToDateJson.setCurrentNextMadeUpToDate(nextMadeUpToDate);
         LocalDate today = localDateNow.get();
 
         if (today.isBefore(nextMadeUpToDate)) {
             nextMadeUpToDateJson.setDue(false);
-            nextMadeUpToDateJson.setNewNextMadeUpToDate(today.format(DateTimeFormatter.ISO_DATE));
+            nextMadeUpToDateJson.setNewNextMadeUpToDate(today);
         } else {
             nextMadeUpToDateJson.setDue(true);
             nextMadeUpToDateJson.setNewNextMadeUpToDate(null);
@@ -231,5 +251,6 @@ public class ConfirmationStatementService {
 
         return nextMadeUpToDateJson;
     }
+
 
 }

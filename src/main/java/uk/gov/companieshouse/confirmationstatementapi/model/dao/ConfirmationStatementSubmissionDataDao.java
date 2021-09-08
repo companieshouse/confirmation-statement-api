@@ -9,6 +9,8 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.Shar
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 
+import java.time.LocalDate;
+
 public class ConfirmationStatementSubmissionDataDao {
 
     @Field("statement_of_capital_data")
@@ -31,6 +33,9 @@ public class ConfirmationStatementSubmissionDataDao {
 
     @Field("register_locations_data")
     private RegisterLocationsDataDao registerLocationsData;
+
+    @Field("confirmation_statement_made_up_to_date")
+    private LocalDate madeUpToDate;
 
     @Field("trading_status")
     private TradingStatusDataDao tradingStatusData;
@@ -89,6 +94,14 @@ public class ConfirmationStatementSubmissionDataDao {
 
     public void setRegisterLocationsData(RegisterLocationsDataDao registerLocationsData) {
         this.registerLocationsData = registerLocationsData;
+    }
+
+    public LocalDate getMadeUpToDate() {
+        return madeUpToDate;
+    }
+
+    public void setMadeUpToDate(LocalDate madeUpToDate) {
+        this.madeUpToDate = madeUpToDate;
     }
 
     public TradingStatusDataDao getTradingStatusData() {

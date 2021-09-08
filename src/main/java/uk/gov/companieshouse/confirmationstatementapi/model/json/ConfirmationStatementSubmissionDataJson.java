@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
@@ -8,6 +9,8 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocatio
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
+
+import java.time.LocalDate;
 
 public class ConfirmationStatementSubmissionDataJson {
 
@@ -31,6 +34,10 @@ public class ConfirmationStatementSubmissionDataJson {
 
     @JsonProperty("register_locations_data")
     private RegisterLocationsDataJson registerLocationsData;
+
+    @JsonProperty("confirmation_statement_made_up_to_date")
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDate madeUpToDate;
 
     @JsonProperty("trading_status")
     private TradingStatusDataJson tradingStatusData;
@@ -89,6 +96,14 @@ public class ConfirmationStatementSubmissionDataJson {
 
     public void setRegisterLocationsData(RegisterLocationsDataJson registerLocationsData) {
         this.registerLocationsData = registerLocationsData;
+    }
+
+    public LocalDate getMadeUpToDate() {
+        return madeUpToDate;
+    }
+
+    public void setMadeUpToDate(LocalDate madeUpToDate) {
+        this.madeUpToDate = madeUpToDate;
     }
 
     public TradingStatusDataJson getTradingStatusData() {
