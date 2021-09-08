@@ -122,6 +122,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setActiveDirectorDetailsData(getActiveDirectorDetailsDaoData());
         data.setShareholdersData(getShareholdersDaoData());
         data.setRegisterLocationsData(getRegisterLocationsDaoData());
+        data.setMadeUpToDate(LocalDate.of(2021, 5, 12));
         return data;
     }
 
