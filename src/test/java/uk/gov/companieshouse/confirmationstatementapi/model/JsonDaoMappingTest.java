@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.TradingStatusDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
@@ -13,6 +14,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeD
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
@@ -90,6 +92,8 @@ class JsonDaoMappingTest {
         RegisterLocationsDataDao rlDao = dao.getData().getRegisterLocationsData();
         LocalDate madeUpToDateDao = dao.getData().getMadeUpToDate();
         LocalDate madeUpToDateJson = json.getData().getMadeUpToDate();
+        TradingStatusDataJson tsJson = json.getData().getTradingStatusData();
+        TradingStatusDataDao tsDao = dao.getData().getTradingStatusData();
 
 
         assertEquals(sicJson.getCode(), sicDao.getCode());
@@ -99,5 +103,6 @@ class JsonDaoMappingTest {
         assertEquals(shareholderJson.getSectionStatus(), shareholderDao.getSectionStatus());
         assertEquals(rlJson.getSectionStatus(), rlDao.getSectionStatus());
         assertEquals(madeUpToDateJson, madeUpToDateDao);
+        assertEquals(tsJson.getSectionStatus(), tsDao.getSectionStatus());
     }
 }

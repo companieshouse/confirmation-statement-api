@@ -3,10 +3,10 @@ package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 
 import java.time.LocalDate;
@@ -36,6 +36,9 @@ public class ConfirmationStatementSubmissionDataDao {
 
     @Field("confirmation_statement_made_up_to_date")
     private LocalDate madeUpToDate;
+
+    @Field("trading_status")
+    private TradingStatusDataDao tradingStatusData;
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -99,5 +102,13 @@ public class ConfirmationStatementSubmissionDataDao {
 
     public void setMadeUpToDate(LocalDate madeUpToDate) {
         this.madeUpToDate = madeUpToDate;
+    }
+
+    public TradingStatusDataDao getTradingStatusData() {
+        return tradingStatusData;
+    }
+
+    public void setTradingStatusData(TradingStatusDataDao tradingStatusData) {
+        this.tradingStatusData = tradingStatusData;
     }
 }
