@@ -3,6 +3,9 @@ package uk.gov.companieshouse.confirmationstatementapi;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
+
 @SpringBootApplication
 public class ConfirmationStatementApiApplication {
 
@@ -12,4 +15,10 @@ public class ConfirmationStatementApiApplication {
 		SpringApplication.run(ConfirmationStatementApiApplication.class, args);
 	}
 
+	@PostConstruct
+	public void init() {
+		// This is to prevent times being out of time by an hour during British Summer Time in MongoDB
+		// MongoDB stores UTC datetime, and LocalDate doesn't contain timezone
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	}
 }
