@@ -1,5 +1,5 @@
 app_name: confirmation-statement-api
-group: internalapi
+group: api
 
 weight: 900
 routes:
