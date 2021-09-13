@@ -37,7 +37,7 @@ public class ConfirmationStatementSubmissionDataDao {
     @Field("confirmation_statement_made_up_to_date")
     private LocalDate madeUpToDate;
 
-    @Field("trading_status")
+    @Field("trading_status_data")
     private TradingStatusDataDao tradingStatusData;
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {

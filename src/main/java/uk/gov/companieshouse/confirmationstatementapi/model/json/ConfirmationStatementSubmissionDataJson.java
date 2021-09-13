@@ -39,7 +39,7 @@ public class ConfirmationStatementSubmissionDataJson {
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate madeUpToDate;
 
-    @JsonProperty("trading_status")
+    @JsonProperty("trading_status_data")
     private TradingStatusDataJson tradingStatusData;
 
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
