@@ -634,11 +634,11 @@
         "shares": {
           "type": "number"
         },
-        "share_class_type_id": {
-          "type": "number"
+        "class_of_shares": {
+          "type": "string"
         },
-        "currency_type_id": {
-          "type": "number"
+        "currency": {
+          "type": "string"
         }
       }
     },

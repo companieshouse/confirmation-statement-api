@@ -15,11 +15,11 @@ public class ShareholderJson {
     @JsonProperty("shares")
     private Long shares;
 
-    @JsonProperty("share_class_type_id")
-    private Long shareClassTypeId;
+    @JsonProperty("class_of_shares")
+    private String classOfShares;
 
-    @JsonProperty("currency_type_id")
-    private Long currencyTypeId;
+    @JsonProperty("currency")
+    private String currency;
 
     public String getForeName1() {
         return foreName1;
@@ -53,20 +53,20 @@ public class ShareholderJson {
         this.shares = shares;
     }
 
-    public Long getShareClassTypeId() {
-        return shareClassTypeId;
+    public String getClassOfShares() {
+        return classOfShares;
     }
 
-    public void setShareClassTypeId(Long shareClassTypeId) {
-        this.shareClassTypeId = shareClassTypeId;
+    public void setClassOfShares(String classOfShares) {
+        this.classOfShares = classOfShares;
     }
 
-    public Long getCurrencyTypeId() {
-        return currencyTypeId;
+    public String getCurrency() {
+        return currency;
     }
 
-    public void setCurrencyTypeId(Long currencyTypeId) {
-        this.currencyTypeId = currencyTypeId;
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
 }
