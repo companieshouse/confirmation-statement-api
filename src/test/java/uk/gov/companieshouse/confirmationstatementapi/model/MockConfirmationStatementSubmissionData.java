@@ -39,7 +39,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setActiveDirectorDetailsData(getActiveDirectorDetailsJsonData());
         data.setShareholdersData(getShareholdersJsonData());
         data.setRegisterLocationsData(getRegisterLocationsData());
-        data.setTradingStatusData(getTradingStatusData());
+        data.setTradingStatusData(getTradingStatusJsonData());
         return data;
     }
 
@@ -116,9 +116,9 @@ public class MockConfirmationStatementSubmissionData {
         return registerLocationsData;
     }
 
-    private static TradingStatusDataJson getTradingStatusData() {
+    private static TradingStatusDataJson getTradingStatusJsonData() {
         var tradingStatusData = new TradingStatusDataJson();
-        tradingStatusData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+        tradingStatusData.setTradingStatusAnswer(false);
 
         return tradingStatusData;
     }
@@ -212,7 +212,7 @@ public class MockConfirmationStatementSubmissionData {
 
     private static TradingStatusDataDao getTradingStatusDaoData() {
         var tradingStatusData = new TradingStatusDataDao();
-        tradingStatusData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+        tradingStatusData.setTradingStatusAnswer(false);
 
         return tradingStatusData;
     }

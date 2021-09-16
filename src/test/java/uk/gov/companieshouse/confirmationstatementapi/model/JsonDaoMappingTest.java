@@ -103,6 +103,6 @@ class JsonDaoMappingTest {
         assertEquals(shareholderJson.getSectionStatus(), shareholderDao.getSectionStatus());
         assertEquals(rlJson.getSectionStatus(), rlDao.getSectionStatus());
         assertEquals(madeUpToDateJson, madeUpToDateDao);
-        assertEquals(tsJson.getSectionStatus(), tsDao.getSectionStatus());
+        assertEquals(tsJson.getTradingStatusAnswer(), tsDao.getTradingStatusAnswer());
     }
 }
