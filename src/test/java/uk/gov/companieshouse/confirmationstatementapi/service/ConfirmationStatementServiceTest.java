@@ -350,6 +350,31 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
+    void areTasksCompleteWithNullLocalDate() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(localDateSupplier.get()).thenReturn(null);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithNullMadeUpToDate() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        confirmationStatementSubmissionJson.getData().setMadeUpToDate(null);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 9, 12));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
     void areTasksCompleteNoSubmission() {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
         assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(SUBMISSION_ID));
