@@ -158,7 +158,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ValidationStatusResponse areTasksComplete(String submissionId) throws SubmissionNotFoundException {
+    public ValidationStatusResponse isValid(String submissionId) throws SubmissionNotFoundException {
         Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
 
         if(submissionJsonOptional.isPresent()) {
@@ -176,7 +176,8 @@ public class ConfirmationStatementService {
                         isConfirmed(submissionData.getStatementOfCapitalData()) &&
                         isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
                         isConfirmed(submissionData.getPersonsSignificantControlData()) &&
-                        isConfirmed(submissionData.getRegisterLocationsData());
+                        isConfirmed(submissionData.getRegisterLocationsData()) &&
+                        isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
                 validationStatus.setValid(isValid);
             }
             if (!validationStatus.isValid()) {
@@ -252,5 +253,11 @@ public class ConfirmationStatementService {
         return nextMadeUpToDateJson;
     }
 
+    private boolean isBeforeOrEqual(LocalDate date, LocalDate compareToDate) {
+        if (date == null || compareToDate == null) {
+            return false;
+        }
+        return !compareToDate.isAfter(date);
+    }
 
 }

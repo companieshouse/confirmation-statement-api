@@ -274,7 +274,8 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertTrue(validationStatusResponse.isValid());
     }
 
@@ -284,7 +285,7 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertFalse(validationStatusResponse.isValid());
     }
 
@@ -296,7 +297,8 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertTrue(validationStatusResponse.isValid());
     }
 
@@ -308,7 +310,7 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertFalse(validationStatusResponse.isValid());
     }
 
@@ -319,14 +321,63 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmissionJson.setData(null);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithMadeUpToDateEqual() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 9, 12));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        assertTrue(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithFutureMadeUpToDate() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 4, 12));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithNullLocalDate() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(localDateSupplier.get()).thenReturn(null);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithNullMadeUpToDate() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        confirmationStatementSubmissionJson.getData().setMadeUpToDate(null);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 9, 12));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertFalse(validationStatusResponse.isValid());
     }
 
     @Test
     void areTasksCompleteNoSubmission() {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
-        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(SUBMISSION_ID));
     }
 
     @Test

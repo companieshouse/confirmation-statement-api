@@ -40,6 +40,8 @@ public class MockConfirmationStatementSubmissionData {
         data.setShareholdersData(getShareholdersJsonData());
         data.setRegisterLocationsData(getRegisterLocationsData());
         data.setTradingStatusData(getTradingStatusJsonData());
+        data.setTradingStatusData(getTradingStatusJsonData());
+        data.setMadeUpToDate(LocalDate.of(2021, 9, 12));
         return data;
     }
 

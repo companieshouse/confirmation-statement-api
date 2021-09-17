@@ -124,7 +124,7 @@ class ConfirmationStatementControllerTest {
     void getTrueValidationStatus() throws SubmissionNotFoundException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
-        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenReturn(validationStatus);
+        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
         var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
@@ -138,7 +138,7 @@ class ConfirmationStatementControllerTest {
         error.setType("ch:validation");
         errors[0] = error;
         validationStatus.setValidationStatusError(errors);
-        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenReturn(validationStatus);
+        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
         var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
@@ -147,9 +147,9 @@ class ConfirmationStatementControllerTest {
     void getValidationStatusNotFound() throws SubmissionNotFoundException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
-        when(confirmationStatementService.areTasksComplete(SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
+        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
         var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
-        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.areTasksComplete(SUBMISSION_ID));
+        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(SUBMISSION_ID));
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
 }
