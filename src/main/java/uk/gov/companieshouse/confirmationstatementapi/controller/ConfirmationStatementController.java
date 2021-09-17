@@ -64,7 +64,7 @@ public class ConfirmationStatementController {
     @GetMapping("/{confirmation_statement_id}/validation-status")
     public ResponseEntity<Object> getValidationStatus(@PathVariable("confirmation_statement_id") String submissionId) {
         try {
-            ValidationStatusResponse validationStatusResponse = confirmationStatementService.areTasksComplete(submissionId);
+            ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (SubmissionNotFoundException e) {
             LOGGER.error(e.getMessage(), e);
