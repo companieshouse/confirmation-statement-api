@@ -58,4 +58,15 @@ class FilingInterceptorTest {
 
         assertFalse(result);
     }
+
+    @Test
+    void preHandleNoTransaction() throws IOException {
+        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+        Object mockHandler = new Object();
+
+        when(mockHttpServletRequest.getAttribute("transaction")).thenReturn(null);
+        var result = filingInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
+
+        assertFalse(result);
+    }
 }
