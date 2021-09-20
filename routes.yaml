@@ -1,7 +1,8 @@
 app_name: confirmation-statement-api
 group: api
 
-weight: 900
+weight: 90
 routes:
   1: ^/transactions/(.*)/confirmation-statement/*
   2: ^/confirmation-statement/*
+  3: ^/private/transactions/(.*)/confirmation-statement/(.*)/filings
