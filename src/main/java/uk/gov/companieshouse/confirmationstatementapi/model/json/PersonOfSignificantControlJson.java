@@ -17,6 +17,21 @@ public class PersonOfSignificantControlJson extends PscApi {
     @JsonProperty("service_address_post_town")
     private String serviceAddressPostTown;
 
+    @JsonProperty("service_address_po_box")
+    private String serviceAddressPoBox;
+
+    @JsonProperty("service_address_country_name")
+    private String serviceAddressCountryName;
+
+    @JsonProperty("service_address_care_of")
+    private String serviceAddressCareOf;
+
+    @JsonProperty("service_address_region")
+    private String serviceAddressRegion;
+
+    @JsonProperty("service_address_area")
+    private String serviceAddressArea;
+
     @JsonProperty("company_name")
     private String companyName;
 
@@ -104,4 +119,43 @@ public class PersonOfSignificantControlJson extends PscApi {
         this.dateOfBirthIso = dateOfBirthIso;
     }
 
+    public String getServiceAddressPoBox() {
+        return serviceAddressPoBox;
+    }
+
+    public void setServiceAddressPoBox(String serviceAddressPoBox) {
+        this.serviceAddressPoBox = serviceAddressPoBox;
+    }
+
+    public String getServiceAddressCountryName() {
+        return serviceAddressCountryName;
+    }
+
+    public void setServiceAddressCountryName(String serviceAddressCountryName) {
+        this.serviceAddressCountryName = serviceAddressCountryName;
+    }
+
+    public String getServiceAddressCareOf() {
+        return serviceAddressCareOf;
+    }
+
+    public void setServiceAddressCareOf(String serviceAddressCareOf) {
+        this.serviceAddressCareOf = serviceAddressCareOf;
+    }
+
+    public String getServiceAddressRegion() {
+        return serviceAddressRegion;
+    }
+
+    public void setServiceAddressRegion(String serviceAddressRegion) {
+        this.serviceAddressRegion = serviceAddressRegion;
+    }
+
+    public String getServiceAddressArea() {
+        return serviceAddressArea;
+    }
+
+    public void setServiceAddressArea(String serviceAddressArea) {
+        this.serviceAddressArea = serviceAddressArea;
+    }
 }

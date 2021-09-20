@@ -38,6 +38,7 @@ public class PscsMapper {
         address.setPremises(psc.getHouseNameNumber());
         address.setAddressLine2(psc.getStreet());
         address.setRegion(psc.getRegion());
+        address.setCareOf(psc.getCareOf());
 
         PersonOfSignificantControlJson pscJson = new PersonOfSignificantControlJson();
         pscJson.setAddress(address);
@@ -56,6 +57,11 @@ public class PscsMapper {
         pscJson.setServiceAddressLine1(psc.getServiceAddressLine1());
         pscJson.setServiceAddressPostCode(psc.getServiceAddressPostCode());
         pscJson.setServiceAddressPostTown(psc.getServiceAddressPostTown());
+        pscJson.setServiceAddressArea(psc.getServiceAddressArea());
+        pscJson.setServiceAddressCareOf(psc.getServiceAddressCareOf());
+        pscJson.setServiceAddressCountryName(psc.getServiceAddressCountryName());
+        pscJson.setServiceAddressPoBox(psc.getServiceAddressPoBox());
+        pscJson.setServiceAddressRegion(psc.getServiceAddressRegion());
 
         pscJson.setCompanyName(psc.getSuppliedCompanyName());
 
@@ -63,6 +69,7 @@ public class PscsMapper {
         pscJson.setLawGoverned(psc.getLawGoverned());
         pscJson.setLegalForm(psc.getLegalForm());
         pscJson.setCountryOfResidence(psc.getCountryOfResidence());
+
 
         return pscJson;
     }
