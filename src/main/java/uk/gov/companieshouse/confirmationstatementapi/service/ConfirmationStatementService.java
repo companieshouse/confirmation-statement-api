@@ -216,7 +216,6 @@ public class ConfirmationStatementService {
         }
     }
 
-
     public NextMadeUpToDateJson getNextMadeUpToDate(String companyNumber) throws CompanyNotFoundException, ServiceException {
         CompanyProfileApi companyProfileApi = companyProfileService.getCompanyProfile(companyNumber);
 
