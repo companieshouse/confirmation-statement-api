@@ -17,10 +17,10 @@ class FilingControllerTest {
     @Test
     void getFiling() {
         var transaction = new Transaction();
-        transaction.setCompanyNumber("12345678");
+        transaction.setDescription("12345678");
         var result = filingController.getFiling(transaction);
 
         assertNotNull(result.getBody());
-        assertEquals("12345678", result.getBody().getCompanyNumber());
+        assertEquals("12345678", result.getBody().getDescription());
     }
 }
