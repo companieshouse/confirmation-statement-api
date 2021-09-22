@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 
@@ -17,7 +16,7 @@ import java.util.Optional;
 @Service
 public class FilingService {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
     private ConfirmationStatementService confirmationStatementService;
     private Environment environment;
 
@@ -27,9 +26,9 @@ public class FilingService {
         environment = env;
     }
 
-    public FilingApi generateConfirmationFiling(Transaction transaction, String confirmationStatementId) throws SubmissionNotFoundException {
+    public FilingApi generateConfirmationFiling(String confirmationStatementId) throws SubmissionNotFoundException {
         FilingApi filing = new FilingApi();
-        filing.setKind("CS01");
+        filing.setKind("Confirmation Statement");
         setFilingApiData(filing, confirmationStatementId);
         setDescription(filing);
         return filing;
@@ -55,8 +54,12 @@ public class FilingService {
     private void setDescription(FilingApi filing) {
         LocalDate madeUpToDate = (LocalDate)filing.getData().get("confirmationStatementDate");
         String description = environment.getProperty("confirmation.statement.no.updates");
-        String madeUpDateStr = madeUpToDate.format(formatter);
-        filing.setDescription(description.replace("(made_up_date)", madeUpDateStr));
+        String madeUpToDateStr = madeUpToDate.format(formatter);
+        filing.setDescriptionIdentifier(description);
+        filing.setDescription(description.replace("{made up date}", madeUpToDateStr));
+        Map<String, String> values = new HashMap<>();
+        values.put("made up date", madeUpToDateStr);
+        filing.setDescriptionValues(values);
     }
 
 }

@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.service.FilingService;
@@ -24,11 +22,10 @@ public class FilingController {
     private FilingService filingService;
 
     @GetMapping
-    public ResponseEntity<FilingApi> getFiling(@RequestAttribute("transaction") Transaction transaction,
-                                               @PathVariable String confirmationStatementId) {
+    public ResponseEntity<FilingApi> getFiling(@PathVariable("confirmation_statement_id") String confirmationStatementId) {
         FilingApi filing = null;
         try {
-            filing = filingService.generateConfirmationFiling(transaction, confirmationStatementId);
+            filing = filingService.generateConfirmationFiling(confirmationStatementId);
             return ResponseEntity.ok(filing);
         } catch (SubmissionNotFoundException e) {
             LOGGER.error(e.getMessage(), e);

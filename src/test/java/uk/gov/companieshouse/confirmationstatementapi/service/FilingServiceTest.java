@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,11 +39,10 @@ class FilingServiceTest {
     void testWhenSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        when(environment.getProperty("confirmation.statement.no.updates")).thenReturn("**Confirmation statement** made on (made_up_date) with no updates");
+        when(environment.getProperty("confirmation.statement.no.updates")).thenReturn("**Confirmation statement** made on {made up date} with no updates");
         when(csService.getConfirmationStatement(CONFIRMATION_ID)).thenReturn(opt);
-        var transaction = new Transaction();
-        FilingApi filing = filingService.generateConfirmationFiling(transaction, CONFIRMATION_ID);
-        assertEquals("**Confirmation statement** made on 2021-06-01 with no updates", filing.getDescription());
+              FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_ID);
+        assertEquals("**Confirmation statement** made on 2021/06/01 with no updates", filing.getDescription());
         assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmationStatementDate"));
         assertFalse((Boolean) filing.getData().get("tradingOnMarket"));
         assertFalse((Boolean) filing.getData().get("dtr5Ind"));
@@ -54,7 +52,7 @@ class FilingServiceTest {
     void testWhenEmptySubmissionIsReturned() {
         when(csService.getConfirmationStatement(CONFIRMATION_ID)).thenReturn(Optional.empty());
         var transaction = new Transaction();
-        assertThrows(SubmissionNotFoundException.class, () -> filingService.generateConfirmationFiling(transaction, CONFIRMATION_ID));
+        assertThrows(SubmissionNotFoundException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_ID));
     }
 
     ConfirmationStatementSubmissionJson buildSubmissionJson() {

@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.service.FilingService;
 
@@ -27,11 +26,10 @@ class FilingControllerTest {
 
     @Test
     void getFiling() throws SubmissionNotFoundException {
-        var transaction = new Transaction();
         FilingApi filing = new FilingApi();
         filing.setDescription("12345678");
-        when(filingService.generateConfirmationFiling(transaction, CONFIRMATION_ID)).thenReturn(filing);
-        var result = filingController.getFiling(transaction, CONFIRMATION_ID);
+        when(filingService.generateConfirmationFiling(CONFIRMATION_ID)).thenReturn(filing);
+        var result = filingController.getFiling(CONFIRMATION_ID);
 
         assertNotNull(result.getBody());
         assertEquals("12345678", result.getBody().getDescription());
