@@ -23,9 +23,8 @@ public class FilingController {
 
     @GetMapping
     public ResponseEntity<FilingApi> getFiling(@PathVariable("confirmation_statement_id") String confirmationStatementId) {
-        FilingApi filing = null;
         try {
-            filing = filingService.generateConfirmationFiling(confirmationStatementId);
+            FilingApi filing = filingService.generateConfirmationFiling(confirmationStatementId);
             return ResponseEntity.ok(filing);
         } catch (SubmissionNotFoundException e) {
             LOGGER.error(e.getMessage(), e);

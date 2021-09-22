@@ -37,17 +37,18 @@ public class FilingService {
     private void setFilingApiData(FilingApi filing, String confirmationStatementId) throws SubmissionNotFoundException {
         Optional<ConfirmationStatementSubmissionJson> submissionOpt =
                 confirmationStatementService.getConfirmationStatement(confirmationStatementId);
-        if(submissionOpt.isEmpty()){
+        if(submissionOpt.isPresent()) {
+            ConfirmationStatementSubmissionJson submission = submissionOpt.get();
+            if (submission.getData() != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("confirmationStatementDate", submission.getData().getMadeUpToDate());
+                data.put("tradingOnMarket", !submission.getData().getTradingStatusData().getTradingStatusAnswer());
+                data.put("dtr5Ind", false);
+                filing.setData(data);
+            }
+        } else {
             throw new SubmissionNotFoundException(
                     String.format("Empty submission returned when generating filing for %s", confirmationStatementId));
-        }
-        ConfirmationStatementSubmissionJson submission = submissionOpt.get();
-        if(submission.getData() != null) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("confirmationStatementDate", submission.getData().getMadeUpToDate());
-            data.put("tradingOnMarket", !submission.getData().getTradingStatusData().getTradingStatusAnswer());
-            data.put("dtr5Ind", false);
-            filing.setData(data);
         }
     }
 
