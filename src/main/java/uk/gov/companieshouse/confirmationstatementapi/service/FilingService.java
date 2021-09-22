@@ -31,7 +31,6 @@ public class FilingService {
         FilingApi filing = new FilingApi();
         filing.setKind("Confirmation Statement");
         setFilingApiData(filing, confirmationStatementId);
-        setDescription(filing);
         return filing;
     }
 
@@ -43,19 +42,20 @@ public class FilingService {
                         new SubmissionNotFoundException(
                                 String.format("Empty submission returned when generating filing for %s", confirmationStatementId)));
         if (submission.getData() != null) {
+            LocalDate madeUpToDate = submission.getData().getMadeUpToDate();
             Map<String, Object> data = new HashMap<>();
-            data.put("confirmationStatementDate", submission.getData().getMadeUpToDate());
+            data.put("confirmationStatementDate", madeUpToDate );
             data.put("tradingOnMarket", !submission.getData().getTradingStatusData().getTradingStatusAnswer());
             data.put("dtr5Ind", false);
             filing.setData(data);
+            setDescription(filing, madeUpToDate);
         } else {
             throw new SubmissionNotFoundException(
                     String.format("Submission contains no data %s", confirmationStatementId));
         }
     }
 
-    private void setDescription(FilingApi filing) {
-        LocalDate madeUpToDate = (LocalDate)filing.getData().get("confirmationStatementDate");
+    private void setDescription(FilingApi filing, LocalDate madeUpToDate) {
         String madeUpToDateStr = madeUpToDate.format(formatter);
         filing.setDescriptionIdentifier(filingDescription);
         filing.setDescription(filingDescription.replace("{made up date}", madeUpToDateStr));
