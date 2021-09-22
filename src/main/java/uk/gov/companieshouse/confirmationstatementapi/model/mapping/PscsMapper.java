@@ -70,7 +70,6 @@ public class PscsMapper {
         pscJson.setLegalForm(psc.getLegalForm());
         pscJson.setCountryOfResidence(psc.getCountryOfResidence());
 
-
         return pscJson;
     }
 
