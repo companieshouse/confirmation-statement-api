@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 public class FilingService {
 
-    @Value("${CONFIRMATION_STATEMENT_NO_UPDATES}")
+    @Value("${CONFIRMATION_STATEMENT_DESCRIPTION_NO_UPDATES}")
     private String filingDescription;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
