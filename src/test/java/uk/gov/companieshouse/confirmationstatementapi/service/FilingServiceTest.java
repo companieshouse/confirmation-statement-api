@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
@@ -39,7 +40,7 @@ class FilingServiceTest {
     void testWhenSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        when(environment.getProperty("confirmation.statement.no.updates")).thenReturn("**Confirmation statement** made on {made up date} with no updates");
+        ReflectionTestUtils.setField(filingService, "filingDescription", "**Confirmation statement** made on {made up date} with no updates");
         when(csService.getConfirmationStatement(CONFIRMATION_ID)).thenReturn(opt);
               FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_ID);
         assertEquals("**Confirmation statement** made on 2021/06/01 with no updates", filing.getDescription());
@@ -51,7 +52,6 @@ class FilingServiceTest {
     @Test
     void testWhenEmptySubmissionIsReturned() {
         when(csService.getConfirmationStatement(CONFIRMATION_ID)).thenReturn(Optional.empty());
-        var transaction = new Transaction();
         assertThrows(SubmissionNotFoundException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_ID));
     }
 

@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
@@ -16,14 +16,15 @@ import java.util.Optional;
 @Service
 public class FilingService {
 
+    @Value("${CONFIRMATION_STATEMENT_NO_UPDATES}")
+    private String filingDescription;
+
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
     private ConfirmationStatementService confirmationStatementService;
-    private Environment environment;
 
     @Autowired
-    public FilingService(ConfirmationStatementService csService, Environment env) {
+    public FilingService(ConfirmationStatementService csService) {
         confirmationStatementService = csService;
-        environment = env;
     }
 
     public FilingApi generateConfirmationFiling(String confirmationStatementId) throws SubmissionNotFoundException {
@@ -37,27 +38,27 @@ public class FilingService {
     private void setFilingApiData(FilingApi filing, String confirmationStatementId) throws SubmissionNotFoundException {
         Optional<ConfirmationStatementSubmissionJson> submissionOpt =
                 confirmationStatementService.getConfirmationStatement(confirmationStatementId);
-        if(submissionOpt.isPresent()) {
-            ConfirmationStatementSubmissionJson submission = submissionOpt.get();
-            if (submission.getData() != null) {
-                Map<String, Object> data = new HashMap<>();
-                data.put("confirmationStatementDate", submission.getData().getMadeUpToDate());
-                data.put("tradingOnMarket", !submission.getData().getTradingStatusData().getTradingStatusAnswer());
-                data.put("dtr5Ind", false);
-                filing.setData(data);
-            }
+        ConfirmationStatementSubmissionJson submission = submissionOpt
+                .orElseThrow(() ->
+                        new SubmissionNotFoundException(
+                                String.format("Empty submission returned when generating filing for %s", confirmationStatementId)));
+        if (submission.getData() != null) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("confirmationStatementDate", submission.getData().getMadeUpToDate());
+            data.put("tradingOnMarket", !submission.getData().getTradingStatusData().getTradingStatusAnswer());
+            data.put("dtr5Ind", false);
+            filing.setData(data);
         } else {
             throw new SubmissionNotFoundException(
-                    String.format("Empty submission returned when generating filing for %s", confirmationStatementId));
+                    String.format("Submission contains no data %s", confirmationStatementId));
         }
     }
 
     private void setDescription(FilingApi filing) {
         LocalDate madeUpToDate = (LocalDate)filing.getData().get("confirmationStatementDate");
-        String description = environment.getProperty("confirmation.statement.no.updates");
         String madeUpToDateStr = madeUpToDate.format(formatter);
-        filing.setDescriptionIdentifier(description);
-        filing.setDescription(description.replace("{made up date}", madeUpToDateStr));
+        filing.setDescriptionIdentifier(filingDescription);
+        filing.setDescription(filingDescription.replace("{made up date}", madeUpToDateStr));
         Map<String, String> values = new HashMap<>();
         values.put("made up date", madeUpToDateStr);
         filing.setDescriptionValues(values);
