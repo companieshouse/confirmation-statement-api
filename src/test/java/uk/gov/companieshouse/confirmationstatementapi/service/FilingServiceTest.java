@@ -67,5 +67,4 @@ class FilingServiceTest {
         confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
         return confirmationStatementSubmissionJson;
     }
-
 }

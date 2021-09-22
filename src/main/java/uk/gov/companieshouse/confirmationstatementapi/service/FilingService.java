@@ -61,5 +61,4 @@ public class FilingService {
         values.put("made up date", madeUpToDateStr);
         filing.setDescriptionValues(values);
     }
-
 }
