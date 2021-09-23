@@ -40,8 +40,8 @@ class ShareholderServiceTest {
         var shareholderData = shareholderService.getShareholders(COMPANY_NUMBER);
 
         assertNotNull(shareholderService.getShareholders(COMPANY_NUMBER));
-        assertEquals(shareholderData.get(0).getSurname(), "Smith");
-        assertEquals(shareholderData.get(1).getSurname(), "Bond");
+        assertEquals("Smith", shareholderData.get(0).getSurname());
+        assertEquals("Bond", shareholderData.get(1).getSurname());
         assertEquals(2, shareholderData.size());
     }
 
