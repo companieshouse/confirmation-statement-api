@@ -9,6 +9,11 @@ public class PersonOfSignificantControl {
     private String serviceAddressLine1;
     private String serviceAddressPostCode;
     private String serviceAddressPostTown;
+    private String serviceAddressPoBox;
+    private String serviceAddressCountryName;
+    private String serviceAddressCareOf;
+    private String serviceAddressRegion;
+    private String serviceAddressArea;
     private String superSecurePscInd;
     private String officerNationality;
     private String officerDateOfBirth;
@@ -19,6 +24,7 @@ public class PersonOfSignificantControl {
     private String postCode;
     private String region;
     private String countryName;
+    private String careOf;
     private String suppliedCompanyName;
     private String poBox;
     private String addressLine1;
@@ -226,5 +232,53 @@ public class PersonOfSignificantControl {
 
     public void setCountryOfResidence(String countryOfResidence) {
         this.countryOfResidence = countryOfResidence;
+    }
+
+    public String getServiceAddressPoBox() {
+        return serviceAddressPoBox;
+    }
+
+    public void setServiceAddressPoBox(String serviceAddressPoBox) {
+        this.serviceAddressPoBox = serviceAddressPoBox;
+    }
+
+    public String getServiceAddressCountryName() {
+        return serviceAddressCountryName;
+    }
+
+    public void setServiceAddressCountryName(String serviceAddressCountryName) {
+        this.serviceAddressCountryName = serviceAddressCountryName;
+    }
+
+    public String getServiceAddressCareOf() {
+        return serviceAddressCareOf;
+    }
+
+    public void setServiceAddressCareOf(String serviceAddressCareOf) {
+        this.serviceAddressCareOf = serviceAddressCareOf;
+    }
+
+    public String getServiceAddressRegion() {
+        return serviceAddressRegion;
+    }
+
+    public void setServiceAddressRegion(String serviceAddressRegion) {
+        this.serviceAddressRegion = serviceAddressRegion;
+    }
+
+    public String getServiceAddressArea() {
+        return serviceAddressArea;
+    }
+
+    public void setServiceAddressArea(String serviceAddressArea) {
+        this.serviceAddressArea = serviceAddressArea;
+    }
+
+    public String getCareOf() {
+        return careOf;
+    }
+
+    public void setCareOf(String careOf) {
+        this.careOf = careOf;
     }
 }

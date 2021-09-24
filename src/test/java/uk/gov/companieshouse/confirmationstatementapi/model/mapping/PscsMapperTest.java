@@ -23,6 +23,11 @@ class PscsMapperTest {
     private static final String SERVICE_ADDRESS_LINE_1 = "serv line 1";
     private static final String SERVICE_ADDRESS_POST_TOWN = "cardiff";
     private static final String SERVICE_ADDRESS_POST_CODE = "CF1 1AA";
+    private static final String SERVICE_ADDRESS_COUNTRY_NAME = "country name";
+    private static final String SERVICE_ADDRESS_PO_BOX = "po box";
+    private static final String SERVICE_ADDRESS_CARE_OF = "care of";
+    private static final String SERVICE_ADDRESS_REGION = "region";
+    private static final String SERVICE_ADDRESS_AREA = "area";
     private static final String SECURE_PSC_IND = "N";
     private static final String HOUSE_NAME_NUMBER = "22";
     private static final String STREET = "street";
@@ -32,6 +37,7 @@ class PscsMapperTest {
     private static final String REGION = "region";
     private static final String COUNTRY_NAME = "Wales";
     private static final String PO_BOX = "po box";
+    private static final String CARE_OF = "care of";
     private static final String SUPPLIED_COMPANY_NAME = "company name";
     private static final String ADDRESS_LINE_1 = "address line 1";
     private static final String REGISTRATION_NUMBER = "123456";
@@ -81,6 +87,11 @@ class PscsMapperTest {
         assertEquals(SERVICE_ADDRESS_LINE_1, pscJson1.getServiceAddressLine1());
         assertEquals(SERVICE_ADDRESS_POST_TOWN, pscJson1.getServiceAddressPostTown());
         assertEquals(SERVICE_ADDRESS_POST_CODE, pscJson1.getServiceAddressPostCode());
+        assertEquals(SERVICE_ADDRESS_PO_BOX, pscJson1.getServiceAddressPoBox());
+        assertEquals(SERVICE_ADDRESS_REGION, pscJson1.getServiceAddressRegion());
+        assertEquals(SERVICE_ADDRESS_CARE_OF, pscJson1.getServiceAddressCareOf());
+        assertEquals(SERVICE_ADDRESS_COUNTRY_NAME, pscJson1.getServiceAddressCountryName());
+        assertEquals(SERVICE_ADDRESS_AREA, pscJson1.getServiceAddressArea());
 
         assertEquals(ADDRESS_LINE_1, pscJson1.getAddress().getAddressLine1());
         assertEquals(HOUSE_NAME_NUMBER, pscJson1.getAddress().getPremises());
@@ -90,6 +101,7 @@ class PscsMapperTest {
         assertEquals(REGION, pscJson1.getAddress().getRegion());
         assertEquals(COUNTRY_NAME, pscJson1.getAddress().getCountry());
         assertEquals(PO_BOX, pscJson1.getAddress().getPoBox());
+        assertEquals(CARE_OF, pscJson1.getAddress().getCareOf());
 
         assertEquals(SUPPLIED_COMPANY_NAME, pscJson1.getCompanyName());
 
@@ -164,12 +176,18 @@ class PscsMapperTest {
         psc.setRegion(REGION);
         psc.setCountryName(COUNTRY_NAME);
         psc.setPoBox(PO_BOX);
+        psc.setCareOf(CARE_OF);
         psc.setSuppliedCompanyName(SUPPLIED_COMPANY_NAME);
         psc.setAddressLine1(ADDRESS_LINE_1);
         psc.setRegistrationNumber(REGISTRATION_NUMBER);
         psc.setLawGoverned(LAW_GOVERNED);
         psc.setLegalForm(LEGAL_FORM);
         psc.setCountryOfResidence(COUNTRY_OF_RESIDENCE);
+        psc.setServiceAddressArea(SERVICE_ADDRESS_AREA);
+        psc.setServiceAddressCareOf(SERVICE_ADDRESS_CARE_OF);
+        psc.setServiceAddressPoBox(SERVICE_ADDRESS_PO_BOX);
+        psc.setServiceAddressRegion(SERVICE_ADDRESS_REGION);
+        psc.setServiceAddressCountryName(SERVICE_ADDRESS_COUNTRY_NAME);
         return psc;
     }
 }
