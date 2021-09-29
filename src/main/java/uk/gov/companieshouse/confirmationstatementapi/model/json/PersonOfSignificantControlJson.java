@@ -38,6 +38,9 @@ public class PersonOfSignificantControlJson extends PscApi {
     @JsonProperty("company_name")
     private String companyName;
 
+    @JsonProperty("register_location")
+    private String registerLocation;
+
     @JsonProperty("registration_number")
     private String registrationNumber;
 
@@ -88,6 +91,14 @@ public class PersonOfSignificantControlJson extends PscApi {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public String getRegisterLocation() {
+        return registerLocation;
+    }
+
+    public void setRegisterLocation(String registerLocation) {
+        this.registerLocation = registerLocation;
     }
 
     public String getRegistrationNumber() {

@@ -66,6 +66,7 @@ public class PscsMapper {
 
         pscJson.setCompanyName(psc.getSuppliedCompanyName());
 
+        pscJson.setRegisterLocation(psc.getRegisterLocation());
         pscJson.setRegistrationNumber(psc.getRegistrationNumber());
         pscJson.setLawGoverned(psc.getLawGoverned());
         pscJson.setLegalForm(psc.getLegalForm());
