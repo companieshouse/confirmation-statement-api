@@ -61,6 +61,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
         addFilingsEndpointInterceptor(registry);
     }
 
+    /**
+     * Interceptor that logs all calls to endpoints
+     * @param registry
+     */
     private void addLoggingInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(loggingInterceptor);
     }
