@@ -23,14 +23,14 @@ public class LoggingInterceptor implements HandlerInterceptor{
 
         MDC.put("context", requestId(request));
         MDC.put("namespace", ConfirmationStatementApiApplication.APP_NAME);
-        if(LOGGER.isInfoEnabled()) {
+        if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Start of request. Method: {} Path: {}", requestMethod(request), requestPath(request));
         }
         return true;
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         Long startTime = (Long) request.getSession().getAttribute("start-time");
         long responseTime = System.currentTimeMillis() - startTime;
 
