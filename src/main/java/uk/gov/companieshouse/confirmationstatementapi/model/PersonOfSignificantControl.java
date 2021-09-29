@@ -30,6 +30,7 @@ public class PersonOfSignificantControl {
     private String poBox;
     private String addressLine1;
     private String natureOfControl;
+    private String registerLocation;
     private String registrationNumber;
     private String lawGoverned;
     private String legalForm;
@@ -201,6 +202,14 @@ public class PersonOfSignificantControl {
 
     public void setNatureOfControl(String natureOfControl) {
         this.natureOfControl = natureOfControl;
+    }
+
+    public String getRegisterLocation() {
+        return registerLocation;
+    }
+
+    public void setRegisterLocation(String registerLocation) {
+        this.registerLocation = registerLocation;
     }
 
     public String getRegistrationNumber() {

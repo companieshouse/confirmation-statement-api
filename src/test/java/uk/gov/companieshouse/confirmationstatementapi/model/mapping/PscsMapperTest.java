@@ -41,6 +41,7 @@ class PscsMapperTest {
     private static final String CARE_OF = "care of";
     private static final String SUPPLIED_COMPANY_NAME = "company name";
     private static final String ADDRESS_LINE_1 = "address line 1";
+    private static final String REGISTER_LOCATION = "ENGLAND";
     private static final String REGISTRATION_NUMBER = "123456";
     private static final String LAW_GOVERNED = "ENGLISH";
     private static final String LEGAL_FORM = "LIMITED";
@@ -107,6 +108,7 @@ class PscsMapperTest {
 
         assertEquals(SUPPLIED_COMPANY_NAME, pscJson1.getCompanyName());
 
+        assertEquals(REGISTER_LOCATION, pscJson1.getRegisterLocation());
         assertEquals(REGISTRATION_NUMBER, pscJson1.getRegistrationNumber());
         assertEquals(LAW_GOVERNED, pscJson1.getLawGoverned());
         assertEquals(LEGAL_FORM, pscJson1.getLegalForm());
@@ -181,6 +183,7 @@ class PscsMapperTest {
         psc.setCareOf(CARE_OF);
         psc.setSuppliedCompanyName(SUPPLIED_COMPANY_NAME);
         psc.setAddressLine1(ADDRESS_LINE_1);
+        psc.setRegisterLocation(REGISTER_LOCATION);
         psc.setRegistrationNumber(REGISTRATION_NUMBER);
         psc.setLawGoverned(LAW_GOVERNED);
         psc.setLegalForm(LEGAL_FORM);

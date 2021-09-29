@@ -551,6 +551,9 @@
         "company_name": {
           "type": "string"
         },
+        "register_location": {
+          "type": "string"
+        },
         "registration_number": {
           "type": "string"
         },
