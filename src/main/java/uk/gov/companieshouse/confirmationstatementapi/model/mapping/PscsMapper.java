@@ -62,6 +62,7 @@ public class PscsMapper {
         pscJson.setServiceAddressCountryName(psc.getServiceAddressCountryName());
         pscJson.setServiceAddressPoBox(psc.getServiceAddressPoBox());
         pscJson.setServiceAddressRegion(psc.getServiceAddressRegion());
+        pscJson.setServiceAddressHouseNameNumber(psc.getServiceAddressHouseNameNumber());
 
         pscJson.setCompanyName(psc.getSuppliedCompanyName());
 
