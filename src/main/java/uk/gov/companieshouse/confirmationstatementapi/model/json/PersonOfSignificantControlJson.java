@@ -32,6 +32,9 @@ public class PersonOfSignificantControlJson extends PscApi {
     @JsonProperty("service_address_area")
     private String serviceAddressArea;
 
+    @JsonProperty("service_address_house_name_number")
+    private String serviceAddressHouseNameNumber;
+
     @JsonProperty("company_name")
     private String companyName;
 
@@ -157,5 +160,13 @@ public class PersonOfSignificantControlJson extends PscApi {
 
     public void setServiceAddressArea(String serviceAddressArea) {
         this.serviceAddressArea = serviceAddressArea;
+    }
+
+    public String getServiceAddressHouseNameNumber() {
+        return serviceAddressHouseNameNumber;
+    }
+
+    public void setServiceAddressHouseNameNumber(String serviceAddressHouseNameNumber) {
+        this.serviceAddressHouseNameNumber = serviceAddressHouseNameNumber;
     }
 }

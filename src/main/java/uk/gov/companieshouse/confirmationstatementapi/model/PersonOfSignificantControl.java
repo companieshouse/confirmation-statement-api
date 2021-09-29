@@ -14,6 +14,7 @@ public class PersonOfSignificantControl {
     private String serviceAddressCareOf;
     private String serviceAddressRegion;
     private String serviceAddressArea;
+    private String serviceAddressHouseNameNumber;
     private String superSecurePscInd;
     private String officerNationality;
     private String officerDateOfBirth;
@@ -280,5 +281,13 @@ public class PersonOfSignificantControl {
 
     public void setCareOf(String careOf) {
         this.careOf = careOf;
+    }
+
+    public String getServiceAddressHouseNameNumber() {
+        return serviceAddressHouseNameNumber;
+    }
+
+    public void setServiceAddressHouseNameNumber(String serviceAddressHouseNameNumber) {
+        this.serviceAddressHouseNameNumber = serviceAddressHouseNameNumber;
     }
 }

@@ -28,6 +28,7 @@ class PscsMapperTest {
     private static final String SERVICE_ADDRESS_CARE_OF = "care of";
     private static final String SERVICE_ADDRESS_REGION = "region";
     private static final String SERVICE_ADDRESS_AREA = "area";
+    private static final String SERVICE_ADDRESS_HOUSE_NAME_NUMBER = "house name number";
     private static final String SECURE_PSC_IND = "N";
     private static final String HOUSE_NAME_NUMBER = "22";
     private static final String STREET = "street";
@@ -92,6 +93,7 @@ class PscsMapperTest {
         assertEquals(SERVICE_ADDRESS_CARE_OF, pscJson1.getServiceAddressCareOf());
         assertEquals(SERVICE_ADDRESS_COUNTRY_NAME, pscJson1.getServiceAddressCountryName());
         assertEquals(SERVICE_ADDRESS_AREA, pscJson1.getServiceAddressArea());
+        assertEquals(SERVICE_ADDRESS_HOUSE_NAME_NUMBER, pscJson1.getServiceAddressHouseNameNumber());
 
         assertEquals(ADDRESS_LINE_1, pscJson1.getAddress().getAddressLine1());
         assertEquals(HOUSE_NAME_NUMBER, pscJson1.getAddress().getPremises());
@@ -188,6 +190,7 @@ class PscsMapperTest {
         psc.setServiceAddressPoBox(SERVICE_ADDRESS_PO_BOX);
         psc.setServiceAddressRegion(SERVICE_ADDRESS_REGION);
         psc.setServiceAddressCountryName(SERVICE_ADDRESS_COUNTRY_NAME);
+        psc.setServiceAddressHouseNameNumber(SERVICE_ADDRESS_HOUSE_NAME_NUMBER);
         return psc;
     }
 }
