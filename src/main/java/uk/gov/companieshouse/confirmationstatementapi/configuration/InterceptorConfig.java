@@ -19,20 +19,24 @@ import uk.gov.companieshouse.confirmationstatementapi.interceptor.TransactionInt
 @ComponentScan("uk.gov.companieshouse.api.interceptor")
 public class InterceptorConfig implements WebMvcConfigurer {
 
-    private static final String TRANSACTIONS = "/transactions/**";
-    private static final String FILINGS = "/private/**/filings";
+    static final String TRANSACTIONS = "/transactions/**";
+    static final String FILINGS = "/private/**/filings";
     private static final String NEXT_MADE_UP_TO_DATE = "/confirmation-statement/**/next-made-up-to-date";
     private static final String ELIGIBILITY = "/confirmation-statement/**/eligibility";
     private static final String COSTS = TRANSACTIONS + "/costs";
 
-    private static final String[] USER_AUTH_ENDPOINTS = {
+    static final String[] USER_AUTH_ENDPOINTS = {
             NEXT_MADE_UP_TO_DATE,
             ELIGIBILITY
     };
-    private static final String[] INTERNAL_AUTH_ENDPOINTS = {
+    static final String[] INTERNAL_AUTH_ENDPOINTS = {
             FILINGS,
             COSTS
     };
+    static final String[] NOT_COMPANY_AUTH_ENDPOINTS = (String[]) ArrayUtils.addAll(
+                    USER_AUTH_ENDPOINTS,
+                    INTERNAL_AUTH_ENDPOINTS
+    );
 
     @Autowired
     private TransactionInterceptor transactionInterceptor;
@@ -46,6 +50,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     private InternalUserInterceptor internalUserInterceptor;
 
+    /**
+     * Setup the interceptors to run against endpoints when the endpoints are called
+     * Interceptors are executed in order of configuration
+     * @param registry
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         addLoggingInterceptor(registry);
@@ -54,7 +63,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
         addInternalUserAuthenticationEndpointsInterceptor(registry);
 
-        addCompanyAuthenticatedEndpointsInterceptor(registry);
+        addCompanyAuthenticationEndpointsInterceptor(registry);
 
         addTransactionInterceptor(registry);
 
@@ -91,9 +100,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
      * Interceptor to authenticate access to specified endpoints using company permissions
      * @param registry
      */
-    private void addCompanyAuthenticatedEndpointsInterceptor(InterceptorRegistry registry) {
+    private void addCompanyAuthenticationEndpointsInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(getCompanyCrudAuthenticationInterceptor())
-                .excludePathPatterns((String[]) ArrayUtils.addAll(USER_AUTH_ENDPOINTS, INTERNAL_AUTH_ENDPOINTS));
+                .excludePathPatterns(NOT_COMPANY_AUTH_ENDPOINTS);
     }
 
     /**
@@ -101,7 +110,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
      * @param registry
      */
     private void addTransactionInterceptor(InterceptorRegistry registry) {
-        registry.addInterceptor(transactionInterceptor).addPathPatterns(TRANSACTIONS);
+        registry.addInterceptor(transactionInterceptor)
+                .addPathPatterns(TRANSACTIONS);
     }
 
     /**
@@ -109,7 +119,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
      * @param registry
      */
     private void addFilingsEndpointInterceptor(InterceptorRegistry registry) {
-        registry.addInterceptor(filingInterceptor).addPathPatterns(FILINGS);
+        registry.addInterceptor(filingInterceptor)
+                .addPathPatterns(FILINGS);
     }
 
     private CRUDAuthenticationInterceptor getUserCrudAuthenticationInterceptor() {
