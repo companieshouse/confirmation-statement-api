@@ -539,14 +539,8 @@
         "appointment_type": {
           "type": "string"
         },
-        "service_address_line_1": {
-          "type": "string"
-        },
-        "service_address_post_code": {
-          "type": "string"
-        },
-        "service_address_post_town": {
-          "type": "string"
+        "service_address": {
+          "$ref": "#/definitions/Address"
         },
         "company_name": {
           "type": "string"

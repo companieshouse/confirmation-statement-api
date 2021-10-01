@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 
@@ -57,14 +58,18 @@ class PscsMapperTest {
         psc2.setOfficerForename1("James");
         psc2.setOfficerForename2(null);
         psc2.setOfficerSurname("Smith");
-        psc2.setAddressLine1("PSC2 ADD LINE1");
+        Address psc2Addr = new Address();
+        psc2Addr.setAddressLine1("PSC2 ADD LINE1");
+        psc2.setAddress(psc2Addr);
         psc2.setNatureOfControl("ABC;HH;XC");
 
         PersonOfSignificantControl psc3 = getPersonOfSignificantControl();
         psc3.setOfficerForename1("Kevin");
         psc3.setOfficerForename2(null);
         psc3.setOfficerSurname("Lloyd");
-        psc3.setAddressLine1("PSC3 ADD LINE1");
+        Address psc3Addr = new Address();
+        psc3Addr.setAddressLine1("PSC3 ADD LINE1");
+        psc3.setAddress(psc3Addr);
         psc3.setNatureOfControl("55;22;88;66");
 
         List<PersonOfSignificantControl> pscs = Arrays.asList(psc1, psc2, psc3);
@@ -86,25 +91,14 @@ class PscsMapperTest {
         assertEquals(OFFICER_NATIONALITY, pscJson1.getNationality());
 
         assertEquals(APPOINTMENT_TYPE_ID, pscJson1.getAppointmentType());
-        assertEquals(SERVICE_ADDRESS_LINE_1, pscJson1.getServiceAddressLine1());
-        assertEquals(SERVICE_ADDRESS_POST_TOWN, pscJson1.getServiceAddressPostTown());
-        assertEquals(SERVICE_ADDRESS_POST_CODE, pscJson1.getServiceAddressPostCode());
-        assertEquals(SERVICE_ADDRESS_PO_BOX, pscJson1.getServiceAddressPoBox());
-        assertEquals(SERVICE_ADDRESS_REGION, pscJson1.getServiceAddressRegion());
-        assertEquals(SERVICE_ADDRESS_CARE_OF, pscJson1.getServiceAddressCareOf());
-        assertEquals(SERVICE_ADDRESS_COUNTRY_NAME, pscJson1.getServiceAddressCountryName());
-        assertEquals(SERVICE_ADDRESS_AREA, pscJson1.getServiceAddressArea());
-        assertEquals(SERVICE_ADDRESS_HOUSE_NAME_NUMBER, pscJson1.getServiceAddressHouseNameNumber());
+
+        assertEquals(SERVICE_ADDRESS_LINE_1, pscJson1.getServiceAddress().getAddressLine1());
+        assertEquals(SERVICE_ADDRESS_POST_TOWN, pscJson1.getServiceAddress().getLocality());
+        assertEquals(SERVICE_ADDRESS_POST_CODE, pscJson1.getServiceAddress().getPostalCode());
 
         assertEquals(ADDRESS_LINE_1, pscJson1.getAddress().getAddressLine1());
-        assertEquals(HOUSE_NAME_NUMBER, pscJson1.getAddress().getPremises());
-        assertEquals(STREET, pscJson1.getAddress().getAddressLine2());
         assertEquals(POST_TOWN, pscJson1.getAddress().getLocality());
         assertEquals(POST_CODE, pscJson1.getAddress().getPostalCode());
-        assertEquals(REGION, pscJson1.getAddress().getRegion());
-        assertEquals(COUNTRY_NAME, pscJson1.getAddress().getCountry());
-        assertEquals(PO_BOX, pscJson1.getAddress().getPoBox());
-        assertEquals(CARE_OF, pscJson1.getAddress().getCareOf());
 
         assertEquals(SUPPLIED_COMPANY_NAME, pscJson1.getCompanyName());
 
@@ -161,39 +155,32 @@ class PscsMapperTest {
     }
 
     private PersonOfSignificantControl getPersonOfSignificantControl() {
+        Address serviceAddress = new Address();
+        serviceAddress.setAddressLine1(SERVICE_ADDRESS_LINE_1);
+        serviceAddress.setPostalCode(SERVICE_ADDRESS_POST_CODE);
+        serviceAddress.setLocality(SERVICE_ADDRESS_POST_TOWN);
+
+        Address address = new Address();
+        address.setAddressLine1(ADDRESS_LINE_1);
+        address.setPostalCode(POST_CODE);
+        address.setLocality(POST_TOWN);
+
         PersonOfSignificantControl psc = new PersonOfSignificantControl();
+        psc.setAddress(address);
+        psc.setServiceAddress(serviceAddress);
         psc.setOfficerForename1(OFFICER_FORENAME_1);
         psc.setOfficerForename2(OFFICER_FORENAME_2);
         psc.setOfficerSurname(OFFICER_SURNAME);
         psc.setOfficerDateOfBirth(OFFICER_DATE_OF_BIRTH);
         psc.setOfficerNationality(OFFICER_NATIONALITY);
         psc.setAppointmentTypeId(APPOINTMENT_TYPE_ID);
-        psc.setServiceAddressLine1(SERVICE_ADDRESS_LINE_1);
-        psc.setServiceAddressPostTown(SERVICE_ADDRESS_POST_TOWN);
-        psc.setServiceAddressPostCode(SERVICE_ADDRESS_POST_CODE);
         psc.setSuperSecurePscInd(SECURE_PSC_IND);
-        psc.setHouseNameNumber(HOUSE_NAME_NUMBER);
-        psc.setStreet(STREET);
-        psc.setArea(AREA);
-        psc.setPostTown(POST_TOWN);
-        psc.setPostCode(POST_CODE);
-        psc.setRegion(REGION);
-        psc.setCountryName(COUNTRY_NAME);
-        psc.setPoBox(PO_BOX);
-        psc.setCareOf(CARE_OF);
         psc.setSuppliedCompanyName(SUPPLIED_COMPANY_NAME);
-        psc.setAddressLine1(ADDRESS_LINE_1);
         psc.setRegisterLocation(REGISTER_LOCATION);
         psc.setRegistrationNumber(REGISTRATION_NUMBER);
         psc.setLawGoverned(LAW_GOVERNED);
         psc.setLegalForm(LEGAL_FORM);
         psc.setCountryOfResidence(COUNTRY_OF_RESIDENCE);
-        psc.setServiceAddressArea(SERVICE_ADDRESS_AREA);
-        psc.setServiceAddressCareOf(SERVICE_ADDRESS_CARE_OF);
-        psc.setServiceAddressPoBox(SERVICE_ADDRESS_PO_BOX);
-        psc.setServiceAddressRegion(SERVICE_ADDRESS_REGION);
-        psc.setServiceAddressCountryName(SERVICE_ADDRESS_COUNTRY_NAME);
-        psc.setServiceAddressHouseNameNumber(SERVICE_ADDRESS_HOUSE_NAME_NUMBER);
         return psc;
     }
 }

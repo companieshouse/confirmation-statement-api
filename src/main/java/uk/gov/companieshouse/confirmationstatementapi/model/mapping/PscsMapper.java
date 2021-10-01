@@ -2,7 +2,6 @@ package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.api.model.common.DateOfBirth;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
@@ -29,19 +28,10 @@ public class PscsMapper {
     }
 
     private PersonOfSignificantControlJson mapToPscJson(PersonOfSignificantControl psc) {
-        Address address = new Address();
-        address.setAddressLine1(psc.getAddressLine1());
-        address.setPoBox(psc.getPoBox());
-        address.setPostalCode(psc.getPostCode());
-        address.setLocality(psc.getPostTown());
-        address.setCountry(psc.getCountryName());
-        address.setPremises(psc.getHouseNameNumber());
-        address.setAddressLine2(psc.getStreet());
-        address.setRegion(psc.getRegion());
-        address.setCareOf(psc.getCareOf());
 
         PersonOfSignificantControlJson pscJson = new PersonOfSignificantControlJson();
-        pscJson.setAddress(address);
+        pscJson.setAddress(psc.getAddress());
+        pscJson.setServiceAddress(psc.getServiceAddress());
         pscJson.setAppointmentType(psc.getAppointmentTypeId());
 
         if (StringUtils.isNotBlank(psc.getNatureOfControl())) {
@@ -53,19 +43,7 @@ public class PscsMapper {
         mapNames(psc, pscJson);
 
         pscJson.setNationality(psc.getOfficerNationality());
-
-        pscJson.setServiceAddressLine1(psc.getServiceAddressLine1());
-        pscJson.setServiceAddressPostCode(psc.getServiceAddressPostCode());
-        pscJson.setServiceAddressPostTown(psc.getServiceAddressPostTown());
-        pscJson.setServiceAddressArea(psc.getServiceAddressArea());
-        pscJson.setServiceAddressCareOf(psc.getServiceAddressCareOf());
-        pscJson.setServiceAddressCountryName(psc.getServiceAddressCountryName());
-        pscJson.setServiceAddressPoBox(psc.getServiceAddressPoBox());
-        pscJson.setServiceAddressRegion(psc.getServiceAddressRegion());
-        pscJson.setServiceAddressHouseNameNumber(psc.getServiceAddressHouseNameNumber());
-
         pscJson.setCompanyName(psc.getSuppliedCompanyName());
-
         pscJson.setRegisterLocation(psc.getRegisterLocation());
         pscJson.setRegistrationNumber(psc.getRegistrationNumber());
         pscJson.setLawGoverned(psc.getLawGoverned());
