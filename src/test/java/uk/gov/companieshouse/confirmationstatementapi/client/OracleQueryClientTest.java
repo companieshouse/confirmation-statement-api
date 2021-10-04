@@ -124,14 +124,15 @@ class OracleQueryClientTest {
     void testGetPersonsOfSignificantControlResponse() throws ServiceException {
         var psc1 = new PersonOfSignificantControl();
         psc1.setAppointmentTypeId("1");
-        psc1.setServiceAddressLine1("1 some street");
-        psc1.setServiceAddressPostCode("post code");
+        Address address = new Address();
+        address.setAddressLine1("1 some street");
+        address.setPostalCode("post code");
+        psc1.setServiceAddress(address);
 
 
         var psc2 = new PersonOfSignificantControl();
         psc2.setAppointmentTypeId("1");
-        psc2.setServiceAddressLine1("1 some street");
-        psc2.setServiceAddressPostCode("post code");
+        psc2.setServiceAddress(address);
 
         PersonOfSignificantControl[] pscArray = { psc1, psc2 };
 

@@ -13,6 +13,7 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.handler.psc.PscsResourceHandler;
 import uk.gov.companieshouse.api.handler.psc.request.PscsList;
 import uk.gov.companieshouse.api.model.ApiResponse;
+import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.api.model.psc.PscsApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
@@ -124,10 +125,13 @@ class PscServiceTest {
 
     @Test
     void testGetPSCsFromOracle() throws ServiceException {
+        Address address = new Address();
+        address.setAddressLine1("1 some street");
+        address.setPostalCode("post code");
         var psc1 = new PersonOfSignificantControl();
-        psc1.setServiceAddressLine1("something");
+        psc1.setServiceAddress(address);
         var psc2 = new PersonOfSignificantControl();
-        psc2.setServiceAddressLine1("else");
+        psc2.setServiceAddress(address);
 
         List<PersonOfSignificantControl> pscs = Arrays.asList(psc1, psc2);
 
