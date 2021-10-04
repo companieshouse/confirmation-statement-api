@@ -9,7 +9,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @Component
 public class FilingInterceptor implements HandlerInterceptor {
@@ -17,7 +16,7 @@ public class FilingInterceptor implements HandlerInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(FilingInterceptor.class);
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final var transaction = (Transaction) request.getAttribute("transaction");
 
         if (transaction == null) {

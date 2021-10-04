@@ -18,7 +18,8 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <spring-boot-maven-plugin.version>2.4.7</spring-boot-maven-plugin.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-        <api-security-java.version>0.3.5</api-security-java.version>
+        <api-security-java.version>0.3.6</api-security-java.version>
+        <structured-logging.version>1.9.7</structured-logging.version>
     </properties>
     <profiles>
         <profile>
@@ -65,7 +66,6 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-security-java</artifactId>
             <version>${api-security-java.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
@@ -87,6 +87,11 @@
             <artifactId>sonar-maven-plugin</artifactId>
             <version>${sonar-maven-plugin.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>structured-logging</artifactId>
+            <version>${structured-logging.version}</version>
         </dependency>
     </dependencies>
 
