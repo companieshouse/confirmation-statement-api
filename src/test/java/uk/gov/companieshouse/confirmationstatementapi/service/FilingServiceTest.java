@@ -18,12 +18,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FilingServiceTest {
 
-    private static final String CONFIRMATION_ID = "abc123";
+    private static final String CONFIRMATION_STATEMENT_ID = "abc123";
 
     @InjectMocks
     private FilingService filingService;
@@ -36,8 +37,8 @@ class FilingServiceTest {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
         ReflectionTestUtils.setField(filingService, "filingDescription", "**Confirmation statement** made on {made up date} with no updates");
-        when(csService.getConfirmationStatement(CONFIRMATION_ID)).thenReturn(opt);
-              FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_ID);
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+              FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID);
         assertEquals("**Confirmation statement** made on 2021/06/01 with no updates", filing.getDescription());
         assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
         assertFalse((Boolean) filing.getData().get("trading_on_market"));
@@ -46,8 +47,19 @@ class FilingServiceTest {
 
     @Test
     void testWhenEmptySubmissionIsReturned() {
-        when(csService.getConfirmationStatement(CONFIRMATION_ID)).thenReturn(Optional.empty());
-        assertThrows(SubmissionNotFoundException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_ID));
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(Optional.empty());
+        var submissionNotFoundException = assertThrows(SubmissionNotFoundException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID));
+        assertTrue(submissionNotFoundException.getMessage()
+                .contains("Empty submission returned when generating filing for " + CONFIRMATION_STATEMENT_ID));
+    }
+
+    @Test
+    void testWhenEmptySubmissionDataIsReturned() {
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson();
+        confirmationStatementSubmissionJson.setData(null);
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(Optional.of(confirmationStatementSubmissionJson));
+        var submissionNotFoundException = assertThrows(SubmissionNotFoundException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID));
+        assertTrue(submissionNotFoundException.getMessage().contains("Submission contains no data " + CONFIRMATION_STATEMENT_ID));
     }
 
     ConfirmationStatementSubmissionJson buildSubmissionJson() {

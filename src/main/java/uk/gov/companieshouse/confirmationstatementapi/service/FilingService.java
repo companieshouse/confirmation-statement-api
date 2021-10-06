@@ -41,11 +41,13 @@ public class FilingService {
                 .orElseThrow(() ->
                         new SubmissionNotFoundException(
                                 String.format("Empty submission returned when generating filing for %s", confirmationStatementId)));
-        if (submission.getData() != null) {
-            LocalDate madeUpToDate = submission.getData().getMadeUpToDate();
+
+        var submissionData = submission.getData();
+        if (submissionData != null) {
+            LocalDate madeUpToDate = submissionData.getMadeUpToDate();
             Map<String, Object> data = new HashMap<>();
             data.put("confirmation_statement_date", madeUpToDate );
-            data.put("trading_on_market", !submission.getData().getTradingStatusData().getTradingStatusAnswer());
+            data.put("trading_on_market", !submissionData.getTradingStatusData().getTradingStatusAnswer());
             data.put("dtr5_ind", false);
             filing.setData(data);
             setDescription(filing, madeUpToDate);
