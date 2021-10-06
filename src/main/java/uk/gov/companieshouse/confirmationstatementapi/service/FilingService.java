@@ -29,7 +29,7 @@ public class FilingService {
 
     public FilingApi generateConfirmationFiling(String confirmationStatementId) throws SubmissionNotFoundException {
         FilingApi filing = new FilingApi();
-        filing.setKind("Confirmation Statement");
+        filing.setKind("confirmation-statement");
         setFilingApiData(filing, confirmationStatementId);
         return filing;
     }
@@ -44,9 +44,9 @@ public class FilingService {
         if (submission.getData() != null) {
             LocalDate madeUpToDate = submission.getData().getMadeUpToDate();
             Map<String, Object> data = new HashMap<>();
-            data.put("confirmationStatementDate", madeUpToDate );
-            data.put("tradingOnMarket", !submission.getData().getTradingStatusData().getTradingStatusAnswer());
-            data.put("dtr5Ind", false);
+            data.put("confirmation_statement_date", madeUpToDate );
+            data.put("trading_on_market", !submission.getData().getTradingStatusData().getTradingStatusAnswer());
+            data.put("dtr5_ind", false);
             filing.setData(data);
             setDescription(filing, madeUpToDate);
         } else {

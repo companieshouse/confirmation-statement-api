@@ -39,9 +39,9 @@ class FilingServiceTest {
         when(csService.getConfirmationStatement(CONFIRMATION_ID)).thenReturn(opt);
               FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_ID);
         assertEquals("**Confirmation statement** made on 2021/06/01 with no updates", filing.getDescription());
-        assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmationStatementDate"));
-        assertFalse((Boolean) filing.getData().get("tradingOnMarket"));
-        assertFalse((Boolean) filing.getData().get("dtr5Ind"));
+        assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
+        assertFalse((Boolean) filing.getData().get("trading_on_market"));
+        assertFalse((Boolean) filing.getData().get("dtr5_ind"));
     }
 
     @Test
