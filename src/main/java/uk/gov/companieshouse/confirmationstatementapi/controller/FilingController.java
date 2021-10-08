@@ -22,10 +22,10 @@ public class FilingController {
     private FilingService filingService;
 
     @GetMapping
-    public ResponseEntity<FilingApi> getFiling(@PathVariable("confirmation_statement_id") String confirmationStatementId) {
+    public ResponseEntity<FilingApi[]> getFiling(@PathVariable("confirmation_statement_id") String confirmationStatementId) {
         try {
             FilingApi filing = filingService.generateConfirmationFiling(confirmationStatementId);
-            return ResponseEntity.ok(filing);
+            return ResponseEntity.ok(new FilingApi[] { filing });
         } catch (SubmissionNotFoundException e) {
             LOGGER.error(e.getMessage(), e);
             return ResponseEntity.notFound().build();

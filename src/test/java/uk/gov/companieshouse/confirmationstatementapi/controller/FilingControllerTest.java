@@ -34,7 +34,8 @@ class FilingControllerTest {
         var result = filingController.getFiling(CONFIRMATION_ID);
 
         assertNotNull(result.getBody());
-        assertEquals("12345678", result.getBody().getDescription());
+        assertEquals(1, result.getBody().length);
+        assertEquals("12345678", result.getBody()[0].getDescription());
     }
 
 
