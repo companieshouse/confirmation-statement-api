@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 class PersonOfSignificantControlJsonControllerTest {
 
     private static final String COMPANY_NUMBER = "12777531";
+    private static final String ERICK_REQUEST_ID = "XaBcDeF12345";
 
     @Mock
     private PscService pscService;
@@ -32,7 +33,7 @@ class PersonOfSignificantControlJsonControllerTest {
     void testGetPersonsOfSignificantControlOKResponse() throws ServiceException {
         var pscs = Arrays.asList(new PersonOfSignificantControlJson(), new PersonOfSignificantControlJson());
         when(pscService.getPSCsFromOracle(COMPANY_NUMBER)).thenReturn(pscs);
-        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(COMPANY_NUMBER);
+        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(COMPANY_NUMBER, ERICK_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(pscs, response.getBody());
@@ -41,7 +42,7 @@ class PersonOfSignificantControlJsonControllerTest {
     @Test
     void testGetPersonsOfSignificantControlServiceException() throws ServiceException {
         when(pscService.getPSCsFromOracle(COMPANY_NUMBER)).thenThrow(new ServiceException("Message"));
-        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(COMPANY_NUMBER);
+        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(COMPANY_NUMBER, ERICK_REQUEST_ID);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -50,7 +51,7 @@ class PersonOfSignificantControlJsonControllerTest {
     void testGetPersonsOfSignificantControlUncheckedException() throws ServiceException {
         var runtimeException = new RuntimeException("Message");
         when(pscService.getPSCsFromOracle(COMPANY_NUMBER)).thenThrow(runtimeException);
-        var thrown = assertThrows(Exception.class, () -> personsOfSignificantControlController.getPersonsOfSignificantControl(COMPANY_NUMBER));
+        var thrown = assertThrows(Exception.class, () -> personsOfSignificantControlController.getPersonsOfSignificantControl(COMPANY_NUMBER, ERICK_REQUEST_ID));
 
         assertEquals(runtimeException, thrown);
     }

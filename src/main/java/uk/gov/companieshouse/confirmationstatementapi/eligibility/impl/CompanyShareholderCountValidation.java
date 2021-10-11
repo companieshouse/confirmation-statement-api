@@ -1,16 +1,16 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 public class CompanyShareholderCountValidation implements EligibilityRule<CompanyProfileApi> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyShareholderCountValidation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyShareholderCountValidation.class.getName());
 
     private final ShareholderService shareholderService;
     private final boolean validationFlag;
@@ -27,7 +27,7 @@ public class CompanyShareholderCountValidation implements EligibilityRule<Compan
             return;
         }
 
-        LOGGER.info("Validating Company shareholder count for: {}", companyProfile.getCompanyNumber());
+        LOGGER.info(String.format("Validating Company shareholder count for: %s", companyProfile.getCompanyNumber()));
 
         // Exclude companies limited by guarantee.
         if (!companyProfile.getType().contains("private-limited-guarant-nsc")) {
@@ -35,12 +35,12 @@ public class CompanyShareholderCountValidation implements EligibilityRule<Compan
             var count = shareholderService.getShareholderCount(coNumber);
 
             if (count > 1) {
-                LOGGER.info("Company shareholder count for {} failed with {} shareholders", coNumber, count);
+                LOGGER.info(String.format("Company shareholder count for %s failed with %s shareholders", coNumber, count));
                 throw new EligibilityException(
                         EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_SHAREHOLDER);
             }
 
-            LOGGER.info("Company shareholder count validation successful for {} with value {}", coNumber, count);
+            LOGGER.info(String.format("Company shareholder count validation successful for %s with value %s", coNumber, count));
         }
     }
 

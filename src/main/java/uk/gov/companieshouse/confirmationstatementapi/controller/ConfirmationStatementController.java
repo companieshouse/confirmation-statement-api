@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -18,15 +17,21 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.HashMap;
+
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
 
 @RestController
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement")
 public class ConfirmationStatementController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementController.class.getName());
 
     private final ConfirmationStatementService confirmationStatementService;
 
@@ -38,39 +43,66 @@ public class ConfirmationStatementController {
     @PostMapping("/")
     public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction, HttpServletRequest request) {
 
-        String passthroughHeader = request
-                .getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
+        String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
+        String requestId = request.getHeader(ERIC_REQUEST_ID);
+
+        var logMap = new HashMap<String, Object>();
+        logMap.put("transaction", transaction);
+        logMap.put("passthroughHeader", passthroughHeader);
+        LOGGER.infoContext(requestId, "Calling service to create submission", logMap);
+
         try {
             return confirmationStatementService.createConfirmationStatement(transaction, passthroughHeader);
         } catch (ServiceException e) {
-            LOGGER.error("Error Creating Confirmation Statement", e);
+            LOGGER.errorContext(requestId,"Error Creating Confirmation Statement", e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/{confirmation_statement_id}")
-    public ResponseEntity<Object> updateSubmission(@RequestBody ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson,
-                                                   @PathVariable("confirmation_statement_id") String submissionId) {
+    public ResponseEntity<Object> updateSubmission(
+            @RequestBody ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson,
+            @PathVariable("confirmation_statement_id") String submissionId,
+            @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
+
+        var logMap = new HashMap<String, Object>();
+        logMap.put("confirmation_statement_id", submissionId);
+        logMap.put("confirmation_statement", confirmationStatementSubmissionJson);
+        LOGGER.infoContext(requestId, "Calling service to update confirmation statement data", logMap);
+
         return confirmationStatementService.updateConfirmationStatement(submissionId, confirmationStatementSubmissionJson);
     }
 
     @GetMapping("/{confirmation_statement_id}")
-    public ResponseEntity<Object> getSubmission(@PathVariable("confirmation_statement_id") String submissionId) {
+    public ResponseEntity<Object> getSubmission(@PathVariable("confirmation_statement_id") String submissionId,
+            @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
+
+        var logMap = new HashMap<String, Object>();
+        logMap.put("confirmation_statement_id", submissionId);
+        LOGGER.infoContext(requestId, "Calling service to retrieve confirmation statement data", logMap);
+
         var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
         return serviceResponse.<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{confirmation_statement_id}/validation-status")
-    public ResponseEntity<Object> getValidationStatus(@PathVariable("confirmation_statement_id") String submissionId) {
+    public ResponseEntity<Object> getValidationStatus(
+            @PathVariable("confirmation_statement_id") String submissionId,
+            @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
+
+        var logMap = new HashMap<String, Object>();
+        logMap.put("confirmation_statement_id", submissionId);
+        LOGGER.infoContext(requestId, "Calling service to get validation status", logMap);
+
         try {
             ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (SubmissionNotFoundException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.errorContext(requestId,e.getMessage(), e, logMap);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.errorContext(requestId,e.getMessage(), e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

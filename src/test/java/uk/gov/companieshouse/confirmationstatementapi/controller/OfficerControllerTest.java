@@ -24,25 +24,26 @@ class OfficerControllerTest {
     private OfficerController officerController;
 
     private static final String COMPANY_NUMBER = "12345678";
+    private static final String ERICK_REQUEST_ID = "XaBcDeF12345";
 
     @Test
     void testGetActiveDirectorDetails() throws ActiveDirectorNotFoundException, ServiceException {
         when(officerService.getActiveDirectorDetails(COMPANY_NUMBER)).thenReturn(new ActiveDirectorDetails());
-        var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER);
+        var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER, ERICK_REQUEST_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     void testGetActiveDirectorDetailsServiceException() throws ActiveDirectorNotFoundException, ServiceException {
         when(officerService.getActiveDirectorDetails(COMPANY_NUMBER)).thenThrow(ServiceException.class);
-        var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER);
+        var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER, ERICK_REQUEST_ID);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
     void testGetActiveDirectorDetailsOfficerNotFoundException() throws ActiveDirectorNotFoundException, ServiceException {
         when(officerService.getActiveDirectorDetails(COMPANY_NUMBER)).thenThrow(ActiveDirectorNotFoundException.class);
-        var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER);
+        var response = officerController.getActiveDirectorDetails(COMPANY_NUMBER, ERICK_REQUEST_ID);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }

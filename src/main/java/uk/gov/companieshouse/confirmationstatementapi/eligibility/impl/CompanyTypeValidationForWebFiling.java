@@ -1,17 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Set;
 
 public class CompanyTypeValidationForWebFiling implements EligibilityRule<CompanyProfileApi> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyTypeValidationForWebFiling.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyTypeValidationForWebFiling.class.getName());
 
     private final Set<String> webFilingTypes;
 
@@ -21,11 +22,13 @@ public class CompanyTypeValidationForWebFiling implements EligibilityRule<Compan
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
-        LOGGER.info("Validating Company Type Should Use Web Filing for: {}", profileToValidate.getCompanyNumber());
+        var logMap = new HashMap<String, Object>();
+        logMap.put("companyProfile", profileToValidate);
+        LOGGER.info(String.format("Validating Company Type Should Use Web Filing for: %s", profileToValidate.getCompanyNumber()), logMap);
         if (webFilingTypes.contains(profileToValidate.getType())) {
-            LOGGER.info("Company Type validation Should Use Web Filing failed for: {}", profileToValidate.getCompanyNumber());
+            LOGGER.info(String.format("Company Type validation Should Use Web Filing failed for: %s", profileToValidate.getCompanyNumber()), logMap);
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TYPE_USE_WEB_FILING);
         }
-        LOGGER.info("Company Type validation Should Use Web Filing passed for: {}", profileToValidate.getCompanyNumber());
+        LOGGER.info(String.format("Company Type validation Should Use Web Filing passed for: %s", profileToValidate.getCompanyNumber()), logMap);
     }
 }

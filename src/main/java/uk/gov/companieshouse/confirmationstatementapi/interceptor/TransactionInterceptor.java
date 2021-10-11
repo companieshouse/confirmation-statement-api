@@ -1,13 +1,13 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.TransactionService;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class TransactionInterceptor implements HandlerInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionInterceptor.class.getName());
 
     private final TransactionService transactionService;
 
@@ -36,7 +36,7 @@ public class TransactionInterceptor implements HandlerInterceptor {
         try {
             LOGGER.debug("Getting transaction for request");
             final var transaction = transactionService.getTransaction(transactionId, passthroughHeader);
-            LOGGER.debug("Transaction retrieved: {}", transaction);
+            LOGGER.debug(String.format("Transaction retrieved: %s", transaction));
             request.setAttribute("transaction", transaction);
             return true;
         } catch (ServiceException ex) {
