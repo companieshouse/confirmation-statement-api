@@ -13,6 +13,8 @@ public class ActiveDirectorDetails {
     private String nationality;
     @JsonProperty("date_of_birth")
     private String dateOfBirth;
+    @JsonProperty("date_of_appointment")
+    private String dateOfAppointment;
     @JsonProperty("service_address")
     private Address serviceAddress;
     @JsonProperty("residential_address")
@@ -80,5 +82,13 @@ public class ActiveDirectorDetails {
 
     public void setResidentialAddress(Address residentialAddress) {
         this.residentialAddress = residentialAddress;
+    }
+
+    public String getDateOfAppointment() {
+        return dateOfAppointment;
+    }
+
+    public void setDateOfAppointment(String dateOfAppointment) {
+        this.dateOfAppointment = dateOfAppointment;
     }
 }
