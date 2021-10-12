@@ -365,6 +365,45 @@
           }
         }
       }
+    },
+    "/private/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/filings": {
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "in": "path",
+          "required" : true,
+          "type" : "string"
+        },
+        {
+          "name": "confirmation_statement_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "Gets filing data ready to send send to CHIPS",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Filings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Filing data",
+            "schema": {
+              "$ref": "#/definitions/FilingAPIResponse"
+            }
+          },
+          "404": {
+            "description": "Submission not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -694,6 +733,31 @@
       "required": [
         "current_next_made_up_to_date"
       ]
+    },
+    "FilingAPIResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "format": "date"
+        },
+        "description": {
+          "type": "string",
+          "format": "date"
+        },
+        "description_identifier": {
+          "type": "string",
+          "format": "date"
+        },
+        "description_values": {
+          "type": "object",
+          "format": "date"
+        },
+        "kind": {
+          "type": "string",
+          "format": "date"
+        }
+      }
     }
   }
 }
