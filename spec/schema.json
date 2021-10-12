@@ -489,6 +489,9 @@
         "date_of_birth":  {
           "type": "string"
         },
+        "date_of_appointment":  {
+          "type": "string"
+        },
         "service_address_line_1":  {
           "type": "string"
         },
