@@ -9,14 +9,12 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.List;
 
-public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileApi> {
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyOfficerValidation.class.getName());
+public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileApi> {
 
     private final OfficerService officerService;
 

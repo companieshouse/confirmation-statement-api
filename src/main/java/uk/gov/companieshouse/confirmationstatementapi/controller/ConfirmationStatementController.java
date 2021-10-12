@@ -17,21 +17,18 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
 
 @RestController
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement")
 public class ConfirmationStatementController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementController.class.getName());
 
     private final ConfirmationStatementService confirmationStatementService;
 
@@ -41,14 +38,16 @@ public class ConfirmationStatementController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> createNewSubmission(@RequestAttribute("transaction") Transaction transaction, HttpServletRequest request) {
+    public ResponseEntity<Object> createNewSubmission(
+            @RequestAttribute("transaction") Transaction transaction,
+            @PathVariable("transaction_id") String transactionId,
+            HttpServletRequest request) {
 
         String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
         String requestId = request.getHeader(ERIC_REQUEST_ID);
 
         var logMap = new HashMap<String, Object>();
-        logMap.put("transaction", transaction);
-        logMap.put("passthroughHeader", passthroughHeader);
+        logMap.put("transaction_id", transactionId);
         LOGGER.infoContext(requestId, "Calling service to create submission", logMap);
 
         try {
@@ -63,22 +62,26 @@ public class ConfirmationStatementController {
     public ResponseEntity<Object> updateSubmission(
             @RequestBody ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson,
             @PathVariable("confirmation_statement_id") String submissionId,
+            @PathVariable("transaction_id") String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
 
         var logMap = new HashMap<String, Object>();
         logMap.put("confirmation_statement_id", submissionId);
-        logMap.put("confirmation_statement", confirmationStatementSubmissionJson);
+        logMap.put("transaction_id", transactionId);
         LOGGER.infoContext(requestId, "Calling service to update confirmation statement data", logMap);
 
         return confirmationStatementService.updateConfirmationStatement(submissionId, confirmationStatementSubmissionJson);
     }
 
     @GetMapping("/{confirmation_statement_id}")
-    public ResponseEntity<Object> getSubmission(@PathVariable("confirmation_statement_id") String submissionId,
+    public ResponseEntity<Object> getSubmission(
+            @PathVariable("confirmation_statement_id") String submissionId,
+            @PathVariable("transaction_id") String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
 
         var logMap = new HashMap<String, Object>();
         logMap.put("confirmation_statement_id", submissionId);
+        logMap.put("transaction_id", transactionId);
         LOGGER.infoContext(requestId, "Calling service to retrieve confirmation statement data", logMap);
 
         var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
@@ -89,10 +92,12 @@ public class ConfirmationStatementController {
     @GetMapping("/{confirmation_statement_id}/validation-status")
     public ResponseEntity<Object> getValidationStatus(
             @PathVariable("confirmation_statement_id") String submissionId,
+            @PathVariable("transaction_id") String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
 
         var logMap = new HashMap<String, Object>();
         logMap.put("confirmation_statement_id", submissionId);
+        logMap.put("transaction_id", transactionId);
         LOGGER.infoContext(requestId, "Calling service to get validation status", logMap);
 
         try {

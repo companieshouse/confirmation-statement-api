@@ -10,17 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.RegisterLocationService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
 
 @RestController
 public class RegisterLocationsController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegisterLocationsController.class.getName());
 
     private RegisterLocationService regLocService;
 
@@ -34,8 +32,7 @@ public class RegisterLocationsController {
             @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
 
         var logMap = new HashMap<String, Object>();
-        logMap.put("requestId", requestId);
-        logMap.put("companyNumber", companyNumber);
+        logMap.put("company_number", companyNumber);
 
         try {
             LOGGER.infoContext(requestId, "Calling service to retrieve register locations data.", logMap);

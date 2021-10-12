@@ -23,8 +23,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDat
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -35,10 +33,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+
 @Service
 public class ConfirmationStatementService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementService.class.getName());
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Value("${FEATURE_FLAG_ENABLE_PAYMENT_CHECK_26082021:true}")

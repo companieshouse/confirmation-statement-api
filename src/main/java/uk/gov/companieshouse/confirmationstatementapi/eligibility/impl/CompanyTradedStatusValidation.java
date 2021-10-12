@@ -6,12 +6,10 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusType;
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
+
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 
 public class CompanyTradedStatusValidation implements EligibilityRule<CompanyProfileApi> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyTradedStatusValidation.class.getName());
 
     private final CorporateBodyService corporateBodyService;
     private final boolean tradedStatusEligibilityFlag;

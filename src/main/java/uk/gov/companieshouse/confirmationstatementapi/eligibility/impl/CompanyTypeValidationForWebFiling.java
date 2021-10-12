@@ -4,15 +4,13 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
+
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 
 import java.util.HashMap;
 import java.util.Set;
 
 public class CompanyTypeValidationForWebFiling implements EligibilityRule<CompanyProfileApi> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyTypeValidationForWebFiling.class.getName());
 
     private final Set<String> webFilingTypes;
 

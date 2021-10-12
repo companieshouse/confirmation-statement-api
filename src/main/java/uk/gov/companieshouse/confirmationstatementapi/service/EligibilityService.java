@@ -9,15 +9,14 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.List;
+
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 
 @Service
 public class EligibilityService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EligibilityService.class.getName());
     private final List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
 
     @Autowired

@@ -10,17 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
 
 @RestController
 class PersonsOfSignificantControlController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PersonsOfSignificantControlController.class.getName());
 
     @Autowired
     private PscService pscService;
@@ -30,8 +28,7 @@ class PersonsOfSignificantControlController {
             @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
 
         var logMap = new HashMap<String, Object>();
-        logMap.put("requestId", requestId);
-        logMap.put("companyNumber", companyNumber);
+        logMap.put("company_number", companyNumber);
 
         String sanitizedCompanyNumber = null;
         if (companyNumber != null) {

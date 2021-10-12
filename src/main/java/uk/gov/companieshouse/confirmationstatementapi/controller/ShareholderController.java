@@ -10,17 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
 
 @RestController
 public class ShareholderController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShareholderController.class.getName());
 
     private ShareholderService shareholderService;
 
@@ -34,7 +32,7 @@ public class ShareholderController {
             @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
 
         var map = new HashMap<String, Object>();
-        map.put("companyNumber", companyNumber);
+        map.put("company_number", companyNumber);
 
         try {
             LOGGER.infoContext(requestId, "Calling service to retrieve shareholders data", map);

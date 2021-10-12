@@ -10,18 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.service.FilingService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.HashMap;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
 
 @RestController
 @RequestMapping("/private/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/filings")
 public class FilingController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FilingController.class.getName());
 
     @Autowired
     private FilingService filingService;
@@ -35,7 +32,6 @@ public class FilingController {
         var logMap = new HashMap<String, Object>();
         logMap.put("transaction_id", transactionId);
         logMap.put("confirmation_statement_id", confirmationStatementId);
-        logMap.put("requestId", requestId);
         LOGGER.infoContext(requestId, "Calling service to retrieve filing", logMap);
 
         try {

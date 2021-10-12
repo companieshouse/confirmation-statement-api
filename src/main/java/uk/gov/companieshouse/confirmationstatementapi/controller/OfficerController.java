@@ -11,11 +11,10 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNo
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.util.HashMap;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
 
 @RestController
@@ -24,15 +23,12 @@ public class OfficerController {
     @Autowired
     private OfficerService officerService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OfficerController.class.getName());
-
     @GetMapping("/confirmation-statement/company/{companyNumber}/active-director-details")
     public ResponseEntity<ActiveDirectorDetails> getActiveDirectorDetails(@PathVariable String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
 
         var logMap = new HashMap<String, Object>();
-        logMap.put("requestId", requestId);
-        logMap.put("companyNumber", companyNumber);
+        logMap.put("company_number", companyNumber);
 
         try {
             LOGGER.infoContext(requestId, "Calling service to retrieve the active director details.", logMap);

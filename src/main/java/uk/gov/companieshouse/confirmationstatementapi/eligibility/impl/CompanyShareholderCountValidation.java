@@ -5,12 +5,10 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRul
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
+
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 
 public class CompanyShareholderCountValidation implements EligibilityRule<CompanyProfileApi> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyShareholderCountValidation.class.getName());
 
     private final ShareholderService shareholderService;
     private final boolean validationFlag;
