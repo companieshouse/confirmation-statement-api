@@ -777,24 +777,19 @@
       "type": "object",
       "properties": {
         "data": {
-          "type": "object",
-          "format": "date"
+          "$ref": "#/definitions/Data"
         },
         "description": {
-          "type": "string",
-          "format": "date"
+          "type": "string"
         },
         "description_identifier": {
-          "type": "string",
-          "format": "date"
+          "type": "string"
         },
         "description_values": {
-          "type": "object",
-          "format": "date"
+          "$ref": "#/definitions/Description"
         },
         "kind": {
-          "type": "string",
-          "format": "date"
+          "type": "string"
         }
       }
     },
@@ -825,6 +820,28 @@
           "type": "string"
         },
         "type": {
+          "type": "string"
+        }
+      }
+    },
+    "Data": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "object"
+        }
+      }
+    },
+    "Description": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
           "type": "string"
         }
       }
