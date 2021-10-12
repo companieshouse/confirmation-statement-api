@@ -83,6 +83,9 @@
             "schema": {
               "$ref": "#/definitions/UpdateSubmissionFieldsError"
             }
+          },
+          "404": {
+            "description": "Submission not found"
           }
         }
       },
@@ -111,17 +114,50 @@
               "$ref": "#/definitions/ConfirmationStatementSubmission"
             }
           },
-          "400": {
-            "description": "There was an error updating the submission",
-            "schema": {
-              "$ref": "#/definitions/UpdateSubmissionFieldsError"
-            }
-          },
           "401": {
             "description": "You are unauthorised to update this submisison",
             "schema": {
               "$ref": "#/definitions/UpdateSubmissionFieldsError"
             }
+          },
+          "404": {
+            "description": "Submission not found"
+          }
+        }
+      }
+    },
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/validation-status" : {
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "confirmation_statement_submission_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "Verify that all the tasks for the Specified Confirmation Statement Submission have been completed",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Validation Status"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Specified Confirmation Statement Submission tasks have been completed.",
+            "schema": {
+              "$ref": "#/definitions/ValidationStatusResponse"
+            }
+          },
+          "404": {
+            "description": "Submission not found"
           }
         }
       }
@@ -362,6 +398,9 @@
             "schema": {
               "$ref": "#/definitions/NextMadeUpToDateResponse"
             }
+          },
+          "404": {
+            "description": "Company not found"
           }
         }
       }
@@ -756,6 +795,37 @@
         "kind": {
           "type": "string",
           "format": "date"
+        }
+      }
+    },
+    "ValidationStatusResponse": {
+      "type": "object",
+      "properties": {
+        "is_valid": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValidationStatusError"
+          }
+        }
+      }
+    },
+    "ValidationStatusError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "location_type": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
         }
       }
     }
