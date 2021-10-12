@@ -21,8 +21,8 @@ public class OfficerController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OfficerController.class);
 
-    @GetMapping("/confirmation-statement/company/{companyNumber}/active-director-details")
-    public ResponseEntity<ActiveDirectorDetails> getActiveDirectorDetails(@PathVariable String companyNumber) {
+    @GetMapping("/confirmation-statement/company/{company-number}/active-director-details")
+    public ResponseEntity<ActiveDirectorDetails> getActiveDirectorDetails(@PathVariable("company-number") String companyNumber) {
         try {
             LOGGER.info("Calling service to retrieve the active director details.");
             var directorDetails = officerService.getActiveDirectorDetails(companyNumber);

@@ -24,8 +24,8 @@ public class StatementOfCapitalController {
         this.statementOfCapitalService = statementOfCapitalService;
     }
 
-    @GetMapping("/confirmation-statement/company/{companyNumber}/statement-of-capital")
-    public ResponseEntity<StatementOfCapitalJson> getStatementOfCapital(@PathVariable String companyNumber) {
+    @GetMapping("/confirmation-statement/company/{company-number}/statement-of-capital")
+    public ResponseEntity<StatementOfCapitalJson> getStatementOfCapital(@PathVariable("company-number") String companyNumber) {
         try {
             LOGGER.info("Calling service to retrieve statement of capital data");
             var statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);

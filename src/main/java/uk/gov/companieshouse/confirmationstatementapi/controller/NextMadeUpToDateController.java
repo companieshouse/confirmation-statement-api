@@ -19,8 +19,8 @@ public class NextMadeUpToDateController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NextMadeUpToDateController.class);
 
-    @GetMapping("/confirmation-statement/company/{companyNumber}/next-made-up-to-date")
-    public ResponseEntity<NextMadeUpToDateJson> getNextMadeUpToDate(@PathVariable String companyNumber) {
+    @GetMapping("/confirmation-statement/company/{company-number}/next-made-up-to-date")
+    public ResponseEntity<NextMadeUpToDateJson> getNextMadeUpToDate(@PathVariable("company-number") String companyNumber) {
         try {
             LOGGER.info("Calling service to retrieve the next made up to date.");
             NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(companyNumber);

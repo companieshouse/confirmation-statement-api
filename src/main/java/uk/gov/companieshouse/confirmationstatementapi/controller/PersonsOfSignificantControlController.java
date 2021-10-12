@@ -21,8 +21,8 @@ class PersonsOfSignificantControlController {
     @Autowired
     private PscService pscService;
 
-    @GetMapping("/confirmation-statement/company/{companyNumber}/persons-of-significant-control")
-    public ResponseEntity<List<PersonOfSignificantControlJson>> getPersonsOfSignificantControl(@PathVariable String companyNumber) {
+    @GetMapping("/confirmation-statement/company/{company-number}/persons-of-significant-control")
+    public ResponseEntity<List<PersonOfSignificantControlJson>> getPersonsOfSignificantControl(@PathVariable("company-number") String companyNumber) {
         String sanitizedCompanyNumber = null;
         if (companyNumber != null) {
             sanitizedCompanyNumber = companyNumber.replaceAll("[\n|\r|\t]", "_");
