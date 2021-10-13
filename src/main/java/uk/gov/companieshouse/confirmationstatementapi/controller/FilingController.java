@@ -14,7 +14,9 @@ import uk.gov.companieshouse.confirmationstatementapi.service.FilingService;
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @RestController
 @RequestMapping("/private/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/filings")
@@ -25,13 +27,13 @@ public class FilingController {
 
     @GetMapping
     public ResponseEntity<FilingApi[]> getFiling(
-            @PathVariable("confirmation_statement_id") String confirmationStatementId,
-            @PathVariable("transaction_id") String transactionId,
-            @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
+            @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String confirmationStatementId,
+            @PathVariable(TRANSACTION_ID_KEY) String transactionId,
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();
-        logMap.put("transaction_id", transactionId);
-        logMap.put("confirmation_statement_id", confirmationStatementId);
+        logMap.put(TRANSACTION_ID_KEY, transactionId);
+        logMap.put(CONFIRMATION_STATEMENT_ID_KEY, confirmationStatementId);
         LOGGER.infoContext(requestId, "Calling service to retrieve filing", logMap);
 
         try {

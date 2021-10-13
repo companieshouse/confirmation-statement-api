@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @RestController
 class PersonsOfSignificantControlController {
@@ -25,7 +25,7 @@ class PersonsOfSignificantControlController {
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/persons-of-significant-control")
     public ResponseEntity<List<PersonOfSignificantControlJson>> getPersonsOfSignificantControl(@PathVariable String companyNumber,
-            @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();
         logMap.put("company_number", companyNumber);
@@ -48,7 +48,7 @@ class PersonsOfSignificantControlController {
         }
     }
 
-    private void logErrorMessage(String requestId, String sanitizedCompanyNumber, HashMap logMap, Exception e) {
+    private void logErrorMessage(String requestId, String sanitizedCompanyNumber, HashMap<String, Object> logMap, Exception e) {
         LOGGER.errorContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), e, logMap);
     }
 }

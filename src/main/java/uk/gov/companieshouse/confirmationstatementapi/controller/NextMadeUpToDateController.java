@@ -13,7 +13,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatem
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @RestController
 public class NextMadeUpToDateController {
@@ -23,7 +23,7 @@ public class NextMadeUpToDateController {
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/next-made-up-to-date")
     public ResponseEntity<NextMadeUpToDateJson> getNextMadeUpToDate(@PathVariable String companyNumber,
-            @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
         var map = new HashMap<String, Object>();
         map.put("company_number", companyNumber);
 

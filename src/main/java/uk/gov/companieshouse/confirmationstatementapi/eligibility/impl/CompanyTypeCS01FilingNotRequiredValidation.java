@@ -9,7 +9,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStateme
 
 import java.util.Set;
 
-public class CompanyTypeCS01FilingNotRequiredValidation implements EligibilityRule<CompanyProfileApi> { ;
+public class CompanyTypeCS01FilingNotRequiredValidation implements EligibilityRule<CompanyProfileApi> {
 
     private final Set<String> companyTypesNotRequiredToFile;
 

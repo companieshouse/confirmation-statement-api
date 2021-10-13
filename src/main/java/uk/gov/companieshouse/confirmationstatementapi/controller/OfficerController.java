@@ -15,7 +15,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @RestController
 public class OfficerController {
@@ -25,7 +25,7 @@ public class OfficerController {
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/active-director-details")
     public ResponseEntity<ActiveDirectorDetails> getActiveDirectorDetails(@PathVariable String companyNumber,
-            @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();
         logMap.put("company_number", companyNumber);

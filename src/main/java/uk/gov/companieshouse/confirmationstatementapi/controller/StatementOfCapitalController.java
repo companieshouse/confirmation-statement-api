@@ -14,7 +14,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapital
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @RestController
 public class StatementOfCapitalController {
@@ -28,7 +28,7 @@ public class StatementOfCapitalController {
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/statement-of-capital")
     public ResponseEntity<StatementOfCapitalJson> getStatementOfCapital(@PathVariable String companyNumber,
-            @RequestHeader(value = ERIC_REQUEST_ID) String requestId) {
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();
         logMap.put("company_number", companyNumber);

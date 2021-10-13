@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @Component
 public class TransactionInterceptor implements HandlerInterceptor {
@@ -29,11 +30,11 @@ public class TransactionInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        final var transactionId = pathVariables.get("transaction_id");
+        final var transactionId = pathVariables.get(TRANSACTION_ID_KEY);
         String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
 
         var logMap = new HashMap<String, Object>();
-        logMap.put("transaction_id",transactionId);
+        logMap.put(TRANSACTION_ID_KEY,transactionId);
         try {
             LOGGER.debug("Getting transaction for request.", logMap);
             final var transaction = transactionService.getTransaction(transactionId, passthroughHeader);
