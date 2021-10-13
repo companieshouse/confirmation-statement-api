@@ -35,7 +35,7 @@ class ConfirmationStatementControllerTest {
     private static final String PASSTHROUGH = "13456";
     private static final String SUBMISSION_ID = "ABCDEFG";
     private static final String TRANSACTION_ID = "GFEDCBA";
-    private static final String ERICK_REQUEST_ID = "XaBcDeF12345";
+    private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @Mock
     private ConfirmationStatementService confirmationStatementService;
@@ -87,7 +87,7 @@ class ConfirmationStatementControllerTest {
         when(confirmationStatementService.updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(UPDATED_SUCCESS_RESPONSE);
 
-        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERICK_REQUEST_ID);
+        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(UPDATED_SUCCESS_RESPONSE, response);
     }
@@ -97,7 +97,7 @@ class ConfirmationStatementControllerTest {
         when(confirmationStatementService.updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(NOT_FOUND_RESPONSE);
 
-        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERICK_REQUEST_ID);
+        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
@@ -107,7 +107,7 @@ class ConfirmationStatementControllerTest {
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
                 .thenReturn(Optional.of(new ConfirmationStatementSubmissionJson()));
 
-        var response = confirmationStatementController.getSubmission(SUBMISSION_ID, TRANSACTION_ID, ERICK_REQUEST_ID);
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -117,7 +117,7 @@ class ConfirmationStatementControllerTest {
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
                 .thenReturn(Optional.empty());
 
-        var response = confirmationStatementController.getSubmission(SUBMISSION_ID, TRANSACTION_ID, ERICK_REQUEST_ID);
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
@@ -127,7 +127,7 @@ class ConfirmationStatementControllerTest {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
         when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERICK_REQUEST_ID);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
 
@@ -141,7 +141,7 @@ class ConfirmationStatementControllerTest {
         errors[0] = error;
         validationStatus.setValidationStatusError(errors);
         when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERICK_REQUEST_ID);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
 
@@ -150,7 +150,7 @@ class ConfirmationStatementControllerTest {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
         when(confirmationStatementService.isValid(SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID,TRANSACTION_ID, ERICK_REQUEST_ID);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
         assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(SUBMISSION_ID));
         assertEquals(NOT_FOUND_RESPONSE, response);
     }

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 class RegisterLocationsControllerTest {
 
     private static final String COMPANY_NUMBER = "12345678";
-    private static final String ERICK_REQUEST_ID = "XaBcDeF12345";
+    private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @Mock
     private RegisterLocationService regLocService;
@@ -32,7 +32,7 @@ class RegisterLocationsControllerTest {
     void testGetRegisterLocationsOKResponse() throws ServiceException {
         var registerLocations = Arrays.asList(new RegisterLocationJson(), new RegisterLocationJson());
         when(regLocService.getRegisterLocations(COMPANY_NUMBER)).thenReturn(registerLocations);
-        var response = regLocController.getRegisterLocations(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        var response = regLocController.getRegisterLocations(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(registerLocations, response.getBody());
@@ -41,7 +41,7 @@ class RegisterLocationsControllerTest {
     @Test
     void testGetRegisterLocationsServiceException() throws ServiceException {
         when(regLocService.getRegisterLocations(COMPANY_NUMBER)).thenThrow(new ServiceException("Internal Server Error"));
-        var response = regLocController.getRegisterLocations(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        var response = regLocController.getRegisterLocations(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -50,7 +50,7 @@ class RegisterLocationsControllerTest {
     void testGetRegisterLocationsUncheckedException() throws ServiceException {
         var runtimeException = new RuntimeException("Runtime Error");
         when(regLocService.getRegisterLocations(COMPANY_NUMBER)).thenThrow(runtimeException);
-        var thrown = assertThrows(Exception.class, () -> regLocController.getRegisterLocations(COMPANY_NUMBER, ERICK_REQUEST_ID));
+        var thrown = assertThrows(Exception.class, () -> regLocController.getRegisterLocations(COMPANY_NUMBER, ERIC_REQUEST_ID));
 
         assertEquals(runtimeException, thrown);
     }

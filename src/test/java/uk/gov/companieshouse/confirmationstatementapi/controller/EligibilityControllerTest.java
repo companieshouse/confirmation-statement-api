@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 class EligibilityControllerTest {
 
     private static final String COMPANY_NUMBER = "11111111";
-    private static final String ERICK_REQUEST_ID = "XaBcDeF12345";
+    private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @Mock
     private CompanyProfileService companyProfileService;
@@ -41,7 +41,7 @@ class EligibilityControllerTest {
         CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
         companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(companyValidationResponse);
-        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
         assertEquals(200, response.getStatusCodeValue());
     }
 
@@ -53,28 +53,28 @@ class EligibilityControllerTest {
         CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
         companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(companyValidationResponse);
-        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
         assertEquals(400, response.getStatusCodeValue());
     }
 
     @Test
     void testServiceExceptionGetEligibility() throws ServiceException, CompanyNotFoundException {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new ServiceException("", new Exception()));
-        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
         assertEquals(500, response.getStatusCodeValue());
     }
 
     @Test
     void testUncheckedExceptionGetEligibility() throws ServiceException, CompanyNotFoundException {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new RuntimeException("runtime exception"));
-        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
         assertEquals(500, response.getStatusCodeValue());
     }
 
     @Test
     void testCompanyNotFound() throws ServiceException, CompanyNotFoundException {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
-        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
         assertEquals(400, response.getStatusCodeValue());
         assertNotNull(response.getBody());
         assertEquals(EligibilityStatusCode.COMPANY_NOT_FOUND, response.getBody().getEligibilityStatusCode());

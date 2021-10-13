@@ -20,7 +20,6 @@ public class LoggingInterceptor implements HandlerInterceptor{
         request.getSession().setAttribute("start-time", startTime);
 
         MDC.put("context", requestId(request));
-        MDC.put("namespace", ConfirmationStatementApiApplication.APP_NAME);
         LOGGER.info(String.format("Start of request. Method: %s Path: %s", requestMethod(request), requestPath(request)));
         return true;
     }

@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 class NextMadeUpToDateControllerTest {
 
     private static final String COMPANY_NUMBER = "12345678";
-    private static final String ERICK_REQUEST_ID = "XaBcDeF12345";
+    private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
     private static final NextMadeUpToDateJson NEXT_MADE_UP_TO_DATE_JSON = new NextMadeUpToDateJson();
 
     @Mock
@@ -45,7 +45,7 @@ class NextMadeUpToDateControllerTest {
         when(confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER))
                 .thenReturn(NEXT_MADE_UP_TO_DATE_JSON);
 
-        ResponseEntity<NextMadeUpToDateJson> response = nextMadeUpToDateController.getNextMadeUpToDate(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        ResponseEntity<NextMadeUpToDateJson> response = nextMadeUpToDateController.getNextMadeUpToDate(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         assertEquals(NEXT_MADE_UP_TO_DATE_JSON, response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -56,7 +56,7 @@ class NextMadeUpToDateControllerTest {
         when(confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER))
                 .thenThrow(new CompanyNotFoundException());
 
-        ResponseEntity<NextMadeUpToDateJson> response = nextMadeUpToDateController.getNextMadeUpToDate(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        ResponseEntity<NextMadeUpToDateJson> response = nextMadeUpToDateController.getNextMadeUpToDate(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
@@ -67,7 +67,7 @@ class NextMadeUpToDateControllerTest {
         when(confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER))
                 .thenThrow(new NullPointerException());
 
-        ResponseEntity<NextMadeUpToDateJson> response = nextMadeUpToDateController.getNextMadeUpToDate(COMPANY_NUMBER, ERICK_REQUEST_ID);
+        ResponseEntity<NextMadeUpToDateJson> response = nextMadeUpToDateController.getNextMadeUpToDate(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
