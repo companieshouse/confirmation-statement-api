@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @Component
@@ -36,9 +37,11 @@ public class TransactionInterceptor implements HandlerInterceptor {
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY,transactionId);
         try {
-            LOGGER.debug("Getting transaction for request.", logMap);
+            String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
+            LOGGER.debugContext(reqId, "Getting transaction for request.", logMap);
+
             final var transaction = transactionService.getTransaction(transactionId, passthroughHeader);
-            LOGGER.debug("Transaction retrieved.", logMap);
+            LOGGER.debugContext(reqId, "Transaction retrieved.", logMap);
 
             request.setAttribute("transaction", transaction);
             return true;
