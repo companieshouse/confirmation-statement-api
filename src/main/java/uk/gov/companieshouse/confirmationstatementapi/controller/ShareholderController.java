@@ -25,8 +25,8 @@ public class ShareholderController {
         this.shareholderService = shareholderService;
     }
 
-    @GetMapping("/confirmation-statement/company/{company-number}/shareholders")
-    public ResponseEntity<List<ShareholderJson>> getShareholders(@PathVariable("company-number") String companyNumber) {
+    @GetMapping("/confirmation-statement/company/{companyNumber}/shareholders")
+    public ResponseEntity<List<ShareholderJson>> getShareholders(@PathVariable String companyNumber) {
         try {
             LOGGER.info("Calling service to retrieve shareholders data");
             var shareholders = shareholderService.getShareholders(companyNumber);

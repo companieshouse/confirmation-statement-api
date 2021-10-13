@@ -25,8 +25,8 @@ public class RegisterLocationsController {
         this.regLocService = regLocService;
     }
 
-    @GetMapping("/confirmation-statement/company/{company-number}/register-locations")
-    public ResponseEntity<List<RegisterLocationJson>> getRegisterLocations(@PathVariable("company-number") String companyNumber) {
+    @GetMapping("/confirmation-statement/company/{companyNumber}/register-locations")
+    public ResponseEntity<List<RegisterLocationJson>> getRegisterLocations(@PathVariable String companyNumber) {
         try {
             LOGGER.info("Calling service to retrieve register locations data");
             var registerLocations = regLocService.getRegisterLocations(companyNumber);

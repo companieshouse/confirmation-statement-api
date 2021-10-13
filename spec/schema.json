@@ -162,39 +162,6 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/submit": {
-      "parameters": [
-        {
-          "name": "transaction_id",
-          "in": "path",
-          "required" : true,
-          "type" : "string"
-        },
-        {
-          "name": "confirmation_statement_submission_id",
-          "in": "path",
-          "required" : true,
-          "type" : "string"
-        }
-      ],
-      "post": {
-        "summary": "Finalise and Submit a Confirmation Statement Submission WIP",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Confirmation Statement"
-        ],
-        "responses": {
-          "202": {
-            "description": "The Confirmation Statement Submission has been submitted",
-            "schema": {
-              "$ref": "#/definitions/ConfirmationStatementSubmission"
-            }
-          }
-        }
-      }
-    },
     "/confirmation-statement/company/{company_number}/statement-of-capital": {
       "parameters": [
         {
