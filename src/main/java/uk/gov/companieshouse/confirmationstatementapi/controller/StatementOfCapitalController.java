@@ -27,7 +27,8 @@ public class StatementOfCapitalController {
     }
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/statement-of-capital")
-    public ResponseEntity<StatementOfCapitalJson> getStatementOfCapital(@PathVariable String companyNumber,
+    public ResponseEntity<StatementOfCapitalJson> getStatementOfCapital(
+            @PathVariable String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();

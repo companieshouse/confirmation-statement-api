@@ -24,7 +24,8 @@ class PersonsOfSignificantControlController {
     private PscService pscService;
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/persons-of-significant-control")
-    public ResponseEntity<List<PersonOfSignificantControlJson>> getPersonsOfSignificantControl(@PathVariable String companyNumber,
+    public ResponseEntity<List<PersonOfSignificantControlJson>> getPersonsOfSignificantControl(
+            @PathVariable String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();

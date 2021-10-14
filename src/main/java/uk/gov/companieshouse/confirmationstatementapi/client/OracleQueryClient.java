@@ -59,8 +59,12 @@ public class OracleQueryClient {
         ResponseEntity<StatementOfCapitalJson> response = restTemplate.getForEntity(statementOfCapitalUrl, StatementOfCapitalJson.class);
         if(response.getStatusCode() == HttpStatus.OK) {
             StatementOfCapitalJson statementOfCapitalJson = response.getBody();
-            if (statementOfCapitalJson != null) return statementOfCapitalJson;
-            else throw new ServiceException("Oracle query api returned no data");
+            if (statementOfCapitalJson != null) {
+                return statementOfCapitalJson;
+            }
+            else {
+                throw new ServiceException("Oracle query api returned no data");
+            }
         } else {
             throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
         }

@@ -28,7 +28,8 @@ public class RegisterLocationsController {
     }
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/register-locations")
-    public ResponseEntity<List<RegisterLocationJson>> getRegisterLocations(@PathVariable String companyNumber,
+    public ResponseEntity<List<RegisterLocationJson>> getRegisterLocations(
+            @PathVariable String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();

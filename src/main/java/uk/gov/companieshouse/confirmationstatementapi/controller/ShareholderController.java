@@ -28,7 +28,8 @@ public class ShareholderController {
     }
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/shareholders")
-    public ResponseEntity<List<ShareholderJson>> getShareholders(@PathVariable String companyNumber,
+    public ResponseEntity<List<ShareholderJson>> getShareholders(
+            @PathVariable String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var map = new HashMap<String, Object>();

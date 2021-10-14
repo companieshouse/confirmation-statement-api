@@ -24,7 +24,8 @@ public class OfficerController {
     private OfficerService officerService;
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/active-director-details")
-    public ResponseEntity<ActiveDirectorDetails> getActiveDirectorDetails(@PathVariable String companyNumber,
+    public ResponseEntity<ActiveDirectorDetails> getActiveDirectorDetails(
+            @PathVariable String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();
