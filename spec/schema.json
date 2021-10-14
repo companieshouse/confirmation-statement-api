@@ -537,6 +537,9 @@
         "date_of_appointment":  {
           "type": "string"
         },
+        "country_of_residence":  {
+          "type": "string"
+        },
         "service_address_line_1":  {
           "type": "string"
         },
