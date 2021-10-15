@@ -36,7 +36,7 @@
           "201": {
             "description": "A Confirmation Statement Submission has been created.",
             "schema": {
-              "$ref": "#/definitions/ConfirmationStatementCreated"
+              "$ref": "#/definitions/ConfirmationStatementSubmission"
             }
           },
           "400": {
@@ -413,12 +413,6 @@
     }
   },
   "definitions": {
-    "ConfirmationStatementCreated": {
-      "type": "object",
-      "properties": {
-        "$ref": "#/definitions/ConfirmationStatementSubmission"
-      }
-    },
     "ConfirmationStatementSubmission": {
       "type": "object",
       "properties": {
