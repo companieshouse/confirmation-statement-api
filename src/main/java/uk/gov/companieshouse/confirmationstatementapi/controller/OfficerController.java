@@ -36,7 +36,7 @@ public class OfficerController {
             var directorDetails = officerService.getActiveDirectorDetails(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(directorDetails);
         } catch (ActiveDirectorNotFoundException e) {
-            LOGGER.errorContext(requestId, "Error retrieving active officer details.", e, logMap);
+            LOGGER.infoContext(requestId, "Error retrieving active officer details.", logMap);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ServiceException e) {
             LOGGER.errorContext(requestId, "Error retrieving active officer details.", e, logMap);

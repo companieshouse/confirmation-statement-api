@@ -39,7 +39,7 @@ public class StatementOfCapitalController {
             var statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
         } catch (ServiceException e) {
-            LOGGER.errorContext(requestId, "Error retrieving statement of capital data.", e, logMap);
+            LOGGER.infoContext(requestId, "Error retrieving statement of capital data.", logMap);
             return ResponseEntity.notFound().build();
         }
     }

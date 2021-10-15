@@ -33,7 +33,7 @@ public class NextMadeUpToDateController {
             NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(companyNumber);
             return ResponseEntity.ok().body(nextMadeUpToDateJson);
         } catch(CompanyNotFoundException cnfe) {
-            LOGGER.errorContext(requestId, "Unable to find company.", cnfe, map);
+            LOGGER.infoContext(requestId, "Unable to find company.", map);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             LOGGER.errorContext(requestId, "Error retrieving next made up to date.", e, map);
