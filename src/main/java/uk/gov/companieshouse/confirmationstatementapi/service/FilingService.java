@@ -19,8 +19,8 @@ public class FilingService {
     @Value("${CONFIRMATION_STATEMENT_DESCRIPTION_NO_UPDATES}")
     private String filingDescription;
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-    private ConfirmationStatementService confirmationStatementService;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
+    private final ConfirmationStatementService confirmationStatementService;
 
     @Autowired
     public FilingService(ConfirmationStatementService csService) {
@@ -28,7 +28,7 @@ public class FilingService {
     }
 
     public FilingApi generateConfirmationFiling(String confirmationStatementId) throws SubmissionNotFoundException {
-        FilingApi filing = new FilingApi();
+        var filing = new FilingApi();
         filing.setKind("confirmation-statement");
         setFilingApiData(filing, confirmationStatementId);
         return filing;

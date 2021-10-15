@@ -36,10 +36,10 @@ class FilingServiceTest {
     void testWhenSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        ReflectionTestUtils.setField(filingService, "filingDescription", "**Confirmation statement** made on {made up date} with no updates");
+        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
               FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID);
-        assertEquals("**Confirmation statement** made on 2021/06/01 with no updates", filing.getDescription());
+        assertEquals("Confirmation statement made on 1 June 2021 with no updates", filing.getDescription());
         assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
         assertFalse((Boolean) filing.getData().get("trading_on_market"));
         assertFalse((Boolean) filing.getData().get("dtr5_ind"));
@@ -67,7 +67,7 @@ class FilingServiceTest {
                 new ConfirmationStatementSubmissionJson();
         ConfirmationStatementSubmissionDataJson confirmationStatementSubmissionDataJson
                 = new ConfirmationStatementSubmissionDataJson();
-        confirmationStatementSubmissionDataJson.setMadeUpToDate(LocalDate.of(2021, 06, 01));
+        confirmationStatementSubmissionDataJson.setMadeUpToDate(LocalDate.of(2021, 6, 1));
         TradingStatusDataJson tradingStatus = new TradingStatusDataJson();
         tradingStatus.setTradingStatusAnswer(true);
         confirmationStatementSubmissionDataJson.setTradingStatusData(tradingStatus);
