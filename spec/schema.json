@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "title": "Companies House - Confirmation Statement API"
   },
-  "host": "internalapi.companieshouse.gov.uk",
+  "host": "api.companieshouse.gov.uk",
   "schemes": [
     "https"
   ],
@@ -416,10 +416,7 @@
     "ConfirmationStatementCreated": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        }
+        "$ref": "#/definitions/ConfirmationStatementSubmission"
       }
     },
     "ConfirmationStatementSubmission": {
@@ -428,6 +425,9 @@
         "id": {
           "type": "string",
           "format": "uuid"
+        },
+        "data": {
+          "$ref": "#/definitions/ConfirmationStatementSubmissionData"
         },
         "links": {
           "type": "object",
@@ -497,9 +497,6 @@
           "type": "integer"
         },
         "prescribedParticulars":  {
-          "type": "string"
-        },
-        "totalCurrency":  {
           "type": "string"
         },
         "totalNumberOfShares":  {
@@ -806,6 +803,17 @@
       }
     },
     "Description": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ConfirmationStatementSubmissionData": {
       "type": "object",
       "properties": {
         "key": {
