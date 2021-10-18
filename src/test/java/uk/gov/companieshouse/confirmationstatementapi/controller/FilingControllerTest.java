@@ -19,6 +19,8 @@ import static org.mockito.Mockito.when;
 class FilingControllerTest {
 
     private static final String CONFIRMATION_ID = "abc123";
+    private static final String TRANSACTION_ID = "def456";
+    private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @InjectMocks
     private FilingController filingController;
@@ -31,7 +33,7 @@ class FilingControllerTest {
         FilingApi filing = new FilingApi();
         filing.setDescription("12345678");
         when(filingService.generateConfirmationFiling(CONFIRMATION_ID)).thenReturn(filing);
-        var result = filingController.getFiling(CONFIRMATION_ID);
+        var result = filingController.getFiling(CONFIRMATION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertNotNull(result.getBody());
         assertEquals(1, result.getBody().length);
@@ -42,7 +44,7 @@ class FilingControllerTest {
     @Test
     void getFilingSubmissionNotFound() throws SubmissionNotFoundException {
         when(filingService.generateConfirmationFiling(CONFIRMATION_ID)).thenThrow(SubmissionNotFoundException.class);
-        var result = filingController.getFiling(CONFIRMATION_ID);
+        var result = filingController.getFiling(CONFIRMATION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertNull(result.getBody());
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
@@ -51,7 +53,7 @@ class FilingControllerTest {
     @Test
     void getFilingException() throws SubmissionNotFoundException {
         when(filingService.generateConfirmationFiling(CONFIRMATION_ID)).thenThrow(RuntimeException.class);
-        var result = filingController.getFiling(CONFIRMATION_ID);
+        var result = filingController.getFiling(CONFIRMATION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertNull(result.getBody());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());

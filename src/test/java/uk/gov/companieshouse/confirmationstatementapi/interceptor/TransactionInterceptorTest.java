@@ -20,11 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionInterceptorTest {
 
-    private static final String TRANSACTION_ID = "12345678";
+    private static final String TX_ID = "12345678";
     private static final String PASSTHROUGH_HEADER = "passthrough";
 
     @Mock
@@ -40,12 +41,12 @@ class TransactionInterceptorTest {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
         Transaction dummyTransaction = new Transaction();
-        dummyTransaction.setId(TRANSACTION_ID);
+        dummyTransaction.setId(TX_ID);
 
         var pathParams = new HashMap<String, String>();
-        pathParams.put("transaction_id", TRANSACTION_ID);
+        pathParams.put(TRANSACTION_ID_KEY, TX_ID);
 
-        when(transactionService.getTransaction(TRANSACTION_ID, PASSTHROUGH_HEADER)).thenReturn(dummyTransaction);
+        when(transactionService.getTransaction(TX_ID, PASSTHROUGH_HEADER)).thenReturn(dummyTransaction);
         when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
         when(mockHttpServletRequest.getHeader("ERIC-Access-Token")).thenReturn(PASSTHROUGH_HEADER);
 
@@ -59,11 +60,11 @@ class TransactionInterceptorTest {
         Object mockHandler = new Object();
 
         var pathParams = new HashMap<String, String>();
-        pathParams.put("transaction_id", TRANSACTION_ID);
+        pathParams.put(TRANSACTION_ID_KEY, TX_ID);
 
         when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
         when(mockHttpServletRequest.getHeader("ERIC-Access-Token")).thenReturn(PASSTHROUGH_HEADER);
-        when(transactionService.getTransaction(TRANSACTION_ID, PASSTHROUGH_HEADER)).thenThrow(ServiceException.class);
+        when(transactionService.getTransaction(TX_ID, PASSTHROUGH_HEADER)).thenThrow(ServiceException.class);
 
         assertFalse(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
         assertEquals(500,  mockHttpServletResponse.getStatus());

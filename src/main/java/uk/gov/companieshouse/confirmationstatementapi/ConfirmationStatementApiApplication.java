@@ -2,6 +2,8 @@ package uk.gov.companieshouse.confirmationstatementapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.TimeZone;
@@ -9,7 +11,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class ConfirmationStatementApiApplication {
 
-	public static final String APP_NAME = "CONFIRMATION-STATEMENT-API";
+	public static final Logger LOGGER = LoggerFactory.getLogger("confirmation-statement-api");
 
 	public static void main(String[] args) {
 		SpringApplication.run(ConfirmationStatementApiApplication.class, args);

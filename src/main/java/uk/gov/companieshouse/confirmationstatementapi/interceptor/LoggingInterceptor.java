@@ -1,31 +1,25 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+
 @Component
 public class LoggingInterceptor implements HandlerInterceptor{
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingInterceptor.class);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Long startTime = System.currentTimeMillis();
         request.getSession().setAttribute("start-time", startTime);
 
-        MDC.put("context", requestId(request));
-        MDC.put("namespace", ConfirmationStatementApiApplication.APP_NAME);
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Start of request. Method: {} Path: {}", requestMethod(request), requestPath(request));
-        }
+        LOGGER.infoContext(requestId(request), String.format("Start of request. Method: %s Path: %s",
+                requestMethod(request), requestPath(request)), null);
         return true;
     }
 
@@ -34,17 +28,12 @@ public class LoggingInterceptor implements HandlerInterceptor{
         Long startTime = (Long) request.getSession().getAttribute("start-time");
         long responseTime = System.currentTimeMillis() - startTime;
 
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("End of request. Method: {} Path: {} Duration: {}ms Status: {}",
-                    requestMethod(request), requestPath(request), responseTime, response.getStatus());
-        }
-
-        MDC.clear();
+        LOGGER.infoContext(requestId(request), String.format("End of request. Method: %s Path: %s Duration: %sms Status: %s",
+                requestMethod(request), requestPath(request), responseTime, response.getStatus()), null);
     }
 
     private String requestPath(HttpServletRequest request) {
-        return (String) request
-                .getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+        return (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
     }
 
     private String requestMethod(HttpServletRequest request) {
@@ -52,6 +41,6 @@ public class LoggingInterceptor implements HandlerInterceptor{
     }
 
     private String requestId(HttpServletRequest request) {
-        return request.getHeader("X-request-id");
+        return request.getHeader(ERIC_REQUEST_ID_KEY);
     }
 }

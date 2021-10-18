@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -14,10 +12,11 @@ import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyVali
 
 import java.util.List;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+
 @Service
 public class EligibilityService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EligibilityService.class);
     private final List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
 
     @Autowired
@@ -33,7 +32,7 @@ public class EligibilityService {
                 eligibilityRule.validate(companyProfile);
             }
         } catch (EligibilityException e) {
-            LOGGER.info("Company {} ineligible to use the service because {}", companyProfile.getCompanyNumber(), e.getEligibilityStatusCode());
+            LOGGER.info(String.format("Company %s ineligible to use the service because %s",  companyProfile.getCompanyNumber(), e.getEligibilityStatusCode()));
             response.setEligibilityStatusCode(e.getEligibilityStatusCode());
             return response;
         }

@@ -1,17 +1,15 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+
 import java.util.Set;
 
 public class CompanyTypeValidationPaperOnly implements EligibilityRule<CompanyProfileApi> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyTypeValidationPaperOnly.class);
 
     private final Set<String> paperOnlyCompanyTypes;
 
@@ -21,13 +19,13 @@ public class CompanyTypeValidationPaperOnly implements EligibilityRule<CompanyPr
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
-        LOGGER.info("Validating Company Type Paper Filing Only for: {}", profileToValidate.getCompanyNumber());
+        LOGGER.info(String.format("Validating Company Type Paper Filing Only for: %s", profileToValidate.getCompanyNumber()));
         var companyType = profileToValidate.getType();
 
         if (paperOnlyCompanyTypes.contains(companyType)) {
-            LOGGER.info("Company Type Paper Filing Only failed for: {}", profileToValidate.getCompanyNumber());
+            LOGGER.info(String.format("Company Type Paper Filing Only failed for: %s", profileToValidate.getCompanyNumber()));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY);
         }
-        LOGGER.info("Company Type Paper Filing Only passed for: {}", profileToValidate.getCompanyNumber());
+        LOGGER.info(String.format("Company Type Paper Filing Only passed for: %s", profileToValidate.getCompanyNumber()));
     }
 }

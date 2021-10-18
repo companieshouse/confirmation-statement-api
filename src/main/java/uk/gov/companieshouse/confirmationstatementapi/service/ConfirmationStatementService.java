@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +33,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+
 @Service
 public class ConfirmationStatementService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementService.class);
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Value("${FEATURE_FLAG_ENABLE_PAYMENT_CHECK_26082021:true}")
@@ -117,7 +116,7 @@ public class ConfirmationStatementService {
 
         transactionService.updateTransaction(transaction, passthroughHeader);
 
-        LOGGER.info("Confirmation Statement created for transaction id: {} with Submission id: {}", transaction.getId(), updatedSubmission.getId());
+        LOGGER.info(String.format("Confirmation Statement created for transaction id: %s with Submission id: %s",  transaction.getId(), updatedSubmission.getId()));
         var responseObject = confirmationStatementJsonDaoMapper.daoToJson(updatedSubmission);
         return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
     }
@@ -148,10 +147,10 @@ public class ConfirmationStatementService {
 
         if (submission.isPresent()) {
             // Save updated submission to database
-            LOGGER.info("{}: Confirmation Statement Submission found. About to update", submission.get().getId());
+            LOGGER.info(String.format("%s: Confirmation Statement Submission found. About to update",  submission.get().getId()));
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
-            LOGGER.info("{}: Confirmation Statement Submission updated", savedResponse.getId());
+            LOGGER.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
             return ResponseEntity.ok(savedResponse);
         } else {
             return ResponseEntity.notFound().build();
@@ -207,7 +206,7 @@ public class ConfirmationStatementService {
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
         if (submission.isPresent()) {
-            LOGGER.info("{}: Confirmation Statement Submission found. About to return", submission.get().getId());
+            LOGGER.info(String.format("%s: Confirmation Statement Submission found. About to return",  submission.get().getId()));
 
             var json = confirmationStatementJsonDaoMapper.daoToJson(submission.get());
             return Optional.of(json);

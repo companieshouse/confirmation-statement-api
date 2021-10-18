@@ -34,6 +34,8 @@ class ConfirmationStatementControllerTest {
     private static final ResponseEntity<Object> NOT_FOUND_RESPONSE = ResponseEntity.notFound().build();
     private static final String PASSTHROUGH = "13456";
     private static final String SUBMISSION_ID = "ABCDEFG";
+    private static final String TRANSACTION_ID = "GFEDCBA";
+    private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @Mock
     private ConfirmationStatementService confirmationStatementService;
@@ -58,7 +60,7 @@ class ConfirmationStatementControllerTest {
     @Test
     void createNewSubmission() throws ServiceException {
         when(confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH)).thenReturn(CREATED_SUCCESS_RESPONSE);
-        var response = confirmationStatementController.createNewSubmission(transaction, mockHttpServletRequest);
+        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, mockHttpServletRequest);
 
         assertEquals(CREATED_SUCCESS_RESPONSE, response);
     }
@@ -66,7 +68,7 @@ class ConfirmationStatementControllerTest {
     @Test
     void createNewSubmissionValidationFailedResponse() throws ServiceException {
         when(confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH)).thenReturn(VALIDATION_FAILED_RESPONSE);
-        var response = confirmationStatementController.createNewSubmission(transaction, mockHttpServletRequest);
+        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, mockHttpServletRequest);
 
         assertEquals(VALIDATION_FAILED_RESPONSE, response);
     }
@@ -75,7 +77,7 @@ class ConfirmationStatementControllerTest {
     void createNewSubmissionServiceException() throws ServiceException {
         when(confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH)).thenThrow(new ServiceException("ERROR", new IOException()));
 
-        var response = confirmationStatementController.createNewSubmission(transaction, mockHttpServletRequest);
+        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, mockHttpServletRequest);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -85,7 +87,7 @@ class ConfirmationStatementControllerTest {
         when(confirmationStatementService.updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(UPDATED_SUCCESS_RESPONSE);
 
-        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID);
+        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(UPDATED_SUCCESS_RESPONSE, response);
     }
@@ -95,7 +97,7 @@ class ConfirmationStatementControllerTest {
         when(confirmationStatementService.updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(NOT_FOUND_RESPONSE);
 
-        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID);
+        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
@@ -105,7 +107,7 @@ class ConfirmationStatementControllerTest {
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
                 .thenReturn(Optional.of(new ConfirmationStatementSubmissionJson()));
 
-        var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -115,7 +117,7 @@ class ConfirmationStatementControllerTest {
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
                 .thenReturn(Optional.empty());
 
-        var response = confirmationStatementController.getSubmission(SUBMISSION_ID);
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
@@ -125,7 +127,7 @@ class ConfirmationStatementControllerTest {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
         when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
 
@@ -139,7 +141,7 @@ class ConfirmationStatementControllerTest {
         errors[0] = error;
         validationStatus.setValidationStatusError(errors);
         when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
 
@@ -148,7 +150,7 @@ class ConfirmationStatementControllerTest {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
         when(confirmationStatementService.isValid(SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID);
+        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
         assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(SUBMISSION_ID));
         assertEquals(NOT_FOUND_RESPONSE, response);
     }

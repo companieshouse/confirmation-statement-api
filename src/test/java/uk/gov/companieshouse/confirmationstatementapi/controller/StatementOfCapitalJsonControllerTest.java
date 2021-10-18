@@ -23,18 +23,19 @@ class StatementOfCapitalJsonControllerTest {
     private StatementOfCapitalController statementOfCapitalController;
 
     private static final String COMPANY_NUMBER = "11111111";
+    private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @Test
     void getStatementOfCapital() throws ServiceException {
         when(statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER)).thenReturn(new StatementOfCapitalJson());
-        var response = statementOfCapitalController.getStatementOfCapital(COMPANY_NUMBER);
+        var response = statementOfCapitalController.getStatementOfCapital(COMPANY_NUMBER, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     void getStatementOfCapitalServiceException() throws ServiceException {
         when(statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER)).thenThrow(ServiceException.class);
-        var response = statementOfCapitalController.getStatementOfCapital(COMPANY_NUMBER);
+        var response = statementOfCapitalController.getStatementOfCapital(COMPANY_NUMBER, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
