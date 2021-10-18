@@ -434,6 +434,83 @@
         }
       }
     },
+    "ConfirmationStatementSubmissionData": {
+      "type": "object",
+      "properties": {
+        "statement_of_capital_data": {
+          "type": "object",
+          "properties": {
+            "statement_of_capital": {
+              "$ref": "#/definitions/StatementOfCapitalResponse"
+            },
+            "section_status": {
+              "$ref": "#/definitions/SectionStatusResponse"
+            }
+          }
+        },
+        "persons_significant_control_data": {
+          "type": "object",
+          "properties": {
+            "persons_significant_control": {
+              "$ref": "#/definitions/PersonsOfSignificantControl"
+            },
+            "section_status": {
+              "$ref": "#/definitions/SectionStatusResponse"
+            }
+          }
+        },
+        "sic_code_data": {
+          "type": "object",
+          "properties": {
+            "sic_code": {
+              "$ref": "#/definitions/SicCodeResponse"
+            },
+            "section_status": {
+              "$ref": "#/definitions/SectionStatusResponse"
+            }
+          }
+        },
+        "registered_office_address_data": {
+          "type": "object",
+          "properties": {
+            "section_status": {
+              "$ref": "#/definitions/SectionStatusResponse"
+            }
+          }
+        },
+        "active_director_details_data": {
+          "type": "object",
+          "properties": {
+            "section_status": {
+              "$ref": "#/definitions/SectionStatusResponse"
+            }
+          }
+        },
+        "shareholder_data": {
+          "type": "object",
+          "properties": {
+            "section_status": {
+              "$ref": "#/definitions/SectionStatusResponse"
+            }
+          }
+        },
+        "register_locations_data": {
+          "type": "object",
+          "properties": {
+            "section_status": {
+              "$ref": "#/definitions/SectionStatusResponse"
+            }
+          }
+        },
+        "confirmation_statement_made_up_to_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "trading_status_data": {
+          "$ref": "#/definitions/TradingStatusResponse"
+        }
+      }
+    },
     "CompanyValidationResponse": {
       "type": "object",
       "properties": {
@@ -807,16 +884,61 @@
         }
       }
     },
-    "ConfirmationStatementSubmissionData": {
+    "TradingStatusResponse": {
       "type": "object",
       "properties": {
-        "key": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
+        "trading_status_answer": {
+          "type": "boolean"
         }
       }
+    },
+    "PersonsOfSignificantControl": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "full_date_of_birth": {
+            "type": "string",
+            "format": "date"
+          },
+          "usual_residential_address": {
+            "type": "string"
+          },
+          "correspondence_address": {
+            "type": "string"
+          },
+          "natures_of_control": {
+            "type": "string"
+          }
+        }
+    },
+    "SicCodeResponse": {
+      "type": "object",
+      "properties": {
+        "SicCodeData": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "SectionStatusResponse": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED",
+        "NOT_CONFIRMED",
+        "RECENT_FILING"
+      ]
     }
   }
 }
