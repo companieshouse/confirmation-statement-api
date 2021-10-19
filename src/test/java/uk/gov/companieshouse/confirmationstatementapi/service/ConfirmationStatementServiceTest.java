@@ -112,7 +112,12 @@ class ConfirmationStatementServiceTest {
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId("ID");
+        var selfLinkUri = "/transactions/" + "xyz" + "/confirmation-statement/" + "vwxyz";
+        var confirmationStatementSubmissionExisting = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmissionExisting.setId("vwxyz");
+        confirmationStatementSubmissionExisting.setLinks(Collections.singletonMap("self", selfLinkUri));
         var listSubmissions = new ArrayList<ConfirmationStatementSubmissionDao>();
+        listSubmissions.add(confirmationStatementSubmissionExisting);
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
