@@ -86,6 +86,14 @@ public class ConfirmationStatementService {
             return ResponseEntity.badRequest().body(companyValidationResponse);
         }
 
+        var allEntries = confirmationStatementSubmissionsRepository.findAll();
+
+        for (var entry : allEntries) {
+            if (entry.getLinks().toString().contains(transaction.getId())) {
+                return ResponseEntity.badRequest().body("EXISTING CONFIRMATION STATEMENT SUBMISSION FOUND FOR TRANSACTION ID: " + transaction.getId());
+            }
+        }
+
         var newSubmission = new ConfirmationStatementSubmissionDao();
         var insertedSubmission = confirmationStatementSubmissionsRepository.insert(newSubmission);
 

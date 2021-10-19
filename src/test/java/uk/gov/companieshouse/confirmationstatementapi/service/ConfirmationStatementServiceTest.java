@@ -31,8 +31,7 @@ import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationSta
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -212,6 +211,32 @@ class ConfirmationStatementServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(responseBody);
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getEligibilityStatusCode());
+    }
+
+    @Test
+    void createConfirmationStatementExistingStatementError() throws ServiceException, CompanyNotFoundException {
+        Transaction transaction = new Transaction();
+        transaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setId("abc");
+        var selfLinkUri = "/transactions/" + transaction.getId() + "/confirmation-statement/" + SUBMISSION_ID;
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        var eligibilityResponse = new CompanyValidationResponse();
+        eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+        confirmationStatementSubmission.setLinks(Collections.singletonMap("self", selfLinkUri));
+        var listSubmissions = new ArrayList<ConfirmationStatementSubmissionDao>();
+        listSubmissions.add(confirmationStatementSubmission);
+
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
+        when(confirmationStatementSubmissionsRepository.findAll()).thenReturn(listSubmissions);
+
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
+        var responseBody = response.getBody();
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(responseBody);
     }
 
     @Test
