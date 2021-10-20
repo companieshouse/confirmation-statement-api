@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
+import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
@@ -31,8 +32,7 @@ import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationSta
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -112,16 +112,9 @@ class ConfirmationStatementServiceTest {
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId("ID");
-        var selfLinkUri = "/transactions/" + "xyz" + "/confirmation-statement/" + "vwxyz";
-        var confirmationStatementSubmissionExisting = new ConfirmationStatementSubmissionDao();
-        confirmationStatementSubmissionExisting.setId("vwxyz");
-        confirmationStatementSubmissionExisting.setLinks(Collections.singletonMap("self", selfLinkUri));
-        var listSubmissions = new ArrayList<ConfirmationStatementSubmissionDao>();
-        listSubmissions.add(confirmationStatementSubmissionExisting);
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
-        when(confirmationStatementSubmissionsRepository.findAll()).thenReturn(listSubmissions);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2021-04-14")).thenReturn(true);
@@ -228,19 +221,17 @@ class ConfirmationStatementServiceTest {
         Transaction transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         transaction.setId("abc");
-        var selfLinkUri = "/transactions/" + transaction.getId() + "/confirmation-statement/" + SUBMISSION_ID;
+        Resource resource = new Resource();
+        resource.setKind("confirmation-statement");
+        Map<String, Resource> resourceMap = new HashMap<>();
+        resourceMap.put("/transactions/abc/confirmation-statement/ID", resource);
+        transaction.setResources(resourceMap);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         var eligibilityResponse = new CompanyValidationResponse();
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
-        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
-        confirmationStatementSubmission.setId(SUBMISSION_ID);
-        confirmationStatementSubmission.setLinks(Collections.singletonMap("self", selfLinkUri));
-        var listSubmissions = new ArrayList<ConfirmationStatementSubmissionDao>();
-        listSubmissions.add(confirmationStatementSubmission);
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
-        when(confirmationStatementSubmissionsRepository.findAll()).thenReturn(listSubmissions);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
         var responseBody = response.getBody();

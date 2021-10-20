@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 @Service
@@ -86,12 +87,8 @@ public class ConfirmationStatementService {
             return ResponseEntity.badRequest().body(companyValidationResponse);
         }
 
-        var allEntries = confirmationStatementSubmissionsRepository.findAll();
-
-        for (var entry : allEntries) {
-            if (entry.getLinks().toString().contains(transaction.getId())) {
-                return ResponseEntity.badRequest().body("EXISTING CONFIRMATION STATEMENT SUBMISSION FOUND FOR TRANSACTION ID: " + transaction.getId());
-            }
+        if (hasExistingConfirmationSubmission(transaction)) {
+            return ResponseEntity.badRequest().body("EXISTING CONFIRMATION STATEMENT SUBMISSION FOUND FOR TRANSACTION ID: " + transaction.getId());
         }
 
         var newSubmission = new ConfirmationStatementSubmissionDao();
@@ -267,4 +264,15 @@ public class ConfirmationStatementService {
         return !compareToDate.isAfter(date);
     }
 
+    private boolean hasExistingConfirmationSubmission (Transaction transaction) {
+        var exists = new AtomicBoolean(false);
+        if (transaction.getResources() != null) {
+            transaction.getResources().forEach((s, resource) -> {
+                if (resource.getKind().equals("confirmation-statement")){
+                    exists.set(true);
+                }
+            });
+        }
+        return exists.get();
+    }
 }
