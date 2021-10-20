@@ -288,13 +288,19 @@
         }
       }
     },
-    "/confirmation-statement/company/{company-number}/shareholders": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/shareholders": {
       "parameters": [
         {
-          "name": "company-number",
+          "name": "transaction_id",
           "in": "path",
-          "required" : true,
-          "type" : "string"
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "confirmation_statement_submission_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
         }
       ],
       "get": {
