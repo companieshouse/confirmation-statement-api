@@ -18,7 +18,6 @@ import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @RestController
@@ -35,12 +34,10 @@ public class ShareholderController {
     public ResponseEntity<List<ShareholderJson>> getShareholders(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
-            @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String submissionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var map = new HashMap<String, Object>();
         map.put(TRANSACTION_ID_KEY, transactionId);
-        map.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
 
         try {
             LOGGER.infoContext(requestId, "Calling service to retrieve shareholders data", map);
