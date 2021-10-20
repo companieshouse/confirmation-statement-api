@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 @Service
@@ -265,14 +264,13 @@ public class ConfirmationStatementService {
     }
 
     private boolean hasExistingConfirmationSubmission (Transaction transaction) {
-        var exists = new AtomicBoolean(false);
         if (transaction.getResources() != null) {
-            transaction.getResources().forEach((s, resource) -> {
-                if (resource.getKind().equals("confirmation-statement")){
-                    exists.set(true);
+            for (Map.Entry<String, Resource> resourceEntry : transaction.getResources().entrySet()) {
+                if (resourceEntry.getValue().getKind().equals("confirmation-statement")) {
+                    return true;
                 }
-            });
+            }
         }
-        return exists.get();
+        return false;
     }
 }
