@@ -295,12 +295,6 @@
           "in": "path",
           "required": true,
           "type": "string"
-        },
-        {
-          "name": "confirmation_statement_submission_id",
-          "in": "path",
-          "required": true,
-          "type": "string"
         }
       ],
       "get": {
