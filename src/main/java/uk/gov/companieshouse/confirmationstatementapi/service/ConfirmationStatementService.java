@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
 
 @Service
 public class ConfirmationStatementService {
@@ -105,7 +105,7 @@ public class ConfirmationStatementService {
         var updatedSubmission = confirmationStatementSubmissionsRepository.save(insertedSubmission);
 
         var csResource = new Resource();
-        csResource.setKind("confirmation-statement");
+        csResource.setKind(FILING_KIND_CS);
         Map<String, String> linksMap = new HashMap<>();
         linksMap.put("resource", createdUri);
         if (isValidationStatusEnabled) {
@@ -265,7 +265,7 @@ public class ConfirmationStatementService {
 
     private boolean hasExistingConfirmationSubmission (Transaction transaction) {
         if (transaction.getResources() != null) {
-            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry -> FILING_KIND.equals(resourceEntry.getValue().getKind()));
+            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry -> FILING_KIND_CS.equals(resourceEntry.getValue().getKind()));
         }
         return false;
     }
