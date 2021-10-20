@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
@@ -73,7 +74,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetStatementOfCapitalData() throws ServiceException {
+    void testGetStatementOfCapitalData() throws ServiceException, StatementOfCapitalNotFoundException {
         when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + SOC_PATH, StatementOfCapitalJson.class))
                 .thenReturn(new ResponseEntity<>(new StatementOfCapitalJson(), HttpStatus.OK));
         StatementOfCapitalJson result = oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER);
@@ -84,7 +85,7 @@ class OracleQueryClientTest {
     void testGetStatementOfCapitalDataNullResponse() {
         when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + SOC_PATH, StatementOfCapitalJson.class))
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
-        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
+        assertThrows(StatementOfCapitalNotFoundException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
     }
 
     @Test

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
@@ -52,7 +53,7 @@ public class OracleQueryClient {
         return response.getBody();
     }
 
-    public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException {
+    public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {
         var statementOfCapitalUrl = String.format("%s/company/%s/statement-of-capital", oracleQueryApiUrl, companyNumber);
         LOGGER.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, statementOfCapitalUrl));
 
@@ -63,7 +64,7 @@ public class OracleQueryClient {
                 return statementOfCapitalJson;
             }
             else {
-                throw new ServiceException("Oracle query api returned no data");
+                throw new StatementOfCapitalNotFoundException("Oracle query api returned no data");
             }
         } else {
             throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
