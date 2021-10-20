@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
+import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
@@ -31,6 +32,7 @@ import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationSta
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -212,6 +214,30 @@ class ConfirmationStatementServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(responseBody);
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, responseBody.getEligibilityStatusCode());
+    }
+
+    @Test
+    void createConfirmationStatementExistingStatementError() throws ServiceException, CompanyNotFoundException {
+        Transaction transaction = new Transaction();
+        transaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setId("abc");
+        Resource resource = new Resource();
+        resource.setKind("confirmation-statement");
+        Map<String, Resource> resourceMap = new HashMap<>();
+        resourceMap.put("/transactions/abc/confirmation-statement/ID", resource);
+        transaction.setResources(resourceMap);
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        var eligibilityResponse = new CompanyValidationResponse();
+        eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
+
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
+        var responseBody = response.getBody();
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(responseBody);
     }
 
     @Test

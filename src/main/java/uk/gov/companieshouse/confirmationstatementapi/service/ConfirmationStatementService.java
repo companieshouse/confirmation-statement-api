@@ -85,6 +85,10 @@ public class ConfirmationStatementService {
             return ResponseEntity.badRequest().body(companyValidationResponse);
         }
 
+        if (hasExistingConfirmationSubmission(transaction)) {
+            return ResponseEntity.badRequest().body("EXISTING CONFIRMATION STATEMENT SUBMISSION FOUND FOR TRANSACTION ID: " + transaction.getId());
+        }
+
         var newSubmission = new ConfirmationStatementSubmissionDao();
         var insertedSubmission = confirmationStatementSubmissionsRepository.insert(newSubmission);
 
@@ -258,4 +262,10 @@ public class ConfirmationStatementService {
         return !compareToDate.isAfter(date);
     }
 
+    private boolean hasExistingConfirmationSubmission (Transaction transaction) {
+        if (transaction.getResources() != null) {
+            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry -> resourceEntry.getValue().getKind().equals("confirmation-statement"));
+        }
+        return false;
+    }
 }
