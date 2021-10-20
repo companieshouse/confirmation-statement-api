@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
+
 @Service
 public class FilingService {
 
@@ -29,7 +31,7 @@ public class FilingService {
 
     public FilingApi generateConfirmationFiling(String confirmationStatementId) throws SubmissionNotFoundException {
         var filing = new FilingApi();
-        filing.setKind("confirmation-statement");
+        filing.setKind(FILING_KIND_CS);
         setFilingApiData(filing, confirmationStatementId);
         return filing;
     }
