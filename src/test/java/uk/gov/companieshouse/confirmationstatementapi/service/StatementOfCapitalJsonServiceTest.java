@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,13 +26,13 @@ class StatementOfCapitalJsonServiceTest {
     private StatementOfCapitalService statementOfCapitalService;
 
     @Test
-    void testGetStatementOfCapitalData() throws ServiceException {
+    void testGetStatementOfCapitalData() throws ServiceException, StatementOfCapitalNotFoundException {
         when(oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER)).thenReturn(new StatementOfCapitalJson());
         assertNotNull(statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER));
     }
 
     @Test
-    void testGetStatementOfCapitalDataServiceException() throws ServiceException {
+    void testGetStatementOfCapitalDataServiceException() throws ServiceException, StatementOfCapitalNotFoundException {
         when(oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER)).thenThrow(ServiceException.class);
         assertThrows(ServiceException.class, () -> statementOfCapitalService.getStatementOfCapital(COMPANY_NUMBER));
     }
