@@ -265,11 +265,7 @@ public class ConfirmationStatementService {
 
     private boolean hasExistingConfirmationSubmission (Transaction transaction) {
         if (transaction.getResources() != null) {
-            for (Map.Entry<String, Resource> resourceEntry : transaction.getResources().entrySet()) {
-                if (resourceEntry.getValue().getKind().equals("confirmation-statement")) {
-                    return true;
-                }
-            }
+            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry -> resourceEntry.getValue().getKind().equals("confirmation-statement"));
         }
         return false;
     }
