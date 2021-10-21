@@ -661,6 +661,9 @@
         "appointment_type": {
           "type": "string"
         },
+        "appointment_date": {
+          "type": "string"
+        },
         "service_address": {
           "$ref": "#/definitions/Address"
         },
