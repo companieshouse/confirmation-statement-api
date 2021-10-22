@@ -27,6 +27,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationSta
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -84,7 +85,9 @@ class FilingServiceTest {
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
         when(transactionsResourceHandler.getPayment(anyString())).thenReturn(transactionsPaymentGet);
         when(transactionsPaymentGet.execute()).thenReturn(transactionApiResponse);
+    }
 
+    void paymentGetMocks() throws ApiErrorResponseException, URIValidationException {
         var paymentApi = new PaymentApi();
         paymentApi.setPaymentMethod("payment-method");
 
@@ -96,7 +99,8 @@ class FilingServiceTest {
     }
 
     @Test
-    void testWhenSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException, ServiceException {
+    void testWhenSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException {
+        paymentGetMocks();
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
         ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
@@ -111,7 +115,21 @@ class FilingServiceTest {
     }
 
     @Test
-    void testWhenEmptySubmissionIsReturned() {
+    void testWhenGetPaymentThrowsException() throws ApiErrorResponseException, URIValidationException {
+        paymentGetMocks();
+        when(paymentGet.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException()));
+        assertThrows(ServiceException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction));
+    }
+
+    @Test
+    void testWhenGetPaymentReferenceFromTransaction() throws ApiErrorResponseException, URIValidationException {
+        when(transactionsPaymentGet.execute()).thenThrow(ApiErrorResponseException.fromIOException(new IOException()));
+        assertThrows(ServiceException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction));
+    }
+
+    @Test
+    void testWhenEmptySubmissionIsReturned() throws URIValidationException, ApiErrorResponseException {
+        paymentGetMocks();
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(Optional.empty());
         var submissionNotFoundException = assertThrows(SubmissionNotFoundException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction));
         assertTrue(submissionNotFoundException.getMessage()
@@ -119,7 +137,8 @@ class FilingServiceTest {
     }
 
     @Test
-    void testWhenEmptySubmissionDataIsReturned() {
+    void testWhenEmptySubmissionDataIsReturned() throws URIValidationException, ApiErrorResponseException {
+        paymentGetMocks();
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson();
         confirmationStatementSubmissionJson.setData(null);
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(Optional.of(confirmationStatementSubmissionJson));
