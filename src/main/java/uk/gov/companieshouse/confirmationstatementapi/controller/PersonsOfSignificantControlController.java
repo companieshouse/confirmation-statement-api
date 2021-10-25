@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.controller;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
