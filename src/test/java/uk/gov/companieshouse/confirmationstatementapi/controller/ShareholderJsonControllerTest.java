@@ -22,7 +22,6 @@ class ShareholderJsonControllerTest {
 
     private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
     private static final String TRANSACTION_ID = "GFEDCBA";
-    private static final String SUBMISSION_ID = "ABCDEFG";
 
     @Mock
     private Transaction transaction;

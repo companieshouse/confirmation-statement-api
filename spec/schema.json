@@ -225,13 +225,19 @@
         }
       }
     },
-    "/confirmation-statement/company/{company_number}/active-director-details": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/active-director-details": {
       "parameters": [
         {
-          "name": "company_number",
+          "name": "transaction_id",
           "in": "path",
-          "required" : true,
-          "type" : "string"
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "confirmation_statement_submission_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
         }
       ],
       "get": {
