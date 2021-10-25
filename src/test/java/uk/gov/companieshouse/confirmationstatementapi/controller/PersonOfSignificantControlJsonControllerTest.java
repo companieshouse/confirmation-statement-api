@@ -44,6 +44,17 @@ class PersonOfSignificantControlJsonControllerTest {
     }
 
     @Test
+    void testGetPersonsOfSignificantControlUnsafeCompNumber() throws ServiceException {
+        when(transaction.getCompanyNumber()).thenReturn("\n\r\t12345678");
+        var pscs = Arrays.asList(new PersonOfSignificantControlJson(), new PersonOfSignificantControlJson());
+        when(pscService.getPSCsFromOracle("___12345678")).thenReturn(pscs);
+        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(pscs, response.getBody());
+    }
+
+    @Test
     void testGetPersonsOfSignificantControlServiceException() throws ServiceException {
         when(pscService.getPSCsFromOracle(transaction.getCompanyNumber())).thenThrow(new ServiceException("Message"));
         var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);

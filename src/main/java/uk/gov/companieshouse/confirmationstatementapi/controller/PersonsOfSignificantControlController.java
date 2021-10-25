@@ -38,7 +38,7 @@ class PersonsOfSignificantControlController {
         String companyNumber = transaction.getCompanyNumber();
         String sanitizedCompanyNumber = null;
         if (companyNumber != null) {
-            sanitizedCompanyNumber = companyNumber.replaceAll("[\n|\r|\t]", "_");
+            sanitizedCompanyNumber = companyNumber.replaceAll("[\n\r\t]", "_");
         }
 
         try {
