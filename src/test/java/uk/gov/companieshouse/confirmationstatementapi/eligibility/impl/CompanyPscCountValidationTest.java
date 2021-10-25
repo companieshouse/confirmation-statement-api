@@ -3,6 +3,8 @@ package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
@@ -35,22 +37,12 @@ class CompanyPscCountValidationTest {
         companyProfileApi = new CompanyProfileApi();
     }
 
-    @Test
-    void validateDoesNotThrowOnSinglePSCTest() throws ServiceException {
+    @ParameterizedTest
+    @ValueSource(longs = {0l, 1l})
+    void validateDoesNotThrow(long PSCs) throws ServiceException {
         when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
         companyPscCountValidation = new CompanyPscCountValidation(pscService, true, false);
-        pscsApi.setActiveCount(1L);
-
-        assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
-    }
-
-    @Test
-    void validateDoesNotThrowOnZeroPSCTest() throws ServiceException {
-        when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
-        companyPscCountValidation = new CompanyPscCountValidation(pscService, true, false);
-
-        pscsApi.setActiveCount(0L);
-
+        pscsApi.setActiveCount(PSCs);
         assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
     }
 
@@ -90,7 +82,7 @@ class CompanyPscCountValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnFivePSCsTestMultipleJourneyOn() throws ServiceException {
+    void validateDoesNotThrowOnFivePSCsOrFewerTestMultipleJourneyOn() throws ServiceException {
         when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
         companyPscCountValidation = new CompanyPscCountValidation(pscService, true, true);
         pscsApi.setActiveCount(5L);
