@@ -38,7 +38,7 @@ class CompanyPscCountValidationTest {
     @Test
     void validateDoesNotThrowOnSinglePSCTest() throws ServiceException {
         when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
-        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true, false);
         pscsApi.setActiveCount(1L);
 
         assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
@@ -47,7 +47,7 @@ class CompanyPscCountValidationTest {
     @Test
     void validateDoesNotThrowOnZeroPSCTest() throws ServiceException {
         when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
-        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true, false);
 
         pscsApi.setActiveCount(0L);
 
@@ -57,7 +57,7 @@ class CompanyPscCountValidationTest {
     @Test
     void validateDoesNotThrowOnNullPSCTest() throws ServiceException {
         when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
-        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true, false);
 
         pscsApi.setActiveCount(null);
         assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
@@ -66,7 +66,7 @@ class CompanyPscCountValidationTest {
     @Test
     void validateThrowsOnMultiplePSCsTest() throws ServiceException {
         when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
-        companyPscCountValidation = new CompanyPscCountValidation(pscService, true);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true, false);
 
         pscsApi.setActiveCount(2L);
 
@@ -79,8 +79,36 @@ class CompanyPscCountValidationTest {
     }
 
     @Test
+    void validateThrowsOnMoreThanFivePSCsTestMultipleJourneyOn() throws ServiceException {
+        when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true, true);
+        pscsApi.setActiveCount(6L);
+        var ex = assertThrows(EligibilityException.class,
+                () -> companyPscCountValidation.validate(companyProfileApi));
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSC,
+                ex.getEligibilityStatusCode());
+    }
+
+    @Test
+    void validateDoesNotThrowOnFivePSCsTestMultipleJourneyOn() throws ServiceException {
+        when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true, true);
+        pscsApi.setActiveCount(5L);
+        assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
+    }
+
+    @Test
+    void validateDoesNotThrowOnNullPSCTestMultipleJourneyOn() throws ServiceException {
+        when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, true, true);
+
+        pscsApi.setActiveCount(null);
+        assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
+    }
+
+    @Test
     void validateDoesNotExecuteWhenFlagIsOff() throws ServiceException, EligibilityException {
-        companyPscCountValidation = new CompanyPscCountValidation(pscService, false);
+        companyPscCountValidation = new CompanyPscCountValidation(pscService, false, false);
 
         companyPscCountValidation.validate(companyProfileApi);
         verifyNoInteractions(pscService);
