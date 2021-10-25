@@ -50,6 +50,9 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${FEATURE_FLAG_TRADED_STATUS_VALIDATION_150621:true}")
     private boolean tradedStatusFeatureFlag;
 
+    @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
+    private boolean multipleOfficerJourneyFeatureFlag;
+
     @Bean
     @Qualifier("confirmation-statement-eligibility-rules")
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService,
@@ -62,7 +65,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag);
-        var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag);
+        var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
 
