@@ -1,15 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
-
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.Set;
 
 public class CompanyTypeValidationPaperOnly implements EligibilityRule<CompanyProfileApi> {
+
+    @Autowired
+    private ApiLogger apiLogger;
 
     private final Set<String> paperOnlyCompanyTypes;
 
@@ -19,13 +22,13 @@ public class CompanyTypeValidationPaperOnly implements EligibilityRule<CompanyPr
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
-        LOGGER.info(String.format("Validating Company Type Paper Filing Only for: %s", profileToValidate.getCompanyNumber()));
+        apiLogger.info(String.format("Validating Company Type Paper Filing Only for: %s", profileToValidate.getCompanyNumber()));
         var companyType = profileToValidate.getType();
 
         if (paperOnlyCompanyTypes.contains(companyType)) {
-            LOGGER.info(String.format("Company Type Paper Filing Only failed for: %s", profileToValidate.getCompanyNumber()));
+            apiLogger.info(String.format("Company Type Paper Filing Only failed for: %s", profileToValidate.getCompanyNumber()));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TYPE_PAPER_FILING_ONLY);
         }
-        LOGGER.info(String.format("Company Type Paper Filing Only passed for: %s", profileToValidate.getCompanyNumber()));
+        apiLogger.info(String.format("Company Type Paper Filing Only passed for: %s", profileToValidate.getCompanyNumber()));
     }
 }

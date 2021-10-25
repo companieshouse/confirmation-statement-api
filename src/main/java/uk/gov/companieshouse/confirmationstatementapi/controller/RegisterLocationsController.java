@@ -10,15 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.RegisterLocationService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 import java.util.List;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @RestController
 public class RegisterLocationsController {
+
+    @Autowired
+    private ApiLogger apiLogger;
 
     private RegisterLocationService regLocService;
 
@@ -36,11 +39,11 @@ public class RegisterLocationsController {
         logMap.put("company_number", companyNumber);
 
         try {
-            LOGGER.infoContext(requestId, "Calling service to retrieve register locations data.", logMap);
+            apiLogger.infoContext(requestId, "Calling service to retrieve register locations data.", logMap);
             var registerLocations = regLocService.getRegisterLocations(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(registerLocations);
         } catch (ServiceException e) {
-            LOGGER.errorContext(requestId, "Error retrieving register locations data.", e, logMap);
+            apiLogger.errorContext(requestId, "Error retrieving register locations data.", e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

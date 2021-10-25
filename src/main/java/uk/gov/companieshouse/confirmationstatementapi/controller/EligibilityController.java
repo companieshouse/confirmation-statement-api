@@ -12,15 +12,17 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundE
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.service.CompanyProfileService;
 import uk.gov.companieshouse.confirmationstatementapi.service.EligibilityService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @RestController
 public class EligibilityController {
 
+    @Autowired
+    private ApiLogger apiLogger;
 
     @Autowired
     private CompanyProfileService companyProfileService;
@@ -34,7 +36,7 @@ public class EligibilityController {
 
         var logMap = new HashMap<String, Object>();
         logMap.put("company_number", companyNumber);
-        LOGGER.infoContext(requestId, "Calling service to retrieve company eligibility", logMap);
+        apiLogger.infoContext(requestId, "Calling service to retrieve company eligibility", logMap);
 
         try {
             var companyProfile = companyProfileService.getCompanyProfile(companyNumber);
@@ -50,7 +52,7 @@ public class EligibilityController {
             companyNotFoundResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_NOT_FOUND);
             return ResponseEntity.badRequest().body(companyNotFoundResponse);
         } catch (Exception e) {
-            LOGGER.errorContext(requestId, "Error checking eligibility of company.", e, logMap);
+            apiLogger.errorContext(requestId, "Error checking eligibility of company.", e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -9,12 +9,14 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.List;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-
 public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileApi> {
+
+    @Autowired
+    private ApiLogger apiLogger;
 
     private final OfficerService officerService;
 
@@ -28,18 +30,18 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
 
     @Override
     public void validate(CompanyProfileApi companyProfileApi) throws EligibilityException, ServiceException {
-        LOGGER.info(String.format("Validating Company Officers for: %s", companyProfileApi.getCompanyNumber()));
+        apiLogger.info(String.format("Validating Company Officers for: %s", companyProfileApi.getCompanyNumber()));
         if (!officerValidationFlag) {
-            LOGGER.debug("OFFICER VALIDATION FEATURE FLAG off skipping validation");
+            apiLogger.debug("OFFICER VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
         var officerCheck = isOfficerDirector(officers.getItems(), officers.getActiveCount());
         if (!officerCheck) {
-            LOGGER.info(String.format("Company Officers validation failed for: %s", companyProfileApi.getCompanyNumber()));
+            apiLogger.info(String.format("Company Officers validation failed for: %s", companyProfileApi.getCompanyNumber()));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS);
         }
-        LOGGER.info(String.format("Company Officers validation passed for: %s", companyProfileApi.getCompanyNumber()));
+        apiLogger.info(String.format("Company Officers validation passed for: %s", companyProfileApi.getCompanyNumber()));
     }
 
     public boolean isOfficerDirector(List<CompanyOfficerApi> officers, Long activeCount) {

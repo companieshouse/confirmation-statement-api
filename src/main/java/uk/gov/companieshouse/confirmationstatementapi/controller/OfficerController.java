@@ -13,15 +13,18 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNo
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @RestController
 public class OfficerController {
+
+    @Autowired
+    private ApiLogger apiLogger;
 
     @Autowired
     private OfficerService officerService;
@@ -36,14 +39,14 @@ public class OfficerController {
         logMap.put(TRANSACTION_ID_KEY, transactionId);
 
         try {
-            LOGGER.infoContext(requestId, "Calling service to retrieve the active director details.", logMap);
+            apiLogger.infoContext(requestId, "Calling service to retrieve the active director details.", logMap);
             var directorDetails = officerService.getActiveDirectorDetails(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(directorDetails);
         } catch (ActiveDirectorNotFoundException e) {
-            LOGGER.infoContext(requestId, "Error retrieving active officer details.", logMap);
+            apiLogger.infoContext(requestId, "Error retrieving active officer details.", logMap);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ServiceException e) {
-            LOGGER.errorContext(requestId, "Error retrieving active officer details.", e, logMap);
+            apiLogger.errorContext(requestId, "Error retrieving active officer details.", e, logMap);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
