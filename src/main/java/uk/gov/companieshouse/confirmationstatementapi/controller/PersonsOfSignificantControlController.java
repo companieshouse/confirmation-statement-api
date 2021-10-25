@@ -35,9 +35,10 @@ class PersonsOfSignificantControlController {
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY, transactionId);
 
+        String companyNumber = transaction.getCompanyNumber();
         String sanitizedCompanyNumber = null;
-        if (transaction.getCompanyNumber() != null) {
-            sanitizedCompanyNumber = (transaction.getCompanyNumber()).replaceAll("[\n|\r|\t]", "_");
+        if (companyNumber != null) {
+            sanitizedCompanyNumber = companyNumber.replaceAll("[\n|\r|\t]", "_");
         }
 
         try {
