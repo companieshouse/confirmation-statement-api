@@ -17,13 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @RestController
 public class ShareholderController {
 
-    private ShareholderService shareholderService;
+    private final ShareholderService shareholderService;
 
     @Autowired
     public ShareholderController(ShareholderService shareholderService) {

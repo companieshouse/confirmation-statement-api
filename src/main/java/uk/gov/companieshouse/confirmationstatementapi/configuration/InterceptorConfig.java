@@ -1,8 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.configuration;
 
-import static uk.gov.companieshouse.api.util.security.Permission.Key.COMPANY_CONFIRMATION_STATEMENT;
-import static uk.gov.companieshouse.api.util.security.Permission.Key.USER_PROFILE;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,6 +11,9 @@ import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.FilingInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.TransactionInterceptor;
+
+import static uk.gov.companieshouse.api.util.security.Permission.Key.COMPANY_CONFIRMATION_STATEMENT;
+import static uk.gov.companieshouse.api.util.security.Permission.Key.USER_PROFILE;
 
 @Configuration
 @ComponentScan("uk.gov.companieshouse.api.interceptor")
