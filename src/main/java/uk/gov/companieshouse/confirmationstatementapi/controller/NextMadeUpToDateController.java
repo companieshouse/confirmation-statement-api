@@ -30,7 +30,7 @@ public class NextMadeUpToDateController {
 
         try {
             LOGGER.infoContext(requestId, "Calling service to retrieve the next made up to date.", map);
-            NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(companyNumber);
+            var nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(companyNumber);
             return ResponseEntity.ok().body(nextMadeUpToDateJson);
         } catch(CompanyNotFoundException cnfe) {
             LOGGER.infoContext(requestId, "Unable to find company.", map);

@@ -8,7 +8,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantC
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +28,7 @@ public class PscsMapper {
 
     private PersonOfSignificantControlJson mapToPscJson(PersonOfSignificantControl psc) {
 
-        PersonOfSignificantControlJson pscJson = new PersonOfSignificantControlJson();
+        var pscJson = new PersonOfSignificantControlJson();
         pscJson.setAddress(psc.getAddress());
         pscJson.setServiceAddress(psc.getServiceAddress());
         pscJson.setAppointmentType(psc.getAppointmentTypeId());
@@ -55,10 +54,10 @@ public class PscsMapper {
 
     private void mapDob(PersonOfSignificantControl psc, PersonOfSignificantControlJson pscJson) {
         if (StringUtils.isNotBlank(psc.getOfficerDateOfBirth())) {
-            Timestamp timestamp = Timestamp.valueOf(psc.getOfficerDateOfBirth());
-            LocalDate localDate = timestamp.toLocalDateTime().toLocalDate();
+            var timestamp = Timestamp.valueOf(psc.getOfficerDateOfBirth());
+            var localDate = timestamp.toLocalDateTime().toLocalDate();
 
-            DateOfBirth dob = new DateOfBirth();
+            var dob = new DateOfBirth();
             dob.setMonth((long) localDate.getMonthValue());
             dob.setYear((long) localDate.getYear());
             pscJson.setDateOfBirth(dob);
@@ -68,9 +67,9 @@ public class PscsMapper {
     }
 
     private void mapNames(PersonOfSignificantControl psc, PersonOfSignificantControlJson pscJson) {
-        StringBuilder fullName = new StringBuilder();
+        var fullName = new StringBuilder();
 
-        String[] names = {
+        var names = new String[]{
                 psc.getOfficerForename1(),
                 psc.getOfficerForename2(),
                 psc.getOfficerSurname()
@@ -86,7 +85,7 @@ public class PscsMapper {
         });
         pscJson.setName(fullName.toString());
 
-        NameElementsApi nameElementsApi = new NameElementsApi();
+        var nameElementsApi = new NameElementsApi();
         nameElementsApi.setForename(psc.getOfficerForename1());
         nameElementsApi.setOtherForenames(psc.getOfficerForename2());
         nameElementsApi.setSurname(psc.getOfficerSurname());

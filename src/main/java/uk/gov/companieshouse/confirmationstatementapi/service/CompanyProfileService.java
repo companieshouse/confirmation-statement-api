@@ -33,7 +33,7 @@ public class CompanyProfileService {
             if (HttpStatus.NOT_FOUND.value() == e.getStatusCode()) {
                 throw new CompanyNotFoundException();
             }
-            String message = String.format(
+            var message = String.format(
                     EXCEPTION_MESSAGE_WITH_HTTP_CODE,
                     companyNumber,
                     e.getStatusCode());

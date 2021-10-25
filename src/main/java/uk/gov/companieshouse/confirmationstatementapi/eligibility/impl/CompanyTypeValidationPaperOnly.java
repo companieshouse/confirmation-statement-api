@@ -5,9 +5,9 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRul
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-
 import java.util.Set;
+
+import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 
 public class CompanyTypeValidationPaperOnly implements EligibilityRule<CompanyProfileApi> {
 

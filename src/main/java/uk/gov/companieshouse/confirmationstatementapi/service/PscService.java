@@ -12,6 +12,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.PscsMapper;
+
 import java.util.List;
 
 @Service

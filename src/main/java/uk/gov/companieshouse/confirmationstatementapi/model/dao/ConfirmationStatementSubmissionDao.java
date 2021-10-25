@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.util.Map;
 
 @Document(collection = "confirmation_statement_submissions")

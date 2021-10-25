@@ -23,7 +23,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRA
 @RestController
 public class RegisterLocationsController {
 
-    private RegisterLocationService regLocService;
+    private final RegisterLocationService regLocService;
 
     @Autowired
     public RegisterLocationsController(RegisterLocationService regLocService) {
