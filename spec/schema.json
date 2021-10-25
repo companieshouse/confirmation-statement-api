@@ -162,13 +162,19 @@
         }
       }
     },
-    "/confirmation-statement/company/{company_number}/statement-of-capital": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/statement-of-capital": {
       "parameters": [
         {
-          "name": "company_number",
+          "name": "transaction_id",
           "in": "path",
-          "required" : true,
-          "type" : "string"
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "confirmation_statement_submission_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
         }
       ],
       "get": {
@@ -264,13 +270,19 @@
         }
       }
     },
-    "/confirmation-statement/company/{company-number}/persons-of-significant-control": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/persons-of-significant-control": {
       "parameters": [
         {
-          "name": "company-number",
+          "name": "transaction_id",
           "in": "path",
-          "required" : true,
-          "type" : "string"
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "confirmation_statement_submission_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
         }
       ],
       "get": {
@@ -327,13 +339,19 @@
         }
       }
     },
-    "/confirmation-statement/company/{company-number}/register-locations": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/register-locations": {
       "parameters": [
         {
-          "name": "company-number",
+          "name": "transaction_id",
           "in": "path",
-          "required" : true,
-          "type" : "string"
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "confirmation_statement_submission_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
         }
       ],
       "get": {
