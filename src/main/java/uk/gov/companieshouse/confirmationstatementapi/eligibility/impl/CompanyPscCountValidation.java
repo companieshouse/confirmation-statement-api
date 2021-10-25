@@ -21,6 +21,7 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
         this.pscService = pscService;
         this.companyPscCountValidationFeatureFlag = companyPscCountValidationFeatureFlag;
         this.multiplePscJourneyFlag = multiplePscJourneyFlag;
+        LOGGER.debug(String.format("MULTIPLE PSC JOURNEY FEATURE FLAG: %s", multiplePscJourneyFlag));
     }
 
     @Override
@@ -37,7 +38,6 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
                 throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC);
             }
         } else {
-            LOGGER.info("MULTIPLE PSC JOURNEY FEATURE FLAG ON ");
             if (count != null && count > 5) {
                 LOGGER.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
                 throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSCS);
