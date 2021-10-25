@@ -40,7 +40,7 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
             LOGGER.info("MULTIPLE PSC JOURNEY FEATURE FLAG ON ");
             if (count != null && count > 5) {
                 LOGGER.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
-                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSC);
+                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSCS);
             }
         }
         LOGGER.info(String.format("Company PSCs validation passed for: %s", profileToValidate.getCompanyNumber()));

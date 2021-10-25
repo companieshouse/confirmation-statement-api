@@ -85,7 +85,7 @@ class CompanyPscCountValidationTest {
         pscsApi.setActiveCount(6L);
         var ex = assertThrows(EligibilityException.class,
                 () -> companyPscCountValidation.validate(companyProfileApi));
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSC,
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSCS,
                 ex.getEligibilityStatusCode());
     }
 
