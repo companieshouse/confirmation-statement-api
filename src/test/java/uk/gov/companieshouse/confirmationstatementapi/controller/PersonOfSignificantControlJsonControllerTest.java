@@ -16,6 +16,8 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +39,17 @@ class PersonOfSignificantControlJsonControllerTest {
     void testGetPersonsOfSignificantControlOKResponse() throws ServiceException {
         var pscs = Arrays.asList(new PersonOfSignificantControlJson(), new PersonOfSignificantControlJson());
         when(pscService.getPSCsFromOracle(transaction.getCompanyNumber())).thenReturn(pscs);
+        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(pscs, response.getBody());
+    }
+
+    @Test
+    void testGetPersonsOfSignificantControlUnsafeCompNumber() throws ServiceException {
+        when(transaction.getCompanyNumber()).thenReturn("\n\r\t12345678");
+        var pscs = Arrays.asList(new PersonOfSignificantControlJson(), new PersonOfSignificantControlJson());
+        when(pscService.getPSCsFromOracle("___12345678")).thenReturn(pscs);
         var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

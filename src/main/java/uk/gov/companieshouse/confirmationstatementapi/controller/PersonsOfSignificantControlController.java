@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.controller;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ class PersonsOfSignificantControlController {
         String companyNumber = transaction.getCompanyNumber();
         String sanitizedCompanyNumber = null;
         if (companyNumber != null) {
-            sanitizedCompanyNumber = companyNumber.replaceAll("[\n|\r|\t]", "_");
+            sanitizedCompanyNumber = companyNumber.replaceAll("[\n\r\t]", "_");
         }
 
         try {
