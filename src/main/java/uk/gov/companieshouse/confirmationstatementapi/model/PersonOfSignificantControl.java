@@ -9,6 +9,7 @@ public class PersonOfSignificantControl {
     private String officerForename2;
     private String officerSurname;
     private String appointmentTypeId;
+    private String appointmentDate;
     private String superSecurePscInd;
     private String officerNationality;
     private String officerDateOfBirth;
@@ -53,6 +54,14 @@ public class PersonOfSignificantControl {
 
     public void setAppointmentTypeId(String appointmentTypeId) {
         this.appointmentTypeId = appointmentTypeId;
+    }
+
+    public String getAppointmentDate() {
+        return appointmentDate;
+    }
+
+    public void setAppointmentDate(String appointmentDate) {
+        this.appointmentDate = appointmentDate;
     }
 
     public String getSuperSecurePscInd() {
