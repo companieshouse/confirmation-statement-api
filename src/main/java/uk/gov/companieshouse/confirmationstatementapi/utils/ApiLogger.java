@@ -24,6 +24,7 @@ public class ApiLogger {
     public void info(String message) {
         LOGGER.info(message, null);
     }
+
     public void info(String message, Map<String, Object> dataMap) {
         LOGGER.info(message, cloneMapData(dataMap));
     }
