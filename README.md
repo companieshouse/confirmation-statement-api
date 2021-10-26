@@ -22,7 +22,7 @@ These instructions are for a local docker environment.
 
 ### Endpoints
 
-The full path for each public endpoint that requires a transaction id begins with the app url:
+The full path for each public endpoints that requires a transaction id begins with the app url:
 `${API_URL}/transactions/{TRANSACTION_ID}/confirmation-statement`
 
 Method    | Path                                                                         | Description
