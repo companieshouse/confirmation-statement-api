@@ -50,5 +50,5 @@ For company endpoints:
 
 Method    | Path                                                                         | Description
 :---------|:-----------------------------------------------------------------------------|:-----------
-**GET**   |`/eligibility`      | Check company is eligible for filing
-**GET**   |`/next-made-up-to-date`        | Get due date
+**GET**   |`/eligibility`                                                                | Check company is eligible for filing
+**GET**   |`/next-made-up-to-date`                                                       | Get due date
