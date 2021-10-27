@@ -231,6 +231,39 @@
         }
       }
     },
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/costs": {
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "confirmation_statement_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+       ],
+      "get": {
+        "summary": "Get payment costs for filing the statement",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Costs"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of costs",
+            "schema": {
+              "$ref": "#/definitions/CostsResponse"
+            }
+          }
+        }
+      }
+    },
     "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/active-director-details": {
       "parameters": [
         {
@@ -578,6 +611,56 @@
         "TRANSACTION_ALREADY_CLOSED",
         "USER_UNAUTHORISED_TO_UPDATE_SUBMISSION"
       ]
+    },
+    "CostsResponse": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "availablePaymentMethods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "classOfPayment": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "descriptionIdentifier": {
+          "type": "string"
+        },
+        "descriptionValues": {
+          "$ref": "#/definitions/Description"
+        },
+        "isVariablePayment": {
+          "type": "boolean"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "resourceKind": {
+          "type": "string"
+        },
+        "productType": {
+          "type": "string"
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "self": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      }
     },
     "StatementOfCapitalResponse": {
       "type": "object",
