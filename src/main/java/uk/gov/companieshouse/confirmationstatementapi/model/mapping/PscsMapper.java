@@ -32,6 +32,7 @@ public class PscsMapper {
         pscJson.setAddress(psc.getAddress());
         pscJson.setServiceAddress(psc.getServiceAddress());
         pscJson.setAppointmentType(psc.getAppointmentTypeId());
+        mapAppointmentDate(psc, pscJson);
 
         if (StringUtils.isNotBlank(psc.getNatureOfControl())) {
             pscJson.setNaturesOfControl(psc.getNatureOfControl().split(";"));
@@ -50,6 +51,14 @@ public class PscsMapper {
         pscJson.setCountryOfResidence(psc.getCountryOfResidence());
 
         return pscJson;
+    }
+
+    private void mapAppointmentDate(PersonOfSignificantControl psc, PersonOfSignificantControlJson pscJson) {
+        if (StringUtils.isNotBlank(psc.getAppointmentDate())) {
+            var appointmentDate = Timestamp.valueOf(psc.getAppointmentDate()).toLocalDateTime().toLocalDate();
+            var isoAppointmentDate = appointmentDate.format(DateTimeFormatter.ISO_DATE);
+            pscJson.setAppointmentDate(isoAppointmentDate);
+        }
     }
 
     private void mapDob(PersonOfSignificantControl psc, PersonOfSignificantControlJson pscJson) {

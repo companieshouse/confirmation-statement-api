@@ -9,6 +9,9 @@ public class PersonOfSignificantControlJson extends PscApi {
     @JsonProperty("appointment_type")
     private String appointmentType;
 
+    @JsonProperty("appointment_date")
+    private String appointmentDate;
+
     @JsonProperty("company_name")
     private String companyName;
 
@@ -36,6 +39,14 @@ public class PersonOfSignificantControlJson extends PscApi {
 
     public void setAppointmentType(String appointmentType) {
         this.appointmentType = appointmentType;
+    }
+
+    public String getAppointmentDate() {
+        return appointmentDate;
+    }
+
+    public void setAppointmentDate(String appointmentDate) {
+        this.appointmentDate = appointmentDate;
     }
 
     public String getCompanyName() {
