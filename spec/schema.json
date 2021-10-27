@@ -649,6 +649,9 @@
           "type": "string"
         },
         "productType": {
+          "type": "string"
+        },
+        "links": {
           "type": "object",
           "properties": {
             "self": {
