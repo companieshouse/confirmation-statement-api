@@ -46,9 +46,9 @@ Method    | Path                                                                
 **GET**   |`{confirmation_statement_id}/filings`                                         | Returns filing data required for the CHIPS filing backend
 
 For company endpoints:
-`${API_URL}/confirmation-statement`
+`${API_URL}/confirmation-statement/company/{companyNumber}`
 
 Method    | Path                                                                         | Description
 :---------|:-----------------------------------------------------------------------------|:-----------
-**GET**   |`${API_URL}/confirmation-statement/company/{company-number}/eligibility`      | Check company is eligible for filing
-**GET**   |`/confirmation-statement/company/{companyNumber}/next-made-up-to-date`        | Get due date
+**GET**   |`/eligibility`      | Check company is eligible for filing
+**GET**   |`/next-made-up-to-date`        | Get due date
