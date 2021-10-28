@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.api.model.transaction.Transaction;

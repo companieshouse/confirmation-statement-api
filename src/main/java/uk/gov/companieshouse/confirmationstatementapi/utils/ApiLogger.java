@@ -9,6 +9,8 @@ import java.util.Map;
 
 public class ApiLogger {
 
+    private ApiLogger() {}
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementApiApplication.APP_NAMESPACE);
 
     public static void debug(String message) {
