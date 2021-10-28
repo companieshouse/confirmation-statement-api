@@ -20,9 +20,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 @RestController
 public class RegisterLocationsController {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private RegisterLocationService regLocService;
 
     @Autowired
@@ -39,11 +36,11 @@ public class RegisterLocationsController {
         logMap.put("company_number", companyNumber);
 
         try {
-            apiLogger.infoContext(requestId, "Calling service to retrieve register locations data.", logMap);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve register locations data.", logMap);
             var registerLocations = regLocService.getRegisterLocations(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(registerLocations);
         } catch (ServiceException e) {
-            apiLogger.errorContext(requestId, "Error retrieving register locations data.", e, logMap);
+            ApiLogger.errorContext(requestId, "Error retrieving register locations data.", e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

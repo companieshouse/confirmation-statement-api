@@ -11,9 +11,6 @@ import java.util.Set;
 
 public class CompanyStatusValidation implements EligibilityRule<CompanyProfileApi> {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private final Set<String> allowedStatuses;
 
     public CompanyStatusValidation(Set<String> allowedStatuses) {
@@ -22,13 +19,13 @@ public class CompanyStatusValidation implements EligibilityRule<CompanyProfileAp
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
-        apiLogger.info(String.format("Validating Company Status for: %s", profileToValidate.getCompanyNumber()));
+        ApiLogger.info(String.format("Validating Company Status for: %s", profileToValidate.getCompanyNumber()));
         var status = profileToValidate.getCompanyStatus();
 
         if (!allowedStatuses.contains(status)) {
-            apiLogger.info(String.format("Company Status validation failed for: %s", profileToValidate.getCompanyNumber()));
+            ApiLogger.info(String.format("Company Status validation failed for: %s", profileToValidate.getCompanyNumber()));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         }
-        apiLogger.info(String.format("Company Status validation passed for: %s", profileToValidate.getCompanyNumber()));
+        ApiLogger.info(String.format("Company Status validation passed for: %s", profileToValidate.getCompanyNumber()));
     }
 }

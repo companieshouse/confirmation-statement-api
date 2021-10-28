@@ -19,9 +19,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 public class NextMadeUpToDateController {
 
     @Autowired
-    private ApiLogger apiLogger;
-
-    @Autowired
     private ConfirmationStatementService confirmationStatementService;
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/next-made-up-to-date")
@@ -32,14 +29,14 @@ public class NextMadeUpToDateController {
         map.put("company_number", companyNumber);
 
         try {
-            apiLogger.infoContext(requestId, "Calling service to retrieve the next made up to date.", map);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve the next made up to date.", map);
             NextMadeUpToDateJson nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(companyNumber);
             return ResponseEntity.ok().body(nextMadeUpToDateJson);
         } catch(CompanyNotFoundException cnfe) {
-            apiLogger.infoContext(requestId, "Unable to find company.", map);
+            ApiLogger.infoContext(requestId, "Unable to find company.", map);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            apiLogger.errorContext(requestId, "Error retrieving next made up to date.", e, map);
+            ApiLogger.errorContext(requestId, "Error retrieving next made up to date.", e, map);
             return ResponseEntity.internalServerError().build();
         }
     }

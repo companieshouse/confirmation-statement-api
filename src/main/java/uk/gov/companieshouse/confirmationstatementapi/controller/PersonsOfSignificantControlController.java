@@ -21,9 +21,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 class PersonsOfSignificantControlController {
 
     @Autowired
-    private ApiLogger apiLogger;
-
-    @Autowired
     private PscService pscService;
 
     @GetMapping("/confirmation-statement/company/{companyNumber}/persons-of-significant-control")
@@ -40,7 +37,7 @@ class PersonsOfSignificantControlController {
         }
 
         try {
-            apiLogger.infoContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), logMap);
+            ApiLogger.infoContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), logMap);
             var pscs = pscService.getPSCsFromOracle(sanitizedCompanyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(pscs);
         } catch (ServiceException e) {
@@ -53,6 +50,6 @@ class PersonsOfSignificantControlController {
     }
 
     private void logErrorMessage(String requestId, String sanitizedCompanyNumber, HashMap<String, Object> logMap, Exception e) {
-        apiLogger.errorContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), e, logMap);
+        ApiLogger.errorContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), e, logMap);
     }
 }

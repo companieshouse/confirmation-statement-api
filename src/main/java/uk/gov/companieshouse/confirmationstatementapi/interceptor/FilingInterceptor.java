@@ -18,16 +18,13 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRA
 @Component
 public class FilingInterceptor implements HandlerInterceptor {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final var transaction = (Transaction) request.getAttribute("transaction");
         final String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
 
         if (transaction == null) {
-            apiLogger.infoContext(reqId, "No transaction found in request", null);
+            ApiLogger.infoContext(reqId, "No transaction found in request", null);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
@@ -36,11 +33,11 @@ public class FilingInterceptor implements HandlerInterceptor {
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
 
         if (TransactionStatus.CLOSED.equals(transaction.getStatus())) {
-            apiLogger.debugContext(reqId, "Closed proceeding to generate filing", logMap);
+            ApiLogger.debugContext(reqId, "Closed proceeding to generate filing", logMap);
             return true;
         }
 
-        apiLogger.debugContext(reqId, "Closed rejecting filing request", logMap);
+        ApiLogger.debugContext(reqId, "Closed rejecting filing request", logMap);
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return false;

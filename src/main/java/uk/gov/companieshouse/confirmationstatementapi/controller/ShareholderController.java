@@ -26,9 +26,6 @@ public class ShareholderController {
     private ShareholderService shareholderService;
 
     @Autowired
-    ApiLogger apiLogger;
-
-    @Autowired
     public ShareholderController(ShareholderService shareholderService) {
         this.shareholderService = shareholderService;
     }
@@ -43,11 +40,11 @@ public class ShareholderController {
         map.put(TRANSACTION_ID_KEY, transactionId);
 
         try {
-            apiLogger.infoContext(requestId, "Calling service to retrieve shareholders data", map);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve shareholders data", map);
             var shareholders = shareholderService.getShareholders(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(shareholders);
         } catch (ServiceException e) {
-            apiLogger.errorContext(requestId,"Error retrieving shareholders data", e, map);
+            ApiLogger.errorContext(requestId,"Error retrieving shareholders data", e, map);
             return ResponseEntity.internalServerError().build();
         }
     }

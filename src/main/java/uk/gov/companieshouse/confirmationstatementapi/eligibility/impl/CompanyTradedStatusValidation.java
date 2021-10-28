@@ -11,9 +11,6 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 public class CompanyTradedStatusValidation implements EligibilityRule<CompanyProfileApi> {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private final CorporateBodyService corporateBodyService;
     private final boolean tradedStatusEligibilityFlag;
 
@@ -25,18 +22,18 @@ public class CompanyTradedStatusValidation implements EligibilityRule<CompanyPro
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
         var companyNumber = profileToValidate.getCompanyNumber();
-        apiLogger.info(String.format("Validating Company Traded Status for: %s", companyNumber));
+        ApiLogger.info(String.format("Validating Company Traded Status for: %s", companyNumber));
         if (!tradedStatusEligibilityFlag) {
-            apiLogger.debug("TRADED STATUS VALIDATION FEATURE FLAG off skipping validation");
+            ApiLogger.debug("TRADED STATUS VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
 
         var companyTradedStatus = corporateBodyService.getCompanyTradedStatus(companyNumber);
 
         if(CompanyTradedStatusType.NOT_ADMITTED_TO_TRADING != companyTradedStatus) {
-            apiLogger.info(String.format("Company traded status validation failed for %s with value %s", companyNumber, companyTradedStatus));
+            ApiLogger.info(String.format("Company traded status validation failed for %s with value %s", companyNumber, companyTradedStatus));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TRADED_STATUS_USE_WEBFILING);
         }
-        apiLogger.info(String.format("Company traded status validation successful for %s with value %s", companyNumber, companyTradedStatus));
+        ApiLogger.info(String.format("Company traded status validation successful for %s with value %s", companyNumber, companyTradedStatus));
     }
 }

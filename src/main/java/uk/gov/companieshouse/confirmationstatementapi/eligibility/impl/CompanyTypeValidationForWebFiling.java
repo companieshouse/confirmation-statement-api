@@ -12,9 +12,6 @@ import java.util.Set;
 
 public class CompanyTypeValidationForWebFiling implements EligibilityRule<CompanyProfileApi> {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private final Set<String> webFilingTypes;
 
     public CompanyTypeValidationForWebFiling(Set<String> webFilingTypes) {
@@ -25,11 +22,11 @@ public class CompanyTypeValidationForWebFiling implements EligibilityRule<Compan
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
         var logMap = new HashMap<String, Object>();
         logMap.put("companyProfile", profileToValidate);
-        apiLogger.info(String.format("Validating Company Type Should Use Web Filing for: %s", profileToValidate.getCompanyNumber()), logMap);
+        ApiLogger.info(String.format("Validating Company Type Should Use Web Filing for: %s", profileToValidate.getCompanyNumber()), logMap);
         if (webFilingTypes.contains(profileToValidate.getType())) {
-            apiLogger.info(String.format("Company Type validation Should Use Web Filing failed for: %s", profileToValidate.getCompanyNumber()), logMap);
+            ApiLogger.info(String.format("Company Type validation Should Use Web Filing failed for: %s", profileToValidate.getCompanyNumber()), logMap);
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TYPE_USE_WEB_FILING);
         }
-        apiLogger.info(String.format("Company Type validation Should Use Web Filing passed for: %s", profileToValidate.getCompanyNumber()), logMap);
+        ApiLogger.info(String.format("Company Type validation Should Use Web Filing passed for: %s", profileToValidate.getCompanyNumber()), logMap);
     }
 }

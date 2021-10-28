@@ -24,9 +24,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRA
 public class OfficerController {
 
     @Autowired
-    private ApiLogger apiLogger;
-
-    @Autowired
     private OfficerService officerService;
 
     @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/active-director-details")
@@ -39,14 +36,14 @@ public class OfficerController {
         logMap.put(TRANSACTION_ID_KEY, transactionId);
 
         try {
-            apiLogger.infoContext(requestId, "Calling service to retrieve the active director details.", logMap);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve the active director details.", logMap);
             var directorDetails = officerService.getActiveDirectorDetails(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(directorDetails);
         } catch (ActiveDirectorNotFoundException e) {
-            apiLogger.infoContext(requestId, "Error retrieving active officer details.", logMap);
+            ApiLogger.infoContext(requestId, "Error retrieving active officer details.", logMap);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ServiceException e) {
-            apiLogger.errorContext(requestId, "Error retrieving active officer details.", e, logMap);
+            ApiLogger.errorContext(requestId, "Error retrieving active officer details.", e, logMap);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

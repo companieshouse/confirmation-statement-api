@@ -27,9 +27,6 @@ public class FilingController {
     @Autowired
     private FilingService filingService;
 
-    @Autowired
-    ApiLogger apiLogger;
-
     @GetMapping
     public ResponseEntity<FilingApi[]> getFiling(
             @RequestAttribute("transaction") Transaction transaction,
@@ -40,16 +37,16 @@ public class FilingController {
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY, transactionId);
         logMap.put(CONFIRMATION_STATEMENT_ID_KEY, confirmationStatementId);
-        apiLogger.infoContext(requestId, "Calling service to retrieve filing", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to retrieve filing", logMap);
 
         try {
             FilingApi filing = filingService.generateConfirmationFiling(confirmationStatementId, transaction);
             return ResponseEntity.ok(new FilingApi[] { filing });
         } catch (SubmissionNotFoundException e) {
-            apiLogger.errorContext(requestId, e.getMessage(), e, logMap);
+            ApiLogger.errorContext(requestId, e.getMessage(), e, logMap);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            apiLogger.errorContext(requestId, e.getMessage(), e, logMap);
+            ApiLogger.errorContext(requestId, e.getMessage(), e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

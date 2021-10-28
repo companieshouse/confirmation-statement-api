@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.utils;
 
-import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -8,44 +7,43 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class ApiLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationStatementApiApplication.APP_NAMESPACE);
 
-    public void debug(String message) {
+    public static void debug(String message) {
         LOGGER.debug(message);
     }
 
-    public void debugContext(String context, String message, Map<String, Object> dataMap) {
+    public static void debugContext(String context, String message, Map<String, Object> dataMap) {
         LOGGER.debugContext(context, message, cloneMapData(dataMap));
     }
 
-    public void info(String message) {
+    public static void info(String message) {
         LOGGER.info(message, null);
     }
 
-    public void info(String message, Map<String, Object> dataMap) {
+    public static void info(String message, Map<String, Object> dataMap) {
         LOGGER.info(message, cloneMapData(dataMap));
     }
 
-    public void infoContext(String context, String message) {
+    public static void infoContext(String context, String message) {
         LOGGER.infoContext(context, message, null);
     }
 
-    public void infoContext(String context, String message, Map<String, Object> dataMap) {
+    public static void infoContext(String context, String message, Map<String, Object> dataMap) {
         LOGGER.infoContext(context, message, cloneMapData(dataMap));
     }
 
-    public void errorContext(String context, Exception e) {
+    public static void errorContext(String context, Exception e) {
         LOGGER.errorContext(context, e, null);
     }
 
-    public void errorContext(String context, String message, Exception e) {
+    public static void errorContext(String context, String message, Exception e) {
         LOGGER.errorContext(context, message, e, null);
     }
 
-    public void errorContext(String context, String message, Exception e, Map<String, Object> dataMap) {
+    public static void errorContext(String context, String message, Exception e, Map<String, Object> dataMap) {
         LOGGER.errorContext(context, message, e, cloneMapData(dataMap));
     }
 
@@ -58,7 +56,10 @@ public class ApiLogger {
      * @param dataMap The map data to log
      * @return A cloned copy of the map data
      */
-    private Map<String, Object> cloneMapData(Map<String, Object> dataMap) {
+    private static Map<String, Object> cloneMapData(Map<String, Object> dataMap) {
+        if(dataMap == null) {
+            dataMap = new HashMap<>();
+        }
         Map<String, Object> clonedMapData = new HashMap<>();
         clonedMapData.putAll(dataMap);
 

@@ -22,9 +22,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 public class EligibilityController {
 
     @Autowired
-    private ApiLogger apiLogger;
-
-    @Autowired
     private CompanyProfileService companyProfileService;
 
     @Autowired
@@ -36,7 +33,7 @@ public class EligibilityController {
 
         var logMap = new HashMap<String, Object>();
         logMap.put("company_number", companyNumber);
-        apiLogger.infoContext(requestId, "Calling service to retrieve company eligibility", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to retrieve company eligibility", logMap);
 
         try {
             var companyProfile = companyProfileService.getCompanyProfile(companyNumber);
@@ -52,7 +49,7 @@ public class EligibilityController {
             companyNotFoundResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_NOT_FOUND);
             return ResponseEntity.badRequest().body(companyNotFoundResponse);
         } catch (Exception e) {
-            apiLogger.errorContext(requestId, "Error checking eligibility of company.", e, logMap);
+            ApiLogger.errorContext(requestId, "Error checking eligibility of company.", e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

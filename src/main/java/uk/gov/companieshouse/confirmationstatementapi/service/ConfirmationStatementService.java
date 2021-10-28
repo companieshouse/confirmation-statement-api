@@ -39,9 +39,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FIL
 @Service
 public class ConfirmationStatementService {
 
-    @Autowired
-    ApiLogger apiLogger;
-
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Value("${FEATURE_FLAG_ENABLE_PAYMENT_CHECK_26082021:true}")
@@ -124,7 +121,7 @@ public class ConfirmationStatementService {
 
         transactionService.updateTransaction(transaction, passthroughHeader);
 
-        apiLogger.info(String.format("Confirmation Statement created for transaction id: %s with Submission id: %s",  transaction.getId(), updatedSubmission.getId()));
+        ApiLogger.info(String.format("Confirmation Statement created for transaction id: %s with Submission id: %s",  transaction.getId(), updatedSubmission.getId()));
         var responseObject = confirmationStatementJsonDaoMapper.daoToJson(updatedSubmission);
         return ResponseEntity.created(URI.create(createdUri)).body(responseObject);
     }
@@ -155,10 +152,10 @@ public class ConfirmationStatementService {
 
         if (submission.isPresent()) {
             // Save updated submission to database
-            apiLogger.info(String.format("%s: Confirmation Statement Submission found. About to update",  submission.get().getId()));
+            ApiLogger.info(String.format("%s: Confirmation Statement Submission found. About to update",  submission.get().getId()));
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
-            apiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
+            ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
             return ResponseEntity.ok(savedResponse);
         } else {
             return ResponseEntity.notFound().build();
@@ -214,7 +211,7 @@ public class ConfirmationStatementService {
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
         if (submission.isPresent()) {
-            apiLogger.info(String.format("%s: Confirmation Statement Submission found. About to return",  submission.get().getId()));
+            ApiLogger.info(String.format("%s: Confirmation Statement Submission found. About to return",  submission.get().getId()));
 
             var json = confirmationStatementJsonDaoMapper.daoToJson(submission.get());
             return Optional.of(json);

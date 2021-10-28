@@ -10,9 +10,6 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 public class CompanyShareholderCountValidation implements EligibilityRule<CompanyProfileApi> {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private final ShareholderService shareholderService;
     private final boolean validationFlag;
 
@@ -24,11 +21,11 @@ public class CompanyShareholderCountValidation implements EligibilityRule<Compan
     @Override
     public void validate(CompanyProfileApi companyProfile) throws EligibilityException {
         if (!validationFlag) {
-            apiLogger.debug("SHAREHOLDER COUNT VALIDATION FEATURE FLAG off skipping validation");
+            ApiLogger.debug("SHAREHOLDER COUNT VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
 
-        apiLogger.info(String.format("Validating Company shareholder count for: %s", companyProfile.getCompanyNumber()));
+        ApiLogger.info(String.format("Validating Company shareholder count for: %s", companyProfile.getCompanyNumber()));
 
         // Exclude companies limited by guarantee.
         if (!companyProfile.getType().contains("private-limited-guarant-nsc")) {
@@ -36,12 +33,12 @@ public class CompanyShareholderCountValidation implements EligibilityRule<Compan
             var count = shareholderService.getShareholderCount(coNumber);
 
             if (count > 1) {
-                apiLogger.info(String.format("Company shareholder count for %s failed with %s shareholders", coNumber, count));
+                ApiLogger.info(String.format("Company shareholder count for %s failed with %s shareholders", coNumber, count));
                 throw new EligibilityException(
                         EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_SHAREHOLDER);
             }
 
-            apiLogger.info(String.format("Company shareholder count validation successful for %s with value %s", coNumber, count));
+            ApiLogger.info(String.format("Company shareholder count validation successful for %s with value %s", coNumber, count));
         }
     }
 

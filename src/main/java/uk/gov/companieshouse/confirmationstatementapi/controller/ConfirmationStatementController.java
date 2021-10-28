@@ -32,9 +32,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRA
 @RequestMapping("/transactions/{transaction_id}/confirmation-statement")
 public class ConfirmationStatementController {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private final ConfirmationStatementService confirmationStatementService;
 
     @Autowired
@@ -53,12 +50,12 @@ public class ConfirmationStatementController {
 
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        apiLogger.infoContext(requestId, "Calling service to create submission", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to create submission", logMap);
 
         try {
             return confirmationStatementService.createConfirmationStatement(transaction, passthroughHeader);
         } catch (ServiceException e) {
-            apiLogger.errorContext(requestId,"Error Creating Confirmation Statement", e, logMap);
+            ApiLogger.errorContext(requestId,"Error Creating Confirmation Statement", e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -73,7 +70,7 @@ public class ConfirmationStatementController {
         var logMap = new HashMap<String, Object>();
         logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        apiLogger.infoContext(requestId, "Calling service to update confirmation statement data", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to update confirmation statement data", logMap);
 
         return confirmationStatementService.updateConfirmationStatement(submissionId, confirmationStatementSubmissionJson);
     }
@@ -87,7 +84,7 @@ public class ConfirmationStatementController {
         var logMap = new HashMap<String, Object>();
         logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        apiLogger.infoContext(requestId, "Calling service to retrieve confirmation statement data", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to retrieve confirmation statement data", logMap);
 
         var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
         return serviceResponse.<ResponseEntity<Object>>map(ResponseEntity::ok)
@@ -103,16 +100,16 @@ public class ConfirmationStatementController {
         var logMap = new HashMap<String, Object>();
         logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        apiLogger.infoContext(requestId, "Calling service to get validation status", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to get validation status", logMap);
 
         try {
             ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (SubmissionNotFoundException e) {
-            apiLogger.errorContext(requestId,e.getMessage(), e, logMap);
+            ApiLogger.errorContext(requestId,e.getMessage(), e, logMap);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            apiLogger.errorContext(requestId,e.getMessage(), e, logMap);
+            ApiLogger.errorContext(requestId,e.getMessage(), e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

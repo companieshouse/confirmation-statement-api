@@ -23,9 +23,6 @@ public class TransactionInterceptor implements HandlerInterceptor {
     private final TransactionService transactionService;
 
     @Autowired
-    ApiLogger apiLogger;
-
-    @Autowired
     public TransactionInterceptor(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
@@ -41,15 +38,15 @@ public class TransactionInterceptor implements HandlerInterceptor {
         logMap.put(TRANSACTION_ID_KEY,transactionId);
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
         try {
-            apiLogger.debugContext(reqId, "Getting transaction for request.", logMap);
+            ApiLogger.debugContext(reqId, "Getting transaction for request.", logMap);
 
             final var transaction = transactionService.getTransaction(transactionId, passthroughHeader);
-            apiLogger.debugContext(reqId, "Transaction retrieved.", logMap);
+            ApiLogger.debugContext(reqId, "Transaction retrieved.", logMap);
 
             request.setAttribute("transaction", transaction);
             return true;
         } catch (ServiceException ex) {
-            apiLogger.errorContext(reqId,"Error retrieving transaction", ex, logMap);
+            ApiLogger.errorContext(reqId,"Error retrieving transaction", ex, logMap);
             response.setStatus(500);
             return false;
         }

@@ -16,9 +16,6 @@ import java.util.List;
 @Service
 public class EligibilityService {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private final List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
 
     @Autowired
@@ -34,7 +31,7 @@ public class EligibilityService {
                 eligibilityRule.validate(companyProfile);
             }
         } catch (EligibilityException e) {
-            apiLogger.info(String.format("Company %s ineligible to use the service because %s",  companyProfile.getCompanyNumber(), e.getEligibilityStatusCode()));
+            ApiLogger.info(String.format("Company %s ineligible to use the service because %s",  companyProfile.getCompanyNumber(), e.getEligibilityStatusCode()));
             response.setEligibilityStatusCode(e.getEligibilityStatusCode());
             return response;
         }

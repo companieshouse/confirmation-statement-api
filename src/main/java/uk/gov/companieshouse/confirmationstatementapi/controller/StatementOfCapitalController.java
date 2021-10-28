@@ -20,9 +20,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 @RestController
 public class StatementOfCapitalController {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private final StatementOfCapitalService statementOfCapitalService;
 
     @Autowired
@@ -39,14 +36,14 @@ public class StatementOfCapitalController {
         logMap.put("company_number", companyNumber);
 
         try {
-            apiLogger.infoContext(requestId, "Calling service to retrieve statement of capital data.", logMap);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve statement of capital data.", logMap);
             var statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
         } catch (StatementOfCapitalNotFoundException e) {
-            apiLogger.infoContext(requestId, e.getMessage(), logMap);
+            ApiLogger.infoContext(requestId, e.getMessage(), logMap);
             return ResponseEntity.notFound().build();
         } catch (ServiceException e) {
-            apiLogger.errorContext(requestId, "Error retrieving statement of capital data.", e, logMap);
+            ApiLogger.errorContext(requestId, "Error retrieving statement of capital data.", e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

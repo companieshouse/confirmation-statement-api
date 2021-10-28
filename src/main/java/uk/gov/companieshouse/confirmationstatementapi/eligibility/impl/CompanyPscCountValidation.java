@@ -11,9 +11,6 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 public class CompanyPscCountValidation implements EligibilityRule<CompanyProfileApi> {
 
-    @Autowired
-    private ApiLogger apiLogger;
-
     private final PscService pscService;
 
     private final boolean companyPscCountValidationFeatureFlag;
@@ -25,17 +22,17 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
-        apiLogger.info(String.format("Validating Company PSCs for: %s", profileToValidate.getCompanyNumber()));
+        ApiLogger.info(String.format("Validating Company PSCs for: %s", profileToValidate.getCompanyNumber()));
         if (!companyPscCountValidationFeatureFlag) {
-            apiLogger.debug("Company PSC Count FEATURE FLAG off skipping validation");
+            ApiLogger.debug("Company PSC Count FEATURE FLAG off skipping validation");
             return;
         }
         var count = pscService.getPSCsFromCHS(profileToValidate.getCompanyNumber()).getActiveCount();
         if (count != null && count > 1) {
-            apiLogger.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
+            ApiLogger.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC);
         }
-        apiLogger.info(String.format("Company PSCs validation passed for: %s", profileToValidate.getCompanyNumber()));
+        ApiLogger.info(String.format("Company PSCs validation passed for: %s", profileToValidate.getCompanyNumber()));
     }
 
 }
