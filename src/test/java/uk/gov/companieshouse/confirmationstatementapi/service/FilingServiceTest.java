@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -129,8 +130,8 @@ class FilingServiceTest {
         assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
         assertFalse((Boolean) filing.getData().get("trading_on_market"));
         assertFalse((Boolean) filing.getData().get("dtr5_ind"));
-        assertEquals(null, filing.getData().get("payment_method"));
-        assertEquals(null, filing.getData().get("payment_reference"));
+        assertNull(filing.getData().get("payment_method"));
+        assertNull(filing.getData().get("payment_reference"));
     }
 
     @Test
