@@ -12,11 +12,11 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 import java.util.List;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
@@ -40,11 +40,11 @@ public class ShareholderController {
         map.put(TRANSACTION_ID_KEY, transactionId);
 
         try {
-            LOGGER.infoContext(requestId, "Calling service to retrieve shareholders data", map);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve shareholders data", map);
             var shareholders = shareholderService.getShareholders(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(shareholders);
         } catch (ServiceException e) {
-            LOGGER.errorContext(requestId,"Error retrieving shareholders data", e, map);
+            ApiLogger.errorContext(requestId,"Error retrieving shareholders data", e, map);
             return ResponseEntity.internalServerError().build();
         }
     }

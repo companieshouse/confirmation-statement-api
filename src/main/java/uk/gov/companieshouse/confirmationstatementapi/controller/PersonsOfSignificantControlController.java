@@ -12,11 +12,11 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 import java.util.List;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
@@ -42,7 +42,7 @@ class PersonsOfSignificantControlController {
         }
 
         try {
-            LOGGER.infoContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), logMap);
+            ApiLogger.infoContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), logMap);
             var pscs = pscService.getPSCsFromOracle(sanitizedCompanyNumber);
             return ResponseEntity.status(HttpStatus.OK).body(pscs);
         } catch (ServiceException e) {
@@ -55,6 +55,6 @@ class PersonsOfSignificantControlController {
     }
 
     private void logErrorMessage(String requestId, String sanitizedCompanyNumber, HashMap<String, Object> logMap, Exception e) {
-        LOGGER.errorContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), e, logMap);
+        ApiLogger.errorContext(requestId, String.format("Calling PscService to retrieve persons of significant control for companyNumber %s", sanitizedCompanyNumber), e, logMap);
     }
 }

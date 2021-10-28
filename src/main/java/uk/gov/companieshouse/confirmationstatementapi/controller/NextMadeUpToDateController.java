@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @RestController
@@ -29,14 +29,14 @@ public class NextMadeUpToDateController {
         map.put("company_number", companyNumber);
 
         try {
-            LOGGER.infoContext(requestId, "Calling service to retrieve the next made up to date.", map);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve the next made up to date.", map);
             var nextMadeUpToDateJson = confirmationStatementService.getNextMadeUpToDate(companyNumber);
             return ResponseEntity.ok().body(nextMadeUpToDateJson);
         } catch(CompanyNotFoundException cnfe) {
-            LOGGER.infoContext(requestId, "Unable to find company.", map);
+            ApiLogger.infoContext(requestId, "Unable to find company.", map);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            LOGGER.errorContext(requestId, "Error retrieving next made up to date.", e, map);
+            ApiLogger.errorContext(requestId, "Error retrieving next made up to date.", e, map);
             return ResponseEntity.internalServerError().build();
         }
     }

@@ -13,10 +13,10 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapitalService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
@@ -40,14 +40,14 @@ public class StatementOfCapitalController {
         logMap.put(TRANSACTION_ID_KEY, transactionId);
 
         try {
-            LOGGER.infoContext(requestId, "Calling service to retrieve statement of capital data.", logMap);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve statement of capital data.", logMap);
             var statementOfCapital = statementOfCapitalService.getStatementOfCapital(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
         } catch (StatementOfCapitalNotFoundException e) {
-            LOGGER.infoContext(requestId, e.getMessage(), logMap);
+            ApiLogger.infoContext(requestId, e.getMessage(), logMap);
             return ResponseEntity.notFound().build();
         } catch (ServiceException e) {
-            LOGGER.errorContext(requestId, "Error retrieving statement of capital data.", e, logMap);
+            ApiLogger.errorContext(requestId, "Error retrieving statement of capital data.", e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

@@ -11,7 +11,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class ConfirmationStatementApiApplication {
 
-	public static final Logger LOGGER = LoggerFactory.getLogger("confirmation-statement-api");
+	public static final String APP_NAMESPACE = "confirmation-statement-api";
 
 	public static void main(String[] args) {
 		SpringApplication.run(ConfirmationStatementApiApplication.class, args);

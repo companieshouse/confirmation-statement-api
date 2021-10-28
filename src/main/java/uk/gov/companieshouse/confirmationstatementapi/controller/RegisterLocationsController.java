@@ -12,11 +12,11 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.RegisterLocationService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 import java.util.List;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
@@ -40,11 +40,11 @@ public class RegisterLocationsController {
         logMap.put(TRANSACTION_ID_KEY, transactionId);
 
         try {
-            LOGGER.infoContext(requestId, "Calling service to retrieve register locations data.", logMap);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve register locations data.", logMap);
             var registerLocations = regLocService.getRegisterLocations(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(registerLocations);
         } catch (ServiceException e) {
-            LOGGER.errorContext(requestId, "Error retrieving register locations data.", e, logMap);
+            ApiLogger.errorContext(requestId, "Error retrieving register locations data.", e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

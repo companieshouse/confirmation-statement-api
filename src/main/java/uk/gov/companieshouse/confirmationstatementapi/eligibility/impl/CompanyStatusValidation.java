@@ -4,10 +4,9 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.Set;
-
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 
 public class CompanyStatusValidation implements EligibilityRule<CompanyProfileApi> {
 
@@ -19,13 +18,13 @@ public class CompanyStatusValidation implements EligibilityRule<CompanyProfileAp
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
-        LOGGER.info(String.format("Validating Company Status for: %s", profileToValidate.getCompanyNumber()));
+        ApiLogger.info(String.format("Validating Company Status for: %s", profileToValidate.getCompanyNumber()));
         var status = profileToValidate.getCompanyStatus();
 
         if (!allowedStatuses.contains(status)) {
-            LOGGER.info(String.format("Company Status validation failed for: %s", profileToValidate.getCompanyNumber()));
+            ApiLogger.info(String.format("Company Status validation failed for: %s", profileToValidate.getCompanyNumber()));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         }
-        LOGGER.info(String.format("Company Status validation passed for: %s", profileToValidate.getCompanyNumber()));
+        ApiLogger.info(String.format("Company Status validation passed for: %s", profileToValidate.getCompanyNumber()));
     }
 }

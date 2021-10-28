@@ -6,6 +6,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.TransactionService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
@@ -36,17 +36,17 @@ public class TransactionInterceptor implements HandlerInterceptor {
 
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY,transactionId);
+        String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
         try {
-            String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
-            LOGGER.debugContext(reqId, "Getting transaction for request.", logMap);
+            ApiLogger.debugContext(reqId, "Getting transaction for request.", logMap);
 
             final var transaction = transactionService.getTransaction(transactionId, passthroughHeader);
-            LOGGER.debugContext(reqId, "Transaction retrieved.", logMap);
+            ApiLogger.debugContext(reqId, "Transaction retrieved.", logMap);
 
             request.setAttribute("transaction", transaction);
             return true;
         } catch (ServiceException ex) {
-            LOGGER.error("Error retrieving transaction", ex);
+            ApiLogger.errorContext(reqId,"Error retrieving transaction", ex, logMap);
             response.setStatus(500);
             return false;
         }
