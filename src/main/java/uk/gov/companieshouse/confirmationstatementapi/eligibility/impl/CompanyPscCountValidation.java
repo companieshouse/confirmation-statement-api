@@ -15,9 +15,13 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
 
     private final boolean companyPscCountValidationFeatureFlag;
 
-    public CompanyPscCountValidation(PscService pscService, boolean companyPscCountValidationFeatureFlag) {
+    private final boolean multiplePscJourneyFlag;
+
+    public CompanyPscCountValidation(PscService pscService, boolean companyPscCountValidationFeatureFlag, boolean multiplePscJourneyFlag) {
         this.pscService = pscService;
         this.companyPscCountValidationFeatureFlag = companyPscCountValidationFeatureFlag;
+        this.multiplePscJourneyFlag = multiplePscJourneyFlag;
+        ApiLogger.debug(String.format("MULTIPLE PSC JOURNEY FEATURE FLAG: %s", multiplePscJourneyFlag));
     }
 
     @Override
@@ -28,9 +32,16 @@ public class CompanyPscCountValidation implements EligibilityRule<CompanyProfile
             return;
         }
         var count = pscService.getPSCsFromCHS(profileToValidate.getCompanyNumber()).getActiveCount();
-        if (count != null && count > 1) {
-            ApiLogger.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
-            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC);
+        if (!multiplePscJourneyFlag) {
+            if (count != null && count > 1) {
+                ApiLogger.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
+                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC);
+            }
+        } else {
+            if (count != null && count > 5) {
+                ApiLogger.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
+                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSCS);
+            }
         }
         ApiLogger.info(String.format("Company PSCs validation passed for: %s", profileToValidate.getCompanyNumber()));
     }

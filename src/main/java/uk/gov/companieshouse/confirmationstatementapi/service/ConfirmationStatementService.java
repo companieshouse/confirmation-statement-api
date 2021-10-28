@@ -97,7 +97,7 @@ public class ConfirmationStatementService {
         String createdUri = "/transactions/" + transaction.getId() + csInsertedSubmission;
         insertedSubmission.setLinks(Collections.singletonMap("self", createdUri));
 
-        ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
+        var data = new ConfirmationStatementSubmissionDataDao();
         LocalDate madeUpToDate = getMadeUpToDate(companyNumber, companyProfile);
         data.setMadeUpToDate(madeUpToDate);
         insertedSubmission.setData(data);
@@ -127,7 +127,7 @@ public class ConfirmationStatementService {
     }
 
     private LocalDate getMadeUpToDate(String companyNumber, CompanyProfileApi companyProfileApi) throws ServiceException {
-        NextMadeUpToDateJson nextMadeUpToDateJson = getNextMadeUpToDateJson(companyNumber, companyProfileApi);
+        var nextMadeUpToDateJson = getNextMadeUpToDateJson(companyNumber, companyProfileApi);
 
         if (nextMadeUpToDateJson.getNewNextMadeUpToDate() != null) {
             return nextMadeUpToDateJson.getNewNextMadeUpToDate();
@@ -166,7 +166,7 @@ public class ConfirmationStatementService {
         Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
 
         if(submissionJsonOptional.isPresent()) {
-            ValidationStatusResponse validationStatus = new ValidationStatusResponse();
+            var validationStatus = new ValidationStatusResponse();
             ConfirmationStatementSubmissionJson submission = submissionJsonOptional.get();
             ConfirmationStatementSubmissionDataJson submissionData = submission.getData();
 
@@ -185,8 +185,8 @@ public class ConfirmationStatementService {
                 validationStatus.setValid(isValid);
             }
             if (!validationStatus.isValid()) {
-                ValidationStatusError[] errors = new ValidationStatusError[1];
-                ValidationStatusError error = new ValidationStatusError();
+                var errors = new ValidationStatusError[1];
+                var error = new ValidationStatusError();
                 error.setType("ch:validation");
                 errors[0] = error;
                 validationStatus.setValidationStatusError(errors);
@@ -221,7 +221,7 @@ public class ConfirmationStatementService {
     }
 
     public NextMadeUpToDateJson getNextMadeUpToDate(String companyNumber) throws CompanyNotFoundException, ServiceException {
-        CompanyProfileApi companyProfileApi = companyProfileService.getCompanyProfile(companyNumber);
+        var companyProfileApi = companyProfileService.getCompanyProfile(companyNumber);
 
         return getNextMadeUpToDateJson(companyNumber, companyProfileApi);
     }
@@ -231,7 +231,7 @@ public class ConfirmationStatementService {
             throw new ServiceException(String.format("Unable to find company profile for company %s", companyNumber));
         }
 
-        NextMadeUpToDateJson nextMadeUpToDateJson = new NextMadeUpToDateJson();
+        var nextMadeUpToDateJson = new NextMadeUpToDateJson();
 
         if (companyProfileApi.getConfirmationStatement() == null
             || companyProfileApi.getConfirmationStatement().getNextMadeUpTo() == null) {
@@ -243,7 +243,7 @@ public class ConfirmationStatementService {
 
         LocalDate nextMadeUpToDate = companyProfileApi.getConfirmationStatement().getNextMadeUpTo();
         nextMadeUpToDateJson.setCurrentNextMadeUpToDate(nextMadeUpToDate);
-        LocalDate today = localDateNow.get();
+        var today = localDateNow.get();
 
         if (today.isBefore(nextMadeUpToDate)) {
             nextMadeUpToDateJson.setDue(false);

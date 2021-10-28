@@ -39,9 +39,7 @@ public class OracleQueryClient {
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, getCompanyTradedStatusUrl));
 
         ResponseEntity<Long> response = restTemplate.getForEntity(getCompanyTradedStatusUrl, Long.class);
-        var companyTradedStatus = response.getBody();
-
-        return companyTradedStatus;
+        return response.getBody();
     }
 
     public Integer getShareholderCount(String companyNumber) {
@@ -59,7 +57,7 @@ public class OracleQueryClient {
 
         ResponseEntity<StatementOfCapitalJson> response = restTemplate.getForEntity(statementOfCapitalUrl, StatementOfCapitalJson.class);
         if(response.getStatusCode() == HttpStatus.OK) {
-            StatementOfCapitalJson statementOfCapitalJson = response.getBody();
+            var statementOfCapitalJson = response.getBody();
             if (statementOfCapitalJson != null) {
                 return statementOfCapitalJson;
             }
@@ -80,8 +78,7 @@ public class OracleQueryClient {
 
         switch (response.getStatusCode()) {
         case OK:
-            var directorDetails = response.getBody();
-            return directorDetails;
+            return response.getBody();
         case NOT_FOUND:
             throw new ActiveDirectorNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
         default:
@@ -141,10 +138,10 @@ public class OracleQueryClient {
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE + " with due date %s", response.getStatusCode(), companyNumber, dueDate));
         }
-        ConfirmationStatementPaymentJson confirmationStatementPaymentJson = response.getBody();
+        var confirmationStatementPaymentJson = response.getBody();
         if (confirmationStatementPaymentJson == null || confirmationStatementPaymentJson.isPaid() == null) {
             throw new ServiceException("Oracle query api returned null for " + companyNumber + " with due date " + dueDate + ", boolean values expected");
         }
-        return response.getBody().isPaid();
+        return confirmationStatementPaymentJson.isPaid();
     }
 }

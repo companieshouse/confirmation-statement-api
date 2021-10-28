@@ -46,10 +46,16 @@ public class FilingService {
     }
 
     private void setFilingApiData(FilingApi filing, String confirmationStatementId, Transaction transaction) throws SubmissionNotFoundException, ServiceException {
+        Map<String, Object> data = new HashMap<>();
+        var isPayable = null != transaction.getLinks().getPayment();
 
-        var paymentReference = getPaymentReferenceFromTransaction(transaction.getLinks().getPayment());
+        if (isPayable) {
+            var paymentReference = getPaymentReferenceFromTransaction(transaction.getLinks().getPayment());
+            var payment = getPayment(paymentReference);
 
-        var payment = getPayment(paymentReference);
+            data.put("payment_reference", paymentReference);
+            data.put("payment_method", payment.getPaymentMethod());
+        }
 
         Optional<ConfirmationStatementSubmissionJson> submissionOpt =
                 confirmationStatementService.getConfirmationStatement(confirmationStatementId);
@@ -61,12 +67,10 @@ public class FilingService {
         var submissionData = submission.getData();
         if (submissionData != null) {
             LocalDate madeUpToDate = submissionData.getMadeUpToDate();
-            Map<String, Object> data = new HashMap<>();
+
             data.put("confirmation_statement_date", madeUpToDate );
             data.put("trading_on_market", !submissionData.getTradingStatusData().getTradingStatusAnswer());
             data.put("dtr5_ind", false);
-            data.put("payment_reference", paymentReference);
-            data.put("payment_method", payment.getPaymentMethod());
             filing.setData(data);
             setDescription(filing, madeUpToDate);
         } else {

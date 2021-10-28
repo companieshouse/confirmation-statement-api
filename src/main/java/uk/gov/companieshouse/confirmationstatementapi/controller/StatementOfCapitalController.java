@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
@@ -16,6 +18,7 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @RestController
 public class StatementOfCapitalController {
@@ -27,17 +30,18 @@ public class StatementOfCapitalController {
         this.statementOfCapitalService = statementOfCapitalService;
     }
 
-    @GetMapping("/confirmation-statement/company/{companyNumber}/statement-of-capital")
+    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/statement-of-capital")
     public ResponseEntity<StatementOfCapitalJson> getStatementOfCapital(
-            @PathVariable String companyNumber,
+            @RequestAttribute("transaction") Transaction transaction,
+            @PathVariable(TRANSACTION_ID_KEY) String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();
-        logMap.put("company_number", companyNumber);
+        logMap.put(TRANSACTION_ID_KEY, transactionId);
 
         try {
             ApiLogger.infoContext(requestId, "Calling service to retrieve statement of capital data.", logMap);
-            var statementOfCapital = statementOfCapitalService.getStatementOfCapital(companyNumber);
+            var statementOfCapital = statementOfCapitalService.getStatementOfCapital(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
         } catch (StatementOfCapitalNotFoundException e) {
             ApiLogger.infoContext(requestId, e.getMessage(), logMap);

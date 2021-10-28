@@ -60,7 +60,7 @@ class ConfirmationStatementControllerTest {
     @Test
     void createNewSubmission() throws ServiceException {
         when(confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH)).thenReturn(CREATED_SUCCESS_RESPONSE);
-        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, mockHttpServletRequest);
+        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, ERIC_REQUEST_ID, mockHttpServletRequest);
 
         assertEquals(CREATED_SUCCESS_RESPONSE, response);
     }
@@ -68,7 +68,7 @@ class ConfirmationStatementControllerTest {
     @Test
     void createNewSubmissionValidationFailedResponse() throws ServiceException {
         when(confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH)).thenReturn(VALIDATION_FAILED_RESPONSE);
-        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, mockHttpServletRequest);
+        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, ERIC_REQUEST_ID, mockHttpServletRequest);
 
         assertEquals(VALIDATION_FAILED_RESPONSE, response);
     }
@@ -77,7 +77,7 @@ class ConfirmationStatementControllerTest {
     void createNewSubmissionServiceException() throws ServiceException {
         when(confirmationStatementService.createConfirmationStatement(transaction, PASSTHROUGH)).thenThrow(new ServiceException("ERROR", new IOException()));
 
-        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, mockHttpServletRequest);
+        var response = confirmationStatementController.createNewSubmission(transaction,TRANSACTION_ID, ERIC_REQUEST_ID, mockHttpServletRequest);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }

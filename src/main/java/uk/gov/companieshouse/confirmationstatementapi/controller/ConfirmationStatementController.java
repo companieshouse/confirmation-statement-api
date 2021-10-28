@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
@@ -21,7 +20,6 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
@@ -43,10 +41,10 @@ public class ConfirmationStatementController {
     public ResponseEntity<Object> createNewSubmission(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
             HttpServletRequest request) {
 
         String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
-        String requestId = request.getHeader(ERIC_REQUEST_ID_KEY);
 
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY, transactionId);
@@ -103,7 +101,7 @@ public class ConfirmationStatementController {
         ApiLogger.infoContext(requestId, "Calling service to get validation status", logMap);
 
         try {
-            ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(submissionId);
+            var validationStatusResponse = confirmationStatementService.isValid(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (SubmissionNotFoundException e) {
             ApiLogger.errorContext(requestId,e.getMessage(), e, logMap);

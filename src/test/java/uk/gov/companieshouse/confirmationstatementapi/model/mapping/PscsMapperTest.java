@@ -21,6 +21,8 @@ class PscsMapperTest {
     private static final String OFFICER_DATE_OF_BIRTH_ISO = "1968-03-28";
     private static final String OFFICER_NATIONALITY = "BRITISH";
     private static final String APPOINTMENT_TYPE_ID = "10";
+    private static final String APPOINTMENT_DATE = "2020-10-10 00:00:00";
+    private static final String APPOINTMENT_DATE_ISO = "2020-10-10";
     private static final String SERVICE_ADDRESS_LINE_1 = "serv line 1";
     private static final String SERVICE_ADDRESS_POST_TOWN = "cardiff";
     private static final String SERVICE_ADDRESS_POST_CODE = "CF1 1AA";
@@ -91,6 +93,7 @@ class PscsMapperTest {
         assertEquals(OFFICER_NATIONALITY, pscJson1.getNationality());
 
         assertEquals(APPOINTMENT_TYPE_ID, pscJson1.getAppointmentType());
+        assertEquals(APPOINTMENT_DATE_ISO, pscJson1.getAppointmentDate());
 
         assertEquals(SERVICE_ADDRESS_LINE_1, pscJson1.getServiceAddress().getAddressLine1());
         assertEquals(SERVICE_ADDRESS_POST_TOWN, pscJson1.getServiceAddress().getLocality());
@@ -174,6 +177,7 @@ class PscsMapperTest {
         psc.setOfficerDateOfBirth(OFFICER_DATE_OF_BIRTH);
         psc.setOfficerNationality(OFFICER_NATIONALITY);
         psc.setAppointmentTypeId(APPOINTMENT_TYPE_ID);
+        psc.setAppointmentDate(APPOINTMENT_DATE);
         psc.setSuperSecurePscInd(SECURE_PSC_IND);
         psc.setSuppliedCompanyName(SUPPLIED_COMPANY_NAME);
         psc.setRegisterLocation(REGISTER_LOCATION);
