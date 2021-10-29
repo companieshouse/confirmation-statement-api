@@ -16,12 +16,12 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
@@ -48,12 +48,12 @@ public class ConfirmationStatementController {
 
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        LOGGER.infoContext(requestId, "Calling service to create submission", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to create submission", logMap);
 
         try {
             return confirmationStatementService.createConfirmationStatement(transaction, passthroughHeader);
         } catch (ServiceException e) {
-            LOGGER.errorContext(requestId,"Error Creating Confirmation Statement", e, logMap);
+            ApiLogger.errorContext(requestId,"Error Creating Confirmation Statement", e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -68,7 +68,7 @@ public class ConfirmationStatementController {
         var logMap = new HashMap<String, Object>();
         logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        LOGGER.infoContext(requestId, "Calling service to update confirmation statement data", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to update confirmation statement data", logMap);
 
         return confirmationStatementService.updateConfirmationStatement(submissionId, confirmationStatementSubmissionJson);
     }
@@ -82,7 +82,7 @@ public class ConfirmationStatementController {
         var logMap = new HashMap<String, Object>();
         logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        LOGGER.infoContext(requestId, "Calling service to retrieve confirmation statement data", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to retrieve confirmation statement data", logMap);
 
         var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
         return serviceResponse.<ResponseEntity<Object>>map(ResponseEntity::ok)
@@ -98,16 +98,16 @@ public class ConfirmationStatementController {
         var logMap = new HashMap<String, Object>();
         logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        LOGGER.infoContext(requestId, "Calling service to get validation status", logMap);
+        ApiLogger.infoContext(requestId, "Calling service to get validation status", logMap);
 
         try {
             var validationStatusResponse = confirmationStatementService.isValid(submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (SubmissionNotFoundException e) {
-            LOGGER.errorContext(requestId,e.getMessage(), e, logMap);
+            ApiLogger.errorContext(requestId,e.getMessage(), e, logMap);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            LOGGER.errorContext(requestId,e.getMessage(), e, logMap);
+            ApiLogger.errorContext(requestId,e.getMessage(), e, logMap);
             return ResponseEntity.internalServerError().build();
         }
     }

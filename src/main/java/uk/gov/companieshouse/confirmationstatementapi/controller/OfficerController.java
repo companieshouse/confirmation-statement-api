@@ -15,11 +15,13 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFou
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.*;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 
 @RestController
 public class OfficerController {
@@ -42,17 +44,17 @@ public class OfficerController {
         logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
 
         try {
-            LOGGER.infoContext(requestId, "Calling service to retrieve the active director details.", logMap);
+            ApiLogger.infoContext(requestId, "Calling service to retrieve the active director details.", logMap);
             var directorDetails = officerService.getActiveDirectorDetails(submissionId, transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(directorDetails);
         } catch (SubmissionNotFoundException e) {
-            LOGGER.errorContext(requestId, e.getMessage(), e, logMap);
+            ApiLogger.errorContext(requestId, e.getMessage(), e, logMap);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ActiveDirectorNotFoundException e) {
-            LOGGER.infoContext(requestId, "Error retrieving active officer details.", logMap);
+            ApiLogger.infoContext(requestId, "Error retrieving active officer details.", logMap);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ServiceException e) {
-            LOGGER.errorContext(requestId, "Error retrieving active officer details.", e, logMap);
+            ApiLogger.errorContext(requestId, "Error retrieving active officer details.", e, logMap);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

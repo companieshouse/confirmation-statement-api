@@ -6,8 +6,7 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusType;
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
-
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 public class CompanyTradedStatusValidation implements EligibilityRule<CompanyProfileApi> {
 
@@ -22,18 +21,18 @@ public class CompanyTradedStatusValidation implements EligibilityRule<CompanyPro
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
         var companyNumber = profileToValidate.getCompanyNumber();
-        LOGGER.info(String.format("Validating Company Traded Status for: %s", companyNumber));
+        ApiLogger.info(String.format("Validating Company Traded Status for: %s", companyNumber));
         if (!tradedStatusEligibilityFlag) {
-            LOGGER.debug("TRADED STATUS VALIDATION FEATURE FLAG off skipping validation");
+            ApiLogger.debug("TRADED STATUS VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
 
         var companyTradedStatus = corporateBodyService.getCompanyTradedStatus(companyNumber);
 
         if(CompanyTradedStatusType.NOT_ADMITTED_TO_TRADING != companyTradedStatus) {
-            LOGGER.info(String.format("Company traded status validation failed for %s with value %s", companyNumber, companyTradedStatus));
+            ApiLogger.info(String.format("Company traded status validation failed for %s with value %s", companyNumber, companyTradedStatus));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TRADED_STATUS_USE_WEBFILING);
         }
-        LOGGER.info(String.format("Company traded status validation successful for %s with value %s", companyNumber, companyTradedStatus));
+        ApiLogger.info(String.format("Company traded status validation successful for %s with value %s", companyNumber, companyTradedStatus));
     }
 }

@@ -4,12 +4,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
@@ -22,7 +22,7 @@ public class FilingInterceptor implements HandlerInterceptor {
         final String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
 
         if (transaction == null) {
-            LOGGER.infoContext(reqId, "No transaction found in request", null);
+            ApiLogger.infoContext(reqId, "No transaction found in request", null);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
@@ -31,11 +31,11 @@ public class FilingInterceptor implements HandlerInterceptor {
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
 
         if (TransactionStatus.CLOSED.equals(transaction.getStatus())) {
-            LOGGER.debugContext(reqId, "Closed proceeding to generate filing", logMap);
+            ApiLogger.debugContext(reqId, "Closed proceeding to generate filing", logMap);
             return true;
         }
 
-        LOGGER.debugContext(reqId, "Closed rejecting filing request", logMap);
+        ApiLogger.debugContext(reqId, "Closed rejecting filing request", logMap);
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return false;

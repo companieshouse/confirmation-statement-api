@@ -13,8 +13,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
-
-import static uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication.LOGGER;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 @Service
 public class OfficerService {
@@ -47,7 +46,7 @@ public class OfficerService {
     public ActiveDirectorDetails getActiveDirectorDetails(String submissionId, String companyNumber) throws ServiceException, ActiveDirectorNotFoundException, SubmissionNotFoundException {
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
         if (submission.isPresent()) {
-            LOGGER.info(String.format("Found submission data for submission %s", submissionId));
+            ApiLogger.info(String.format("Found submission data for submission %s", submissionId));
         } else {
             throw new SubmissionNotFoundException("Could not find submission data for submission " + submissionId);
         }
