@@ -18,11 +18,14 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
     private final OfficerService officerService;
 
     private final boolean officerValidationFlag;
+    private final boolean multipleOfficerJourneyFlag;
 
     @Autowired
-    public CompanyOfficerValidation(OfficerService officerService, boolean officerValidationFlag){
+    public CompanyOfficerValidation(OfficerService officerService, boolean officerValidationFlag, boolean multipleOfficerJourneyFlag){
         this.officerService = officerService;
         this.officerValidationFlag = officerValidationFlag;
+        this.multipleOfficerJourneyFlag = multipleOfficerJourneyFlag;
+        ApiLogger.debug(String.format("MULTIPLE OFFICER (5 OR LESS) JOURNEY FEATURE FLAG: %s", this.multipleOfficerJourneyFlag));
     }
 
     @Override
@@ -33,10 +36,20 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
             return;
         }
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
-        var officerCheck = isOfficerDirector(officers.getItems(), officers.getActiveCount());
-        if (!officerCheck) {
-            ApiLogger.info(String.format("Company Officers validation failed for: %s", companyProfileApi.getCompanyNumber()));
-            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS);
+        var activeOfficersCount = officers.getActiveCount();
+        ApiLogger.debug(String.format("Company has %s active officers", activeOfficersCount));
+
+        if(!multipleOfficerJourneyFlag) {
+            var officerCheck = isOfficerDirector(officers.getItems(), activeOfficersCount);
+            if(!officerCheck) {
+                ApiLogger.info(String.format("Company Officers validation failed for: %s", companyProfileApi.getCompanyNumber()));
+                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS);
+            }
+        } else {
+            if(activeOfficersCount != null && activeOfficersCount > 5) {
+                ApiLogger.info(String.format("Company Officers validation failed for: %s", companyProfileApi.getCompanyNumber()));
+                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_OFFICERS);
+            }
         }
         ApiLogger.info(String.format("Company Officers validation passed for: %s", companyProfileApi.getCompanyNumber()));
     }
