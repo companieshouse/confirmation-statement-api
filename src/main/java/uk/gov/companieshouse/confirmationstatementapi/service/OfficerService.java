@@ -10,23 +10,18 @@ import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
-import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
-import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 @Service
 public class OfficerService {
 
     private final ApiClientService apiClientService;
     private final OracleQueryClient oracleQueryClient;
-    private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
 
     @Autowired
-    public OfficerService(ApiClientService apiClientService, OracleQueryClient oracleQueryClient, ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository) {
+    public OfficerService(ApiClientService apiClientService, OracleQueryClient oracleQueryClient) {
         this.apiClientService = apiClientService;
         this.oracleQueryClient = oracleQueryClient;
-        this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
     }
 
     public OfficersApi getOfficers(String companyNumber) throws ServiceException {
@@ -43,13 +38,7 @@ public class OfficerService {
         }
     }
 
-    public ActiveDirectorDetails getActiveDirectorDetails(String submissionId, String companyNumber) throws ServiceException, ActiveDirectorNotFoundException, SubmissionNotFoundException {
-        var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
-        if (submission.isPresent()) {
-            ApiLogger.info(String.format("Found submission data for submission %s", submissionId));
-        } else {
-            throw new SubmissionNotFoundException("Could not find submission data for submission " + submissionId);
-        }
+    public ActiveDirectorDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveDirectorNotFoundException {
         return oracleQueryClient.getActiveDirectorDetails(companyNumber);
     }
 }

@@ -18,13 +18,10 @@ import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -120,25 +117,14 @@ class OfficerServiceTest {
     }
 
     @Test
-    void getActiveDirectorDetailsTest() throws ServiceException, ActiveDirectorNotFoundException, SubmissionNotFoundException {
-        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+    void getActiveDirectorDetailsTest() throws ServiceException, ActiveDirectorNotFoundException {
         ActiveDirectorDetails details = new ActiveDirectorDetails();
         details.setForeName1("John");
         details.setSurname("Doe");
-        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         when(oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER)).thenReturn(details);
 
-        var response = officerService.getActiveDirectorDetails(SUBMISSION_ID, COMPANY_NUMBER);
+        var response = officerService.getActiveDirectorDetails(COMPANY_NUMBER);
 
         assertEquals(response, details);
-    }
-
-    @Test
-    void getSubmissionNotFoundException() {
-        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
-
-        assertThrows(SubmissionNotFoundException.class, () -> {
-            officerService.getActiveDirectorDetails(SUBMISSION_ID, COMPANY_NUMBER);
-        });
     }
 }
