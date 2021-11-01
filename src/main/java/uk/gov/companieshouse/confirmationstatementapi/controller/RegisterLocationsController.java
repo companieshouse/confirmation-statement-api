@@ -30,7 +30,7 @@ public class RegisterLocationsController {
         this.regLocService = regLocService;
     }
 
-    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/register-locations")
+    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/register-locations")
     public ResponseEntity<List<RegisterLocationJson>> getRegisterLocations(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,

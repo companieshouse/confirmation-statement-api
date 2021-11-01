@@ -30,7 +30,7 @@ public class ShareholderController {
         this.shareholderService = shareholderService;
     }
 
-    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/shareholders")
+    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/shareholders")
     public ResponseEntity<List<ShareholderJson>> getShareholders(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
