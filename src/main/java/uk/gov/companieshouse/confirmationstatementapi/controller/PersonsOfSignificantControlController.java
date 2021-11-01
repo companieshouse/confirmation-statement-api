@@ -26,7 +26,7 @@ class PersonsOfSignificantControlController {
     @Autowired
     private PscService pscService;
 
-    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/persons-of-significant-control")
+    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/persons-of-significant-control")
     public ResponseEntity<List<PersonOfSignificantControlJson>> getPersonsOfSignificantControl(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,

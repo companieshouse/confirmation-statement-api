@@ -30,7 +30,7 @@ public class StatementOfCapitalController {
         this.statementOfCapitalService = statementOfCapitalService;
     }
 
-    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/statement-of-capital")
+    @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/statement-of-capital")
     public ResponseEntity<StatementOfCapitalJson> getStatementOfCapital(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
