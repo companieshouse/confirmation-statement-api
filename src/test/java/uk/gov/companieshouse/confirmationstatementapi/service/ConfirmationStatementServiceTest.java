@@ -275,7 +275,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void getConfirmationSubmission() {
+    void getConfirmationSubmission() throws SubmissionNotFoundException {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
@@ -286,11 +286,11 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void getConfirmationSubmissionNotFound() {
+    void getConfirmationSubmissionNotFound() throws SubmissionNotFoundException {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
-        var result = confirmationStatementService.getConfirmationStatement(SUBMISSION_ID);
-
-        assertFalse(result.isPresent());
+        assertThrows(SubmissionNotFoundException.class, () -> {
+            confirmationStatementService.getConfirmationStatement(SUBMISSION_ID);
+        });
     }
 
     @Test

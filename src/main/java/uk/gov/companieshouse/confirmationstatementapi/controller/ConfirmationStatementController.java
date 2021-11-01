@@ -84,9 +84,14 @@ public class ConfirmationStatementController {
         logMap.put(TRANSACTION_ID_KEY, transactionId);
         ApiLogger.infoContext(requestId, "Calling service to retrieve confirmation statement data", logMap);
 
-        var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
-        return serviceResponse.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            var serviceResponse = confirmationStatementService.getConfirmationStatement(submissionId);
+            return serviceResponse.<ResponseEntity<Object>>map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (SubmissionNotFoundException e) {
+            ApiLogger.errorContext(requestId,e.getMessage(), e, logMap);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{confirmation_statement_id}/validation-status")

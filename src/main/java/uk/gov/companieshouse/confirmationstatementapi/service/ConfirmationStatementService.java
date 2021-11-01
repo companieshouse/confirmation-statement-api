@@ -206,7 +206,7 @@ public class ConfirmationStatementService {
                  sectionData.getSectionStatus() == SectionStatus.RECENT_FILING);
     }
 
-    public Optional<ConfirmationStatementSubmissionJson> getConfirmationStatement(String submissionId) {
+    public Optional<ConfirmationStatementSubmissionJson> getConfirmationStatement(String submissionId) throws SubmissionNotFoundException {
         // Check Submission exists
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
@@ -216,7 +216,8 @@ public class ConfirmationStatementService {
             var json = confirmationStatementJsonDaoMapper.daoToJson(submission.get());
             return Optional.of(json);
         } else {
-            return Optional.empty();
+            throw new SubmissionNotFoundException(
+                    String.format("Could not find submission data for submission %s", submissionId));
         }
     }
 

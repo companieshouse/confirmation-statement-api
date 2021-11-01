@@ -150,7 +150,7 @@ class FilingServiceTest {
     }
 
     @Test
-    void testWhenEmptySubmissionIsReturned() throws URIValidationException, ApiErrorResponseException {
+    void testWhenEmptySubmissionIsReturned() throws URIValidationException, ApiErrorResponseException, SubmissionNotFoundException {
         paymentGetMocks();
         getTransactionPaymentLinkMock();
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(Optional.empty());
@@ -160,7 +160,7 @@ class FilingServiceTest {
     }
 
     @Test
-    void testWhenEmptySubmissionDataIsReturned() throws URIValidationException, ApiErrorResponseException {
+    void testWhenEmptySubmissionDataIsReturned() throws URIValidationException, ApiErrorResponseException, SubmissionNotFoundException {
         paymentGetMocks();
         getTransactionPaymentLinkMock();
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson();

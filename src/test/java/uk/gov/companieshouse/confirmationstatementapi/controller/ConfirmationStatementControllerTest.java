@@ -103,7 +103,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getSubmission() {
+    void getSubmission() throws SubmissionNotFoundException {
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
                 .thenReturn(Optional.of(new ConfirmationStatementSubmissionJson()));
 
@@ -113,13 +113,11 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getSubmissionIdNotFound() {
+    void getSubmissionIdNotFound() throws SubmissionNotFoundException{
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID))
-                .thenReturn(Optional.empty());
-
-        var response = confirmationStatementController.getSubmission(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
-
-        assertEquals(NOT_FOUND_RESPONSE, response);
+                .thenThrow(SubmissionNotFoundException.class);
+        var response = confirmationStatementController.getSubmission(SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test

@@ -10,6 +10,7 @@ import uk.gov.companieshouse.api.interceptor.CRUDAuthenticationInterceptor;
 import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.FilingInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.LoggingInterceptor;
+import uk.gov.companieshouse.confirmationstatementapi.interceptor.SubmissionInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.TransactionInterceptor;
 
 import static uk.gov.companieshouse.api.util.security.Permission.Key.COMPANY_CONFIRMATION_STATEMENT;
@@ -21,6 +22,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     static final String TRANSACTIONS = "/transactions/**";
     static final String FILINGS = "/private/**/filings";
+    static final String SUBMISSIONS = TRANSACTIONS + "/confirmation-statement/{confirmation_statement_id}/**";
     private static final String NEXT_MADE_UP_TO_DATE = "/confirmation-statement/**/next-made-up-to-date";
     private static final String ELIGIBILITY = "/confirmation-statement/**/eligibility";
     private static final String COSTS = TRANSACTIONS + "/costs";
@@ -50,6 +52,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     private InternalUserInterceptor internalUserInterceptor;
 
+    @Autowired
+    private SubmissionInterceptor submissionInterceptor;
+
     /**
      * Setup the interceptors to run against endpoints when the endpoints are called
      * Interceptors are executed in order of configuration
@@ -68,6 +73,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
         addTransactionInterceptor(registry);
 
         addFilingsEndpointInterceptor(registry);
+
+        addSubmissionInterceptor(registry);
     }
 
     /**
@@ -112,6 +119,15 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private void addTransactionInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(transactionInterceptor)
                 .addPathPatterns(TRANSACTIONS, FILINGS);
+    }
+
+    /**
+     * Interceptor to check submission exists for the endpoints
+     * @param registry
+     */
+    private void addSubmissionInterceptor(InterceptorRegistry registry) {
+        registry.addInterceptor(submissionInterceptor)
+                .addPathPatterns(SUBMISSIONS);
     }
 
     /**
