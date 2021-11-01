@@ -35,9 +35,9 @@ public class SubmissionInterceptor implements HandlerInterceptor {
         var logMap = new HashMap<String, Object>();
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
         try {
-            confirmationStatementService.getConfirmationStatement(submissionId).isPresent();
+            boolean isPresent = confirmationStatementService.getConfirmationStatement(submissionId).isPresent();
             ApiLogger.debugContext(reqId, "Submission found", logMap);
-            return true;
+            return isPresent;
         } catch (SubmissionNotFoundException e) {
             ApiLogger.errorContext(reqId, e.getMessage(), e, logMap);
             response.setStatus(404);
