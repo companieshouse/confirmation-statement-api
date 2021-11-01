@@ -47,7 +47,7 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
             }
         } else {
             if(activeOfficersCount != null && activeOfficersCount > 5) {
-                ApiLogger.info(String.format("Company Officers validation failed for: %s", companyProfileApi.getCompanyNumber()));
+                ApiLogger.info(String.format("Company Officers validation failed for: %s. More than 5 active officers.", companyProfileApi.getCompanyNumber()));
                 throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_OFFICERS);
             }
         }
