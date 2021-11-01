@@ -162,7 +162,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/statement-of-capital": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/statement-of-capital": {
       "parameters": [
         {
           "name": "transaction_id",
@@ -171,7 +171,7 @@
           "type": "string"
         },
         {
-          "name": "confirmation_statement_submission_id",
+          "name": "confirmation_statement_id",
           "in": "path",
           "required": true,
           "type": "string"
@@ -303,7 +303,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/persons-of-significant-control": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/persons-of-significant-control": {
       "parameters": [
         {
           "name": "transaction_id",
@@ -312,7 +312,7 @@
           "type": "string"
         },
         {
-          "name": "confirmation_statement_submission_id",
+          "name": "confirmation_statement_id",
           "in": "path",
           "required": true,
           "type": "string"
@@ -339,7 +339,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/shareholders": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/shareholders": {
       "parameters": [
         {
           "name": "transaction_id",
@@ -348,7 +348,7 @@
           "type": "string"
         },
         {
-          "name": "confirmation_statement_submission_id",
+          "name": "confirmation_statement_id",
           "in": "path",
           "required": true,
           "type": "string"
@@ -372,7 +372,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/register-locations": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/register-locations": {
       "parameters": [
         {
           "name": "transaction_id",
@@ -381,7 +381,7 @@
           "type": "string"
         },
         {
-          "name": "confirmation_statement_submission_id",
+          "name": "confirmation_statement_id",
           "in": "path",
           "required": true,
           "type": "string"

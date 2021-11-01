@@ -18,13 +18,17 @@ import uk.gov.companieshouse.api.model.psc.PscsApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.PscsMapper;
+import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,6 +40,7 @@ import static org.mockito.Mockito.when;
 class PscServiceTest {
 
     private static final String COMPANY_NUMBER = "12345678";
+    private static final String SUBMISSION_ID = "ABCDEFG";
     
     @Mock
     private ApiClient apiClient;
@@ -57,6 +62,9 @@ class PscServiceTest {
 
     @Mock
     private PscsMapper pscsMapper;
+
+    @Mock
+    private ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
 
     @InjectMocks
     private PscService pscService;
@@ -124,7 +132,8 @@ class PscServiceTest {
     }
 
     @Test
-    void testGetPSCsFromOracle() throws ServiceException {
+    void testGetPSCsFromOracle() throws ServiceException, SubmissionNotFoundException {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         Address address = new Address();
         address.setAddressLine1("1 some street");
         address.setPostalCode("post code");
@@ -140,10 +149,11 @@ class PscServiceTest {
         var pscJsonList = Arrays.asList(pscJson1, pscJson2);
 
 
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         when(oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER)).thenReturn(pscs);
         when(pscsMapper.mapToPscsApi(pscs)).thenReturn(pscJsonList);
 
-        var response = pscService.getPSCsFromOracle(COMPANY_NUMBER);
+        var response = pscService.getPSCsFromOracle(SUBMISSION_ID, COMPANY_NUMBER);
 
         assertEquals(pscJsonList, response);
         assertEquals(2, response.size());
@@ -151,10 +161,18 @@ class PscServiceTest {
 
     @Test
     void testGetPSCsFromOracleThrowsServiceException() throws ServiceException {
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         var se = new ServiceException("Message");
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         when(oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER)).thenThrow(se);
 
-        var exception = assertThrows(ServiceException.class, () -> pscService.getPSCsFromOracle(COMPANY_NUMBER));
+        var exception = assertThrows(ServiceException.class, () -> pscService.getPSCsFromOracle(SUBMISSION_ID, COMPANY_NUMBER));
         assertEquals(se, exception);
+    }
+
+    @Test
+    void testGetPSCsFromOracleThrowsSubmissionNotFoundException() throws SubmissionNotFoundException {
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
+        assertThrows(SubmissionNotFoundException.class, () -> pscService.getPSCsFromOracle(SUBMISSION_ID, COMPANY_NUMBER));
     }
 }

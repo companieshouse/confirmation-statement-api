@@ -9,9 +9,12 @@ import uk.gov.companieshouse.api.model.psc.PscsApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.PscsMapper;
+import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.List;
 
@@ -21,14 +24,17 @@ public class PscService {
     private final ApiClientService apiClientService;
     private final OracleQueryClient oracleQueryClient;
     private final PscsMapper pscsMapper;
+    private final ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
 
     @Autowired
     public PscService(ApiClientService apiClientService,
                       OracleQueryClient oracleQueryClient,
-                      PscsMapper pscsMapper) {
+                      PscsMapper pscsMapper,
+                      ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository) {
         this.apiClientService = apiClientService;
         this.oracleQueryClient = oracleQueryClient;
         this.pscsMapper = pscsMapper;
+        this.confirmationStatementSubmissionsRepository = confirmationStatementSubmissionsRepository;
     }
 
     public PscsApi getPSCsFromCHS(String companyNumber) throws ServiceException {
@@ -45,7 +51,13 @@ public class PscService {
         }
     }
 
-    public List<PersonOfSignificantControlJson> getPSCsFromOracle(String companyNumber) throws ServiceException {
+    public List<PersonOfSignificantControlJson> getPSCsFromOracle(String submissionId, String companyNumber) throws ServiceException, SubmissionNotFoundException {
+        var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
+        if (submission.isPresent()) {
+            ApiLogger.info(String.format("Found submission data for submission %s", submissionId));
+        } else {
+            throw new SubmissionNotFoundException("Could not find submission data for submission " + submissionId);
+        }
         List<PersonOfSignificantControl> pscs = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
         return pscsMapper.mapToPscsApi(pscs);
     }
