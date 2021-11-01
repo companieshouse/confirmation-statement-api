@@ -64,7 +64,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 companyTypesNotRequiredToFileCS01);
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
-        var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag);
+        var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag, multipleOfficerJourneyFeatureFlag);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
