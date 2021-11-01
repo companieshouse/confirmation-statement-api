@@ -60,4 +60,11 @@ class RegisterLocationsControllerTest {
 
         assertEquals(runtimeException, thrown);
     }
+
+    @Test
+    void testGetShareholderSubmissionNotFoundException() throws ServiceException, SubmissionNotFoundException {
+        when(regLocService.getRegisterLocations(SUBMISSION_ID, transaction.getCompanyNumber())).thenThrow(SubmissionNotFoundException.class);
+        var response = regLocController.getRegisterLocations(transaction, TRANSACTION_ID, SUBMISSION_ID, ERIC_REQUEST_ID);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
 }

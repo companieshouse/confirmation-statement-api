@@ -34,7 +34,6 @@ public class RegisterLocationsController {
     public ResponseEntity<List<RegisterLocationJson>> getRegisterLocations(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
-
             @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String submissionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 

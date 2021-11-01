@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -17,8 +18,7 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import java.util.HashMap;
 import java.util.List;
 
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.*;
 
 @RestController
 public class ShareholderController {
@@ -34,15 +34,20 @@ public class ShareholderController {
     public ResponseEntity<List<ShareholderJson>> getShareholders(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
+            @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String submissionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var map = new HashMap<String, Object>();
         map.put(TRANSACTION_ID_KEY, transactionId);
+        map.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
 
         try {
             ApiLogger.infoContext(requestId, "Calling service to retrieve shareholders data", map);
-            var shareholders = shareholderService.getShareholders(transaction.getCompanyNumber());
+            var shareholders = shareholderService.getShareholders(submissionId, transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(shareholders);
+        } catch (SubmissionNotFoundException e) {
+            ApiLogger.errorContext(requestId, e.getMessage(), e, map);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ServiceException e) {
             ApiLogger.errorContext(requestId,"Error retrieving shareholders data", e, map);
             return ResponseEntity.internalServerError().build();
