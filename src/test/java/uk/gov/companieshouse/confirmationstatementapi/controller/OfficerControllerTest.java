@@ -28,9 +28,6 @@ class OfficerControllerTest {
     @Mock
     private OfficerService officerService;
 
-    @Mock
-    private ConfirmationStatementSubmissionsRepository confirmationStatementSubmissionsRepository;
-
     @InjectMocks
     private OfficerController officerController;
 
