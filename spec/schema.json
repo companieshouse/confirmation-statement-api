@@ -48,7 +48,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}": {
       "parameters": [
         {
           "name": "transaction_id",
@@ -57,7 +57,7 @@
           "type" : "string"
         },
         {
-          "name": "confirmation_statement_submission_id",
+          "name": "confirmation_statement_id",
           "in": "path",
           "required" : true,
           "type" : "string"
@@ -126,7 +126,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/validation-status" : {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/validation-status" : {
       "parameters": [
         {
           "name": "transaction_id",
@@ -135,7 +135,7 @@
           "type": "string"
         },
         {
-          "name": "confirmation_statement_submission_id",
+          "name": "confirmation_statement_id",
           "in": "path",
           "required": true,
           "type": "string"
