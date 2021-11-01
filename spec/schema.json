@@ -264,7 +264,7 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_submission_id}/active-director-details": {
+    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/active-director-details": {
       "parameters": [
         {
           "name": "transaction_id",
@@ -273,7 +273,7 @@
           "type": "string"
         },
         {
-          "name": "confirmation_statement_submission_id",
+          "name": "confirmation_statement_id",
           "in": "path",
           "required": true,
           "type": "string"
