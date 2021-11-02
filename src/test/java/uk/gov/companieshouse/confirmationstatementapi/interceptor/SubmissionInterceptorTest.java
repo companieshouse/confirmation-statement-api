@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
@@ -19,10 +18,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @ExtendWith(MockitoExtension.class)
-public class SubmissionInterceptorTest {
+class SubmissionInterceptorTest {
 
     private static final String SUBMISSION_ID = "ABCDEFG";
 
@@ -36,7 +34,7 @@ public class SubmissionInterceptorTest {
     private SubmissionInterceptor submissionInterceptor;
 
     @Test
-    void preHandle() throws Exception {
+    void preHandle() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
         ConfirmationStatementSubmissionJson dummyConfirmationStatementSubmission = new ConfirmationStatementSubmissionJson();
@@ -52,14 +50,14 @@ public class SubmissionInterceptorTest {
     }
 
     @Test
-    void exceptionPreHandle() throws SubmissionNotFoundException {
+    void exceptionPreHandle() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 
         var pathParams = new HashMap<String, String>();
         pathParams.put(CONFIRMATION_STATEMENT_ID_KEY, SUBMISSION_ID);
 
-        when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
+        when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID)).thenReturn(Optional.empty());
         when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
 
         assertFalse(submissionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));

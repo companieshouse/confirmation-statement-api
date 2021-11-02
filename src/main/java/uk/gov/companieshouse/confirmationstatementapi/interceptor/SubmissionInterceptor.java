@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.*;
 
@@ -34,13 +35,17 @@ public class SubmissionInterceptor implements HandlerInterceptor {
 
         var logMap = new HashMap<String, Object>();
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
-        try {
-            boolean isPresent = confirmationStatementService.getConfirmationStatement(submissionId).isPresent();
-            ApiLogger.debugContext(reqId, "Submission found", logMap);
-            return isPresent;
-        } catch (SubmissionNotFoundException e) {
-            ApiLogger.errorContext(reqId, e.getMessage(), e, logMap);
-            response.setStatus(404);
+
+        Optional<ConfirmationStatementSubmissionJson> submission = confirmationStatementService.getConfirmationStatement(submissionId);
+        boolean isPresent = submission.isPresent();
+        if (isPresent) {
+            ApiLogger.infoContext(reqId, "Submission found for " + submissionId, logMap);
+            response.setStatus(HttpServletResponse.SC_FOUND);
+            request.setAttribute("submission", submission);
+            return true;
+        } else {
+            ApiLogger.infoContext(reqId, "Submission not found for " + submissionId, logMap);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return false;
         }
     }
