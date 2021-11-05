@@ -331,7 +331,7 @@ class ConfirmationStatementServiceTest {
     @Test
     void areTasksCompleteWithSomeNotPresent() throws SubmissionNotFoundException {
         makeAllMockTasksConfirmed();
-        confirmationStatementSubmissionJson.getData().setActiveDirectorDetailsData(null);
+        confirmationStatementSubmissionJson.getData().setActiveOfficerDetailsData(null);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
@@ -501,7 +501,7 @@ class ConfirmationStatementServiceTest {
 
     void makeAllMockTasksConfirmed() {
         ConfirmationStatementSubmissionDataJson data = confirmationStatementSubmissionJson.getData();
-        data.getActiveDirectorDetailsData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getActiveOfficerDetailsData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getStatementOfCapitalData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getShareholdersData() .setSectionStatus(SectionStatus.CONFIRMED);

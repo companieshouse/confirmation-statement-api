@@ -2,6 +2,6 @@ package uk.gov.companieshouse.confirmationstatementapi.model.json.activedirector
 
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 
-public class ActiveDirectorDetailsDataJson extends SectionDataJson {
+public class ActiveOfficerDetailsDataJson extends SectionDataJson {
 
 }

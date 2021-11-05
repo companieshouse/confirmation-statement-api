@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 
 import org.springframework.data.mongodb.core.mapping.Field;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
@@ -26,7 +26,7 @@ public class ConfirmationStatementSubmissionDataDao {
     private RegisteredOfficeAddressDataDao registeredOfficeAddressData;
 
     @Field("active_director_details_data")
-    private ActiveDirectorDetailsDataDao activeDirectorDetailsData;
+    private ActiveOfficerDetailsDataDao activeOfficerDetailsData;
 
     @Field("shareholder_data")
     private ShareholderDataDao shareholderData;
@@ -72,12 +72,12 @@ public class ConfirmationStatementSubmissionDataDao {
         this.registeredOfficeAddressData = registeredOfficeAddressDataDao;
     }
 
-    public ActiveDirectorDetailsDataDao getActiveDirectorDetailsData() {
-        return activeDirectorDetailsData;
+    public ActiveOfficerDetailsDataDao getActiveOfficerDetailsData() {
+        return activeOfficerDetailsData;
     }
 
-    public void setActiveDirectorDetailsData(ActiveDirectorDetailsDataDao activeDirectorDetailsDataDao) {
-        this.activeDirectorDetailsData = activeDirectorDetailsDataDao;
+    public void setActiveOfficerDetailsData(ActiveOfficerDetailsDataDao activeOfficerDetailsDataDao) {
+        this.activeOfficerDetailsData = activeOfficerDetailsDataDao;
     }
 
     public ShareholderDataDao getShareholdersData() {
