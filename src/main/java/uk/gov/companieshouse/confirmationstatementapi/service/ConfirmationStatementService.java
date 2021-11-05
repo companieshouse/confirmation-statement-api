@@ -176,7 +176,7 @@ public class ConfirmationStatementService {
 
                 boolean isValid = isConfirmed(submissionData.getShareholdersData()) &&
                         isConfirmed(submissionData.getSicCodeData()) &&
-                        isConfirmed(submissionData.getActiveDirectorDetailsData()) &&
+                        isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
                         isConfirmed(submissionData.getStatementOfCapitalData()) &&
                         isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
                         isConfirmed(submissionData.getPersonsSignificantControlData()) &&

@@ -2,6 +2,6 @@ package uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectord
 
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.SectionDataDao;
 
-public class ActiveDirectorDetailsDataDao extends SectionDataDao {
+public class ActiveOfficerDetailsDataDao extends SectionDataDao {
 
 }

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.TradingStatusDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
@@ -15,7 +15,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapit
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveOfficerDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
@@ -84,8 +84,8 @@ class JsonDaoMappingTest {
         SicCodeDao sicDao = sicDataDao.getSicCode();
         RegisteredOfficeAddressDataJson roaJson = json.getData().getRegisteredOfficeAddressData();
         RegisteredOfficeAddressDataDao roaDao = dao.getData().getRegisteredOfficeAddressData();
-        ActiveDirectorDetailsDataJson dirJson = json.getData().getActiveDirectorDetailsData();
-        ActiveDirectorDetailsDataDao dirDao = dao.getData().getActiveDirectorDetailsData();
+        ActiveOfficerDetailsDataJson dirJson = json.getData().getActiveOfficerDetailsData();
+        ActiveOfficerDetailsDataDao dirDao = dao.getData().getActiveOfficerDetailsData();
         ShareholderDataJson shareholderJson = json.getData().getShareholdersData();
         ShareholderDataDao shareholderDao = dao.getData().getShareholdersData();
         RegisterLocationsDataJson rlJson = json.getData().getRegisterLocationsData();

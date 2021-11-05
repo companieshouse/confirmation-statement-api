@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
@@ -8,10 +9,10 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.officers.OfficersApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
@@ -43,7 +44,8 @@ public class OfficerService {
         }
     }
 
-    public ActiveDirectorDetails getActiveDirectorDetails(String submissionId, String companyNumber) throws ServiceException, ActiveDirectorNotFoundException, SubmissionNotFoundException {
+    public ActiveOfficerDetails getActiveOfficerDetails(String submissionId, String companyNumber) throws ServiceException,
+            ActiveOfficerNotFoundException, SubmissionNotFoundException {
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
         if (submission.isPresent()) {
             ApiLogger.info(String.format("Found submission data for submission %s", submissionId));
