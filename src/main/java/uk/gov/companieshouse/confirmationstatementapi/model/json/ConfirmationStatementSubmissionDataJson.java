@@ -26,7 +26,7 @@ public class ConfirmationStatementSubmissionDataJson {
     @JsonProperty("registered_office_address_data")
     private RegisteredOfficeAddressDataJson registeredOfficeAddressData;
 
-    @JsonProperty("active_director_details_data")
+    @JsonProperty("active_officer_details_data")
     private ActiveOfficerDetailsDataJson activeOfficerDetailsData;
 
     @JsonProperty("shareholder_data")
