@@ -29,7 +29,7 @@ Method    | Path                                                                
 :---------|:-----------------------------------------------------------------------------|:-----------
 **GET**   |`/{confirmation_statement_id}`                                                | Returns confirmation-statement based on confirmationStatementId
 **GET**   |`/{confirmation_statement_id}/validation-status`                              | Returns flags to indicate that all required tasks are complete
-**GET**   |`/{confirmation-statement-id}/costs`                                          | Returns the payment amount required to submit
+**GET**   |`/{confirmation_statement_id}/costs`                                          | Returns the payment amount required to submit
 **GET**   |`/{confirmation_statement_id}/active-director-details"`            | Returns data to present to the user
 **GET**   |`/{confirmation_statement_id}/persons-of-significant-control`      | Returns data to present to the user
 **GET**   |`/{confirmation_statement_id}/register-locations`                  | Returns data to present to the user
