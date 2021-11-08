@@ -2,7 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.TradingStatusDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveDirectorDetailsDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonSignificantControlDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
@@ -14,7 +14,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapit
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveDirectorDetailsDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveOfficerDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
@@ -36,7 +36,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setPersonsSignificantControlData(getPersonsSignificantControlJsonData());
         data.setSicCodeData(getSicCodeJsonData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressJsonData());
-        data.setActiveDirectorDetailsData(getActiveDirectorDetailsJsonData());
+        data.setActiveOfficerDetailsData(getActiveOfficerDetailsJsonData());
         data.setShareholdersData(getShareholdersJsonData());
         data.setRegisterLocationsData(getRegisterLocationsData());
         data.setTradingStatusData(getTradingStatusJsonData());
@@ -97,8 +97,8 @@ public class MockConfirmationStatementSubmissionData {
         return registeredOfficeAddressData;
     }
 
-    private static ActiveDirectorDetailsDataJson getActiveDirectorDetailsJsonData() {
-        var activeDirectorDetailsData = new ActiveDirectorDetailsDataJson();
+    private static ActiveOfficerDetailsDataJson getActiveOfficerDetailsJsonData() {
+        var activeDirectorDetailsData = new ActiveOfficerDetailsDataJson();
         activeDirectorDetailsData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
 
         return activeDirectorDetailsData;
@@ -131,7 +131,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setPersonsSignificantControlData(getPersonsSignificantControlDaoData());
         data.setSicCodeData(getSicCodeDaoData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressDaoData());
-        data.setActiveDirectorDetailsData(getActiveDirectorDetailsDaoData());
+        data.setActiveOfficerDetailsData(getActiveOfficerDetailsDaoData());
         data.setShareholdersData(getShareholdersDaoData());
         data.setRegisterLocationsData(getRegisterLocationsDaoData());
         data.setMadeUpToDate(LocalDate.of(2021, 5, 12));
@@ -191,11 +191,11 @@ public class MockConfirmationStatementSubmissionData {
         return registeredOfficeAddressData;
     }
 
-    private static ActiveDirectorDetailsDataDao getActiveDirectorDetailsDaoData() {
-        var activeDirectorDetailsData = new ActiveDirectorDetailsDataDao();
-        activeDirectorDetailsData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+    private static ActiveOfficerDetailsDataDao getActiveOfficerDetailsDaoData() {
+        var activeOfficerDetailsData = new ActiveOfficerDetailsDataDao();
+        activeOfficerDetailsData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
 
-        return activeDirectorDetailsData;
+        return activeOfficerDetailsData;
     }
 
     private static ShareholderDataDao getShareholdersDaoData() {

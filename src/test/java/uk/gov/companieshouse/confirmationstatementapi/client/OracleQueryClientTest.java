@@ -11,10 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.model.common.Address;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveDirectorNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveDirectorDetails;
+import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
@@ -96,10 +96,10 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetActiveDirectorDetailsOkStatusResponse() throws ServiceException, ActiveDirectorNotFoundException {
+    void testGetActiveDirectorDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException {
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveDirectorDetails.class))
-                .thenReturn(new ResponseEntity<>(new ActiveDirectorDetails(), HttpStatus.OK));
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveOfficerDetails.class))
+                .thenReturn(new ResponseEntity<>(new ActiveOfficerDetails(), HttpStatus.OK));
 
         var result = oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER);
         assertNotNull(result);
@@ -107,15 +107,15 @@ class OracleQueryClientTest {
 
     @Test
     void testGetActiveDirectorDetailsStatus400Response() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveDirectorDetails.class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveOfficerDetails.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-        assertThrows(ActiveDirectorNotFoundException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));
+        assertThrows(ActiveOfficerNotFoundException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));
     }
 
     @Test
     void testGetActiveDirectorDetailsNotOkStatusResponse() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveDirectorDetails.class))
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveOfficerDetails.class))
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));

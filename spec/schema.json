@@ -291,13 +291,13 @@
           "200": {
             "description": "Active officer details",
             "schema": {
-              "$ref": "#/definitions/ActiveDirectorDetailsResponse"
+              "$ref": "#/definitions/ActiveOfficersDetailsResponse"
             }
           },
           "404": {
             "description": "Active officer details not found",
             "schema": {
-              "$ref": "#/definitions/ActiveDirectorDetailsResponse"
+              "$ref": "#/definitions/ActiveOfficersDetailsResponse"
             }
           }
         }
@@ -693,7 +693,7 @@
         }
       }
     },
-    "ActiveDirectorDetailsResponse": {
+    "ActiveOfficersDetailsResponse": {
       "type": "object",
       "properties": {
         "fore_name_1":  {
