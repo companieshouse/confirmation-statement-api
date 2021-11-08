@@ -7,21 +7,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @ExtendWith(MockitoExtension.class)
 class SubmissionInterceptorTest {
 
+    private static final String TRANSACTION_ID = "12345678";
     private static final String SUBMISSION_ID = "ABCDEFG";
 
     @Mock
@@ -39,8 +41,10 @@ class SubmissionInterceptorTest {
         Object mockHandler = new Object();
         ConfirmationStatementSubmissionJson dummyConfirmationStatementSubmission = new ConfirmationStatementSubmissionJson();
         dummyConfirmationStatementSubmission.setId(SUBMISSION_ID);
+        dummyConfirmationStatementSubmission.setLinks(Collections.singletonMap("self", TRANSACTION_ID));
 
         var pathParams = new HashMap<String, String>();
+        pathParams.put(TRANSACTION_ID_KEY, TRANSACTION_ID);
         pathParams.put(CONFIRMATION_STATEMENT_ID_KEY, SUBMISSION_ID);
 
         when(confirmationStatementService.getConfirmationStatement(SUBMISSION_ID)).thenReturn(Optional.of(dummyConfirmationStatementSubmission));

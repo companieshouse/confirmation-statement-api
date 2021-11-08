@@ -32,18 +32,19 @@ public class SubmissionInterceptor implements HandlerInterceptor {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var submissionId = pathVariables.get(CONFIRMATION_STATEMENT_ID_KEY);
+        final var transactionId = pathVariables.get(TRANSACTION_ID_KEY);
 
         var logMap = new HashMap<String, Object>();
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
 
         Optional<ConfirmationStatementSubmissionJson> submission = confirmationStatementService.getConfirmationStatement(submissionId);
         boolean isPresent = submission.isPresent();
-        if (isPresent) {
-            ApiLogger.infoContext(reqId, "Submission found for " + submissionId, logMap);
+
+        if (isPresent && submission.get().getLinks().get("self").contains(transactionId)) {
             request.setAttribute("submission", submission);
             return true;
         } else {
-            ApiLogger.infoContext(reqId, "Submission not found for " + submissionId, logMap);
+            ApiLogger.infoContext(reqId, "Error retrieving confirmation statement submission", logMap);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return false;
         }
