@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -28,13 +30,21 @@ public class SubmissionInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var submissionId = pathVariables.get(CONFIRMATION_STATEMENT_ID_KEY);
 
         var logMap = new HashMap<String, Object>();
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
+
+        if (StringUtils.isBlank(submissionId)) {
+            logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
+            logMap.put(ApiLogger.LOG_MAP_KEY_HTTP_REQUEST_URL, request.getRequestURI());
+            var exceptionMessage = String.format("SubmissionInterceptor - %s is blank", CONFIRMATION_STATEMENT_ID_KEY);
+            ApiLogger.infoContext(reqId, exceptionMessage, logMap);
+            throw new ServiceException(exceptionMessage);
+        }
 
         Optional<ConfirmationStatementSubmissionJson> submission = confirmationStatementService.getConfirmationStatement(submissionId);
         boolean isPresent = submission.isPresent();

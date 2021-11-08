@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ApiLogger {
+    public static final String LOG_MAP_KEY_HTTP_REQUEST_URL = "HTTP REQUEST URL";
 
     private ApiLogger() {}
 
