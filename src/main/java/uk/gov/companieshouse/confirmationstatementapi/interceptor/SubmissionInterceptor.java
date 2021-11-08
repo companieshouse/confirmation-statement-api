@@ -40,7 +40,6 @@ public class SubmissionInterceptor implements HandlerInterceptor {
         boolean isPresent = submission.isPresent();
         if (isPresent) {
             ApiLogger.infoContext(reqId, "Submission found for " + submissionId, logMap);
-            response.setStatus(HttpServletResponse.SC_FOUND);
             request.setAttribute("submission", submission);
             return true;
         } else {
