@@ -25,7 +25,7 @@ public class ConfirmationStatementSubmissionDataDao {
     @Field("registered_office_address_data")
     private RegisteredOfficeAddressDataDao registeredOfficeAddressData;
 
-    @Field("active_director_details_data")
+    @Field("active_officer_details_data")
     private ActiveOfficerDetailsDataDao activeOfficerDetailsData;
 
     @Field("shareholder_data")

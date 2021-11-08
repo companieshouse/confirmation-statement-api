@@ -538,7 +538,7 @@
             }
           }
         },
-        "active_director_details_data": {
+        "active_officer_details_data": {
           "type": "object",
           "properties": {
             "section_status": {
