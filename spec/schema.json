@@ -720,25 +720,13 @@
         "country_of_residence":  {
           "type": "string"
         },
-        "service_address_line_1":  {
-          "type": "string"
+        "service_address":  {
+          "$ref": "#/definitions/Address"
         },
-        "service_address_post_town":  {
-          "type": "string"
+        "residential_address":  {
+          "$ref": "#/definitions/Address"
         },
-        "service_address_post_code":  {
-          "type": "string"
-        },
-        "ura_line_1":  {
-          "type": "string"
-        },
-        "ura_post_town":  {
-          "type": "string"
-        },
-        "ura_post_code":  {
-          "type": "string"
-        },
-        "secure_indicator":  {
+        "officer_type":  {
           "type": "string"
         }
       }
