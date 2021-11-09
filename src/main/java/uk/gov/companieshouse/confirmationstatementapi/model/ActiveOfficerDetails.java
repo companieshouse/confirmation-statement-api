@@ -21,6 +21,8 @@ public class ActiveOfficerDetails {
     private Address serviceAddress;
     @JsonProperty("residential_address")
     private Address residentialAddress;
+    @JsonProperty("officer_type")
+    private String officerType;
 
     public String getForeName1() {
         return foreName1;
@@ -100,5 +102,13 @@ public class ActiveOfficerDetails {
 
     public void setDateOfAppointment(String dateOfAppointment) {
         this.dateOfAppointment = dateOfAppointment;
+    }
+
+    public String getOfficerType() {
+        return officerType;
+    }
+
+    public void setOfficerType(String officerType) {
+        this.officerType = officerType;
     }
 }
