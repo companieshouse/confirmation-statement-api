@@ -21,6 +21,7 @@ public class ActiveOfficerDetails {
     private Address serviceAddress;
     @JsonProperty("residential_address")
     private Address residentialAddress;
+    @JsonProperty("is_corporate")
     private boolean corporate;
     private String role;
     @JsonProperty("place_registered")
@@ -113,8 +114,6 @@ public class ActiveOfficerDetails {
     public void setDateOfAppointment(String dateOfAppointment) {
         this.dateOfAppointment = dateOfAppointment;
     }
-
-
 
     public boolean isCorporate() {
         return corporate;
