@@ -720,25 +720,31 @@
         "country_of_residence":  {
           "type": "string"
         },
-        "service_address_line_1":  {
+        "service_address":  {
+          "$ref": "#/definitions/Address"
+        },
+        "residential_address":  {
+          "$ref": "#/definitions/Address"
+        },
+        "corporate":  {
+          "type": "boolean"
+        },
+        "role":  {
           "type": "string"
         },
-        "service_address_post_town":  {
+        "place_registered":  {
           "type": "string"
         },
-        "service_address_post_code":  {
+        "registration_number":  {
           "type": "string"
         },
-        "ura_line_1":  {
+        "law_governed":  {
           "type": "string"
         },
-        "ura_post_town":  {
+        "legal_form":  {
           "type": "string"
         },
-        "ura_post_code":  {
-          "type": "string"
-        },
-        "secure_indicator":  {
+        "identification_type":  {
           "type": "string"
         }
       }
