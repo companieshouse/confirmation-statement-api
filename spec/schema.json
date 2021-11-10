@@ -726,7 +726,7 @@
         "residential_address":  {
           "$ref": "#/definitions/Address"
         },
-        "corporate":  {
+        "is_corporate":  {
           "type": "boolean"
         },
         "role":  {
