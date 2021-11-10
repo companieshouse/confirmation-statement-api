@@ -21,6 +21,19 @@ public class ActiveOfficerDetails {
     private Address serviceAddress;
     @JsonProperty("residential_address")
     private Address residentialAddress;
+    @JsonProperty("is_corporate")
+    private boolean corporate;
+    private String role;
+    @JsonProperty("place_registered")
+    private String placeRegistered;
+    @JsonProperty("registration_number")
+    private String registrationNumber;
+    @JsonProperty("law_governed")
+    private String lawGoverned;
+    @JsonProperty("legal_form")
+    private String legalForm;
+    @JsonProperty("identification_type")
+    private String identificationType;
 
     public String getForeName1() {
         return foreName1;
@@ -100,5 +113,61 @@ public class ActiveOfficerDetails {
 
     public void setDateOfAppointment(String dateOfAppointment) {
         this.dateOfAppointment = dateOfAppointment;
+    }
+
+    public boolean isCorporate() {
+        return corporate;
+    }
+
+    public void setCorporate(boolean corporate) {
+        this.corporate = corporate;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getPlaceRegistered() {
+        return placeRegistered;
+    }
+
+    public void setPlaceRegistered(String placeRegistered) {
+        this.placeRegistered = placeRegistered;
+    }
+
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+
+    public String getLawGoverned() {
+        return lawGoverned;
+    }
+
+    public void setLawGoverned(String lawGoverned) {
+        this.lawGoverned = lawGoverned;
+    }
+
+    public String getLegalForm() {
+        return legalForm;
+    }
+
+    public void setLegalForm(String legalForm) {
+        this.legalForm = legalForm;
+    }
+
+    public String getIdentificationType() {
+        return identificationType;
+    }
+
+    public void setIdentificationType(String identificationType) {
+        this.identificationType = identificationType;
     }
 }
