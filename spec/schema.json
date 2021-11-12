@@ -39,6 +39,9 @@
               "$ref": "#/definitions/ConfirmationStatementSubmission"
             }
           },
+          "401":{
+            "description": "Unauthorised"
+          },
           "400": {
             "description": "The provided Company Number failed validation",
             "schema": {
@@ -78,11 +81,8 @@
               "$ref": "#/definitions/ConfirmationStatementSubmission"
             }
           },
-          "401": {
-            "description": "You are unauthorised to retrieve this submisison",
-            "schema": {
-              "$ref": "#/definitions/UpdateSubmissionFieldsError"
-            }
+          "401":{
+            "description": "Unauthorised"
           },
           "404": {
             "description": "Submission not found"
@@ -114,11 +114,8 @@
               "$ref": "#/definitions/ConfirmationStatementSubmission"
             }
           },
-          "401": {
-            "description": "You are unauthorised to update this submisison",
-            "schema": {
-              "$ref": "#/definitions/UpdateSubmissionFieldsError"
-            }
+          "401":{
+            "description": "Unauthorised"
           },
           "404": {
             "description": "Submission not found"
@@ -156,6 +153,9 @@
               "$ref": "#/definitions/ValidationStatusResponse"
             }
           },
+          "401":{
+            "description": "Unauthorised"
+          },
           "404": {
             "description": "Submission not found"
           }
@@ -191,6 +191,9 @@
             "schema": {
               "$ref": "#/definitions/StatementOfCapitalResponse"
             }
+          },
+          "401":{
+            "description": "Unauthorised"
           },
           "404": {
             "description": "Statement of capital data not found"
@@ -260,6 +263,9 @@
             "schema": {
               "$ref": "#/definitions/CostsResponse"
             }
+          },
+          "401":{
+            "description": "Unauthorised"
           }
         }
       }
@@ -293,6 +299,9 @@
             "schema": {
               "$ref": "#/definitions/ActiveOfficersDetailsResponse"
             }
+          },
+          "401":{
+            "description": "Unauthorised"
           },
           "404": {
             "description": "Active officer details not found",
@@ -335,6 +344,9 @@
                 "$ref": "#/definitions/PersonsOfSignificantControlResponse"
               }
             }
+          },
+          "401":{
+            "description": "Unauthorised"
           }
         }
       }
@@ -368,6 +380,9 @@
             "schema": {
               "$ref": "#/definitions/ShareholdersResponse"
             }
+          },
+          "401":{
+            "description": "Unauthorised"
           }
         }
       }
@@ -401,6 +416,9 @@
             "schema": {
               "$ref": "#/definitions/RegisterLocationResponse"
             }
+          },
+          "401":{
+            "description": "Unauthorised"
           }
         }
       }
@@ -464,6 +482,9 @@
             "schema": {
               "$ref": "#/definitions/FilingAPIResponse"
             }
+          },
+          "401":{
+            "description": "Unauthorised"
           },
           "404": {
             "description": "Submission not found"
@@ -594,24 +615,6 @@
         "INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED",
         "INVALID_COMPANY_TYPE_PAPER_FILING_ONLY",
         "INVALID_COMPANY_TYPE_USE_WEB_FILING"
-      ]
-    },
-    "UpdateSubmissionFieldsError": {
-      "type": "object",
-      "properties": {
-        "update_submission_fields_error": {
-          "$ref": "#/definitions/UpdateSubmissionFieldsErrorTypes"
-        }
-      }
-    },
-    "UpdateSubmissionFieldsErrorTypes": {
-      "type": "string",
-      "enum": [
-        "TRANSACTION_NOT_FOUND",
-        "SUBMISSION_NOT_FOUND",
-        "SUBMISSION_NOT_RELATED_TO_TRANSACTION",
-        "TRANSACTION_ALREADY_CLOSED",
-        "USER_UNAUTHORISED_TO_UPDATE_SUBMISSION"
       ]
     },
     "CostsResponse": {
