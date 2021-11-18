@@ -89,6 +89,20 @@ public class OracleQueryClient {
         }
     }
 
+    public List<ActiveOfficerDetails> getActiveOfficersDetails(String companyNumber) throws ServiceException {
+        var officersDetailsUrl = String.format("%s/company/%s/officers/active", oracleQueryApiUrl, companyNumber);
+        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, officersDetailsUrl));
+
+        ResponseEntity<ActiveOfficerDetails[]> response = restTemplate.getForEntity(officersDetailsUrl, ActiveOfficerDetails[].class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+        }
+        if (response.getBody() == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(response.getBody());
+    }
+
     public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
         var pscUrl = String.format("%s/company/%s/corporate-body-appointments/persons-of-significant-control", oracleQueryApiUrl, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl));

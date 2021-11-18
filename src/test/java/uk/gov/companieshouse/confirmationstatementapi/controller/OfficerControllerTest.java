@@ -12,6 +12,9 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +51,28 @@ class OfficerControllerTest {
     void testGetActiveOfficerDetailsOfficerNotFoundException() throws ActiveOfficerNotFoundException, ServiceException {
         when(officerService.getActiveOfficerDetails(transaction.getCompanyNumber())).thenThrow(ActiveOfficerNotFoundException.class);
         var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void testGetListActiveOfficersDetails() throws ActiveOfficerNotFoundException, ServiceException {
+        var officers = Arrays.asList(new ActiveOfficerDetails(), new ActiveOfficerDetails());
+        when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenReturn(officers);
+        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void testGetListActiveOfficersDetailsServiceException() throws ActiveOfficerNotFoundException, ServiceException {
+        when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
+        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    void testGetListActiveOfficersDetailsOfficerNotFoundException() throws ActiveOfficerNotFoundException, ServiceException {
+        when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenThrow(ActiveOfficerNotFoundException.class);
+        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }

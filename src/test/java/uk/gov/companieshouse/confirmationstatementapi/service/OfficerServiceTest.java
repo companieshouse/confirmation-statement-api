@@ -22,6 +22,8 @@ import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -126,5 +128,16 @@ class OfficerServiceTest {
         var response = officerService.getActiveOfficerDetails(COMPANY_NUMBER);
 
         assertEquals(response, details);
+    }
+
+    @Test
+    void getListActiveOfficersDetailsTest() throws ServiceException, ActiveOfficerNotFoundException {
+        ActiveOfficerDetails officer1 = new ActiveOfficerDetails();
+        ActiveOfficerDetails officer2 = new ActiveOfficerDetails();
+        List<ActiveOfficerDetails> officers = Arrays.asList(officer1, officer2);
+        when(oracleQueryClient.getActiveOfficersDetails(COMPANY_NUMBER)).thenReturn(officers);
+
+        var response = officerService.getListActiveOfficersDetails(COMPANY_NUMBER);
+        assertEquals(response, officers);
     }
 }

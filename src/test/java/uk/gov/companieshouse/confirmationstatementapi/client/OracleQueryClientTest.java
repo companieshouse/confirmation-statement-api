@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 class OracleQueryClientTest {
 
     private static final String ACTIVE_DIRECTOR_PATH = "/director/active";
+    private static final String ACTIVE_OFFICERS_PATH = "/officers/active";
     private static final String COMPANY_NUMBER = "12345678";
     private static final String DUMMY_URL = "http://test";
     private static final String PSC_PATH = "/corporate-body-appointments/persons-of-significant-control";
@@ -119,6 +120,31 @@ class OracleQueryClientTest {
                 .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
 
         assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetListActiveOfficersDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException {
+        var officer1 = new ActiveOfficerDetails();
+        var officer2 = new ActiveOfficerDetails();
+        ActiveOfficerDetails[] officerArray = {officer1, officer2};
+
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_OFFICERS_PATH, ActiveOfficerDetails[].class))
+                .thenReturn(new ResponseEntity<>(officerArray, HttpStatus.OK));
+
+        var result = oracleQueryClient.getActiveOfficersDetails(COMPANY_NUMBER);
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testGetListActiveOfficersDetailsNotOkStatusResponse() {
+        var companyNumber = "123213";
+        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + ACTIVE_OFFICERS_PATH, ActiveOfficerDetails[].class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+
+        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveOfficersDetails(companyNumber));
+        assertTrue(serviceException.getMessage().contains(companyNumber));
+        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
     }
 
     @Test
