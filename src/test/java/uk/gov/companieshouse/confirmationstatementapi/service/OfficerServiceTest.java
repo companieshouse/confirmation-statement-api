@@ -131,7 +131,7 @@ class OfficerServiceTest {
     }
 
     @Test
-    void getListActiveOfficersDetailsTest() throws ServiceException, ActiveOfficerNotFoundException {
+    void getListActiveOfficersDetailsTest() throws ServiceException {
         ActiveOfficerDetails officer1 = new ActiveOfficerDetails();
         ActiveOfficerDetails officer2 = new ActiveOfficerDetails();
         List<ActiveOfficerDetails> officers = Arrays.asList(officer1, officer2);

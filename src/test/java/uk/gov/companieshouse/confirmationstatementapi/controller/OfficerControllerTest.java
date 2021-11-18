@@ -13,7 +13,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;

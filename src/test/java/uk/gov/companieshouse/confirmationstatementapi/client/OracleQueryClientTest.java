@@ -123,7 +123,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetListActiveOfficersDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException {
+    void testGetListActiveOfficersDetailsOkStatusResponse() throws ServiceException {
         var officer1 = new ActiveOfficerDetails();
         var officer2 = new ActiveOfficerDetails();
         ActiveOfficerDetails[] officerArray = {officer1, officer2};
