@@ -55,7 +55,7 @@ class OfficerControllerTest {
     }
 
     @Test
-    void testGetListActiveOfficersDetails() throws ActiveOfficerNotFoundException, ServiceException {
+    void testGetListActiveOfficersDetails() throws ServiceException {
         var officers = Arrays.asList(new ActiveOfficerDetails(), new ActiveOfficerDetails());
         when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenReturn(officers);
         var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
@@ -63,16 +63,16 @@ class OfficerControllerTest {
     }
 
     @Test
-    void testGetListActiveOfficersDetailsServiceException() throws ActiveOfficerNotFoundException, ServiceException {
+    void testGetListActiveOfficersDetailsServiceException() throws ServiceException {
         when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
         var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
-    void testGetListActiveOfficersDetailsOfficerNotFoundException() throws ActiveOfficerNotFoundException, ServiceException {
-        when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenThrow(ActiveOfficerNotFoundException.class);
+    void testGetListActiveOfficersDetailsOfficerNotFoundException() throws ServiceException {
+        when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
         var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 }

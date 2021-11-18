@@ -62,9 +62,6 @@ public class OfficerController {
             ApiLogger.infoContext(requestId, "Calling service to retrieve the active officers details.", logMap);
             var officersDetails = officerService.getListActiveOfficersDetails(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(officersDetails);
-        } catch (ActiveOfficerNotFoundException e) {
-            ApiLogger.infoContext(requestId, "Error retrieving active officers details.", logMap);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (ServiceException e) {
             ApiLogger.errorContext(requestId, "Error retrieving active officers details.", e, logMap);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
