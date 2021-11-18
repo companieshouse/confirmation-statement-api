@@ -12,6 +12,8 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNot
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 
+import java.util.List;
+
 @Service
 public class OfficerService {
 
@@ -40,5 +42,9 @@ public class OfficerService {
 
     public ActiveOfficerDetails getActiveOfficerDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
         return oracleQueryClient.getActiveDirectorDetails(companyNumber);
+    }
+
+    public List<ActiveOfficerDetails> getListActiveOfficersDetails(String companyNumber) throws ServiceException {
+        return oracleQueryClient.getActiveOfficersDetails(companyNumber);
     }
 }
