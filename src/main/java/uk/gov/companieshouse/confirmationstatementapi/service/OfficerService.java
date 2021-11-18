@@ -44,7 +44,7 @@ public class OfficerService {
         return oracleQueryClient.getActiveDirectorDetails(companyNumber);
     }
 
-    public List<ActiveOfficerDetails> getListActiveOfficersDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
+    public List<ActiveOfficerDetails> getListActiveOfficersDetails(String companyNumber) throws ServiceException {
         return oracleQueryClient.getActiveOfficersDetails(companyNumber);
     }
 }
