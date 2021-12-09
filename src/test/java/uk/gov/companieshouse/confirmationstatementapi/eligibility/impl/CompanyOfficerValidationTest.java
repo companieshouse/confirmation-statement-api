@@ -108,6 +108,21 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
+    void validateThrowsOnZeroOfficersWithMultipleOfficerJourneyFlagOn() throws ServiceException {
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, true);
+        CompanyOfficerApi director = new CompanyOfficerApi();
+        director.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
+        OFFICER_LIST.add(director);
+        mockOfficers.setItems(OFFICER_LIST);
+        mockOfficers.setActiveCount(0L);
+
+        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
+
+        var ex = assertThrows(EligibilityException.class, () -> companyOfficerValidation.validate(companyProfileApi));
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_OFFICERS,ex.getEligibilityStatusCode() );
+    }
+
+    @Test
     void validateThrowsOnMoreThanFiveOfficersWithMultipleOfficerJourneyFlagOn() throws ServiceException {
         companyOfficerValidation = new CompanyOfficerValidation(officerService,true, true);
         CompanyOfficerApi director = new CompanyOfficerApi();
