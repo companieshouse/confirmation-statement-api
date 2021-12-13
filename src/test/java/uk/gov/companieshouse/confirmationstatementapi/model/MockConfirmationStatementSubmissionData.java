@@ -40,7 +40,6 @@ public class MockConfirmationStatementSubmissionData {
         data.setShareholdersData(getShareholdersJsonData());
         data.setRegisterLocationsData(getRegisterLocationsData());
         data.setTradingStatusData(getTradingStatusJsonData());
-        data.setTradingStatusData(getTradingStatusJsonData());
         data.setMadeUpToDate(LocalDate.of(2021, 9, 12));
         return data;
     }
@@ -120,7 +119,7 @@ public class MockConfirmationStatementSubmissionData {
 
     private static TradingStatusDataJson getTradingStatusJsonData() {
         var tradingStatusData = new TradingStatusDataJson();
-        tradingStatusData.setTradingStatusAnswer(false);
+        tradingStatusData.setTradingStatusAnswer(true);
 
         return tradingStatusData;
     }

@@ -97,7 +97,6 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
         confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
-
         ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", true);
     }
 
@@ -345,6 +344,19 @@ class ConfirmationStatementServiceTest {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
         confirmationStatementSubmissionJson.setData(null);
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithTradingStatusAnswerFalse() throws SubmissionNotFoundException {
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
+        confirmationStatementSubmissionJson.getData().getTradingStatusData().setTradingStatusAnswer(false);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
