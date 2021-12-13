@@ -181,6 +181,7 @@ public class ConfirmationStatementService {
                         isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
                         isConfirmed(submissionData.getPersonsSignificantControlData()) &&
                         isConfirmed(submissionData.getRegisterLocationsData()) &&
+                        Boolean.TRUE.equals(submissionData.getTradingStatusData().getTradingStatusAnswer()) &&
                         isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
                 validationStatus.setValid(isValid);
             }
