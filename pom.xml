@@ -19,7 +19,7 @@
         <spring-boot-maven-plugin.version>2.5.6</spring-boot-maven-plugin.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <api-security-java.version>0.3.6</api-security-java.version>
-        <structured-logging.version>1.9.7</structured-logging.version>
+        <structured-logging.version>1.9.11</structured-logging.version>
     </properties>
     <profiles>
         <profile>
@@ -31,6 +31,13 @@
     </profiles>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>2.16.0</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
