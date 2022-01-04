@@ -27,6 +27,9 @@ public class PersonOfSignificantControlJson extends PscApi {
     @JsonProperty("legal_form")
     private String legalForm;
 
+    @JsonProperty("usual_residential_country")
+    private String usualResidentialCountry;
+
     @JsonProperty("date_of_birth_iso")
     private String dateOfBirthIso;
 
@@ -87,6 +90,14 @@ public class PersonOfSignificantControlJson extends PscApi {
 
     public void setLegalForm(String legalForm) {
         this.legalForm = legalForm;
+    }
+
+    public String getUsualResidentialCountry() {
+        return usualResidentialCountry;
+    }
+
+    public void setUsualResidentialCountry(String usualResidentialCountry) {
+        this.usualResidentialCountry = usualResidentialCountry;
     }
 
     public String getDateOfBirthIso() {

@@ -20,6 +20,7 @@ class PscsMapperTest {
     private static final String OFFICER_DATE_OF_BIRTH = "1968-03-28 00:00:00";
     private static final String OFFICER_DATE_OF_BIRTH_ISO = "1968-03-28";
     private static final String OFFICER_NATIONALITY = "BRITISH";
+    private static final String OFFICER_USUAL_RESIDENTIAL_COUNTRY = "UNITED KINGDOM";
     private static final String APPOINTMENT_TYPE_ID = "10";
     private static final String APPOINTMENT_DATE = "2020-10-10 00:00:00";
     private static final String APPOINTMENT_DATE_ISO = "2020-10-10";
@@ -89,7 +90,7 @@ class PscsMapperTest {
         assertEquals(3L, pscJson1.getDateOfBirth().getMonth());
         assertEquals(1968L, pscJson1.getDateOfBirth().getYear());
         assertEquals(OFFICER_DATE_OF_BIRTH_ISO, pscJson1.getDateOfBirthIso());
-
+        assertEquals(OFFICER_USUAL_RESIDENTIAL_COUNTRY, pscJson1.getUsualResidentialCountry());
         assertEquals(OFFICER_NATIONALITY, pscJson1.getNationality());
 
         assertEquals(APPOINTMENT_TYPE_ID, pscJson1.getAppointmentType());
@@ -176,6 +177,7 @@ class PscsMapperTest {
         psc.setOfficerSurname(OFFICER_SURNAME);
         psc.setOfficerDateOfBirth(OFFICER_DATE_OF_BIRTH);
         psc.setOfficerNationality(OFFICER_NATIONALITY);
+        psc.setUsualResidentialCountry(OFFICER_USUAL_RESIDENTIAL_COUNTRY);
         psc.setAppointmentTypeId(APPOINTMENT_TYPE_ID);
         psc.setAppointmentDate(APPOINTMENT_DATE);
         psc.setSuperSecurePscInd(SECURE_PSC_IND);

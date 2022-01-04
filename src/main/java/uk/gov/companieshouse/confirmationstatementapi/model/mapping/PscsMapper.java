@@ -43,6 +43,7 @@ public class PscsMapper {
         mapNames(psc, pscJson);
 
         pscJson.setNationality(psc.getOfficerNationality());
+        pscJson.setUsualResidentialCountry(psc.getUsualResidentialCountry());
         pscJson.setCompanyName(psc.getSuppliedCompanyName());
         pscJson.setRegisterLocation(psc.getRegisterLocation());
         pscJson.setRegistrationNumber(psc.getRegistrationNumber());

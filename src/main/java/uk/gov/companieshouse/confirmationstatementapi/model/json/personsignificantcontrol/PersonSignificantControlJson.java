@@ -11,6 +11,8 @@ public class PersonSignificantControlJson {
     private String name;
     @JsonProperty("nationality")
     private String nationality;
+    @JsonProperty("usual_residential_country")
+    private String usualResidentialCountry;
     @JsonProperty("full_date_of_birth")
     private LocalDate fullDateOfBirth;
     @JsonProperty("usual_residential_address")
@@ -34,6 +36,14 @@ public class PersonSignificantControlJson {
 
     public void setNationality(String nationality) {
         this.nationality = nationality;
+    }
+
+    public String getUsualResidentialCountry() {
+        return usualResidentialCountry;
+    }
+
+    public void setUsualResidentialCountry(String usualResidentialCountry) {
+        this.usualResidentialCountry = usualResidentialCountry;
     }
 
     public LocalDate getFullDateOfBirth() {

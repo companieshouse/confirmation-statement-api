@@ -12,6 +12,7 @@ public class PersonOfSignificantControl {
     private String appointmentDate;
     private String superSecurePscInd;
     private String officerNationality;
+    private String usualResidentialCountry;
     private String officerDateOfBirth;
     private String suppliedCompanyName;
     private String natureOfControl;
@@ -78,6 +79,14 @@ public class PersonOfSignificantControl {
 
     public void setOfficerNationality(String officerNationality) {
         this.officerNationality = officerNationality;
+    }
+
+    public String getUsualResidentialCountry() {
+        return usualResidentialCountry;
+    }
+
+    public void setUsualResidentialCountry(String usualResidentialCountry) {
+        this.usualResidentialCountry = usualResidentialCountry;
     }
 
     public String getOfficerDateOfBirth() {
