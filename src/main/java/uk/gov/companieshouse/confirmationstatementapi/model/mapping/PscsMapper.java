@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 @Component
 public class PscsMapper {
 
+    private static final String PSC_APPOINTMENT_TYPE_ID = "5007";
+
     public List<PersonOfSignificantControlJson> mapToPscsApi(List<PersonOfSignificantControl> pscList) {
         if (pscList == null) {
             return new ArrayList<>();
@@ -43,13 +45,17 @@ public class PscsMapper {
         mapNames(psc, pscJson);
 
         pscJson.setNationality(psc.getOfficerNationality());
-        pscJson.setCountryOfResidence(psc.getUsualResidentialCountry());
         pscJson.setCompanyName(psc.getSuppliedCompanyName());
         pscJson.setRegisterLocation(psc.getRegisterLocation());
         pscJson.setRegistrationNumber(psc.getRegistrationNumber());
         pscJson.setLawGoverned(psc.getLawGoverned());
         pscJson.setLegalForm(psc.getLegalForm());
-        pscJson.setPscCountry(psc.getPscCountry());
+
+        if(psc.getAppointmentTypeId().equals(PSC_APPOINTMENT_TYPE_ID)) {
+            pscJson.setCountryOfResidence(psc.getUsualResidentialCountry());
+        } else {
+            pscJson.setCountryOfResidence(psc.getPscCountry());
+        }
 
         return pscJson;
     }
