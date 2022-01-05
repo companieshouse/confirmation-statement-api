@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
