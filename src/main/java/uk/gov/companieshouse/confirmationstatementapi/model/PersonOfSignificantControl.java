@@ -20,7 +20,7 @@ public class PersonOfSignificantControl {
     private String registrationNumber;
     private String lawGoverned;
     private String legalForm;
-    private String countryOfResidence;
+    private String pscCountry;
     @JsonProperty("service_address")
     private Address serviceAddress;
     private Address address;
@@ -145,12 +145,12 @@ public class PersonOfSignificantControl {
         this.legalForm = legalForm;
     }
 
-    public String getCountryOfResidence() {
-        return countryOfResidence;
+    public String getPscCountry() {
+        return pscCountry;
     }
 
-    public void setCountryOfResidence(String countryOfResidence) {
-        this.countryOfResidence = countryOfResidence;
+    public void setPscCountry(String pscCountry) {
+        this.pscCountry = pscCountry;
     }
 
     public Address getServiceAddress() {

@@ -11,8 +11,8 @@ public class PersonSignificantControlJson {
     private String name;
     @JsonProperty("nationality")
     private String nationality;
-    @JsonProperty("usual_residential_country")
-    private String usualResidentialCountry;
+    @JsonProperty("country_of_residence")
+    private String countryOfResidence;
     @JsonProperty("full_date_of_birth")
     private LocalDate fullDateOfBirth;
     @JsonProperty("usual_residential_address")
@@ -21,6 +21,8 @@ public class PersonSignificantControlJson {
     private String correspondenceAddress;
     @JsonProperty("natures_of_control")
     private Set<String> naturesOfControl;
+    @JsonProperty("psc_country")
+    private String pscCountry;
 
     public String getName() {
         return name;
@@ -38,12 +40,12 @@ public class PersonSignificantControlJson {
         this.nationality = nationality;
     }
 
-    public String getUsualResidentialCountry() {
-        return usualResidentialCountry;
+    public String getCountryOfResidence() {
+        return countryOfResidence;
     }
 
-    public void setUsualResidentialCountry(String usualResidentialCountry) {
-        this.usualResidentialCountry = usualResidentialCountry;
+    public void setCountryOfResidence(String countryOfResidence) {
+        this.countryOfResidence = countryOfResidence;
     }
 
     public LocalDate getFullDateOfBirth() {
@@ -76,5 +78,13 @@ public class PersonSignificantControlJson {
 
     public void setNaturesOfControl(Set<String> naturesOfControl) {
         this.naturesOfControl = naturesOfControl;
+    }
+
+    public String getPscCountry() {
+        return pscCountry;
+    }
+
+    public void setPscCountry(String pscCountry) {
+        this.pscCountry = pscCountry;
     }
 }

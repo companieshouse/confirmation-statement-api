@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
@@ -11,8 +12,8 @@ public class PersonSignificantControlDao {
     private String name;
     @Field("nationality")
     private String nationality;
-    @Field("usual_residential_country")
-    private String usualResidentialCountry;
+    @Field("country_of_residence")
+    private String countryOfResidence;
     @Field("full_date_of_birth")
     private LocalDate fullDateOfBirth;
     @Field("usual_residential_address")
@@ -38,12 +39,12 @@ public class PersonSignificantControlDao {
         this.nationality = nationality;
     }
 
-    public String getUsualResidentialCountry() {
-        return usualResidentialCountry;
+    public String getCountryOfResidence() {
+        return countryOfResidence;
     }
 
-    public void setUsualResidentialCountry(String usualResidentialCountry) {
-        this.usualResidentialCountry = usualResidentialCountry;
+    public void setCountryOfResidence(String countryOfResidence) {
+        this.countryOfResidence = countryOfResidence;
     }
 
     public LocalDate getFullDateOfBirth() {
