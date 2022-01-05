@@ -20,6 +20,7 @@ class PscsMapperTest {
     private static final String OFFICER_DATE_OF_BIRTH = "1968-03-28 00:00:00";
     private static final String OFFICER_DATE_OF_BIRTH_ISO = "1968-03-28";
     private static final String OFFICER_NATIONALITY = "BRITISH";
+    private static final String USUAL_RESIDENTIAL_COUNTRY = "UNITED KINGDOM";
     private static final String APPOINTMENT_TYPE_ID = "10";
     private static final String APPOINTMENT_DATE = "2020-10-10 00:00:00";
     private static final String APPOINTMENT_DATE_ISO = "2020-10-10";
@@ -48,7 +49,7 @@ class PscsMapperTest {
     private static final String REGISTRATION_NUMBER = "123456";
     private static final String LAW_GOVERNED = "ENGLISH";
     private static final String LEGAL_FORM = "LIMITED";
-    private static final String COUNTRY_OF_RESIDENCE = "UNITED KINGDOM";
+    private static final String PSC_COUNTRY = "UNITED KINGDOM";
     private PscsMapper pscsMapper = new PscsMapper();
 
     @Test
@@ -89,7 +90,7 @@ class PscsMapperTest {
         assertEquals(3L, pscJson1.getDateOfBirth().getMonth());
         assertEquals(1968L, pscJson1.getDateOfBirth().getYear());
         assertEquals(OFFICER_DATE_OF_BIRTH_ISO, pscJson1.getDateOfBirthIso());
-
+        assertEquals(USUAL_RESIDENTIAL_COUNTRY, pscJson1.getCountryOfResidence());
         assertEquals(OFFICER_NATIONALITY, pscJson1.getNationality());
 
         assertEquals(APPOINTMENT_TYPE_ID, pscJson1.getAppointmentType());
@@ -109,7 +110,8 @@ class PscsMapperTest {
         assertEquals(REGISTRATION_NUMBER, pscJson1.getRegistrationNumber());
         assertEquals(LAW_GOVERNED, pscJson1.getLawGoverned());
         assertEquals(LEGAL_FORM, pscJson1.getLegalForm());
-        assertEquals(COUNTRY_OF_RESIDENCE, pscJson1.getCountryOfResidence());
+        assertEquals(PSC_COUNTRY, pscJson1.getPscCountry());
+       
 
         assertEquals(3, pscJson1.getNaturesOfControl().length);
         assertEquals("12", pscJson1.getNaturesOfControl()[0]);
@@ -176,6 +178,7 @@ class PscsMapperTest {
         psc.setOfficerSurname(OFFICER_SURNAME);
         psc.setOfficerDateOfBirth(OFFICER_DATE_OF_BIRTH);
         psc.setOfficerNationality(OFFICER_NATIONALITY);
+        psc.setUsualResidentialCountry(USUAL_RESIDENTIAL_COUNTRY);
         psc.setAppointmentTypeId(APPOINTMENT_TYPE_ID);
         psc.setAppointmentDate(APPOINTMENT_DATE);
         psc.setSuperSecurePscInd(SECURE_PSC_IND);
@@ -184,7 +187,7 @@ class PscsMapperTest {
         psc.setRegistrationNumber(REGISTRATION_NUMBER);
         psc.setLawGoverned(LAW_GOVERNED);
         psc.setLegalForm(LEGAL_FORM);
-        psc.setCountryOfResidence(COUNTRY_OF_RESIDENCE);
+        psc.setPscCountry(PSC_COUNTRY);
         return psc;
     }
 }

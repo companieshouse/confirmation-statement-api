@@ -43,12 +43,13 @@ public class PscsMapper {
         mapNames(psc, pscJson);
 
         pscJson.setNationality(psc.getOfficerNationality());
+        pscJson.setCountryOfResidence(psc.getUsualResidentialCountry());
         pscJson.setCompanyName(psc.getSuppliedCompanyName());
         pscJson.setRegisterLocation(psc.getRegisterLocation());
         pscJson.setRegistrationNumber(psc.getRegistrationNumber());
         pscJson.setLawGoverned(psc.getLawGoverned());
         pscJson.setLegalForm(psc.getLegalForm());
-        pscJson.setCountryOfResidence(psc.getCountryOfResidence());
+        pscJson.setPscCountry(psc.getPscCountry());
 
         return pscJson;
     }

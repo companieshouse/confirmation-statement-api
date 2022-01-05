@@ -11,6 +11,8 @@ public class PersonSignificantControlDao {
     private String name;
     @Field("nationality")
     private String nationality;
+    @Field("country_of_residence")
+    private String countryOfResidence;
     @Field("full_date_of_birth")
     private LocalDate fullDateOfBirth;
     @Field("usual_residential_address")
@@ -34,6 +36,14 @@ public class PersonSignificantControlDao {
 
     public void setNationality(String nationality) {
         this.nationality = nationality;
+    }
+
+    public String getCountryOfResidence() {
+        return countryOfResidence;
+    }
+
+    public void setCountryOfResidence(String countryOfResidence) {
+        this.countryOfResidence = countryOfResidence;
     }
 
     public LocalDate getFullDateOfBirth() {

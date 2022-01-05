@@ -12,6 +12,7 @@ public class PersonOfSignificantControl {
     private String appointmentDate;
     private String superSecurePscInd;
     private String officerNationality;
+    private String usualResidentialCountry;
     private String officerDateOfBirth;
     private String suppliedCompanyName;
     private String natureOfControl;
@@ -19,7 +20,7 @@ public class PersonOfSignificantControl {
     private String registrationNumber;
     private String lawGoverned;
     private String legalForm;
-    private String countryOfResidence;
+    private String pscCountry;
     @JsonProperty("service_address")
     private Address serviceAddress;
     private Address address;
@@ -80,6 +81,14 @@ public class PersonOfSignificantControl {
         this.officerNationality = officerNationality;
     }
 
+    public String getUsualResidentialCountry() {
+        return usualResidentialCountry;
+    }
+
+    public void setUsualResidentialCountry(String usualResidentialCountry) {
+        this.usualResidentialCountry = usualResidentialCountry;
+    }
+
     public String getOfficerDateOfBirth() {
         return officerDateOfBirth;
     }
@@ -136,12 +145,12 @@ public class PersonOfSignificantControl {
         this.legalForm = legalForm;
     }
 
-    public String getCountryOfResidence() {
-        return countryOfResidence;
+    public String getPscCountry() {
+        return pscCountry;
     }
 
-    public void setCountryOfResidence(String countryOfResidence) {
-        this.countryOfResidence = countryOfResidence;
+    public void setPscCountry(String pscCountry) {
+        this.pscCountry = pscCountry;
     }
 
     public Address getServiceAddress() {
