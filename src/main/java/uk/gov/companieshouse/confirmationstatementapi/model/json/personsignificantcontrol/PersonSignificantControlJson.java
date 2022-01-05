@@ -21,8 +21,6 @@ public class PersonSignificantControlJson {
     private String correspondenceAddress;
     @JsonProperty("natures_of_control")
     private Set<String> naturesOfControl;
-    @JsonProperty("psc_country")
-    private String pscCountry;
 
     public String getName() {
         return name;
@@ -78,13 +76,5 @@ public class PersonSignificantControlJson {
 
     public void setNaturesOfControl(Set<String> naturesOfControl) {
         this.naturesOfControl = naturesOfControl;
-    }
-
-    public String getPscCountry() {
-        return pscCountry;
-    }
-
-    public void setPscCountry(String pscCountry) {
-        this.pscCountry = pscCountry;
     }
 }
