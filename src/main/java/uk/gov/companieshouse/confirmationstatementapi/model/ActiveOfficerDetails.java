@@ -2,6 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.api.model.common.Address;
+import uk.gov.companieshouse.confirmationstatementapi.model.mapping.OfficerIdentificationTypeMapper;
 
 public class ActiveOfficerDetails {
     @JsonProperty("fore_name_1")
@@ -168,6 +169,9 @@ public class ActiveOfficerDetails {
     }
 
     public void setIdentificationType(String identificationType) {
-        this.identificationType = identificationType;
+        if (identificationType != null) {
+            this.identificationType =
+                    OfficerIdentificationTypeMapper.mapIdentificationTypeToChs(identificationType);
+        }
     }
 }
