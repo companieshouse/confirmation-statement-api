@@ -1,6 +1,9 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -31,21 +34,11 @@ class OfficerIdentificationTypeMapperTest {
         assertEquals("other-corporate-body-or-firm", chsType);
     }
 
-    @Test
-    void testUnrecognizedMapping() {
-        String chsType = OfficerIdentificationTypeMapper.mapIdentificationTypeToChs("Z");
-        assertNull(chsType);
-    }
-
-    @Test
-    void testEmptyMapping() {
-        String chsType = OfficerIdentificationTypeMapper.mapIdentificationTypeToChs("");
-        assertNull(chsType);
-    }
-
-    @Test
-    void testNullMapping() {
-        String chsType = OfficerIdentificationTypeMapper.mapIdentificationTypeToChs(null);
+    @ParameterizedTest
+    @ValueSource(strings = {"Z", " ", ""})
+    void testNullUnrecognizedMappings(String type) {
+        System.out.println("TYPE: " + type);
+        String chsType = OfficerIdentificationTypeMapper.mapIdentificationTypeToChs(type);
         assertNull(chsType);
     }
 }
