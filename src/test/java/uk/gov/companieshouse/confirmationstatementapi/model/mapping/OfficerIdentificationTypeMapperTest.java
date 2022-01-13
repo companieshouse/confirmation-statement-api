@@ -37,7 +37,6 @@ class OfficerIdentificationTypeMapperTest {
     @ParameterizedTest
     @ValueSource(strings = {"Z", " ", ""})
     void testNullUnrecognizedMappings(String type) {
-        System.out.println("TYPE: " + type);
         String chsType = OfficerIdentificationTypeMapper.mapIdentificationTypeToChs(type);
         assertNull(chsType);
     }
