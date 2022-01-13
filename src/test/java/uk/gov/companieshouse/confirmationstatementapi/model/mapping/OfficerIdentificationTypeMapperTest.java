@@ -36,4 +36,16 @@ class OfficerIdentificationTypeMapperTest {
         String chsType = OfficerIdentificationTypeMapper.mapIdentificationTypeToChs("Z");
         assertNull(chsType);
     }
+
+    @Test
+    void testEmptyMapping() {
+        String chsType = OfficerIdentificationTypeMapper.mapIdentificationTypeToChs("");
+        assertNull(chsType);
+    }
+
+    @Test
+    void testNullMapping() {
+        String chsType = OfficerIdentificationTypeMapper.mapIdentificationTypeToChs(null);
+        assertNull(chsType);
+    }
 }
