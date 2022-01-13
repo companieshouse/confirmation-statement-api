@@ -14,6 +14,8 @@ public class OfficerIdentificationTypeMapper {
         identificationTypesMap.put("G", "other-corporate-body-or-firm");
     }
 
+    private OfficerIdentificationTypeMapper(){}
+
     public static String mapIdentificationTypeToChs(String oracleIdTypeCode) {
         return identificationTypesMap.get(oracleIdTypeCode);
     }
