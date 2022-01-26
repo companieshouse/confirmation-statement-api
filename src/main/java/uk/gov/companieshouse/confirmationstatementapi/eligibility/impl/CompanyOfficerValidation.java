@@ -12,6 +12,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileApi> {
 
@@ -46,9 +47,9 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
                 throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS);
             }
         } else {
-            if(activeOfficersCount != null && (activeOfficersCount == 0 || activeOfficersCount > 5)) {
+            if(Objects.isNull(activeOfficersCount) || activeOfficersCount == 0 || activeOfficersCount > 5) {
                 ApiLogger.info(String.format("Company Officers validation failed for: %s. No officers found or more than 5 active officers, activeOfficersCount = %s.", companyProfileApi.getCompanyNumber(), activeOfficersCount));
-                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_OFFICERS);
+                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS);
             }
         }
         ApiLogger.info(String.format("Company Officers validation passed for: %s", companyProfileApi.getCompanyNumber()));
