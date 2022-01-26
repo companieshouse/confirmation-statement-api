@@ -11,6 +11,7 @@ import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class OfficerService {
             throw new ServiceException("Error Retrieving Officers", e);
         } catch ( ApiErrorResponseException e) {
             if (HttpStatus.NOT_FOUND.value() == e.getStatusCode()){
+                ApiLogger.info(String.format("The API client service found no officers for company %s", companyNumber));
                 return new OfficersApi();
             }
             throw new ServiceException("Error Retrieving Officers", e);
