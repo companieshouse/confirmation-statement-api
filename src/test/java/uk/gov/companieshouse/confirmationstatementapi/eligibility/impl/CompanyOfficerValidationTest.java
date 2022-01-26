@@ -228,7 +228,10 @@ class CompanyOfficerValidationTest {
     @Test
     void validateThrowsExceptionOnCompanyWithNullOfficerList() throws ServiceException {
         companyOfficerValidation = new CompanyOfficerValidation(officerService,true, true);
-        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(new OfficersApi());
+        OfficersApi officersApi = new OfficersApi();
+        officersApi.setItems(null);
+        officersApi.setActiveCount(null);
+        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(officersApi);
         var result = companyOfficerValidation.isOfficerDirector(mockOfficers.getItems(), mockOfficers.getActiveCount());
         var ex = assertThrows(EligibilityException.class, () -> companyOfficerValidation.validate(companyProfileApi));
 

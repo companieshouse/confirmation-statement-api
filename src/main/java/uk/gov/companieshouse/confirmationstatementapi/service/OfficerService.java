@@ -35,7 +35,7 @@ public class OfficerService {
             throw new ServiceException("Error Retrieving Officers", e);
         } catch ( ApiErrorResponseException e) {
             if (HttpStatus.NOT_FOUND.value() == e.getStatusCode()){
-                ApiLogger.info("The API client service found no officers");
+                ApiLogger.info(String.format("The API client service found no officers for company %s", companyNumber));
                 return new OfficersApi();
             }
             throw new ServiceException("Error Retrieving Officers", e);
