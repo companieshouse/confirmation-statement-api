@@ -38,9 +38,6 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${WEB_FILING_COMPANY_TYPES}")
     private Set<String> webFilingCompanyTypes;
 
-    @Value("${FEATURE_FLAG_OFFICER_VALIDATION_01062021:true}")
-    private boolean officerValidationFlag;
-
     @Value("${FEATURE_FLAG_SHAREHOLDER_COUNT_VALIDATION_09062021:true}")
     private boolean shareholderCountalidationFeatureFlag;
 
@@ -64,7 +61,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 companyTypesNotRequiredToFileCS01);
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
-        var companyOfficerValidation = new CompanyOfficerValidation(officerService, officerValidationFlag, multipleOfficerJourneyFeatureFlag);
+        var companyOfficerValidation = new CompanyOfficerValidation(officerService, multipleOfficerJourneyFeatureFlag);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
