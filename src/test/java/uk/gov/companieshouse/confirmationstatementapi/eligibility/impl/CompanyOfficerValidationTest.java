@@ -52,7 +52,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateDoesNotThrowExceptionOnSingleOfficerCompanyWithDirectorWithMultipleOfficerJourneyFlagOff() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
@@ -63,7 +63,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateThrowsExceptionOnSingleOfficerCompanyWithSecretaryWithMultipleOfficerJourneyFlagOff() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         OFFICER_LIST.clear();
         CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
         MOCK_OFFICER.setOfficerRole(OfficerRoleApi.SECRETARY);
@@ -80,7 +80,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateThrowsExceptionOnMultipleOfficerCompanyWithMultipleOfficerJourneyFlagOff() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         CompanyOfficerApi director = new CompanyOfficerApi();
         director.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
         OFFICER_LIST.add(director);
@@ -96,7 +96,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateDoesNotThrowExceptionOnFiveOrLessOfficersWithMultipleOfficerJourneyFlagOn() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, true);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,true);
         CompanyOfficerApi director = new CompanyOfficerApi();
         director.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
         OFFICER_LIST.add(director);
@@ -110,7 +110,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateThrowsExceptionOnZeroOfficersWithMultipleOfficerJourneyFlagOn() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, true);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,true);
         CompanyOfficerApi director = new CompanyOfficerApi();
         director.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
         OFFICER_LIST.add(director);
@@ -125,7 +125,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateThrowsExceptionOnMoreThanFiveOfficersWithMultipleOfficerJourneyFlagOn() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, true);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,true);
         CompanyOfficerApi director = new CompanyOfficerApi();
         director.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
         OFFICER_LIST.add(director);
@@ -141,7 +141,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateThrowsExceptionOnSingleDirectorCompanyWithSecretariesWithMultipleOfficerJourneyFlagOff() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         CompanyOfficerApi secretary = new CompanyOfficerApi();
         secretary.setOfficerRole(OfficerRoleApi.SECRETARY);
         OFFICER_LIST.add(secretary);
@@ -157,7 +157,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void isOfficerDirectorReturnsFalseForMultipleOfficerCompany() {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         CompanyOfficerApi director = new CompanyOfficerApi();
         CompanyOfficerApi director2 = new CompanyOfficerApi();
         CompanyOfficerApi secretary = new CompanyOfficerApi();
@@ -177,7 +177,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void isOfficerDirectorReturnsTrueForCompanyWithTwoDirectorsOneRetired() {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         CompanyOfficerApi director = new CompanyOfficerApi();
         director.setOfficerRole(OfficerRoleApi.NOMINEE_DIRECTOR);
         director.setResignedOn(LocalDate.now());
@@ -192,7 +192,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void isOfficerDirectorReturnsFalseForCompanyWithOneSecretary() {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         OFFICER_LIST.clear();
         CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
         MOCK_OFFICER.setOfficerRole(OfficerRoleApi.SECRETARY);
@@ -205,15 +205,8 @@ class CompanyOfficerValidationTest {
     }
 
     @Test
-    void validateDoesNotCallOfficerServiceWhenOfficerValidationFeatureFlagFalse() throws ServiceException, EligibilityException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,false, false);
-        companyOfficerValidation.validate(companyProfileApi);
-        verify(officerService, times(0)).getOfficers(COMPANY_NUMBER);
-    }
-
-    @Test
     void validateThrowsExceptionOnCompanyWithZeroOfficers() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, false);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         OfficersApi officersApi = new OfficersApi();
         officersApi.setItems(Collections.emptyList());
         officersApi.setActiveCount(0L);
@@ -227,7 +220,7 @@ class CompanyOfficerValidationTest {
 
     @Test
     void validateThrowsExceptionOnCompanyWithNullOfficerList() throws ServiceException {
-        companyOfficerValidation = new CompanyOfficerValidation(officerService,true, true);
+        companyOfficerValidation = new CompanyOfficerValidation(officerService,true);
         OfficersApi officersApi = new OfficersApi();
         officersApi.setItems(null);
         officersApi.setActiveCount(null);

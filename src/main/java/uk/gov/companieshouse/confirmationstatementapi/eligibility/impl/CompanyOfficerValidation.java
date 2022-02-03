@@ -18,13 +18,11 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
 
     private final OfficerService officerService;
 
-    private final boolean officerValidationFlag;
     private final boolean multipleOfficerJourneyFlag;
 
     @Autowired
-    public CompanyOfficerValidation(OfficerService officerService, boolean officerValidationFlag, boolean multipleOfficerJourneyFlag){
+    public CompanyOfficerValidation(OfficerService officerService, boolean multipleOfficerJourneyFlag){
         this.officerService = officerService;
-        this.officerValidationFlag = officerValidationFlag;
         this.multipleOfficerJourneyFlag = multipleOfficerJourneyFlag;
         ApiLogger.debug(String.format("MULTIPLE OFFICER (5 OR LESS) JOURNEY FEATURE FLAG: %s", this.multipleOfficerJourneyFlag));
     }
@@ -32,10 +30,6 @@ public class CompanyOfficerValidation implements EligibilityRule<CompanyProfileA
     @Override
     public void validate(CompanyProfileApi companyProfileApi) throws EligibilityException, ServiceException {
         ApiLogger.info(String.format("Validating Company Officers for: %s", companyProfileApi.getCompanyNumber()));
-        if (!officerValidationFlag) {
-            ApiLogger.debug("OFFICER VALIDATION FEATURE FLAG off skipping validation");
-            return;
-        }
         var officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
         var activeOfficersCount = officers.getActiveCount();
         ApiLogger.debug(String.format("Company has %s active officers", activeOfficersCount));
