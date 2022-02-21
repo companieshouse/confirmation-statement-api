@@ -25,6 +25,7 @@ public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
         if (submissionId.length() > MAX_LENGTH) {
             String truncatedUrlId = submissionId.substring(0, MAX_LENGTH);
             ApiLogger.debug("Submission URL id exceeds " + MAX_LENGTH + " characters - " + truncatedUrlId + "...");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 
