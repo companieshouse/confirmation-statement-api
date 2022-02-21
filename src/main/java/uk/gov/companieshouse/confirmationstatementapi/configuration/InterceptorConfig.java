@@ -12,6 +12,8 @@ import uk.gov.companieshouse.confirmationstatementapi.interceptor.FilingIntercep
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.SubmissionInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.confirmationstatementapi.interceptor.validation.SubmissionIdValidationInterceptor;
+import uk.gov.companieshouse.confirmationstatementapi.interceptor.validation.TransactionIdValidationInterceptor;
 
 import static uk.gov.companieshouse.api.util.security.Permission.Key.COMPANY_CONFIRMATION_STATEMENT;
 import static uk.gov.companieshouse.api.util.security.Permission.Key.USER_PROFILE;
@@ -41,6 +43,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
     );
 
     @Autowired
+    private TransactionIdValidationInterceptor transactionIdValidationInterceptor;
+
+    @Autowired
     private TransactionInterceptor transactionInterceptor;
 
     @Autowired
@@ -51,6 +56,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Autowired
     private InternalUserInterceptor internalUserInterceptor;
+
+    @Autowired
+    private SubmissionIdValidationInterceptor submissionIdValidationInterceptor;
 
     @Autowired
     private SubmissionInterceptor submissionInterceptor;
@@ -70,9 +78,13 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
         addCompanyAuthenticationEndpointsInterceptor(registry);
 
+        addTransactionIdValidationInterceptor(registry);
+
         addTransactionInterceptor(registry);
 
         addFilingsEndpointInterceptor(registry);
+
+        addSubmissionIdValidationInterceptor(registry);
 
         addSubmissionInterceptor(registry);
     }
@@ -113,12 +125,30 @@ public class InterceptorConfig implements WebMvcConfigurer {
     }
 
     /**
+     * Interceptor to validate transaction id
+     * @param registry
+     */
+    private void addTransactionIdValidationInterceptor(InterceptorRegistry registry) {
+        registry.addInterceptor(transactionIdValidationInterceptor)
+                .addPathPatterns(TRANSACTIONS);
+    }
+
+    /**
      *  Interceptor to get transaction and put in request for endpoints that require a transaction
      * @param registry
      */
     private void addTransactionInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(transactionInterceptor)
                 .addPathPatterns(TRANSACTIONS, FILINGS);
+    }
+
+    /**
+     * Interceptor to validate submission id
+     * @param registry
+     */
+    private void addSubmissionIdValidationInterceptor(InterceptorRegistry registry) {
+        registry.addInterceptor(submissionIdValidationInterceptor)
+                .addPathPatterns(SUBMISSIONS);
     }
 
     /**
