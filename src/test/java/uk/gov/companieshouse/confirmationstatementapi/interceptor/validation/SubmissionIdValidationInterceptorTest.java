@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 
 @ExtendWith(MockitoExtension.class)
-public class SubmissionIdValidationInterceptorTest {
+class SubmissionIdValidationInterceptorTest {
 
     @Mock
     private HttpServletRequest mockHttpServletRequest;

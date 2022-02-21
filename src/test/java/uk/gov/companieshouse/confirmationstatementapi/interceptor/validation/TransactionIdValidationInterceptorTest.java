@@ -1,7 +1,10 @@
+
 package uk.gov.companieshouse.confirmationstatementapi.interceptor.validation;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,6 +13,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,7 +22,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @ExtendWith(MockitoExtension.class)
-public class TransactionIdValidationInterceptorTest {
+class TransactionIdValidationInterceptorTest {
+
+    static Stream<String> blankStrings() {
+        return Stream.of("", "   ", null);
+    }
 
     @Mock
     private HttpServletRequest mockHttpServletRequest;
@@ -51,33 +59,8 @@ public class TransactionIdValidationInterceptorTest {
         assertTrue(transactionIdValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
     }
 
-    @Test
-    void preHandleFalseForNullString() {
-        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
-        Object mockHandler = new Object();
-
-        var pathParams = new HashMap<String, String>();
-        pathParams.put(TRANSACTION_ID_KEY, null);
-        when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
-
-        assertFalse(transactionIdValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
-        assertEquals(500,  mockHttpServletResponse.getStatus());
-    }
-
-    @Test
-    void preHandleFalseForEmptyString() {
-        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
-        Object mockHandler = new Object();
-
-        var pathParams = new HashMap<String, String>();
-        pathParams.put(TRANSACTION_ID_KEY, "");
-        when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
-
-        assertFalse(transactionIdValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
-        assertEquals(500,  mockHttpServletResponse.getStatus());
-    }
-
-    @Test
+    @ParameterizedTest
+    @MethodSource("blankStrings")
     void preHandleFalseForBlankString() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();

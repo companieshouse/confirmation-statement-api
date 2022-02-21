@@ -30,7 +30,7 @@ public class TransactionIdValidationInterceptor implements HandlerInterceptor {
         }
 
         if (transactionId.length() > MAX_LENGTH) {
-            String truncatedUrlId = transactionId.substring(0, MAX_LENGTH);
+            var truncatedUrlId = transactionId.substring(0, MAX_LENGTH);
             ApiLogger.debug("Transaction URL id exceeds " + MAX_LENGTH + " characters - " + truncatedUrlId + "...");
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
