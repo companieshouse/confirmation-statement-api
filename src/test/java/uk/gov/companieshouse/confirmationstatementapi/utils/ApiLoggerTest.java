@@ -61,4 +61,12 @@ class ApiLoggerTest {
         assertEquals(1, logMap.size());
         assertEquals(LOG_MAP_VALUE, logMap.get(LOG_MAP_KEY));
     }
+
+    @Test
+    void testErrorContextWithNoExceptionLoggingDoesNotModifyLogMap() {
+        apiLogger.errorContext(TEST_MESSAGE, logMap);
+
+        assertEquals(1, logMap.size());
+        assertEquals(LOG_MAP_VALUE, logMap.get(LOG_MAP_KEY));
+    }
 }
