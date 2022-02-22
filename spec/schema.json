@@ -81,6 +81,9 @@
               "$ref": "#/definitions/ConfirmationStatementSubmission"
             }
           },
+          "400": {
+            "description": "A provided url id failed validation"
+          },
           "401":{
             "description": "Unauthorised"
           },
@@ -113,6 +116,9 @@
             "schema": {
               "$ref": "#/definitions/ConfirmationStatementSubmission"
             }
+          },
+          "400": {
+            "description": "A provided url id failed validation"
           },
           "401":{
             "description": "Unauthorised"
@@ -153,6 +159,9 @@
               "$ref": "#/definitions/ValidationStatusResponse"
             }
           },
+          "400": {
+            "description": "A provided url id failed validation"
+          },
           "401":{
             "description": "Unauthorised"
           },
@@ -191,6 +200,9 @@
             "schema": {
               "$ref": "#/definitions/StatementOfCapitalResponse"
             }
+          },
+          "400": {
+            "description": "A provided url id failed validation"
           },
           "401":{
             "description": "Unauthorised"
@@ -264,6 +276,9 @@
               "$ref": "#/definitions/CostsResponse"
             }
           },
+          "400": {
+            "description": "A provided url id failed validation"
+          },
           "401":{
             "description": "Unauthorised"
           }
@@ -299,6 +314,9 @@
             "schema": {
               "$ref": "#/definitions/ActiveOfficersDetailsResponse"
             }
+          },
+          "400": {
+            "description": "A provided url id failed validation"
           },
           "401":{
             "description": "Unauthorised"
@@ -345,6 +363,9 @@
               }
             }
           },
+          "400": {
+            "description": "A provided url id failed validation"
+          },
           "401":{
             "description": "Unauthorised"
           }
@@ -381,6 +402,9 @@
               "$ref": "#/definitions/ShareholdersResponse"
             }
           },
+          "400": {
+            "description": "A provided url id failed validation"
+          },
           "401":{
             "description": "Unauthorised"
           }
@@ -416,6 +440,9 @@
             "schema": {
               "$ref": "#/definitions/RegisterLocationResponse"
             }
+          },
+          "400": {
+            "description": "A provided url id failed validation"
           },
           "401":{
             "description": "Unauthorised"
@@ -482,6 +509,9 @@
             "schema": {
               "$ref": "#/definitions/FilingAPIResponse"
             }
+          },
+          "400": {
+            "description": "A provided url id failed validation"
           },
           "401":{
             "description": "Unauthorised"

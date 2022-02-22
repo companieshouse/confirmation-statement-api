@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
@@ -61,16 +62,16 @@ class TransactionIdValidationInterceptorTest {
 
     @ParameterizedTest
     @MethodSource("blankStrings")
-    void preHandleFalseForBlankString() {
+    void preHandleFalseForBlankString(String input) {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 
         var pathParams = new HashMap<String, String>();
-        pathParams.put(TRANSACTION_ID_KEY, " ");
+        pathParams.put(TRANSACTION_ID_KEY, input);
         when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
 
         assertFalse(transactionIdValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
-        assertEquals(500,  mockHttpServletResponse.getStatus());
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST,  mockHttpServletResponse.getStatus());
     }
 
     @Test
@@ -84,6 +85,6 @@ class TransactionIdValidationInterceptorTest {
         when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
 
         assertFalse(transactionIdValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
-        assertEquals(500,  mockHttpServletResponse.getStatus());
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST,  mockHttpServletResponse.getStatus());
     }
 }

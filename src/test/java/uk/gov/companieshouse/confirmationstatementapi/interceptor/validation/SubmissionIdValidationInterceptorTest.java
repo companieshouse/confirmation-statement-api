@@ -2,6 +2,8 @@ package uk.gov.companieshouse.confirmationstatementapi.interceptor.validation;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,16 +11,23 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @ExtendWith(MockitoExtension.class)
 class SubmissionIdValidationInterceptorTest {
+
+    static Stream<String> blankStrings() {
+        return Stream.of("", "   ", null);
+    }
 
     @Mock
     private HttpServletRequest mockHttpServletRequest;
@@ -51,6 +60,20 @@ class SubmissionIdValidationInterceptorTest {
         assertTrue(submissionIdValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
     }
 
+    @ParameterizedTest
+    @MethodSource("blankStrings")
+    void preHandleFalseForBlankString(String input) {
+        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+        Object mockHandler = new Object();
+
+        var pathParams = new HashMap<String, String>();
+        pathParams.put(TRANSACTION_ID_KEY, input);
+        when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
+
+        assertFalse(submissionIdValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST,  mockHttpServletResponse.getStatus());
+    }
+
     @Test
     void preHandleFalseForFiftyPlusLengthString() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
@@ -62,6 +85,6 @@ class SubmissionIdValidationInterceptorTest {
         when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
 
         assertFalse(submissionIdValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
-        assertEquals(500,  mockHttpServletResponse.getStatus());
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST,  mockHttpServletResponse.getStatus());
     }
 }
