@@ -9,7 +9,6 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.COMPANY_NUMBER;
