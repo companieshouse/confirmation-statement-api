@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @Component
 public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
@@ -23,9 +24,10 @@ public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var submissionId = pathVariables.get(CONFIRMATION_STATEMENT_ID_KEY);
+        var reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
 
         if (StringUtils.isBlank(submissionId)) {
-            ApiLogger.error("No submission URL id supplied");
+            ApiLogger.infoContext(reqId, "No submission URL id supplied");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
@@ -34,11 +36,10 @@ public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
             var truncatedUrlId = submissionId.substring(0, MAX_LENGTH);
             var logMap = new HashMap<String, Object>();
             logMap.put(CONFIRMATION_STATEMENT_ID_KEY, truncatedUrlId);
-            ApiLogger.errorContext("Submission URL id exceeds " + MAX_LENGTH + " characters.", logMap);
+            ApiLogger.infoContext(reqId, "Submission URL id exceeds " + MAX_LENGTH + " characters.", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
-
         return true;
     }
 }
