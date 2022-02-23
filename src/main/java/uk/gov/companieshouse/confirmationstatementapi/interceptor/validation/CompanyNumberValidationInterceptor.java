@@ -18,15 +18,13 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 @Component
 public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
     private static final Pattern COMPANY_NUMBER_PATTERN = Pattern.compile(
-            "^([a-z]|[a-z][a-z])?\\d{6,8}?$", Pattern.CASE_INSENSITIVE);
+            "^([a-z]|[a-z][a-z])?\\d{6,8}$", Pattern.CASE_INSENSITIVE);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         String companyNumber = pathVariables.get(COMPANY_NUMBER);
-
-        ApiLogger.info(">>>>>>>>>>>>> PATH VARS " + pathVariables);
         var reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
 
         if (StringUtils.isBlank(companyNumber)) {
@@ -40,7 +38,8 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
-        Matcher matcher = COMPANY_NUMBER_PATTERN.matcher(companyNumber);
+
+        var matcher = COMPANY_NUMBER_PATTERN.matcher(companyNumber);
         if(!matcher.find()){
             ApiLogger.infoContext(reqId, "Company number contains invalid characters");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
