@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_SUBMISSION_ID_LENGTH;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_ID_LENGTH;
 
 @Component
 public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
@@ -31,11 +31,11 @@ public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (submissionId.length() > MAX_SUBMISSION_ID_LENGTH) {
-            var truncatedUrlId = submissionId.substring(0, MAX_SUBMISSION_ID_LENGTH);
+        if (submissionId.length() > MAX_ID_LENGTH) {
+            var truncatedUrlId = submissionId.substring(0, MAX_ID_LENGTH);
             var logMap = new HashMap<String, Object>();
             logMap.put(CONFIRMATION_STATEMENT_ID_KEY, truncatedUrlId);
-            ApiLogger.infoContext(reqId, "Submission URL id exceeds " + MAX_SUBMISSION_ID_LENGTH + " characters.", logMap);
+            ApiLogger.infoContext(reqId, "Submission URL id exceeds " + MAX_ID_LENGTH + " characters.", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }

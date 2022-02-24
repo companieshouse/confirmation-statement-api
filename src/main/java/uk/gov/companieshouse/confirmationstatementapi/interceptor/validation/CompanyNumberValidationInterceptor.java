@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.COMPANY_NUMBER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_COMPANY_NUMBER_LENGTH;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_ID_LENGTH;
 
 @Component
 public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
@@ -35,8 +36,8 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        var truncatedNumber = (companyNumber.length() > MAX_COMPANY_NUMBER_LENGTH) ?
-                companyNumber.substring(0, MAX_COMPANY_NUMBER_LENGTH) : companyNumber;
+        var truncatedNumber = (companyNumber.length() > MAX_ID_LENGTH) ?
+                companyNumber.substring(0, MAX_ID_LENGTH) : companyNumber;
         var logMap = new HashMap<String, Object>();
         logMap.put(COMPANY_NUMBER, truncatedNumber);
 
