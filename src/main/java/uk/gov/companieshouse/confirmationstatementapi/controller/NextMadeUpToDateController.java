@@ -21,9 +21,9 @@ public class NextMadeUpToDateController {
     @Autowired
     private ConfirmationStatementService confirmationStatementService;
 
-    @GetMapping("/confirmation-statement/company/{companyNumber}/next-made-up-to-date")
+    @GetMapping("/confirmation-statement/company/{company-number}/next-made-up-to-date")
     public ResponseEntity<NextMadeUpToDateJson> getNextMadeUpToDate(
-            @PathVariable String companyNumber,
+            @PathVariable("company-number") String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
         var map = new HashMap<String, Object>();
         map.put("company_number", companyNumber);

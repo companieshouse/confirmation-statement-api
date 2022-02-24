@@ -12,12 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_ID_LENGTH;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @Component
 public class TransactionIdValidationInterceptor implements HandlerInterceptor {
-
-    private static final int MAX_LENGTH = 50;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -32,11 +31,11 @@ public class TransactionIdValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (transactionId.length() > MAX_LENGTH) {
-            var truncatedUrlId = transactionId.substring(0, MAX_LENGTH);
+        if (transactionId.length() > MAX_ID_LENGTH) {
+            var truncatedUrlId = transactionId.substring(0, MAX_ID_LENGTH);
             var logMap = new HashMap<String, Object>();
             logMap.put(TRANSACTION_ID_KEY, truncatedUrlId);
-            ApiLogger.infoContext(reqId, "Transaction URL id exceeds " + MAX_LENGTH + " characters.", logMap);
+            ApiLogger.infoContext(reqId, "Transaction URL id exceeds " + MAX_ID_LENGTH + " characters.", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }

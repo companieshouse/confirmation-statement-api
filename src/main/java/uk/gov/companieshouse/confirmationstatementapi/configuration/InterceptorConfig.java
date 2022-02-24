@@ -12,6 +12,7 @@ import uk.gov.companieshouse.confirmationstatementapi.interceptor.FilingIntercep
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.SubmissionInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.confirmationstatementapi.interceptor.validation.CompanyNumberValidationInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.validation.SubmissionIdValidationInterceptor;
 import uk.gov.companieshouse.confirmationstatementapi.interceptor.validation.TransactionIdValidationInterceptor;
 
@@ -22,6 +23,7 @@ import static uk.gov.companieshouse.api.util.security.Permission.Key.USER_PROFIL
 @ComponentScan("uk.gov.companieshouse.api.interceptor")
 public class InterceptorConfig implements WebMvcConfigurer {
 
+    static final String COMPANY_NUMBER = "/confirmation-statement/company/**";
     static final String TRANSACTIONS = "/transactions/**";
     static final String FILINGS = "/private/**/filings";
     static final String SUBMISSIONS = TRANSACTIONS + "/confirmation-statement/{confirmation_statement_id}/**";
@@ -41,6 +43,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
                     USER_AUTH_ENDPOINTS,
                     INTERNAL_AUTH_ENDPOINTS
     );
+
+    @Autowired
+    private CompanyNumberValidationInterceptor companyNumberValidationInterceptor;
 
     @Autowired
     private TransactionIdValidationInterceptor transactionIdValidationInterceptor;
@@ -75,6 +80,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
         addUserAuthenticationEndpointsInterceptor(registry);
 
         addInternalUserAuthenticationEndpointsInterceptor(registry);
+
+        addCompanyNumberValidationInterceptor(registry);
 
         addCompanyAuthenticationEndpointsInterceptor(registry);
 
@@ -113,6 +120,15 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private void addInternalUserAuthenticationEndpointsInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(internalUserInterceptor)
                 .addPathPatterns(INTERNAL_AUTH_ENDPOINTS);
+    }
+
+    /**
+     * Interceptor to validate company number
+     * @param registry
+     */
+    private void addCompanyNumberValidationInterceptor(InterceptorRegistry registry) {
+        registry.addInterceptor(companyNumberValidationInterceptor)
+                .addPathPatterns(COMPANY_NUMBER);
     }
 
     /**
