@@ -8,14 +8,17 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.COMPANY_NUMBER;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_COMPANY_NUMBER_LENGTH;
 
 @Component
 public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
+
     private static final Pattern COMPANY_NUMBER_PATTERN = Pattern.compile(
             "^([a-z]|[a-z][a-z])?\\d{6,8}$", Pattern.CASE_INSENSITIVE);
 
@@ -32,15 +35,20 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (companyNumber.length() != 8) {
-            ApiLogger.infoContext(reqId, "Company number length is invalid");
+        var truncatedNumber = (companyNumber.length() > MAX_COMPANY_NUMBER_LENGTH) ?
+                companyNumber.substring(0, MAX_COMPANY_NUMBER_LENGTH) : companyNumber;
+        var logMap = new HashMap<String, Object>();
+        logMap.put(COMPANY_NUMBER, truncatedNumber);
+
+        if (companyNumber.length() != MAX_COMPANY_NUMBER_LENGTH) {
+            ApiLogger.infoContext(reqId, "Company number length is invalid", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
 
         var matcher = COMPANY_NUMBER_PATTERN.matcher(companyNumber);
         if(!matcher.find()){
-            ApiLogger.infoContext(reqId, "Company number contains invalid characters");
+            ApiLogger.infoContext(reqId, "Company number contains invalid characters", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }

@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor.validation;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
