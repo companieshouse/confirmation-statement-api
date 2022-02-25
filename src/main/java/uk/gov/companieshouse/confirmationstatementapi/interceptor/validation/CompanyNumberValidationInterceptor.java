@@ -13,15 +13,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.COMPANY_NUMBER;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.COMPANY_NUMBER_PATTERN;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_COMPANY_NUMBER_LENGTH;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_ID_LENGTH;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.InputProcessor.sanitiseString;
 
 @Component
 public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
-
-    private static final Pattern COMPANY_NUMBER_PATTERN = Pattern.compile(
-            "^([a-z]|[a-z][a-z])?\\d{6,8}$", Pattern.CASE_INSENSITIVE);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -39,7 +38,7 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
         var truncatedNumber = (companyNumber.length() > MAX_ID_LENGTH) ?
                 companyNumber.substring(0, MAX_ID_LENGTH) : companyNumber;
         var logMap = new HashMap<String, Object>();
-        logMap.put(COMPANY_NUMBER, truncatedNumber);
+        logMap.put(COMPANY_NUMBER, sanitiseString(truncatedNumber));
 
         if (companyNumber.length() != MAX_COMPANY_NUMBER_LENGTH) {
             ApiLogger.infoContext(reqId, "Company number length is invalid", logMap);
