@@ -13,7 +13,7 @@ public class Constants {
             "^([a-z]|[a-z][a-z])?\\d{6,8}$", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern ID_PATTERN = Pattern.compile(
-            "[^A-Z|a-z|\\d| |-]");
+            "[^A-Za-z\\d -]");
 
     public static final String ERIC_REQUEST_ID_KEY = "X-Request-Id";
     public static final String TRANSACTION_ID_KEY = "transaction_id";
