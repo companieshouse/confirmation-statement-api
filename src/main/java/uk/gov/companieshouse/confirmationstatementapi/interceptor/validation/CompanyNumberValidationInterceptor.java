@@ -23,10 +23,10 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
     private String maxIdLengthString;
 
     @Value("${MAX_COMPANY_NUMBER_LENGTH}")
-    private String maxComapnyNumberLengthString;
+    private String maxCompanyNumberLengthString;
 
     @Value("${COMPANY_NUMBER_PATTERN}")
-    private String confirmationNumberPattern;
+    private String companyNumberPattern;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -47,13 +47,13 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
         var logMap = new HashMap<String, Object>();
         logMap.put(COMPANY_NUMBER, truncatedNumber);
 
-        if (companyNumber.length() != Integer.parseInt(maxComapnyNumberLengthString)) {
+        if (companyNumber.length() != Integer.parseInt(maxCompanyNumberLengthString)) {
             ApiLogger.infoContext(reqId, "Company number length is invalid", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
         var matcher = Pattern.compile(
-                confirmationNumberPattern, Pattern.CASE_INSENSITIVE).matcher(companyNumber);
+                companyNumberPattern, Pattern.CASE_INSENSITIVE).matcher(companyNumber);
         if(!matcher.find()){
             ApiLogger.infoContext(reqId, "Company number contains invalid characters", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
