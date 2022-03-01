@@ -1,25 +1,32 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor.validation;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
-import uk.gov.companieshouse.confirmationstatementapi.utils.InputProcessor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.COMPANY_NUMBER;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.COMPANY_NUMBER_PATTERN;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_COMPANY_NUMBER_LENGTH;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_ID_LENGTH;
 
 @Component
 public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
+
+    @Value("${MAX_ID_LENGTH}")
+    private String maxIdLengthString;
+
+    @Value("${MAX_COMPANY_NUMBER_LENGTH}")
+    private String maxComapnyNumberLengthString;
+
+    @Value("${COMPANY_NUMBER_PATTERN}")
+    private String confirmationNumberPattern;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -34,18 +41,19 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        var truncatedNumber = (companyNumber.length() > MAX_ID_LENGTH) ?
-                companyNumber.substring(0, MAX_ID_LENGTH) : companyNumber;
+        var maxIdLength = Integer.parseInt(maxIdLengthString);
+        var truncatedNumber = (companyNumber.length() > maxIdLength) ?
+                companyNumber.substring(0, maxIdLength) : companyNumber;
         var logMap = new HashMap<String, Object>();
-        logMap.put(COMPANY_NUMBER, InputProcessor.sanitiseString(truncatedNumber));
+        logMap.put(COMPANY_NUMBER, truncatedNumber);
 
-        if (companyNumber.length() != MAX_COMPANY_NUMBER_LENGTH) {
+        if (companyNumber.length() != Integer.parseInt(maxComapnyNumberLengthString)) {
             ApiLogger.infoContext(reqId, "Company number length is invalid", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
-
-        var matcher = COMPANY_NUMBER_PATTERN.matcher(companyNumber);
+        var matcher = Pattern.compile(
+                confirmationNumberPattern, Pattern.CASE_INSENSITIVE).matcher(companyNumber);
         if(!matcher.find()){
             ApiLogger.infoContext(reqId, "Company number contains invalid characters", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

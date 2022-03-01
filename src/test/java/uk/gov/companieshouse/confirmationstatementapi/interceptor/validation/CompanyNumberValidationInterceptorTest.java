@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor.validation;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -7,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,13 @@ class CompanyNumberValidationInterceptorTest {
     private HttpServletRequest mockHttpServletRequest;
     @InjectMocks
     private CompanyNumberValidationInterceptor companyNumberValidationInterceptor;
+
+    @BeforeEach
+    void SetEnvironment() {
+        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "maxIdLengthString", "50");
+        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "maxComapnyNumberLengthString", "8");
+        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "confirmationNumberPattern", "^([a-z]|[a-z][a-z])?\\d{6,8}$");
+    }
 
     @ParameterizedTest
     @MethodSource("validStrings")

@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor.validation;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +35,12 @@ class SubmissionIdValidationInterceptorTest {
     private HttpServletRequest mockHttpServletRequest;
     @InjectMocks
     private SubmissionIdValidationInterceptor submissionIdValidationInterceptor;
+
+    @BeforeEach
+    void SetEnvironment() {
+        ReflectionTestUtils.setField(submissionIdValidationInterceptor, "maxIdLengthString", "50");
+        ReflectionTestUtils.setField(submissionIdValidationInterceptor, "submissionIdRegexPattern", "[^A-Za-z\\d -]");
+    }
 
     @Test
     void preHandleTrueForStringWithSpecialChars() throws Exception {

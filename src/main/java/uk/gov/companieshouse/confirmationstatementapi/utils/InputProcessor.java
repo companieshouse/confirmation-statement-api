@@ -2,8 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.utils;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ID_PATTERN;
+import java.util.regex.Pattern;
 
 public class InputProcessor {
 
@@ -11,8 +10,8 @@ public class InputProcessor {
         throw new IllegalStateException("Utility class");
     }
 
-    public static String sanitiseString(String input) {
-        var matcher = ID_PATTERN.matcher(input);
+    public static String sanitiseString(String input, String regex) {
+        var matcher = Pattern.compile(regex).matcher(input);
         Set<String> allMatches = new HashSet<>();
 
         while (matcher.find()) {
