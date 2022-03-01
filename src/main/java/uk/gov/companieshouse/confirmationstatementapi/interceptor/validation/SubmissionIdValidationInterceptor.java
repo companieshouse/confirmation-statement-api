@@ -20,7 +20,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
 
     @Value("${MAX_ID_LENGTH}")
-    private String maxIdLengthString;
+    private int maxIdLength;
 
     @Value("${SUBMISSION_ID_REGEX_PATTERN}")
     private String submissionIdRegexPattern;
@@ -38,7 +38,6 @@ public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        var maxIdLength = Integer.parseInt(maxIdLengthString);
         if (submissionId.length() > maxIdLength) {
             var truncatedUrlId = submissionId.substring(0, maxIdLength);
             var logMap = new HashMap<String, Object>();

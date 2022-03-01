@@ -36,8 +36,8 @@ class TransactionIdValidationInterceptorTest {
     private TransactionIdValidationInterceptor transactionIdValidationInterceptor;
 
     @BeforeEach
-    void SetEnvironment() {
-        ReflectionTestUtils.setField(transactionIdValidationInterceptor, "maxIdLengthString", "50");
+    void setEnvironment() {
+        ReflectionTestUtils.setField(transactionIdValidationInterceptor, "maxIdLength", 50);
     }
 
     @Test

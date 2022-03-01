@@ -19,7 +19,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRA
 public class TransactionIdValidationInterceptor implements HandlerInterceptor {
 
     @Value("${MAX_ID_LENGTH}")
-    private String maxIdLengthString;
+    private int maxIdLength;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -34,7 +34,6 @@ public class TransactionIdValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        var maxIdLength = Integer.parseInt(maxIdLengthString);
         if (transactionId.length() > maxIdLength) {
             var truncatedUrlId = transactionId.substring(0, maxIdLength);
             var logMap = new HashMap<String, Object>();

@@ -20,10 +20,10 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
 
     @Value("${MAX_ID_LENGTH}")
-    private String maxIdLengthString;
+    private int maxIdLength;
 
     @Value("${MAX_COMPANY_NUMBER_LENGTH}")
-    private String maxCompanyNumberLengthString;
+    private int maxCompanyNumberLength;
 
     @Value("${COMPANY_NUMBER_PATTERN}")
     private String companyNumberPattern;
@@ -41,13 +41,12 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        var maxIdLength = Integer.parseInt(maxIdLengthString);
         var truncatedNumber = (companyNumber.length() > maxIdLength) ?
                 companyNumber.substring(0, maxIdLength) : companyNumber;
         var logMap = new HashMap<String, Object>();
         logMap.put(COMPANY_NUMBER, truncatedNumber);
 
-        if (companyNumber.length() != Integer.parseInt(maxCompanyNumberLengthString)) {
+        if (companyNumber.length() != maxCompanyNumberLength) {
             ApiLogger.infoContext(reqId, "Company number length is invalid", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;

@@ -42,9 +42,9 @@ class CompanyNumberValidationInterceptorTest {
     private CompanyNumberValidationInterceptor companyNumberValidationInterceptor;
 
     @BeforeEach
-    void SetEnvironment() {
-        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "maxIdLengthString", "50");
-        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "maxCompanyNumberLengthString", "8");
+    void setEnvironment() {
+        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "maxIdLength", 50);
+        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "maxCompanyNumberLength", 8);
         ReflectionTestUtils.setField(companyNumberValidationInterceptor, "companyNumberPattern", "^([a-z]|[a-z][a-z])?\\d{6,8}$");
     }
 

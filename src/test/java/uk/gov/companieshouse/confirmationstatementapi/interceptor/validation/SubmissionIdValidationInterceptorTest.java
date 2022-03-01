@@ -37,8 +37,8 @@ class SubmissionIdValidationInterceptorTest {
     private SubmissionIdValidationInterceptor submissionIdValidationInterceptor;
 
     @BeforeEach
-    void SetEnvironment() {
-        ReflectionTestUtils.setField(submissionIdValidationInterceptor, "maxIdLengthString", "50");
+    void setEnvironment() {
+        ReflectionTestUtils.setField(submissionIdValidationInterceptor, "maxIdLength", 50);
         ReflectionTestUtils.setField(submissionIdValidationInterceptor, "submissionIdRegexPattern", "[^A-Za-z\\d -]");
     }
 
