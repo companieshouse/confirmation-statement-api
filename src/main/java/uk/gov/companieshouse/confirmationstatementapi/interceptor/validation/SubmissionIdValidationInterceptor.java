@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor.validation;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
+import uk.gov.companieshouse.confirmationstatementapi.utils.InputProcessor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,10 +15,15 @@ import java.util.Map;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_ID_LENGTH;
 
 @Component
 public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
+
+    @Value("${MAX_ID_LENGTH}")
+    private int maxIdLength;
+
+    @Value("${SUBMISSION_ID_REGEX_PATTERN}")
+    private String submissionIdRegexPattern;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -31,11 +38,11 @@ public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (submissionId.length() > MAX_ID_LENGTH) {
-            var truncatedUrlId = submissionId.substring(0, MAX_ID_LENGTH);
+        if (submissionId.length() > maxIdLength) {
+            var truncatedUrlId = submissionId.substring(0, maxIdLength);
             var logMap = new HashMap<String, Object>();
-            logMap.put(CONFIRMATION_STATEMENT_ID_KEY, truncatedUrlId);
-            ApiLogger.infoContext(reqId, "Submission URL id exceeds " + MAX_ID_LENGTH + " characters.", logMap);
+            logMap.put(CONFIRMATION_STATEMENT_ID_KEY, InputProcessor.sanitiseString(truncatedUrlId, submissionIdRegexPattern));
+            ApiLogger.infoContext(reqId, "Submission URL id exceeds " + maxIdLength + " characters", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }

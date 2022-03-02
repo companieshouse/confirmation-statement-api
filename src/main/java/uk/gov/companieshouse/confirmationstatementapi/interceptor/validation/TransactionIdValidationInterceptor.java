@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor.validation;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
@@ -12,11 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.MAX_ID_LENGTH;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @Component
 public class TransactionIdValidationInterceptor implements HandlerInterceptor {
+
+    @Value("${MAX_ID_LENGTH}")
+    private int maxIdLength;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -31,11 +34,11 @@ public class TransactionIdValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (transactionId.length() > MAX_ID_LENGTH) {
-            var truncatedUrlId = transactionId.substring(0, MAX_ID_LENGTH);
+        if (transactionId.length() > maxIdLength) {
+            var truncatedUrlId = transactionId.substring(0, maxIdLength);
             var logMap = new HashMap<String, Object>();
             logMap.put(TRANSACTION_ID_KEY, truncatedUrlId);
-            ApiLogger.infoContext(reqId, "Transaction URL id exceeds " + MAX_ID_LENGTH + " characters.", logMap);
+            ApiLogger.infoContext(reqId, "Transaction URL id exceeds " + maxIdLength + " characters", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
