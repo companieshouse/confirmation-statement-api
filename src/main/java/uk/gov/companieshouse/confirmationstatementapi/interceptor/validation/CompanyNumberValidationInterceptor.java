@@ -20,7 +20,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
 
     @Value("${MAX_ID_LENGTH}")
-    private int maxIdLength;
+    private int truncationLength;
 
     @Value("${COMPANY_NUMBER_PATTERN}")
     private String companyNumberPattern;
@@ -38,8 +38,8 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        var truncatedNumber = (companyNumber.length() > maxIdLength) ?
-                companyNumber.substring(0, maxIdLength) : companyNumber;
+        var truncatedNumber = (companyNumber.length() > truncationLength) ?
+                companyNumber.substring(0, truncationLength) : companyNumber;
         var logMap = new HashMap<String, Object>();
         logMap.put(COMPANY_NUMBER, truncatedNumber);
 

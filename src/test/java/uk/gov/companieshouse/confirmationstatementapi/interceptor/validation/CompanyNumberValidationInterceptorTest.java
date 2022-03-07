@@ -32,7 +32,7 @@ class CompanyNumberValidationInterceptorTest {
     }
 
     static Stream<String> invalidStrings() {
-        return Stream.of("11111111111111111111111111", "AB11111111!", "$A111111", "1111111!");
+        return Stream.of("11111111111111111111111111", "AB11111111!", "$A111111", "1111111!", "10101010101");
     }
 
     @Mock
@@ -42,7 +42,7 @@ class CompanyNumberValidationInterceptorTest {
 
     @BeforeEach
     void setEnvironment() {
-        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "maxIdLength", 50);
+        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "truncationLength", 50);
         ReflectionTestUtils.setField(companyNumberValidationInterceptor, "companyNumberPattern", "^[A-Za-z0-9]{0,10}$");
     }
 
