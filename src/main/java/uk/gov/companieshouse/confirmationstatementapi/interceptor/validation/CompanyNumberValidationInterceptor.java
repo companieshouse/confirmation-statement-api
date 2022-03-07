@@ -22,9 +22,6 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
     @Value("${MAX_ID_LENGTH}")
     private int maxIdLength;
 
-    @Value("${MAX_COMPANY_NUMBER_LENGTH}")
-    private int maxCompanyNumberLength;
-
     @Value("${COMPANY_NUMBER_PATTERN}")
     private String companyNumberPattern;
 
@@ -46,15 +43,10 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
         var logMap = new HashMap<String, Object>();
         logMap.put(COMPANY_NUMBER, truncatedNumber);
 
-        if (companyNumber.length() != maxCompanyNumberLength) {
-            ApiLogger.infoContext(reqId, "Company number length is invalid", logMap);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return false;
-        }
         var matcher = Pattern.compile(
-                companyNumberPattern, Pattern.CASE_INSENSITIVE).matcher(companyNumber);
+        companyNumberPattern).matcher(companyNumber);
         if(!matcher.find()){
-            ApiLogger.infoContext(reqId, "Company number contains invalid characters", logMap);
+            ApiLogger.infoContext(reqId, "Company number is either too long or contains invalid characters", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
