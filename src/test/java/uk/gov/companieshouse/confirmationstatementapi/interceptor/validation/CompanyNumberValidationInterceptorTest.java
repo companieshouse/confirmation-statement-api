@@ -24,7 +24,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.COM
 class CompanyNumberValidationInterceptorTest {
 
     static Stream<String> validStrings() {
-        return Stream.of("11111111", "A1111111", "AB111111", "ab111111", "IP00366C", "1010101010");
+        return Stream.of("11111111", "A1111111", "AB111111", "ab111111", "IP00366C");
     }
 
     static Stream<String> blankStrings() {
@@ -32,7 +32,7 @@ class CompanyNumberValidationInterceptorTest {
     }
 
     static Stream<String> invalidStrings() {
-        return Stream.of("11111111111111111111111111", "AB11111111!", "$A111111", "1111111!", "10101010101");
+        return Stream.of("7777777", "999999999", "LONG1111111111111111111111", "AB11111111!", "$A111111", "1111111!");
     }
 
     @Mock
@@ -43,7 +43,7 @@ class CompanyNumberValidationInterceptorTest {
     @BeforeEach
     void setEnvironment() {
         ReflectionTestUtils.setField(companyNumberValidationInterceptor, "truncationLength", 50);
-        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "companyNumberPattern", "^[A-Za-z0-9]{0,10}$");
+        ReflectionTestUtils.setField(companyNumberValidationInterceptor, "companyNumberPattern", "^[A-Za-z0-9]{8}$");
     }
 
     @ParameterizedTest
