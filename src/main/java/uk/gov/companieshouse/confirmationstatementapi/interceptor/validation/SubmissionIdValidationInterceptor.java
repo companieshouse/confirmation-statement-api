@@ -39,9 +39,10 @@ public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
         }
 
         if (submissionId.length() > maxIdLength) {
-            var truncatedUrlId = submissionId.substring(0, maxIdLength);
+            var processedUrlId = InputProcessor.sanitiseString(submissionId, submissionIdRegexPattern);
+            processedUrlId = processedUrlId.substring(0, maxIdLength).concat("...");
             var logMap = new HashMap<String, Object>();
-            logMap.put(CONFIRMATION_STATEMENT_ID_KEY, InputProcessor.sanitiseString(truncatedUrlId, submissionIdRegexPattern));
+            logMap.put(CONFIRMATION_STATEMENT_ID_KEY, processedUrlId);
             ApiLogger.infoContext(reqId, "Submission URL id exceeds " + maxIdLength + " characters", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;

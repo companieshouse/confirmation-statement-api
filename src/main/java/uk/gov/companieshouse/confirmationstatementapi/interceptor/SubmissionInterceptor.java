@@ -1,12 +1,14 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
+import uk.gov.companieshouse.confirmationstatementapi.utils.InputProcessor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +21,9 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.*;
 
 @Component
 public class SubmissionInterceptor implements HandlerInterceptor {
+
+    @Value("${SUBMISSION_ID_REGEX_PATTERN}")
+    private String submissionIdRegexPattern;
 
     private final ConfirmationStatementService confirmationStatementService;
 
@@ -35,7 +40,7 @@ public class SubmissionInterceptor implements HandlerInterceptor {
         final var transactionId = pathVariables.get(TRANSACTION_ID_KEY);
 
         var logMap = new HashMap<String, Object>();
-        logMap.put(CONFIRMATION_STATEMENT_ID_KEY, submissionId);
+        logMap.put(CONFIRMATION_STATEMENT_ID_KEY, InputProcessor.sanitiseString(submissionId, submissionIdRegexPattern));
         logMap.put(TRANSACTION_ID_KEY, transactionId);
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
 
