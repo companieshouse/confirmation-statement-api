@@ -1,11 +1,13 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
@@ -36,6 +38,11 @@ class SubmissionInterceptorTest {
 
     @InjectMocks
     private SubmissionInterceptor submissionInterceptor;
+
+    @BeforeEach
+    void setEnvironment() {
+        ReflectionTestUtils.setField(submissionInterceptor, "submissionIdRegexPattern", "[^A-Za-z\\d -]");
+    }
 
     @Test
     void preHandle() {
