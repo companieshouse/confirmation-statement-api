@@ -46,7 +46,7 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
         var matcher = Pattern.compile(
         companyNumberPattern).matcher(companyNumber);
         if(!matcher.find()){
-            ApiLogger.infoContext(reqId, "Company number is either too long or contains invalid characters", logMap);
+            ApiLogger.infoContext(reqId, "Company number is either too long, too short or contains invalid characters", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
