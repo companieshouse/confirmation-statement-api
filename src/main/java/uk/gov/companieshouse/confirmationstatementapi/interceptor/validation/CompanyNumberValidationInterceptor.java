@@ -39,7 +39,7 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
         }
 
         var truncatedNumber = (companyNumber.length() > truncationLength) ?
-                companyNumber.substring(0, truncationLength) : companyNumber;
+                companyNumber.substring(0, truncationLength).concat("...") : companyNumber;
         var logMap = new HashMap<String, Object>();
         logMap.put(COMPANY_NUMBER, truncatedNumber);
 

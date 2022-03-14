@@ -35,7 +35,7 @@ public class TransactionIdValidationInterceptor implements HandlerInterceptor {
         }
 
         if (transactionId.length() > maxIdLength) {
-            var truncatedUrlId = transactionId.substring(0, maxIdLength);
+            var truncatedUrlId = transactionId.substring(0, maxIdLength).concat("...");
             var logMap = new HashMap<String, Object>();
             logMap.put(TRANSACTION_ID_KEY, truncatedUrlId);
             ApiLogger.infoContext(reqId, "Transaction URL id exceeds " + maxIdLength + " characters", logMap);
