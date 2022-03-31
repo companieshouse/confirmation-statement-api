@@ -16,7 +16,7 @@
         <spring-boot-dependencies.version>2.5.6</spring-boot-dependencies.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <spring-boot-maven-plugin.version>2.5.6</spring-boot-maven-plugin.version>
+        <spring-boot-maven-plugin.version>2.6.6</spring-boot-maven-plugin.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <api-security-java.version>0.3.6</api-security-java.version>
         <structured-logging.version>1.9.11</structured-logging.version>
