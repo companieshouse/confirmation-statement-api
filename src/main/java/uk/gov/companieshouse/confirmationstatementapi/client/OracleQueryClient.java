@@ -1,25 +1,27 @@
 package uk.gov.companieshouse.confirmationstatementapi.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 @Component
@@ -160,5 +162,23 @@ public class OracleQueryClient {
             throw new ServiceException("Oracle query api returned null for " + companyNumber + " with due date " + dueDate + ", boolean values expected");
         }
         return confirmationStatementPaymentJson.isPaid();
+    }
+
+    public String getRegisteredEmailAddress(String companyNumber) throws ServiceException {
+        var url = String.format("%s/company/%s/registered-email-address", oracleQueryApiUrl, companyNumber);
+        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
+
+        ResponseEntity<RegisteredEmailAddressJson> response = restTemplate.getForEntity(url, RegisteredEmailAddressJson.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            var body = response.getBody();
+            if (body != null) {
+                return body.getRegisteredEmailAddress();
+            } else {
+                throw new ServiceException("Oracle query api returned no data");
+            }
+        } else {
+            throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
+        }
     }
 }

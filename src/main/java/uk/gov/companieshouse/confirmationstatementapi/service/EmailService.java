@@ -17,7 +17,7 @@ public class EmailService {
     }
 
     public String getRegisteredEmailAddress(String companyNumber) throws ServiceException {
-        return "registered-email-address";
+        return oracleQueryClient.getRegisteredEmailAddress(companyNumber);
     }
 
 }
