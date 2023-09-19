@@ -28,7 +28,10 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 public class OracleQueryClient {
 
     private static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL: %s";
-    public static final String ORACLE_QUERY_API_STATUS_MESSAGE = "Oracle query api returned with status = %s, companyNumber = %s";
+
+    private static final String ORACLE_QUERY_API_STATUS_MESSAGE = "Oracle query api returned with status = %s, companyNumber = %s";
+
+    private static final String ORACLE_QUERY_API_NO_DATA = "Oracle query api returned no data";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -175,10 +178,10 @@ public class OracleQueryClient {
             if (body != null) {
                 return body.getRegisteredEmailAddress();
             } else {
-                throw new ServiceException("Oracle query api returned no data");
+                throw new ServiceException(ORACLE_QUERY_API_NO_DATA);
             }
         } else {
-            throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
     }
 }
