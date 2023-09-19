@@ -1,5 +1,12 @@
 package uk.gov.companieshouse.confirmationstatementapi.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+
 import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -17,16 +25,10 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapit
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OracleQueryClientTest {
@@ -280,5 +282,62 @@ class OracleQueryClientTest {
                 ConfirmationStatementPaymentJson.class )).thenReturn(response);
         assertThrows(ServiceException.class, () ->
                 oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+    }
+
+    @Test
+    void testGetRegisteredEmailAddress() throws ServiceException {
+        // GIVEN
+
+        var registeredEmailAddress = "info@acme.com";
+
+        var json = new RegisteredEmailAddressJson();
+        json.setRegisteredEmailAddress(registeredEmailAddress);
+
+        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.OK).body(json);
+
+        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
+
+        // WHEN
+
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class )).thenReturn(response);
+
+        // THEN
+
+        assertEquals(registeredEmailAddress, oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
+
+    }
+
+    @Test
+    void testGetRegisteredEmailAddressServiceUnavailable() throws ServiceException {
+        // GIVEN
+
+        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(null);
+
+        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
+
+        // WHEN
+
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class )).thenReturn(response);
+
+        // THEN
+
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetRegisteredEmailAddressNoBody() throws ServiceException {
+        // GIVEN
+
+        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
+
+        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
+
+        // WHEN
+
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class )).thenReturn(response);
+
+        // THEN
+
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
     }
 }

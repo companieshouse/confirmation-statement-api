@@ -25,8 +25,8 @@ public class EmailController {
     private final EmailService emailService;
 
     @Autowired
-    public EmailController(EmailService shareholderService) {
-        this.emailService = shareholderService;
+    public EmailController(EmailService emailService) {
+        this.emailService = emailService;
     }
 
     @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/registered-email-address")
