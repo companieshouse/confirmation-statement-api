@@ -30,7 +30,7 @@ public class EmailController {
     }
 
     @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/registered-email-address")
-    public ResponseEntity<String> getShareholders(
+    public ResponseEntity<String> getRegisteredEmailAddress(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
