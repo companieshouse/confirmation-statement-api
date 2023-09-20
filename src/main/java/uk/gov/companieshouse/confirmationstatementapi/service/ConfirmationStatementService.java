@@ -41,9 +41,7 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 @Service
 public class ConfirmationStatementService {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    private static final DateTimeFormatter ECCT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Value("${FEATURE_FLAG_ENABLE_PAYMENT_CHECK_26082021:true}")
     private boolean isPaymentCheckFeatureEnabled;
@@ -51,7 +49,7 @@ public class ConfirmationStatementService {
     @Value("${FEATURE_FLAG_VALIDATION_STATUS_02092021:true}")
     private boolean isValidationStatusEnabled;
 
-    @Value("${FEATURE_FLAG_ECCT_START_DATE_14082023:05/02/2024}")
+    @Value("${FEATURE_FLAG_ECCT_START_DATE_14082023:2024-02-05}")
     private String ecctStartDateStr;
 
     private final CompanyProfileService companyProfileService;
@@ -225,13 +223,9 @@ public class ConfirmationStatementService {
     }
 
     private boolean isEcctEnabled(LocalDate madeUpToDate) {
-        if (madeUpToDate != null) {
-            var ecctStartDate = LocalDate.parse(ecctStartDateStr, ECCT_DATE_TIME_FORMATTER);
+        var ecctStartDate = LocalDate.parse(ecctStartDateStr, DATE_TIME_FORMATTER);
 
-            return !ecctStartDate.isAfter(madeUpToDate);
-        }
-
-        return false;
+        return isBeforeOrEqual(madeUpToDate, ecctStartDate);
     }
 
     public Optional<ConfirmationStatementSubmissionJson> getConfirmationStatement(String submissionId) {
