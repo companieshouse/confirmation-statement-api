@@ -1,16 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveOfficerDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
-
-import java.time.LocalDate;
 
 public class ConfirmationStatementSubmissionDataJson {
 
@@ -25,6 +27,9 @@ public class ConfirmationStatementSubmissionDataJson {
 
     @JsonProperty("registered_office_address_data")
     private RegisteredOfficeAddressDataJson registeredOfficeAddressData;
+
+    @JsonProperty("registered_email_address_data")
+    private RegisteredEmailAddressDataJson registeredEmailAddressData;
 
     @JsonProperty("active_officer_details_data")
     private ActiveOfficerDetailsDataJson activeOfficerDetailsData;
@@ -72,6 +77,14 @@ public class ConfirmationStatementSubmissionDataJson {
 
     public void setRegisteredOfficeAddressData(RegisteredOfficeAddressDataJson registeredOfficeAddressDataJson) {
         this.registeredOfficeAddressData = registeredOfficeAddressDataJson;
+    }
+
+    public RegisteredEmailAddressDataJson getRegisteredEmailAddressData() {
+        return registeredEmailAddressData;
+    }
+
+    public void setRegisteredEmailAddressData(RegisteredEmailAddressDataJson registeredEmailAddressData) {
+        this.registeredEmailAddressData = registeredEmailAddressData;
     }
 
     public ActiveOfficerDetailsDataJson getActiveOfficerDetailsData() {
