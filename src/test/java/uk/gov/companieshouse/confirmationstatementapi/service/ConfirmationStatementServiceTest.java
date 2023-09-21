@@ -98,6 +98,7 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
         confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
         ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", true);
+        ReflectionTestUtils.setField(confirmationStatementService, "ecctStartDateStr", "2018-02-05");
     }
 
     @Test
@@ -316,14 +317,124 @@ class ConfirmationStatementServiceTest {
 
     @Test
     void areTasksCompleteWithSomeRecentFiling() throws SubmissionNotFoundException {
+        // GIVEN
+
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
+        confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setSectionStatus(SectionStatus.RECENT_FILING);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        // WHEN
+
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
+
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+
+        // THEN
+
+        assertTrue(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithREANotConfirmed_madeUpBeforeDayOne() throws SubmissionNotFoundException {
+        // GIVEN
+
+        var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
+        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.DATE_TIME_FORMATTER);
+        var madeUpDate = ecctStartDate.minusDays(1);
+
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().setMadeUpToDate(madeUpDate);
+        confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setSectionStatus(SectionStatus.NOT_CONFIRMED);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        // WHEN
+
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
+
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+
+        // THEN
+
+        assertTrue(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithREANotConfirmed_madeUpOnDayOne() throws SubmissionNotFoundException {
+        // GIVEN
+
+        var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
+        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.DATE_TIME_FORMATTER);
+        var madeUpDate = ecctStartDate;
+
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().setMadeUpToDate(madeUpDate);
+        confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setSectionStatus(SectionStatus.NOT_CONFIRMED);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        // WHEN
+
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+
+        // THEN
+
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithREANotConfirmed_madeUpAfterDayOne() throws SubmissionNotFoundException {
+        // GIVEN
+
+        var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
+        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.DATE_TIME_FORMATTER);
+        var madeUpDate = ecctStartDate.plusDays(1);
+
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().setMadeUpToDate(madeUpDate);
+        confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setSectionStatus(SectionStatus.NOT_CONFIRMED);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        // WHEN
+
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+
+        // THEN
+
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithREAInitialFiling() throws SubmissionNotFoundException {
+        // GIVEN
+
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setSectionStatus(SectionStatus.INITIAL_FILING);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        // WHEN
+
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+
+        // THEN
+
         assertTrue(validationStatusResponse.isValid());
     }
 
@@ -336,6 +447,27 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithREANotPresent() throws SubmissionNotFoundException {
+        // GIVEN
+
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().setRegisteredEmailAddressData(null);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        // WHEN
+
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+
+        // THEN
+
         assertFalse(validationStatusResponse.isValid());
     }
 
@@ -518,6 +650,7 @@ class ConfirmationStatementServiceTest {
         data.getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getShareholdersData() .setSectionStatus(SectionStatus.CONFIRMED);
         data.getRegisteredOfficeAddressData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.getRegisteredEmailAddressData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getPersonsSignificantControlData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getRegisterLocationsData().setSectionStatus(SectionStatus.CONFIRMED);
     }
