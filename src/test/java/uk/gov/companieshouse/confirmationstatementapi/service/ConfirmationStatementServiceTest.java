@@ -98,7 +98,7 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
         confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
         ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", true);
-        ReflectionTestUtils.setField(confirmationStatementService, "ecctStartDateStr", "20180205");
+        ReflectionTestUtils.setField(confirmationStatementService, "ecctStartDateStr", "2018-02-05");
     }
 
     @Test
@@ -343,7 +343,7 @@ class ConfirmationStatementServiceTest {
         // GIVEN
 
         var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
-        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.ECCT_START_DATE_FORMATTER);
+        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.DATE_TIME_FORMATTER);
         var madeUpDate = ecctStartDate.minusDays(1);
 
         makeAllMockTasksConfirmed();
@@ -370,7 +370,7 @@ class ConfirmationStatementServiceTest {
         // GIVEN
 
         var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
-        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.ECCT_START_DATE_FORMATTER);
+        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.DATE_TIME_FORMATTER);
         var madeUpDate = ecctStartDate;
 
         makeAllMockTasksConfirmed();
@@ -396,7 +396,7 @@ class ConfirmationStatementServiceTest {
         // GIVEN
 
         var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
-        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.ECCT_START_DATE_FORMATTER);
+        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.DATE_TIME_FORMATTER);
         var madeUpDate = ecctStartDate.plusDays(1);
 
         makeAllMockTasksConfirmed();
