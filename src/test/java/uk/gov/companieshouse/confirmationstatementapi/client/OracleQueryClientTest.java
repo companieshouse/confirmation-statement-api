@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
@@ -285,7 +286,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetRegisteredEmailAddress() throws ServiceException {
+    void testGetRegisteredEmailAddress() throws ServiceException, RegisteredEmailNotFoundException {
         // GIVEN
 
         var registeredEmailAddress = "info@acme.com";
@@ -308,7 +309,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetRegisteredEmailAddressServiceUnavailable() throws ServiceException {
+    void testGetRegisteredEmailAddressServiceUnavailable() {
         // GIVEN
 
         ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(null);
@@ -325,10 +326,10 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetRegisteredEmailAddressNoBody() throws ServiceException {
+    void testGetRegisteredEmailAddressCompanyNotFound() {
         // GIVEN
 
-        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
+        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 
         var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
 
@@ -338,6 +339,6 @@ class OracleQueryClientTest {
 
         // THEN
 
-        assertThrows(ServiceException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
+        assertThrows(RegisteredEmailNotFoundException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
     }
 }

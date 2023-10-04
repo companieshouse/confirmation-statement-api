@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 
 @Service
@@ -16,7 +17,7 @@ public class EmailService {
         this.oracleQueryClient = oracleQueryClient;
     }
 
-    public String getRegisteredEmailAddress(String companyNumber) throws ServiceException {
+    public String getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
         return oracleQueryClient.getRegisteredEmailAddress(companyNumber);
     }
 

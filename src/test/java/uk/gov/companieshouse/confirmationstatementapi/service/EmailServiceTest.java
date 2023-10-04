@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,7 +26,7 @@ class EmailServiceTest {
     private EmailService emailService;
 
     @Test
-    void getRegisteredEmailAddress() throws ServiceException {
+    void getRegisteredEmailAddress() throws ServiceException, RegisteredEmailNotFoundException {
 
         // GIVEN
 
@@ -41,7 +42,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void getRegisteredEmailAddressServiceException() throws ServiceException {
+    void getRegisteredEmailAddressServiceException() throws ServiceException, RegisteredEmailNotFoundException {
 
         // WHEN
 

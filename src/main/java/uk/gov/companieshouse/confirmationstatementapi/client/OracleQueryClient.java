@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
@@ -167,21 +168,19 @@ public class OracleQueryClient {
         return confirmationStatementPaymentJson.isPaid();
     }
 
-    public String getRegisteredEmailAddress(String companyNumber) throws ServiceException {
+    public String getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
         var url = String.format("%s/company/%s/registered-email-address", oracleQueryApiUrl, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         ResponseEntity<RegisteredEmailAddressJson> response = restTemplate.getForEntity(url, RegisteredEmailAddressJson.class);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            var body = response.getBody();
-            if (body != null) {
-                return body.getRegisteredEmailAddress();
-            } else {
-                throw new ServiceException(ORACLE_QUERY_API_NO_DATA);
-            }
-        } else {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+        switch(response.getStatusCode().value()){
+            case 200:
+                return response.getBody().getRegisteredEmailAddress();
+            case 404:
+                throw new RegisteredEmailNotFoundException("Registered Email Address not found");
+            default:
+                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
     }
 }
