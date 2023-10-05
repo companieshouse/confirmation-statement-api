@@ -176,9 +176,13 @@ public class OracleQueryClient {
         ResponseEntity<RegisteredEmailAddressJson> response;
         try {
             response = restTemplate.getForEntity(url, RegisteredEmailAddressJson.class);
-        } catch (HttpClientErrorException e) {
-            // Corporate body detail record does not exist or Registered Email Address is empty
-            throw new RegisteredEmailNotFoundException(REGISTERED_EMAIL_ADDRESS_NOT_FOUND);
+        } catch (HttpClientErrorException hcee) {
+            // Corporate body detail HttpStatus.record does not exist or Registered Email Address is empty
+            if (hcee.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new RegisteredEmailNotFoundException(REGISTERED_EMAIL_ADDRESS_NOT_FOUND);
+            } else {
+                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, hcee.getStatusCode(), companyNumber));
+            }
         } catch (Exception e) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
         }

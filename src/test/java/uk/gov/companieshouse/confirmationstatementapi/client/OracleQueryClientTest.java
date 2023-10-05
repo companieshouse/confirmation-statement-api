@@ -325,6 +325,29 @@ class OracleQueryClientTest {
     }
 
     @Test
+    void testGetRegisteredEmailAddressUnexpectedHttpClientFailure() throws ServiceException, RegisteredEmailNotFoundException {
+        // GIVEN
+
+        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
+
+        // WHEN
+
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+
+        // THEN
+
+        Exception actual;
+        try {
+            oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER);
+        } catch (ServiceException e) {
+            assertEquals("Oracle query api returned with status = 400 BAD_REQUEST, companyNumber = 12345678", e.getMessage());
+            return;
+        }
+
+        assert false;
+    }
+
+    @Test
     void testGetRegisteredEmailAddressCompanyNotFound() {
         // GIVEN
 
@@ -332,7 +355,7 @@ class OracleQueryClientTest {
 
         // WHEN
 
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenThrow(HttpClientErrorException.class);
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         // THEN
 
