@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model.json;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveOfficerDetailsDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.lawfulpurpose.AcceptLawfulPurposeStatementDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
@@ -41,6 +42,9 @@ public class ConfirmationStatementSubmissionDataJson {
 
     @JsonProperty("trading_status_data")
     private TradingStatusDataJson tradingStatusData;
+
+    @JsonProperty("accept_lawful_purpose_statement_data")
+    private AcceptLawfulPurposeStatementDataJson acceptLawfulPurposeStatementData;
 
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -113,4 +117,14 @@ public class ConfirmationStatementSubmissionDataJson {
     public void setTradingStatusData(TradingStatusDataJson tradingStatusData) {
         this.tradingStatusData = tradingStatusData;
     }
+
+    public AcceptLawfulPurposeStatementDataJson getAcceptLawfulPurposeStatementData() {
+        return acceptLawfulPurposeStatementData;
+    }
+
+    public void setAcceptLawfulPurposeStatementData(AcceptLawfulPurposeStatementDataJson acceptLawfulPurposeStatementData) {
+        this.acceptLawfulPurposeStatementData = acceptLawfulPurposeStatementData;
+    }
+
+
 }

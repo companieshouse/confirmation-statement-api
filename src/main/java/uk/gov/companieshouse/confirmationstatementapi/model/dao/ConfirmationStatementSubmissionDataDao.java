@@ -2,6 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.lawfulpurpose.AcceptLawfulPurposeStatementDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
@@ -39,6 +40,9 @@ public class ConfirmationStatementSubmissionDataDao {
 
     @Field("trading_status_data")
     private TradingStatusDataDao tradingStatusData;
+
+    @Field("accept_lawful_purpose_statement_data")
+    private AcceptLawfulPurposeStatementDataDao acceptLawfulPurposeStatementData;
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -111,4 +115,13 @@ public class ConfirmationStatementSubmissionDataDao {
     public void setTradingStatusData(TradingStatusDataDao tradingStatusData) {
         this.tradingStatusData = tradingStatusData;
     }
+
+    public AcceptLawfulPurposeStatementDataDao getAcceptLawfulPurposeStatementData() {
+        return acceptLawfulPurposeStatementData;
+    }
+
+    public void setAcceptLawfulPurposeStatementData(AcceptLawfulPurposeStatementDataDao acceptLawfulPurposeStatementData) {
+        this.acceptLawfulPurposeStatementData = acceptLawfulPurposeStatementData;
+    }
+
 }
