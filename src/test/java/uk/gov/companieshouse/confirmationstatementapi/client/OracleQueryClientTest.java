@@ -1,12 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.client;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
 import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
@@ -30,6 +24,13 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemail
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OracleQueryClientTest {
@@ -164,7 +165,7 @@ class OracleQueryClientTest {
         psc2.setAppointmentTypeId("1");
         psc2.setServiceAddress(address);
 
-        PersonOfSignificantControl[] pscArray = { psc1, psc2 };
+        PersonOfSignificantControl[] pscArray = {psc1, psc2};
 
         var companyNumber = "123213";
 
@@ -198,7 +199,7 @@ class OracleQueryClientTest {
         shareholder2.setForeName1("James");
         shareholder2.setSurname("Bond");
 
-        ShareholderJson[] shareholderArray = { shareholder1, shareholder2 };
+        ShareholderJson[] shareholderArray = {shareholder1, shareholder2};
 
         var companyNumber = "123213";
 
@@ -231,7 +232,7 @@ class OracleQueryClientTest {
         regLoc2.setRegisterTypeDesc("desc2");
         regLoc2.setSailAddress(new Address());
 
-        RegisterLocationJson[] registerLocationsArray = { regLoc1, regLoc2 };
+        RegisterLocationJson[] registerLocationsArray = {regLoc1, regLoc2};
 
         var companyNumber = "123213";
 
@@ -260,7 +261,7 @@ class OracleQueryClientTest {
         ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(confirmationStatementPaymentJson);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class )).thenReturn(response);
+                ConfirmationStatementPaymentJson.class)).thenReturn(response);
         assertTrue(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
 
@@ -271,7 +272,7 @@ class OracleQueryClientTest {
         ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(confirmationStatementPaymentJson);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class )).thenReturn(response);
+                ConfirmationStatementPaymentJson.class)).thenReturn(response);
         assertFalse(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
 
@@ -280,7 +281,7 @@ class OracleQueryClientTest {
         ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class )).thenReturn(response);
+                ConfirmationStatementPaymentJson.class)).thenReturn(response);
         assertThrows(ServiceException.class, () ->
                 oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
@@ -300,7 +301,7 @@ class OracleQueryClientTest {
 
         // WHEN
 
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class )).thenReturn(response);
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenReturn(response);
 
         // THEN
 
@@ -312,13 +313,11 @@ class OracleQueryClientTest {
     void testGetRegisteredEmailAddressServiceUnavailable() {
         // GIVEN
 
-        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(null);
-
         var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
 
         // WHEN
 
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class )).thenReturn(response);
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenThrow(RestClientException.class);
 
         // THEN
 
@@ -329,13 +328,11 @@ class OracleQueryClientTest {
     void testGetRegisteredEmailAddressCompanyNotFound() {
         // GIVEN
 
-        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-
         var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
 
         // WHEN
 
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class )).thenReturn(response);
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenThrow(HttpClientErrorException.class);
 
         // THEN
 
