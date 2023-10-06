@@ -348,7 +348,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetRegisteredEmailAddressCompanyNotFound() {
+    void testGetRegisteredEmailAddressEmailAddressNotFound() {
         // GIVEN
 
         var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
@@ -360,5 +360,24 @@ class OracleQueryClientTest {
         // THEN
 
         assertThrows(RegisteredEmailNotFoundException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetRegisteredEmailAddressNullResponseBody() throws ServiceException, RegisteredEmailNotFoundException {
+        // GIVEN
+
+        var registeredEmailAddress = "info@acme.com";
+
+        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
+
+        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
+
+        // WHEN
+
+        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenReturn(response);
+
+        // THEN
+
+        assertThrows(NullPointerException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
     }
 }

@@ -23,6 +23,7 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 @Component
@@ -177,7 +178,6 @@ public class OracleQueryClient {
         try {
             response = restTemplate.getForEntity(url, RegisteredEmailAddressJson.class);
         } catch (HttpClientErrorException hcee) {
-            // Corporate body detail HttpStatus.record does not exist or Registered Email Address is empty
             if (hcee.getStatusCode() == HttpStatus.NOT_FOUND) {
                 throw new RegisteredEmailNotFoundException(REGISTERED_EMAIL_ADDRESS_NOT_FOUND);
             } else {
@@ -187,6 +187,6 @@ public class OracleQueryClient {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
         }
 
-        return response.getBody().getRegisteredEmailAddress();
+        return Objects.requireNonNull(response.getBody()).getRegisteredEmailAddress();
     }
 }
