@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.EmailService;
 
@@ -32,7 +33,7 @@ class EmailControllerTest {
     private EmailController emailController;
 
     @Test
-    void getRegisteredEmailAddress() throws ServiceException {
+    void getRegisteredEmailAddress() throws ServiceException, RegisteredEmailNotFoundException {
         // GIVEN
 
         var companyNumber = "12345ABCDE";
@@ -52,7 +53,7 @@ class EmailControllerTest {
     }
 
     @Test
-    void getRegisteredEmailAddressServiceException() throws ServiceException {
+    void getRegisteredEmailAddressServiceException() throws ServiceException, RegisteredEmailNotFoundException {
         // GIVEN
 
         var companyNumber = "12345ABCDE";
@@ -67,6 +68,24 @@ class EmailControllerTest {
         // THEN
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    void getRegisteredEmailAddressRegisteredEmailNotFoundException() throws ServiceException, RegisteredEmailNotFoundException {
+        // GIVEN
+
+        var companyNumber = "12345ABCDE";
+
+        // WHEN
+
+        when(transaction.getCompanyNumber()).thenReturn(companyNumber);
+        when(emailService.getRegisteredEmailAddress(companyNumber)).thenThrow(RegisteredEmailNotFoundException.class);
+
+        var response = emailController.getRegisteredEmailAddress(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+
+        // THEN
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
 }
