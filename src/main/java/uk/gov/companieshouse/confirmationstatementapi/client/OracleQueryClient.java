@@ -173,7 +173,7 @@ public class OracleQueryClient {
         }
         return confirmationStatementPaymentJson.isPaid();
     }
-
+// test comment to try to fix concourse build
     public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
