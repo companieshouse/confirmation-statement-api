@@ -450,6 +450,51 @@
         }
       }
     },
+    "/transactions/{transaction_id}/confirmation-statement/company/{company_number}/registered-email-address": {
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "company_number",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "Get the details of the Registered Email Address",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Registered Email Address"
+        ],
+        "responses": {
+          "200": {
+            "description": "Registered email address",
+            "schema": {
+              "$ref": "#/definitions/registeredEmailAddressResponse"
+            }
+          },
+          "400": {
+            "description": "A provided url id failed validation"
+          },
+          "401": {
+            "description": "Unauthorised"
+          },
+          "404": {
+            "description": "Registered email address not found"
+          },
+          "500":{
+            "description": "internal server error"
+          }
+        }
+      }
+    },
     "/confirmation-statement/company/{company-number}/next-made-up-to-date": {
       "parameters": [
         {
@@ -608,6 +653,17 @@
         "register_locations_data": {
           "type": "object",
           "properties": {
+            "section_status": {
+              "$ref": "#/definitions/SectionStatusResponse"
+            }
+          }
+        },
+        "registered_email_address_data": {
+          "type": "object",
+          "properties": {
+            "registered_email_address": {
+              "$ref": "#/definitions/registeredEmailAddressResponse"
+            },
             "section_status": {
               "$ref": "#/definitions/SectionStatusResponse"
             }
@@ -948,6 +1004,14 @@
         }
       }
     },
+    "registeredEmailAddressResponse": {
+      "type": "object",
+      "properties": {
+        "registered_email_address": {
+          "type": "string"
+        }
+      }
+    },
     "NextMadeUpToDateResponse": {
       "type": "object",
       "properties": {
@@ -1093,7 +1157,8 @@
       "enum": [
         "CONFIRMED",
         "NOT_CONFIRMED",
-        "RECENT_FILING"
+        "RECENT_FILING",
+        "INITIAL_FILING"
       ]
     }
   }
