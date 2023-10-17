@@ -82,9 +82,18 @@ class InterceptorConfigTest {
         inOrder.verify(interceptorRegistry).addInterceptor(internalUserInterceptor);
         inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.INTERNAL_AUTH_ENDPOINTS);
 
+        // Company number validation interceptor check
+        inOrder.verify(interceptorRegistry).addInterceptor(companyNumberValidationInterceptor);
+        inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.COMPANY_NUMBER);
+
         // Company auth CRUD interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(any(CRUDAuthenticationInterceptor.class));
         inOrder.verify(interceptorRegistration).excludePathPatterns(InterceptorConfig.NOT_COMPANY_AUTH_ENDPOINTS);
+
+        // Transaction id validation interceptor check
+        inOrder.verify(interceptorRegistry).addInterceptor(transactionIdValidationInterceptor);
+        inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.TRANSACTIONS);
+        inOrder.verify(interceptorRegistration).excludePathPatterns(InterceptorConfig.FILINGS);
 
         // Transactions endpoints interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(transactionInterceptor);
@@ -93,6 +102,16 @@ class InterceptorConfigTest {
         // Filings endpoint interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(filingInterceptor);
         inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.FILINGS);
+
+        // Submission id validation interceptor check
+        inOrder.verify(interceptorRegistry).addInterceptor(submissionIdValidationInterceptor);
+        inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.SUBMISSIONS);
+        inOrder.verify(interceptorRegistration).excludePathPatterns(InterceptorConfig.FILINGS);
+
+        // Submission endpoints interceptor check
+        inOrder.verify(interceptorRegistry).addInterceptor(submissionInterceptor);
+        inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.SUBMISSIONS);
+        inOrder.verify(interceptorRegistration).excludePathPatterns(InterceptorConfig.FILINGS);
     }
 
 }
