@@ -1,18 +1,27 @@
 package uk.gov.companieshouse.confirmationstatementapi.client;
 
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.InternalApiClient;
+import uk.gov.companieshouse.api.error.ApiErrorResponseException;
+import uk.gov.companieshouse.api.handler.company.PrivateCompanyResourceHandler;
+import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyEmailGet;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
+import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -20,7 +29,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapit
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
@@ -30,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +53,22 @@ class OracleQueryClientTest {
     private static final String SHAREHOLDER_PATH = "/shareholders";
     private static final String REGISTER_LOCATIONS_PATH = "/register/location";
     private static final String PAYMENT_PATH = "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid?payment_period_made_up_to_date=2022-01-01";
+    private static final String COMPANY_EMAIL = "info@acme.com";
 
+    @Mock
+    private ApiClientService apiClientService;
+
+    @Mock
+    private InternalApiClient apiClient;
+
+    @Mock
+    private ApiResponse<uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson> apiPrivateCompanyEmailGetResponse;
+
+    @Mock
+    private PrivateCompanyResourceHandler privateCompanyResourceHandler;
+
+    @Mock
+    private PrivateCompanyEmailGet privateCompanyEmailGet;
 
     @Mock
     private RestTemplate restTemplate;
@@ -52,9 +76,13 @@ class OracleQueryClientTest {
     @InjectMocks
     private OracleQueryClient oracleQueryClient;
 
+
     @BeforeEach
     void setup() {
         ReflectionTestUtils.setField(oracleQueryClient, "oracleQueryApiUrl", DUMMY_URL);
+        lenient().when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
+        lenient().when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
+        lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
     }
 
     @Test
@@ -287,60 +315,45 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetRegisteredEmailAddress() throws ServiceException, RegisteredEmailNotFoundException {
+    void testGetRegisteredEmailAddress() throws ServiceException, RegisteredEmailNotFoundException, ApiErrorResponseException, URIValidationException {
         // GIVEN
-
-        var registeredEmailAddress = "info@acme.com";
-
-        var json = new RegisteredEmailAddressJson();
-        json.setRegisteredEmailAddress(registeredEmailAddress);
-
-        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.OK).body(json);
-
-        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
+        var registeredEmailAddress = new RegisteredEmailAddressJson();
+        registeredEmailAddress.setRegisteredEmailAddress("info@acme.com");
 
         // WHEN
-
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenReturn(response);
+        when(privateCompanyEmailGet.execute()).thenReturn(apiPrivateCompanyEmailGetResponse);
+        when(apiPrivateCompanyEmailGetResponse.getData()).thenReturn(registeredEmailAddress);
 
         // THEN
-
-        assertEquals(registeredEmailAddress, oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
-
+        RegisteredEmailAddressJson response = oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER);
+        assertEquals(COMPANY_EMAIL, response.getRegisteredEmailAddress());
     }
 
     @Test
     void testGetRegisteredEmailAddressServiceUnavailable() {
         // GIVEN
 
-        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
-
         // WHEN
-
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenThrow(RestClientException.class);
+        lenient().when(apiPrivateCompanyEmailGetResponse.getData()).thenThrow(RestClientException.class);
 
         // THEN
-
         assertThrows(ServiceException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
     }
 
     @Test
-    void testGetRegisteredEmailAddressUnexpectedHttpClientFailure() throws ServiceException, RegisteredEmailNotFoundException {
+    void testGetRegisteredEmailAddressUnexpectedResponse() throws RegisteredEmailNotFoundException, ApiErrorResponseException, URIValidationException {
         // GIVEN
-
-        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
+        ApiErrorResponseException BAD_REQUEST_Exception = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(400, "ERROR", new HttpHeaders()).build());
 
         // WHEN
-
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+        when(privateCompanyEmailGet.execute()).thenThrow(BAD_REQUEST_Exception);
 
         // THEN
-
-        Exception actual;
         try {
             oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER);
         } catch (ServiceException e) {
-            assertEquals("Oracle query api returned with status = 400 BAD_REQUEST, companyNumber = 12345678", e.getMessage());
+            assertEquals("Oracle query api returned with status = 400, companyNumber = 12345678", e.getMessage());
             return;
         }
 
@@ -348,36 +361,15 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetRegisteredEmailAddressEmailAddressNotFound() {
+    void testGetRegisteredEmailAddressEmailAddressResponseNotFound() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
-
-        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
+        ApiErrorResponseException NOT_FOUND_Exception = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(404, "ERROR", new HttpHeaders()).build());
 
         // WHEN
-
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+        when(privateCompanyEmailGet.execute()).thenThrow(NOT_FOUND_Exception);
 
         // THEN
-
         assertThrows(RegisteredEmailNotFoundException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
-    }
-
-    @Test
-    void testGetRegisteredEmailAddressNullResponseBody() throws ServiceException, RegisteredEmailNotFoundException {
-        // GIVEN
-
-        var registeredEmailAddress = "info@acme.com";
-
-        ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
-
-        var url = DUMMY_URL + "/company/" + COMPANY_NUMBER + "/registered-email-address";
-
-        // WHEN
-
-        when(restTemplate.getForEntity(url, RegisteredEmailAddressJson.class)).thenReturn(response);
-
-        // THEN
-
-        assertThrows(NullPointerException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
     }
 }
