@@ -30,7 +30,7 @@ public class EmailController {
     }
 
     @GetMapping("/company/{company-number}/registered-email-address")
-    public ResponseEntity<String> getRegisteredEmailAddress(
+    public ResponseEntity<Object> getRegisteredEmailAddress(
             @PathVariable(COMPANY_NUMBER) String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 

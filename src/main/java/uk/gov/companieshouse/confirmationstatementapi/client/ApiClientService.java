@@ -21,4 +21,8 @@ public class ApiClientService {
     public InternalApiClient getInternalOauthAuthenticatedClient(String ericPassThroughHeader) throws IOException {
         return ApiSdkManager.getPrivateSDK(ericPassThroughHeader);
     }
+
+    public InternalApiClient getInternalApiClient() {
+        return ApiSdkManager.getPrivateSDK();
+    }
 }

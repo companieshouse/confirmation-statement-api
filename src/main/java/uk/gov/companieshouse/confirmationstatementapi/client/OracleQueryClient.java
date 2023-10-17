@@ -5,8 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.error.ApiErrorResponseException;
+import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -14,7 +15,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapit
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
@@ -23,7 +23,6 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 
 @Component
@@ -36,6 +35,11 @@ public class OracleQueryClient {
     private static final String ORACLE_QUERY_API_NO_DATA = "Oracle query api returned no data";
 
     private static final String REGISTERED_EMAIL_ADDRESS_NOT_FOUND = "Registered Email Address not found";
+
+    private static final String REGISTERED_EMAIL_ADDRESS_URI_SUFFIX = "/company/%s/registered-email-address";
+
+    @Autowired
+    private ApiClientService apiClientService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -170,23 +174,24 @@ public class OracleQueryClient {
         return confirmationStatementPaymentJson.isPaid();
     }
 
-    public String getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
-        var url = String.format("%s/company/%s/registered-email-address", oracleQueryApiUrl, companyNumber);
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
-
-        ResponseEntity<RegisteredEmailAddressJson> response;
+    public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
         try {
-            response = restTemplate.getForEntity(url, RegisteredEmailAddressJson.class);
-        } catch (HttpClientErrorException hcee) {
-            if (hcee.getStatusCode() == HttpStatus.NOT_FOUND) {
+            var internalApiClient = apiClientService.getInternalApiClient();
+            internalApiClient.setBasePath(oracleQueryApiUrl);
+
+            return internalApiClient
+                    .privateCompanyResourceHandler()
+                    .getCompanyRegisteredEmailAddress(String.format(REGISTERED_EMAIL_ADDRESS_URI_SUFFIX, companyNumber))
+                    .execute()
+                    .getData();
+        } catch (ApiErrorResponseException aere) {
+            if (aere.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
                 throw new RegisteredEmailNotFoundException(REGISTERED_EMAIL_ADDRESS_NOT_FOUND);
             } else {
-                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, hcee.getStatusCode(), companyNumber));
+                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber));
             }
         } catch (Exception e) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
         }
-
-        return Objects.requireNonNull(response.getBody()).getRegisteredEmailAddress();
     }
 }

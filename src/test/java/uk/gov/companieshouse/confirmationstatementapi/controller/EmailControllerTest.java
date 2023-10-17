@@ -1,18 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-
+import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.EmailService;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -31,7 +31,8 @@ class EmailControllerTest {
         // GIVEN
 
         var companyNumber = "12345ABCDE";
-        var registeredEmailAddress = "info@acme.com";
+        var registeredEmailAddress = new RegisteredEmailAddressJson();
+        registeredEmailAddress.setRegisteredEmailAddress("info@acme.com");
 
         // WHEN
 
@@ -40,9 +41,9 @@ class EmailControllerTest {
         var response = emailController.getRegisteredEmailAddress(companyNumber, ERIC_REQUEST_ID);
 
         // THEN
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(registeredEmailAddress, response.getBody());
+        RegisteredEmailAddressJson actual = (RegisteredEmailAddressJson) response.getBody();
+        assertEquals(registeredEmailAddress.getRegisteredEmailAddress(), actual.getRegisteredEmailAddress());
     }
 
     @Test
@@ -78,5 +79,4 @@ class EmailControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
-
 }
