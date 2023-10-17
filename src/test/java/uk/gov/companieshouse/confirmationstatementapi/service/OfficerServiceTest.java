@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 class OfficerServiceTest {
 
     private static final String COMPANY_NUMBER = "12345678";
-    private static final String SUBMISSION_ID = "ABCDEFG";
 
     @Mock
     private ApiClientService apiClientService;
