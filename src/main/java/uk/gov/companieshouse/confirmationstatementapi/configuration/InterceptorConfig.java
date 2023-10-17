@@ -23,8 +23,9 @@ import static uk.gov.companieshouse.api.util.security.Permission.Key.USER_PROFIL
 @ComponentScan("uk.gov.companieshouse.api.interceptor")
 public class InterceptorConfig implements WebMvcConfigurer {
 
-    static final String COMPANY_NUMBER = "/confirmation-statement/company/**";
-    static final String TRANSACTIONS = "/transactions/**";
+    static final String COMPANY_NUMBER = "/**/company/**";
+    static final String TRANSACTIONS = "/**/transactions/**";
+    static final String PRIVATE = "/private/**";
     static final String FILINGS = "/private/**/filings";
     static final String SUBMISSIONS = TRANSACTIONS + "/confirmation-statement/{confirmation_statement_id}/**";
     private static final String NEXT_MADE_UP_TO_DATE = "/confirmation-statement/**/next-made-up-to-date";
@@ -32,16 +33,16 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private static final String COSTS = TRANSACTIONS + "/costs";
 
     static final String[] USER_AUTH_ENDPOINTS = {
-            NEXT_MADE_UP_TO_DATE,
-            ELIGIBILITY
+        NEXT_MADE_UP_TO_DATE,
+        ELIGIBILITY
     };
     static final String[] INTERNAL_AUTH_ENDPOINTS = {
-            FILINGS,
-            COSTS
+        PRIVATE,
+        COSTS
     };
     static final String[] NOT_COMPANY_AUTH_ENDPOINTS = (String[]) ArrayUtils.addAll(
-                    USER_AUTH_ENDPOINTS,
-                    INTERNAL_AUTH_ENDPOINTS
+        USER_AUTH_ENDPOINTS,
+        INTERNAL_AUTH_ENDPOINTS
     );
 
     @Autowired
@@ -146,7 +147,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
      */
     private void addTransactionIdValidationInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(transactionIdValidationInterceptor)
-                .addPathPatterns(TRANSACTIONS);
+                .addPathPatterns(TRANSACTIONS)
+                .excludePathPatterns(FILINGS);
     }
 
     /**
@@ -155,7 +157,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
      */
     private void addTransactionInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(transactionInterceptor)
-                .addPathPatterns(TRANSACTIONS, FILINGS);
+                .addPathPatterns(TRANSACTIONS);
     }
 
     /**
@@ -164,7 +166,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
      */
     private void addSubmissionIdValidationInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(submissionIdValidationInterceptor)
-                .addPathPatterns(SUBMISSIONS);
+                .addPathPatterns(SUBMISSIONS)
+                .excludePathPatterns(FILINGS);
     }
 
     /**
@@ -173,7 +176,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
      */
     private void addSubmissionInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(submissionInterceptor)
-                .addPathPatterns(SUBMISSIONS);
+                .addPathPatterns(SUBMISSIONS)
+                .excludePathPatterns(FILINGS);
     }
 
     /**
