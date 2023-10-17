@@ -174,7 +174,7 @@ public class ConfirmationStatementService {
                 validationStatus.setValid(false);
             } else {
 
-                boolean isValid = isConfirmed(submissionData.getShareholdersData()) &&
+                boolean isValid = isConfirmed(submissionData.getShareholderData()) &&
                         isConfirmed(submissionData.getSicCodeData()) &&
                         isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
                         isConfirmed(submissionData.getStatementOfCapitalData()) &&
