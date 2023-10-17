@@ -336,7 +336,6 @@ class OracleQueryClientTest {
 
         // THEN
 
-        Exception actual;
         try {
             oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER);
         } catch (ServiceException e) {
@@ -365,8 +364,6 @@ class OracleQueryClientTest {
     @Test
     void testGetRegisteredEmailAddressNullResponseBody() throws ServiceException, RegisteredEmailNotFoundException {
         // GIVEN
-
-        var registeredEmailAddress = "info@acme.com";
 
         ResponseEntity<RegisteredEmailAddressJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
 
