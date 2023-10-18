@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest()
+@SpringBootTest
 class InterceptorConfigRouteMatchingTest {
 
     @Autowired
@@ -26,11 +26,11 @@ class InterceptorConfigRouteMatchingTest {
     void interceptorsMatchIntendedRoutesTest() throws Exception {
 
         Map<String,Set<String>> testCases = new HashMap<>();
-        var COMPANY_NUMBER_INTERCEPTORS =
+        Set<String> COMPANY_NUMBER_INTERCEPTORS =
             Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "CompanyNumberValidationInterceptor");
-        var TRANSACTION_INTERCEPTORS =
+        Set<String> TRANSACTION_INTERCEPTORS =
             Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor");
-        var CS_ID_INTERCEPTORS =
+        Set<String> CS_ID_INTERCEPTORS =
             Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor",
                 "SubmissionInterceptor", "SubmissionIdValidationInterceptor");
 
@@ -58,7 +58,7 @@ class InterceptorConfigRouteMatchingTest {
 
         for (String requestPath : testCases.keySet()){
 
-            var expectedInterceptors = testCases.get(requestPath);
+            Set<String> expectedInterceptors = testCases.get(requestPath);
 
             MockHttpServletRequest request = new MockHttpServletRequest("GET", requestPath);
             HandlerExecutionChain chain;
@@ -70,7 +70,7 @@ class InterceptorConfigRouteMatchingTest {
             }
             assertNotNull(chain, "No handler found for path "+requestPath);
 
-            var foundInterceptors = chain.getInterceptorList()
+            Set<String> foundInterceptors = chain.getInterceptorList()
                 .stream()
                 .map((s) -> s.getClass())
                 .filter((s) -> s.getPackageName().startsWith("uk.gov.companieshouse"))
