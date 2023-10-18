@@ -26,7 +26,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     static final String COMPANY_NUMBER = "/**/company/**";
     static final String TRANSACTIONS = "/**/transactions/**";
     static final String PRIVATE = "/private/**";
-    static final String FILINGS = "/private/**/filings";
+    static final String FILINGS = PRIVATE + "/filings";
     static final String SUBMISSIONS = TRANSACTIONS + "/confirmation-statement/{confirmation_statement_id}/**";
     private static final String NEXT_MADE_UP_TO_DATE = "/confirmation-statement/**/next-made-up-to-date";
     private static final String ELIGIBILITY = "/confirmation-statement/**/eligibility";
