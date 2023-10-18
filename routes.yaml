@@ -5,4 +5,5 @@ weight: 90
 routes:
   1: ^/transactions/(.*)/confirmation-statement/*
   2: ^/confirmation-statement/*
-  3: ^/private/transactions/(.*)/confirmation-statement/(.*)/filings
+  3: ^/private/confirmation-statement/*
+  4: ^/private/transactions/(.*)/confirmation-statement/(.*)/filings
