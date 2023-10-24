@@ -1,17 +1,17 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveOfficerDetailsDataJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.lawfulpurpose.AcceptLawfulPurposeStatementDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
-
-import java.time.LocalDate;
 
 public class ConfirmationStatementSubmissionDataJson {
 
@@ -43,8 +43,8 @@ public class ConfirmationStatementSubmissionDataJson {
     @JsonProperty("trading_status_data")
     private TradingStatusDataJson tradingStatusData;
 
-    @JsonProperty("accept_lawful_purpose_statement_data")
-    private AcceptLawfulPurposeStatementDataJson acceptLawfulPurposeStatementData;
+    @JsonProperty("accept_lawful_purpose_statement")
+    private Boolean acceptLawfulPurposeStatement;
 
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -118,12 +118,12 @@ public class ConfirmationStatementSubmissionDataJson {
         this.tradingStatusData = tradingStatusData;
     }
 
-    public AcceptLawfulPurposeStatementDataJson getAcceptLawfulPurposeStatementData() {
-        return acceptLawfulPurposeStatementData;
+    public Boolean getAcceptLawfulPurposeStatement() {
+        return acceptLawfulPurposeStatement;
     }
 
-    public void setAcceptLawfulPurposeStatementData(AcceptLawfulPurposeStatementDataJson acceptLawfulPurposeStatementData) {
-        this.acceptLawfulPurposeStatementData = acceptLawfulPurposeStatementData;
+    public void setAcceptLawfulPurposeStatement(Boolean acceptLawfulPurposeStatement) {
+        this.acceptLawfulPurposeStatement = acceptLawfulPurposeStatement;
     }
 
 

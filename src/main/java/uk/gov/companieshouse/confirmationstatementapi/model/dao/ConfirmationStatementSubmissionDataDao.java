@@ -1,16 +1,16 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 
+import java.time.LocalDate;
+
 import org.springframework.data.mongodb.core.mapping.Field;
+
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.lawfulpurpose.AcceptLawfulPurposeStatementDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
-
-import java.time.LocalDate;
 
 public class ConfirmationStatementSubmissionDataDao {
 
@@ -41,8 +41,8 @@ public class ConfirmationStatementSubmissionDataDao {
     @Field("trading_status_data")
     private TradingStatusDataDao tradingStatusData;
 
-    @Field("accept_lawful_purpose_statement_data")
-    private AcceptLawfulPurposeStatementDataDao acceptLawfulPurposeStatementData;
+    @Field("accept_lawful_purpose_statement")
+    private Boolean acceptLawfulPurposeStatement;
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;
@@ -116,12 +116,12 @@ public class ConfirmationStatementSubmissionDataDao {
         this.tradingStatusData = tradingStatusData;
     }
 
-    public AcceptLawfulPurposeStatementDataDao getAcceptLawfulPurposeStatementData() {
-        return acceptLawfulPurposeStatementData;
+    public Boolean getAcceptLawfulPurposeStatement() {
+        return acceptLawfulPurposeStatement;
     }
 
-    public void setAcceptLawfulPurposeStatementData(AcceptLawfulPurposeStatementDataDao acceptLawfulPurposeStatementData) {
-        this.acceptLawfulPurposeStatementData = acceptLawfulPurposeStatementData;
+    public void setAcceptLawfulPurposeStatement(Boolean acceptLawfulPurposeStatement) {
+        this.acceptLawfulPurposeStatement = acceptLawfulPurposeStatement;
     }
 
 }

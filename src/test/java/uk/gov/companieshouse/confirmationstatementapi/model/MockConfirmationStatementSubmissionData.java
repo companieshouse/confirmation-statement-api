@@ -41,6 +41,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setRegisterLocationsData(getRegisterLocationsData());
         data.setTradingStatusData(getTradingStatusJsonData());
         data.setMadeUpToDate(LocalDate.of(2021, 9, 12));
+        data.setAcceptLawfulPurposeStatement(true);
         return data;
     }
 
@@ -135,6 +136,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setRegisterLocationsData(getRegisterLocationsDaoData());
         data.setMadeUpToDate(LocalDate.of(2021, 5, 12));
         data.setTradingStatusData(getTradingStatusDaoData());
+        data.setAcceptLawfulPurposeStatement(true);
         return data;
     }
 
