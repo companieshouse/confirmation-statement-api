@@ -285,45 +285,6 @@
         }
       }
     },
-    "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/registered-email-address": {
-      "parameters": [
-        {
-          "name": "transaction_id",
-          "in": "path",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "confirmation_statement_id",
-          "in": "path",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "get": {
-        "summary": "Get the registered email address",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Registered Email Address"
-        ],
-        "responses": {
-          "200": {
-            "description": "Registered email address",
-            "schema": {
-              "$ref": "#/definitions/RegisteredEmailAddress"
-            }
-          },
-          "400": {
-            "description": "A provided url id failed validation"
-          },
-          "401":{
-            "description": "Unauthorised"
-          }
-        }
-      }
-    },
     "/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/active-director-details": {
       "parameters": [
         {
@@ -662,17 +623,6 @@
         "registered_office_address_data": {
           "type": "object",
           "properties": {
-            "section_status": {
-              "$ref": "#/definitions/SectionStatusResponse"
-            }
-          }
-        },
-        "registered_email_address_data": {
-          "type": "object",
-          "properties": {
-            "registered_email_address": {
-              "$ref" : "#/definitions/RegisteredEmailAddress"
-            },
             "section_status": {
               "$ref": "#/definitions/SectionStatusResponse"
             }
