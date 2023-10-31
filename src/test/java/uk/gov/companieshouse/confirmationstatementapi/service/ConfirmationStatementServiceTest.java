@@ -516,7 +516,7 @@ class ConfirmationStatementServiceTest {
         data.getActiveOfficerDetailsData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getStatementOfCapitalData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
-        data.getShareholdersData() .setSectionStatus(SectionStatus.CONFIRMED);
+        data.getShareholderData() .setSectionStatus(SectionStatus.CONFIRMED);
         data.getRegisteredOfficeAddressData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getPersonsSignificantControlData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getRegisterLocationsData().setSectionStatus(SectionStatus.CONFIRMED);

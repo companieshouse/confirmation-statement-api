@@ -82,11 +82,11 @@ public class ConfirmationStatementSubmissionDataJson {
         this.activeOfficerDetailsData = activeOfficerDetailsData;
     }
 
-    public ShareholderDataJson getShareholdersData() {
+    public ShareholderDataJson getShareholderData() {
         return shareholderData;
     }
 
-    public void setShareholdersData(ShareholderDataJson shareholderData) {
+    public void setShareholderData(ShareholderDataJson shareholderData) {
         this.shareholderData = shareholderData;
     }
 
