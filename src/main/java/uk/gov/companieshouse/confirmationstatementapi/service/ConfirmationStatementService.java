@@ -43,6 +43,26 @@ public class ConfirmationStatementService {
 
     static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private static boolean isConfirmed(SectionDataJson sectionData) {
+        return (sectionData != null) &&
+                (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
+                 sectionData.getSectionStatus() == SectionStatus.RECENT_FILING);
+    }
+
+    private static boolean isBeforeOrEqual(LocalDate date, LocalDate compareToDate) {
+        if (date == null || compareToDate == null) {
+            return false;
+        }
+        return !compareToDate.isAfter(date);
+    }
+
+    private static boolean hasExistingConfirmationSubmission (Transaction transaction) {
+        if (transaction.getResources() != null) {
+            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry -> FILING_KIND_CS.equals(resourceEntry.getValue().getKind()));
+        }
+        return false;
+    }
+
     @Value("${FEATURE_FLAG_ENABLE_PAYMENT_CHECK_26082021:true}")
     private boolean isPaymentCheckFeatureEnabled;
 
@@ -205,12 +225,6 @@ public class ConfirmationStatementService {
         }
     }
 
-    private boolean isConfirmed(SectionDataJson sectionData) {
-        return (sectionData != null) &&
-                (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
-                 sectionData.getSectionStatus() == SectionStatus.RECENT_FILING);
-    }
-
     private boolean isConfirmed(RegisteredEmailAddressDataJson sectionData, LocalDate madeUpToDate) {
         if (isEcctEnabled(madeUpToDate)) {
             return (sectionData != null) &&
@@ -222,6 +236,10 @@ public class ConfirmationStatementService {
         return true;
     }
 
+    /**
+     * @param madeUpToDate the made-up-date
+     * @return True if madeUpToDate is on or after the ECCT Start Date
+     */
     private boolean isEcctEnabled(LocalDate madeUpToDate) {
         var ecctStartDate = LocalDate.parse(ecctStartDateStr, DATE_TIME_FORMATTER);
 
@@ -276,19 +294,5 @@ public class ConfirmationStatementService {
         }
 
         return nextMadeUpToDateJson;
-    }
-
-    private boolean isBeforeOrEqual(LocalDate date, LocalDate compareToDate) {
-        if (date == null || compareToDate == null) {
-            return false;
-        }
-        return !compareToDate.isAfter(date);
-    }
-
-    private boolean hasExistingConfirmationSubmission (Transaction transaction) {
-        if (transaction.getResources() != null) {
-            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry -> FILING_KIND_CS.equals(resourceEntry.getValue().getKind()));
-        }
-        return false;
     }
 }

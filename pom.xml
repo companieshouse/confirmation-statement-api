@@ -14,8 +14,8 @@
     <properties>
         <java.version>11</java.version>
         <spring-boot-dependencies.version>2.5.6</spring-boot-dependencies.version>
-        <api-sdk-java.version>4.3.22</api-sdk-java.version>
-        <private-api-sdk-java.version>2.0.286</private-api-sdk-java.version>
+        <api-sdk-java.version>4.3.35</api-sdk-java.version>
+        <private-api-sdk-java.version>2.0.313</private-api-sdk-java.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <spring-boot-maven-plugin.version>2.5.6</spring-boot-maven-plugin.version>
