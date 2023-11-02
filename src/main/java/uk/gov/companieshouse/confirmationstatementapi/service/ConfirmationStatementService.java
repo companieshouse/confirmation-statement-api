@@ -49,6 +49,11 @@ public class ConfirmationStatementService {
                  sectionData.getSectionStatus() == SectionStatus.RECENT_FILING);
     }
 
+    /**
+     * @param date The reference date
+     * @param compareToDate The date to compare with the reference date
+     * @return True if the compare date is before or equal to the reference date
+     */
     private static boolean isBeforeOrEqual(LocalDate date, LocalDate compareToDate) {
         if (date == null || compareToDate == null) {
             return false;
