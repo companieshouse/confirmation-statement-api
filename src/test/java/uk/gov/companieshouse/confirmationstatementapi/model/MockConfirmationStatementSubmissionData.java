@@ -40,7 +40,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressJsonData());
         data.setRegisteredEmailAddressData(getRegisteredEmailAddressJsonData());
         data.setActiveOfficerDetailsData(getActiveOfficerDetailsJsonData());
-        data.setShareholdersData(getShareholdersJsonData());
+        data.setShareholderData(getShareholdersJsonData());
         data.setRegisterLocationsData(getRegisterLocationsData());
         data.setTradingStatusData(getTradingStatusJsonData());
         data.setMadeUpToDate(LocalDate.of(2021, 9, 12));
@@ -142,7 +142,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressDaoData());
         data.setRegisteredEmailAddressData(getRegisteredEmailAddressDaoData());
         data.setActiveOfficerDetailsData(getActiveOfficerDetailsDaoData());
-        data.setShareholdersData(getShareholdersDaoData());
+        data.setShareholderData(getShareholdersDaoData());
         data.setRegisterLocationsData(getRegisterLocationsDaoData());
         data.setMadeUpToDate(LocalDate.of(2021, 5, 12));
         data.setTradingStatusData(getTradingStatusDaoData());

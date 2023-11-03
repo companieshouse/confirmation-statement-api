@@ -93,11 +93,11 @@ public class ConfirmationStatementSubmissionDataDao {
         this.activeOfficerDetailsData = activeOfficerDetailsDataDao;
     }
 
-    public ShareholderDataDao getShareholdersData() {
+    public ShareholderDataDao getShareholderData() {
         return shareholderData;
     }
 
-    public void setShareholdersData(ShareholderDataDao shareholderDataDao) {
+    public void setShareholderData(ShareholderDataDao shareholderDataDao) {
         this.shareholderData = shareholderDataDao;
     }
 

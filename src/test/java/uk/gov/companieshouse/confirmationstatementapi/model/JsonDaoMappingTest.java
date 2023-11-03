@@ -91,8 +91,8 @@ class JsonDaoMappingTest {
         RegisteredEmailAddressDataDao reaDao = dao.getData().getRegisteredEmailAddressData();
         ActiveOfficerDetailsDataJson dirJson = json.getData().getActiveOfficerDetailsData();
         ActiveOfficerDetailsDataDao dirDao = dao.getData().getActiveOfficerDetailsData();
-        ShareholderDataJson shareholderJson = json.getData().getShareholdersData();
-        ShareholderDataDao shareholderDao = dao.getData().getShareholdersData();
+        ShareholderDataJson shareholderJson = json.getData().getShareholderData();
+        ShareholderDataDao shareholderDao = dao.getData().getShareholderData();
         RegisterLocationsDataJson rlJson = json.getData().getRegisterLocationsData();
         RegisterLocationsDataDao rlDao = dao.getData().getRegisterLocationsData();
         LocalDate madeUpToDateDao = dao.getData().getMadeUpToDate();
