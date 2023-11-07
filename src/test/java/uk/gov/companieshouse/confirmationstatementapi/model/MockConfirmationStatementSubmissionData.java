@@ -1,10 +1,14 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
+import java.time.LocalDate;
+import java.util.Collections;
+
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.TradingStatusDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonSignificantControlDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredemailaddress.RegisteredEmailAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
@@ -17,6 +21,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDa
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveOfficerDetailsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.personsignificantcontrol.PersonsSignificantControlDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
@@ -24,9 +29,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCode
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
-
-import java.time.LocalDate;
-import java.util.Collections;
 
 public class MockConfirmationStatementSubmissionData {
 
@@ -36,6 +38,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setPersonsSignificantControlData(getPersonsSignificantControlJsonData());
         data.setSicCodeData(getSicCodeJsonData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressJsonData());
+        data.setRegisteredEmailAddressData(getRegisteredEmailAddressJsonData());
         data.setActiveOfficerDetailsData(getActiveOfficerDetailsJsonData());
         data.setShareholderData(getShareholdersJsonData());
         data.setRegisterLocationsData(getRegisterLocationsData());
@@ -96,6 +99,13 @@ public class MockConfirmationStatementSubmissionData {
         return registeredOfficeAddressData;
     }
 
+    private static RegisteredEmailAddressDataJson getRegisteredEmailAddressJsonData() {
+        var registeredEmailAddressData = new RegisteredEmailAddressDataJson();
+        registeredEmailAddressData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        return registeredEmailAddressData;
+    }
+
     private static ActiveOfficerDetailsDataJson getActiveOfficerDetailsJsonData() {
         var activeDirectorDetailsData = new ActiveOfficerDetailsDataJson();
         activeDirectorDetailsData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
@@ -130,6 +140,7 @@ public class MockConfirmationStatementSubmissionData {
         data.setPersonsSignificantControlData(getPersonsSignificantControlDaoData());
         data.setSicCodeData(getSicCodeDaoData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressDaoData());
+        data.setRegisteredEmailAddressData(getRegisteredEmailAddressDaoData());
         data.setActiveOfficerDetailsData(getActiveOfficerDetailsDaoData());
         data.setShareholderData(getShareholdersDaoData());
         data.setRegisterLocationsData(getRegisterLocationsDaoData());
@@ -188,6 +199,13 @@ public class MockConfirmationStatementSubmissionData {
         registeredOfficeAddressData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
 
         return registeredOfficeAddressData;
+    }
+
+    private static RegisteredEmailAddressDataDao getRegisteredEmailAddressDaoData() {
+        var registeredEmailAddressData = new RegisteredEmailAddressDataDao();
+        registeredEmailAddressData.setSectionStatus(SectionStatus.NOT_CONFIRMED);
+
+        return registeredEmailAddressData;
     }
 
     private static ActiveOfficerDetailsDataDao getActiveOfficerDetailsDaoData() {

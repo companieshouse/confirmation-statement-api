@@ -1,9 +1,21 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
+
+import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -21,31 +33,49 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationSta
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-import java.net.URI;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
-
 @Service
 public class ConfirmationStatementService {
 
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private static boolean isConfirmed(SectionDataJson sectionData) {
+        return (sectionData != null) &&
+                (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
+                 sectionData.getSectionStatus() == SectionStatus.RECENT_FILING);
+    }
+
+    /**
+     * @param date The reference date
+     * @param compareToDate The date to compare with the reference date
+     * @return True if the compare date is before or equal to the reference date
+     */
+    private static boolean isBeforeOrEqual(LocalDate date, LocalDate compareToDate) {
+        if (date == null || compareToDate == null) {
+            return false;
+        }
+        return !compareToDate.isAfter(date);
+    }
+
+    private static boolean hasExistingConfirmationSubmission (Transaction transaction) {
+        if (transaction.getResources() != null) {
+            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry -> FILING_KIND_CS.equals(resourceEntry.getValue().getKind()));
+        }
+        return false;
+    }
 
     @Value("${FEATURE_FLAG_ENABLE_PAYMENT_CHECK_26082021:true}")
     private boolean isPaymentCheckFeatureEnabled;
 
     @Value("${FEATURE_FLAG_VALIDATION_STATUS_02092021:true}")
     private boolean isValidationStatusEnabled;
+
+    @Value("${FEATURE_FLAG_ECCT_START_DATE_14082023:2024-02-05}")
+    private String ecctStartDateStr;
 
     private final CompanyProfileService companyProfileService;
     private final EligibilityService eligibilityService;
@@ -140,7 +170,7 @@ public class ConfirmationStatementService {
                                              Map<String, String> linksMap,
                                              LocalDate madeUpToDate, String companyNumber) throws ServiceException {
         if (!oracleQueryClient.isConfirmationStatementPaid(companyNumber,
-                madeUpToDate.format(dateTimeFormatter))) {
+                madeUpToDate.format(DATE_TIME_FORMATTER))) {
             String costsLink = createdUri + "/costs";
             linksMap.put("costs", costsLink);
         }
@@ -165,7 +195,7 @@ public class ConfirmationStatementService {
     public ValidationStatusResponse isValid(String submissionId) throws SubmissionNotFoundException {
         Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
 
-        if(submissionJsonOptional.isPresent()) {
+        if (submissionJsonOptional.isPresent()) {
             var validationStatus = new ValidationStatusResponse();
             ConfirmationStatementSubmissionJson submission = submissionJsonOptional.get();
             ConfirmationStatementSubmissionDataJson submissionData = submission.getData();
@@ -173,7 +203,6 @@ public class ConfirmationStatementService {
             if (submissionData == null) {
                 validationStatus.setValid(false);
             } else {
-
                 boolean isValid = isConfirmed(submissionData.getShareholderData()) &&
                         isConfirmed(submissionData.getSicCodeData()) &&
                         isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
@@ -181,10 +210,12 @@ public class ConfirmationStatementService {
                         isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
                         isConfirmed(submissionData.getPersonsSignificantControlData()) &&
                         isConfirmed(submissionData.getRegisterLocationsData()) &&
+                        isConfirmed(submissionData.getRegisteredEmailAddressData(), submissionData.getMadeUpToDate()) &&
                         Boolean.TRUE.equals(submissionData.getTradingStatusData().getTradingStatusAnswer()) &&
                         isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
                 validationStatus.setValid(isValid);
             }
+
             if (!validationStatus.isValid()) {
                 var errors = new ValidationStatusError[1];
                 var error = new ValidationStatusError();
@@ -193,18 +224,31 @@ public class ConfirmationStatementService {
                 validationStatus.setValidationStatusError(errors);
             }
 
-
             return validationStatus;
         } else  {
-            throw new SubmissionNotFoundException(
-                String.format("Could not find submission data for submission %s", submissionId));
+            throw new SubmissionNotFoundException(String.format("Could not find submission data for submission %s", submissionId));
         }
     }
 
-    private boolean isConfirmed(SectionDataJson sectionData) {
-        return sectionData != null &&
-                (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
-                 sectionData.getSectionStatus() == SectionStatus.RECENT_FILING);
+    private boolean isConfirmed(RegisteredEmailAddressDataJson sectionData, LocalDate madeUpToDate) {
+        if (isEcctEnabled(madeUpToDate)) {
+            return (sectionData != null) &&
+                    (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
+                    sectionData.getSectionStatus() == SectionStatus.RECENT_FILING ||
+                    sectionData.getSectionStatus() == SectionStatus.INITIAL_FILING);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param madeUpToDate the made-up-date
+     * @return True if madeUpToDate is on or after the ECCT Start Date
+     */
+    private boolean isEcctEnabled(LocalDate madeUpToDate) {
+        var ecctStartDate = LocalDate.parse(ecctStartDateStr, DATE_TIME_FORMATTER);
+
+        return isBeforeOrEqual(madeUpToDate, ecctStartDate);
     }
 
     public Optional<ConfirmationStatementSubmissionJson> getConfirmationStatement(String submissionId) {
@@ -255,19 +299,5 @@ public class ConfirmationStatementService {
         }
 
         return nextMadeUpToDateJson;
-    }
-
-    private boolean isBeforeOrEqual(LocalDate date, LocalDate compareToDate) {
-        if (date == null || compareToDate == null) {
-            return false;
-        }
-        return !compareToDate.isAfter(date);
-    }
-
-    private boolean hasExistingConfirmationSubmission (Transaction transaction) {
-        if (transaction.getResources() != null) {
-            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry -> FILING_KIND_CS.equals(resourceEntry.getValue().getKind()));
-        }
-        return false;
     }
 }

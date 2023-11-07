@@ -1,15 +1,17 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 
+import java.time.LocalDate;
+
 import org.springframework.data.mongodb.core.mapping.Field;
+
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.personsignificantcontrol.PersonsSignificantControlDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredemailaddress.RegisteredEmailAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
-
-import java.time.LocalDate;
 
 public class ConfirmationStatementSubmissionDataDao {
 
@@ -24,6 +26,9 @@ public class ConfirmationStatementSubmissionDataDao {
 
     @Field("registered_office_address_data")
     private RegisteredOfficeAddressDataDao registeredOfficeAddressData;
+
+    @Field("registered_email_address_data")
+    private RegisteredEmailAddressDataDao registeredEmailAddressData;
 
     @Field("active_officer_details_data")
     private ActiveOfficerDetailsDataDao activeOfficerDetailsData;
@@ -70,6 +75,14 @@ public class ConfirmationStatementSubmissionDataDao {
 
     public void setRegisteredOfficeAddressData(RegisteredOfficeAddressDataDao registeredOfficeAddressDataDao) {
         this.registeredOfficeAddressData = registeredOfficeAddressDataDao;
+    }
+
+    public RegisteredEmailAddressDataDao getRegisteredEmailAddressData() {
+        return registeredEmailAddressData;
+    }
+
+    public void setRegisteredEmailAddressData(RegisteredEmailAddressDataDao registeredEmailAddressData) {
+        this.registeredEmailAddressData = registeredEmailAddressData;
     }
 
     public ActiveOfficerDetailsDataDao getActiveOfficerDetailsData() {

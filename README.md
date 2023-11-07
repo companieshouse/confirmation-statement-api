@@ -52,3 +52,9 @@ Method    | Path                                                                
 :---------|:-----------------------------------------------------------------------------|:-----------
 **GET**   |`/eligibility`                                                                | Check company is eligible for filing
 **GET**   |`/next-made-up-to-date`                                                       | Get due date
+
+Private company endpoint to retrieve registered email address:
+`${API_URL}/private/confirmation-statement/company/{company-number}`
+Method    | Path                                                                         | Description
+:---------|:-----------------------------------------------------------------------------|:-----------
+**GET**   |`/registered-email-address`                                                   | Returns company's registered email address

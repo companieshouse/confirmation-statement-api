@@ -6,7 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.error.ApiErrorResponseException;
+import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
@@ -26,7 +29,17 @@ import java.util.List;
 public class OracleQueryClient {
 
     private static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL: %s";
-    public static final String ORACLE_QUERY_API_STATUS_MESSAGE = "Oracle query api returned with status = %s, companyNumber = %s";
+
+    private static final String ORACLE_QUERY_API_STATUS_MESSAGE = "Oracle query api returned with status = %s, companyNumber = %s";
+
+    private static final String ORACLE_QUERY_API_NO_DATA = "Oracle query api returned no data";
+
+    private static final String REGISTERED_EMAIL_ADDRESS_NOT_FOUND = "Registered Email Address not found";
+
+    private static final String REGISTERED_EMAIL_ADDRESS_URI_SUFFIX = "/company/%s/registered-email-address";
+
+    @Autowired
+    private ApiClientService apiClientService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -59,13 +72,12 @@ public class OracleQueryClient {
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, statementOfCapitalUrl));
 
         ResponseEntity<StatementOfCapitalJson> response = restTemplate.getForEntity(statementOfCapitalUrl, StatementOfCapitalJson.class);
-        if(response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode() == HttpStatus.OK) {
             var statementOfCapitalJson = response.getBody();
             if (statementOfCapitalJson != null) {
                 return statementOfCapitalJson;
-            }
-            else {
-                throw new StatementOfCapitalNotFoundException("Oracle query api returned no data");
+            } else {
+                throw new StatementOfCapitalNotFoundException(ORACLE_QUERY_API_NO_DATA);
             }
         } else {
             throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
@@ -80,12 +92,12 @@ public class OracleQueryClient {
         ResponseEntity<ActiveOfficerDetails> response = restTemplate.getForEntity(directorDetailsUrl, ActiveOfficerDetails.class);
 
         switch (response.getStatusCode()) {
-        case OK:
-            return response.getBody();
-        case NOT_FOUND:
-            throw new ActiveOfficerNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
-        default:
-            throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
+            case OK:
+                return response.getBody();
+            case NOT_FOUND:
+                throw new ActiveOfficerNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
+            default:
+                throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
         }
     }
 
@@ -147,8 +159,8 @@ public class OracleQueryClient {
     }
 
     public boolean isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
-       var paymentsUrl = String.format(
-               "%s/company/%s/confirmation-statement/paid?payment_period_made_up_to_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
+        var paymentsUrl = String.format(
+                "%s/company/%s/confirmation-statement/paid?payment_period_made_up_to_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
 
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, paymentsUrl));
         ResponseEntity<ConfirmationStatementPaymentJson> response = restTemplate.getForEntity(paymentsUrl, ConfirmationStatementPaymentJson.class);
@@ -160,5 +172,26 @@ public class OracleQueryClient {
             throw new ServiceException("Oracle query api returned null for " + companyNumber + " with due date " + dueDate + ", boolean values expected");
         }
         return confirmationStatementPaymentJson.isPaid();
+    }
+
+    public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
+        try {
+            var internalApiClient = apiClientService.getInternalApiClient();
+            internalApiClient.setBasePath(oracleQueryApiUrl);
+
+            return internalApiClient
+                    .privateCompanyResourceHandler()
+                    .getCompanyRegisteredEmailAddress(String.format(REGISTERED_EMAIL_ADDRESS_URI_SUFFIX, companyNumber))
+                    .execute()
+                    .getData();
+        } catch (ApiErrorResponseException aere) {
+            if (aere.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                throw new RegisteredEmailNotFoundException(REGISTERED_EMAIL_ADDRESS_NOT_FOUND);
+            } else {
+                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber));
+            }
+        } catch (Exception e) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
+        }
     }
 }

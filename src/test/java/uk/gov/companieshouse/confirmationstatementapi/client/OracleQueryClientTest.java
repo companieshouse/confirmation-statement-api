@@ -1,17 +1,29 @@
 package uk.gov.companieshouse.confirmationstatementapi.client;
 
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.InternalApiClient;
+import uk.gov.companieshouse.api.error.ApiErrorResponseException;
+import uk.gov.companieshouse.api.handler.company.PrivateCompanyResourceHandler;
+import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyEmailGet;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
+import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
@@ -26,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +53,22 @@ class OracleQueryClientTest {
     private static final String SHAREHOLDER_PATH = "/shareholders";
     private static final String REGISTER_LOCATIONS_PATH = "/register/location";
     private static final String PAYMENT_PATH = "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid?payment_period_made_up_to_date=2022-01-01";
+    private static final String COMPANY_EMAIL = "info@acme.com";
 
+    @Mock
+    private ApiClientService apiClientService;
+
+    @Mock
+    private InternalApiClient apiClient;
+
+    @Mock
+    private ApiResponse<uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson> apiPrivateCompanyEmailGetResponse;
+
+    @Mock
+    private PrivateCompanyResourceHandler privateCompanyResourceHandler;
+
+    @Mock
+    private PrivateCompanyEmailGet privateCompanyEmailGet;
 
     @Mock
     private RestTemplate restTemplate;
@@ -48,9 +76,13 @@ class OracleQueryClientTest {
     @InjectMocks
     private OracleQueryClient oracleQueryClient;
 
+
     @BeforeEach
     void setup() {
         ReflectionTestUtils.setField(oracleQueryClient, "oracleQueryApiUrl", DUMMY_URL);
+        lenient().when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
+        lenient().when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
+        lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
     }
 
     @Test
@@ -161,7 +193,7 @@ class OracleQueryClientTest {
         psc2.setAppointmentTypeId("1");
         psc2.setServiceAddress(address);
 
-        PersonOfSignificantControl[] pscArray = { psc1, psc2 };
+        PersonOfSignificantControl[] pscArray = {psc1, psc2};
 
         var companyNumber = "123213";
 
@@ -195,7 +227,7 @@ class OracleQueryClientTest {
         shareholder2.setForeName1("James");
         shareholder2.setSurname("Bond");
 
-        ShareholderJson[] shareholderArray = { shareholder1, shareholder2 };
+        ShareholderJson[] shareholderArray = {shareholder1, shareholder2};
 
         var companyNumber = "123213";
 
@@ -228,7 +260,7 @@ class OracleQueryClientTest {
         regLoc2.setRegisterTypeDesc("desc2");
         regLoc2.setSailAddress(new Address());
 
-        RegisterLocationJson[] registerLocationsArray = { regLoc1, regLoc2 };
+        RegisterLocationJson[] registerLocationsArray = {regLoc1, regLoc2};
 
         var companyNumber = "123213";
 
@@ -257,7 +289,7 @@ class OracleQueryClientTest {
         ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(confirmationStatementPaymentJson);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class )).thenReturn(response);
+                ConfirmationStatementPaymentJson.class)).thenReturn(response);
         assertTrue(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
 
@@ -268,7 +300,7 @@ class OracleQueryClientTest {
         ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(confirmationStatementPaymentJson);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class )).thenReturn(response);
+                ConfirmationStatementPaymentJson.class)).thenReturn(response);
         assertFalse(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
     }
 
@@ -277,8 +309,67 @@ class OracleQueryClientTest {
         ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
         when(restTemplate.getForEntity(
                 DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class )).thenReturn(response);
+                ConfirmationStatementPaymentJson.class)).thenReturn(response);
         assertThrows(ServiceException.class, () ->
                 oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+    }
+
+    @Test
+    void testGetRegisteredEmailAddress() throws ServiceException, RegisteredEmailNotFoundException, ApiErrorResponseException, URIValidationException {
+        // GIVEN
+        var registeredEmailAddress = new RegisteredEmailAddressJson();
+        registeredEmailAddress.setRegisteredEmailAddress("info@acme.com");
+
+        // WHEN
+        when(privateCompanyEmailGet.execute()).thenReturn(apiPrivateCompanyEmailGetResponse);
+        when(apiPrivateCompanyEmailGetResponse.getData()).thenReturn(registeredEmailAddress);
+
+        // THEN
+        RegisteredEmailAddressJson response = oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER);
+        assertEquals(COMPANY_EMAIL, response.getRegisteredEmailAddress());
+    }
+
+    @Test
+    void testGetRegisteredEmailAddressServiceUnavailable() {
+        // GIVEN
+
+        // WHEN
+        lenient().when(apiPrivateCompanyEmailGetResponse.getData()).thenThrow(RestClientException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetRegisteredEmailAddressUnexpectedResponse() throws RegisteredEmailNotFoundException, ApiErrorResponseException, URIValidationException {
+        // GIVEN
+        ApiErrorResponseException BAD_REQUEST_Exception = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(400, "ERROR", new HttpHeaders()).build());
+
+        // WHEN
+        when(privateCompanyEmailGet.execute()).thenThrow(BAD_REQUEST_Exception);
+
+        // THEN
+        try {
+            oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER);
+        } catch (ServiceException e) {
+            assertEquals("Oracle query api returned with status = 400, companyNumber = 12345678", e.getMessage());
+            return;
+        }
+
+        assert false;
+    }
+
+    @Test
+    void testGetRegisteredEmailAddressEmailAddressResponseNotFound() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+        ApiErrorResponseException NOT_FOUND_Exception = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(404, "ERROR", new HttpHeaders()).build());
+
+        // WHEN
+        when(privateCompanyEmailGet.execute()).thenThrow(NOT_FOUND_Exception);
+
+        // THEN
+        assertThrows(RegisteredEmailNotFoundException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
     }
 }

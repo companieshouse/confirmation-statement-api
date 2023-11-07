@@ -1,11 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.TradingStatusDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredemailaddress.RegisteredEmailAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredofficeaddress.RegisteredOfficeAddressDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registerlocation.RegisterLocationsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.shareholder.ShareholderDataDao;
@@ -16,6 +23,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapit
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveOfficerDetailsDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
@@ -25,11 +33,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapi
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapperImpl;
-
-import java.time.LocalDate;
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JsonDaoMappingTest {
 
@@ -84,6 +87,8 @@ class JsonDaoMappingTest {
         SicCodeDao sicDao = sicDataDao.getSicCode();
         RegisteredOfficeAddressDataJson roaJson = json.getData().getRegisteredOfficeAddressData();
         RegisteredOfficeAddressDataDao roaDao = dao.getData().getRegisteredOfficeAddressData();
+        RegisteredEmailAddressDataJson reaJson = json.getData().getRegisteredEmailAddressData();
+        RegisteredEmailAddressDataDao reaDao = dao.getData().getRegisteredEmailAddressData();
         ActiveOfficerDetailsDataJson dirJson = json.getData().getActiveOfficerDetailsData();
         ActiveOfficerDetailsDataDao dirDao = dao.getData().getActiveOfficerDetailsData();
         ShareholderDataJson shareholderJson = json.getData().getShareholderData();
@@ -99,6 +104,8 @@ class JsonDaoMappingTest {
         assertEquals(sicJson.getCode(), sicDao.getCode());
         assertEquals(sicJson.getDescription(), sicDao.getDescription());
         assertEquals(roaJson.getSectionStatus(), roaDao.getSectionStatus());
+        assertEquals(reaJson.getSectionStatus(), reaDao.getSectionStatus());
+        assertEquals(reaJson.getRegisteredEmailAddress(), reaDao.getRegisteredEmailAddress());
         assertEquals(dirJson.getSectionStatus(), dirDao.getSectionStatus());
         assertEquals(shareholderJson.getSectionStatus(), shareholderDao.getSectionStatus());
         assertEquals(rlJson.getSectionStatus(), rlDao.getSectionStatus());
