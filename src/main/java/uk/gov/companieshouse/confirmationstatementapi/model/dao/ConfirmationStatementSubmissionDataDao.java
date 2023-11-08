@@ -45,6 +45,9 @@ public class ConfirmationStatementSubmissionDataDao {
     @Field("trading_status_data")
     private TradingStatusDataDao tradingStatusData;
 
+    @Field("accept_lawful_purpose_statement")
+    private Boolean acceptLawfulPurposeStatement;
+
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;
     }
@@ -124,4 +127,13 @@ public class ConfirmationStatementSubmissionDataDao {
     public void setTradingStatusData(TradingStatusDataDao tradingStatusData) {
         this.tradingStatusData = tradingStatusData;
     }
+
+    public Boolean getAcceptLawfulPurposeStatement() {
+        return acceptLawfulPurposeStatement;
+    }
+
+    public void setAcceptLawfulPurposeStatement(Boolean acceptLawfulPurposeStatement) {
+        this.acceptLawfulPurposeStatement = acceptLawfulPurposeStatement;
+    }
+
 }

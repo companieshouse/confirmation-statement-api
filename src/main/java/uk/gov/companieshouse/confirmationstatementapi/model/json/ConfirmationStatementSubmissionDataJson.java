@@ -47,6 +47,9 @@ public class ConfirmationStatementSubmissionDataJson {
     @JsonProperty("trading_status_data")
     private TradingStatusDataJson tradingStatusData;
 
+    @JsonProperty("accept_lawful_purpose_statement")
+    private Boolean acceptLawfulPurposeStatement;
+
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
         return statementOfCapitalData;
     }
@@ -126,4 +129,14 @@ public class ConfirmationStatementSubmissionDataJson {
     public void setTradingStatusData(TradingStatusDataJson tradingStatusData) {
         this.tradingStatusData = tradingStatusData;
     }
+
+    public Boolean getAcceptLawfulPurposeStatement() {
+        return acceptLawfulPurposeStatement;
+    }
+
+    public void setAcceptLawfulPurposeStatement(Boolean acceptLawfulPurposeStatement) {
+        this.acceptLawfulPurposeStatement = acceptLawfulPurposeStatement;
+    }
+
+
 }
