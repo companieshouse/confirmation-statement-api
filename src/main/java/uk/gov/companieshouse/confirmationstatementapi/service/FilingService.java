@@ -1,8 +1,17 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
@@ -11,15 +20,9 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
 
 @Service
 public class FilingService {
@@ -71,6 +74,12 @@ public class FilingService {
             data.put("confirmation_statement_date", madeUpToDate );
             data.put("trading_on_market", !submissionData.getTradingStatusData().getTradingStatusAnswer());
             data.put("dtr5_ind", false);
+
+            RegisteredEmailAddressDataJson registeredEmailAddressData = submissionData.getRegisteredEmailAddressData();
+            if (registeredEmailAddressData.getSectionStatus() == SectionStatus.INITIAL_FILING) {
+                data.put("registered_email_address", registeredEmailAddressData.getRegisteredEmailAddress());
+            }
+
             filing.setData(data);
             setDescription(filing, madeUpToDate);
         } else {
