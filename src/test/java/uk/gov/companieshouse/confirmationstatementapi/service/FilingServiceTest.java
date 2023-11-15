@@ -83,7 +83,7 @@ class FilingServiceTest {
         transaction.setLinks(transactionLinks);
     }
 
-    void getTransactionPaymentLinkMock() throws ApiErrorResponseException, URIValidationException {
+    private void getTransactionPaymentLinkMock() throws ApiErrorResponseException, URIValidationException {
         var transactionPayment = new TransactionPayment();
         transactionPayment.setPaymentReference("reference");
 
@@ -95,7 +95,7 @@ class FilingServiceTest {
         when(transactionsPaymentGet.execute()).thenReturn(transactionApiResponse);
     }
 
-    void paymentGetMocks() throws ApiErrorResponseException, URIValidationException {
+    private void paymentGetMocks() throws ApiErrorResponseException, URIValidationException {
         var paymentApi = new PaymentApi();
         paymentApi.setPaymentMethod("payment-method");
 
@@ -117,6 +117,7 @@ class FilingServiceTest {
               FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
         assertEquals("Confirmation statement made on 1 June 2021 with no updates", filing.getDescription());
         assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
+        assertEquals(Boolean.TRUE, confirmationStatementSubmissionJson.getData().getAcceptLawfulPurposeStatement());
         assertFalse((Boolean) filing.getData().get("trading_on_market"));
         assertFalse((Boolean) filing.getData().get("dtr5_ind"));
         assertEquals("payment-method", filing.getData().get("payment_method"));
@@ -147,6 +148,7 @@ class FilingServiceTest {
 
         assertEquals("Confirmation statement made on 1 June 2021 with no updates", filing.getDescription());
         assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), data.get("confirmation_statement_date"));
+        assertEquals(Boolean.TRUE, confirmationStatementSubmissionJson.getData().getAcceptLawfulPurposeStatement());
         assertFalse((Boolean) data.get("trading_on_market"));
         assertFalse((Boolean) data.get("dtr5_ind"));
         assertEquals("payment-method", data.get("payment_method"));
@@ -165,6 +167,7 @@ class FilingServiceTest {
         FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
         assertEquals("Confirmation statement made on 1 June 2021 with no updates", filing.getDescription());
         assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
+        assertEquals(Boolean.TRUE, confirmationStatementSubmissionJson.getData().getAcceptLawfulPurposeStatement());
         assertFalse((Boolean) filing.getData().get("trading_on_market"));
         assertFalse((Boolean) filing.getData().get("dtr5_ind"));
         assertNull(filing.getData().get("payment_method"));
@@ -228,6 +231,8 @@ class FilingServiceTest {
             registeredEmailAddressDataJson.setRegisteredEmailAddress("rea@acme.com");
         }
         confirmationStatementSubmissionDataJson.setRegisteredEmailAddressData(registeredEmailAddressDataJson);
+
+        confirmationStatementSubmissionDataJson.setAcceptLawfulPurposeStatement(Boolean.TRUE);
 
         confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
 
