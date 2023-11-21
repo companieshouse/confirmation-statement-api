@@ -80,6 +80,10 @@ public class FilingService {
                 data.put("registered_email_address", registeredEmailAddressData.getRegisteredEmailAddress());
             }
 
+            if (Boolean.TRUE.equals(submissionData.getAcceptLawfulPurposeStatement())) {
+                data.put("accept_lawful_purpose_statement", true);
+            }
+
             filing.setData(data);
             setDescription(filing, madeUpToDate);
         } else {
