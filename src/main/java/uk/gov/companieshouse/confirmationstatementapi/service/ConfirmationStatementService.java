@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -233,9 +234,9 @@ public class ConfirmationStatementService {
     private boolean isConfirmed(RegisteredEmailAddressDataJson sectionData, LocalDate madeUpToDate) {
         if (isEcctEnabled(madeUpToDate)) {
             return (sectionData != null) &&
-                    (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
-                    sectionData.getSectionStatus() == SectionStatus.RECENT_FILING ||
-                    sectionData.getSectionStatus() == SectionStatus.INITIAL_FILING);
+                    ((sectionData.getSectionStatus() == SectionStatus.CONFIRMED) ||
+                    (sectionData.getSectionStatus() == SectionStatus.RECENT_FILING) ||
+                    (sectionData.getSectionStatus() == SectionStatus.INITIAL_FILING && !StringUtils.isBlank(sectionData.getRegisteredEmailAddress())));
         }
 
         return true;
