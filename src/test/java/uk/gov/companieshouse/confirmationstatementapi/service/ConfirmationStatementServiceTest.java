@@ -418,7 +418,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithREAInitialFiling() throws SubmissionNotFoundException {
+    void areTasksIncompleteWithREAInitialFiling() throws SubmissionNotFoundException {
         // GIVEN
 
         makeAllMockTasksConfirmed();
@@ -430,7 +430,30 @@ class ConfirmationStatementServiceTest {
 
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+
+        // THEN
+
+        assertFalse(validationStatusResponse.isValid());
+    }
+
+    @Test
+    void areTasksCompleteWithREAInitialFiling() throws SubmissionNotFoundException {
+        // GIVEN
+
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setSectionStatus(SectionStatus.INITIAL_FILING);
+        confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setRegisteredEmailAddress("info@acme.com");
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        // WHEN
+
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
+
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
 
         // THEN
