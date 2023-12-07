@@ -1,42 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
-import uk.gov.companieshouse.api.model.transaction.Resource;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
-import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
-import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
-import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
-import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -47,6 +10,48 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
+import uk.gov.companieshouse.api.model.transaction.Resource;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
+import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
+import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
+import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
+import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
+import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ConfirmationStatementServiceTest {
@@ -417,6 +422,58 @@ class ConfirmationStatementServiceTest {
         assertFalse(validationStatusResponse.isValid());
     }
 
+    private static Stream<Arguments> provideArgumentsForAcceptLawfulPurpose() {
+        var today = LocalDate.of(2021, 10, 12);
+
+        final int madeUpDateBeforeEcct = -1;
+        final int madeUpDateOnEcct = 0;
+        final int madeUpDateAfterEcct = 1;
+
+        return Stream.of(
+                Arguments.of(madeUpDateBeforeEcct, null, today, true),
+                Arguments.of(madeUpDateBeforeEcct, false, today, true),
+                Arguments.of(madeUpDateBeforeEcct, true, today, true),
+
+                Arguments.of(madeUpDateOnEcct, null, null, false),
+                Arguments.of(madeUpDateOnEcct, false, null, false),
+                Arguments.of(madeUpDateOnEcct, true, today, true),
+
+                Arguments.of(madeUpDateAfterEcct, null, null, false),
+                Arguments.of(madeUpDateAfterEcct, false, null, false),
+                Arguments.of(madeUpDateAfterEcct, true, today, true)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForAcceptLawfulPurpose")
+    void areTasksCompleteWithAcceptLawfulPurposeStatementNotPresent(int madeUpDateOffset, Boolean acceptLawfulPurposeStatement, LocalDate today, boolean valid) throws SubmissionNotFoundException {
+        // GIVEN
+
+        var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
+        var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.DATE_TIME_FORMATTER);
+        var madeUpDate = ecctStartDate.plusDays(madeUpDateOffset);
+
+        makeAllMockTasksConfirmed();
+        confirmationStatementSubmissionJson.getData().setAcceptLawfulPurposeStatement(acceptLawfulPurposeStatement);
+        confirmationStatementSubmissionJson.getData().setMadeUpToDate(madeUpDate);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        if (today != null) {
+            when(localDateSupplier.get()).thenReturn(today);
+        }
+
+        // WHEN
+
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+
+        // THEN
+
+        assertEquals(valid, validationStatusResponse.isValid());
+    }
+
     @Test
     void areTasksIncompleteWithREAInitialFiling() throws SubmissionNotFoundException {
         // GIVEN
@@ -676,5 +733,6 @@ class ConfirmationStatementServiceTest {
         data.getRegisteredEmailAddressData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getPersonsSignificantControlData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getRegisterLocationsData().setSectionStatus(SectionStatus.CONFIRMED);
+        data.setAcceptLawfulPurposeStatement(true);
     }
 }

@@ -212,6 +212,7 @@ public class ConfirmationStatementService {
                         isConfirmed(submissionData.getPersonsSignificantControlData()) &&
                         isConfirmed(submissionData.getRegisterLocationsData()) &&
                         isConfirmed(submissionData.getRegisteredEmailAddressData(), submissionData.getMadeUpToDate()) &&
+                        isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate()) &&
                         Boolean.TRUE.equals(submissionData.getTradingStatusData().getTradingStatusAnswer()) &&
                         isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
                 validationStatus.setValid(isValid);
@@ -237,6 +238,14 @@ public class ConfirmationStatementService {
                     ((sectionData.getSectionStatus() == SectionStatus.CONFIRMED) ||
                     (sectionData.getSectionStatus() == SectionStatus.RECENT_FILING) ||
                     (sectionData.getSectionStatus() == SectionStatus.INITIAL_FILING && !StringUtils.isBlank(sectionData.getRegisteredEmailAddress())));
+        }
+
+        return true;
+    }
+
+    private boolean isValid(Boolean acceptLawfulPurposeStatement, LocalDate madeUpToDate) {
+        if (isEcctEnabled(madeUpToDate)) {
+            return Boolean.TRUE.equals(acceptLawfulPurposeStatement);
         }
 
         return true;
