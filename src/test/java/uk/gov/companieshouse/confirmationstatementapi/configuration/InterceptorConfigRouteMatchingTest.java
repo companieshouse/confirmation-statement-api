@@ -1,5 +1,13 @@
 package uk.gov.companieshouse.confirmationstatementapi.configuration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,14 +15,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.springframework.web.util.ServletRequestPathUtils;
 
 @SpringBootTest
 class InterceptorConfigRouteMatchingTest {
@@ -51,10 +52,11 @@ class InterceptorConfigRouteMatchingTest {
         testCases.put("/private/transactions/12345/confirmation-statement/12345/filings",
             Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "FilingInterceptor"));
         testCases.put("/transactions/12345/confirmation-statement/12345/costs",
-            Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor", 
+            Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor",
                 "SubmissionInterceptor", "SubmissionIdValidationInterceptor"));
         testCases.put("/private/confirmation-statement/company/12345/registered-email-address",
             Set.of("LoggingInterceptor", "InternalUserInterceptor", "CompanyNumberValidationInterceptor"));
+
 
         for (String requestPath : testCases.keySet()){
 
@@ -63,9 +65,19 @@ class InterceptorConfigRouteMatchingTest {
             MockHttpServletRequest request = new MockHttpServletRequest("GET", requestPath);
             HandlerExecutionChain chain;
             try {
+                // https://github.com/spring-projects/spring-boot/issues/28874
+                if (!ServletRequestPathUtils.hasParsedRequestPath(request)) {
+                    ServletRequestPathUtils.parseAndCache(request);
+                }
+
                  chain = mapping.getHandler(request);
             } catch (HttpRequestMethodNotSupportedException e) {
                 request = new MockHttpServletRequest("POST", requestPath);
+
+                if (!ServletRequestPathUtils.hasParsedRequestPath(request)) {
+                    ServletRequestPathUtils.parseAndCache(request);
+                }
+
                 chain = mapping.getHandler(request);
             }
             assertNotNull(chain, "No handler found for path "+requestPath);

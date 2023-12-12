@@ -13,12 +13,12 @@
     <description>API for confirmation statement service</description>
     <properties>
         <java.version>11</java.version>
-        <spring-boot-dependencies.version>2.5.6</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>2.7.11</spring-boot-dependencies.version>
         <api-sdk-java.version>4.3.35</api-sdk-java.version>
         <private-api-sdk-java.version>2.0.313</private-api-sdk-java.version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <spring-boot-maven-plugin.version>2.5.6</spring-boot-maven-plugin.version>
+        <spring-boot-maven-plugin.version>3.0.6</spring-boot-maven-plugin.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <api-security-java.version>0.3.6</api-security-java.version>
         <structured-logging.version>1.9.11</structured-logging.version>
@@ -36,7 +36,7 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
-                <version>2.17.1</version>
+                <version>2.20.0</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -141,7 +141,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.1.4</version>
+                <version>3.3.2</version>
                 <configuration>
                     <container>
                         <expandClasspathDependencies>true</expandClasspathDependencies>
