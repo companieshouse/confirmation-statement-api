@@ -13,7 +13,7 @@
     <description>API for confirmation statement service</description>
     <properties>
         <java.version>11</java.version>
-        <spring-boot-dependencies.version>2.7.11</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>2.7.18</spring-boot-dependencies.version>
         <api-sdk-java.version>4.3.35</api-sdk-java.version>
         <private-api-sdk-java.version>2.0.313</private-api-sdk-java.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
