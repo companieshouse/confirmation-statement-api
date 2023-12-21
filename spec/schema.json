@@ -669,6 +669,9 @@
               "$ref": "#/definitions/SectionStatusResponse"
             }
           }
+        },
+        "accept_lawful_purpose_statement": {
+          "type": "boolean"
         }
       }
     },
