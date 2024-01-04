@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -110,7 +111,7 @@ class FilingServiceTest {
     void testWhenPayableSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException {
         paymentGetMocks();
         getTransactionPaymentLinkMock();
-        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null);
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null, null);
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
         ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
@@ -132,7 +133,7 @@ class FilingServiceTest {
         paymentGetMocks();
         getTransactionPaymentLinkMock();
         String initialRea = "initial.rea@acme.com";
-        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(initialRea);
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(initialRea, null);
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
         ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
 
@@ -158,9 +159,41 @@ class FilingServiceTest {
     }
 
     @Test
+    void testWhenPayableSubmissionWithREAConfirmedIsReturnedSuccessfully() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException {
+        // GIVEN
+
+        paymentGetMocks();
+        getTransactionPaymentLinkMock();
+        String confirmedRea = "confirmed.rea@acme.com";
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null, confirmedRea);
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
+        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
+
+        given(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).willReturn(opt);
+
+        // WHEN
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        // THEN
+
+        Map<String, Object> data = filing.getData();
+
+        assertEquals("Confirmation statement made on 1 June 2021 with no updates", filing.getDescription());
+        assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), data.get("confirmation_statement_date"));
+        assertEquals(Boolean.TRUE, confirmationStatementSubmissionJson.getData().getAcceptLawfulPurposeStatement());
+        assertFalse((Boolean) data.get("trading_on_market"));
+        assertFalse((Boolean) data.get("dtr5_ind"));
+        assertEquals("payment-method", data.get("payment_method"));
+        assertEquals("reference", data.get("payment_reference"));
+        assertEquals("reference", data.get("payment_reference"));
+        assertNull(data.get("registered_email_address"));
+    }
+
+    @Test
     void testWhenNonPayableSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException {
         transaction.getLinks().setPayment(null);
-        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null);
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null, null);
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
         ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
@@ -204,14 +237,14 @@ class FilingServiceTest {
     void testWhenEmptySubmissionDataIsReturned() throws URIValidationException, ApiErrorResponseException {
         paymentGetMocks();
         getTransactionPaymentLinkMock();
-        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null);
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null, null);
         confirmationStatementSubmissionJson.setData(null);
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(Optional.of(confirmationStatementSubmissionJson));
         var submissionNotFoundException = assertThrows(SubmissionNotFoundException.class, () -> filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction));
         assertTrue(submissionNotFoundException.getMessage().contains("Submission contains no data " + CONFIRMATION_STATEMENT_ID));
     }
 
-    private static ConfirmationStatementSubmissionJson buildSubmissionJson(String initialRea) {
+    private static ConfirmationStatementSubmissionJson buildSubmissionJson(String initialRea, String confirmedRea) {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
 
         ConfirmationStatementSubmissionDataJson confirmationStatementSubmissionDataJson = new ConfirmationStatementSubmissionDataJson();
@@ -223,14 +256,14 @@ class FilingServiceTest {
         confirmationStatementSubmissionDataJson.setTradingStatusData(tradingStatus);
 
         RegisteredEmailAddressDataJson registeredEmailAddressDataJson = new RegisteredEmailAddressDataJson();
-        if (initialRea != null) {
+        if (!StringUtils.isBlank(initialRea)) {
             registeredEmailAddressDataJson.setSectionStatus(SectionStatus.INITIAL_FILING);
             registeredEmailAddressDataJson.setRegisteredEmailAddress(initialRea);
-        } else {
+            confirmationStatementSubmissionDataJson.setRegisteredEmailAddressData(registeredEmailAddressDataJson);
+        } else if (!StringUtils.isBlank(confirmedRea)) {
             registeredEmailAddressDataJson.setSectionStatus(SectionStatus.CONFIRMED);
-            registeredEmailAddressDataJson.setRegisteredEmailAddress("rea@acme.com");
+            confirmationStatementSubmissionDataJson.setRegisteredEmailAddressData(registeredEmailAddressDataJson);
         }
-        confirmationStatementSubmissionDataJson.setRegisteredEmailAddressData(registeredEmailAddressDataJson);
 
         confirmationStatementSubmissionDataJson.setAcceptLawfulPurposeStatement(Boolean.TRUE);
 

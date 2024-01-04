@@ -76,7 +76,7 @@ public class FilingService {
             data.put("dtr5_ind", false);
 
             RegisteredEmailAddressDataJson registeredEmailAddressData = submissionData.getRegisteredEmailAddressData();
-            if (registeredEmailAddressData.getSectionStatus() == SectionStatus.INITIAL_FILING) {
+            if ((registeredEmailAddressData != null) && (registeredEmailAddressData.getSectionStatus() == SectionStatus.INITIAL_FILING)) {
                 data.put("registered_email_address", registeredEmailAddressData.getRegisteredEmailAddress());
             }
 
