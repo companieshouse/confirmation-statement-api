@@ -75,7 +75,7 @@ public class ConfirmationStatementService {
     @Value("${FEATURE_FLAG_VALIDATION_STATUS_02092021:true}")
     private boolean isValidationStatusEnabled;
 
-    @Value("${FEATURE_FLAG_ECCT_START_DATE_14082023:2024-02-05}")
+    @Value("${FEATURE_FLAG_ECCT_START_DATE_14082023:2024-03-05}")
     private String ecctStartDateStr;
 
     private final CompanyProfileService companyProfileService;
@@ -253,7 +253,10 @@ public class ConfirmationStatementService {
 
     /**
      * @param madeUpToDate the made-up-date
-     * @return True if madeUpToDate is on or after the ECCT Start Date
+     * @return True if madeUpToDate is on or after the configured ECCT Start Date.
+     * The configured date passed in for this service should be the day AFTER
+     * the full Day One go-live date, as the confirmation statement made up date
+     * must be AFTER rather than on or after.
      */
     private boolean isEcctEnabled(LocalDate madeUpToDate) {
         var ecctStartDate = LocalDate.parse(ecctStartDateStr, DATE_TIME_FORMATTER);

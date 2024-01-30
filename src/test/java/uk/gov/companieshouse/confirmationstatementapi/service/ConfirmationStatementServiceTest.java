@@ -318,6 +318,8 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertFalse(validationStatusResponse.isValid());
+        verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
+
     }
 
     @Test
@@ -394,6 +396,8 @@ class ConfirmationStatementServiceTest {
         // THEN
 
         assertFalse(validationStatusResponse.isValid());
+        verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
+
     }
 
     @Test
@@ -420,6 +424,8 @@ class ConfirmationStatementServiceTest {
         // THEN
 
         assertFalse(validationStatusResponse.isValid());
+        verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
+
     }
 
     private static Stream<Arguments> provideArgumentsForAcceptLawfulPurpose() {
@@ -493,6 +499,8 @@ class ConfirmationStatementServiceTest {
         // THEN
 
         assertFalse(validationStatusResponse.isValid());
+        verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
+
     }
 
     @Test
@@ -528,6 +536,8 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertFalse(validationStatusResponse.isValid());
+        verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
+
     }
 
     @Test
@@ -549,6 +559,8 @@ class ConfirmationStatementServiceTest {
         // THEN
 
         assertFalse(validationStatusResponse.isValid());
+        verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
+
     }
 
     @Test
@@ -560,6 +572,8 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertFalse(validationStatusResponse.isValid());
+        verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
+
     }
 
     @Test
@@ -573,6 +587,8 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
         assertFalse(validationStatusResponse.isValid());
+        verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
+
     }
 
     @Test
