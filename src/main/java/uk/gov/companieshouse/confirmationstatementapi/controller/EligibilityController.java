@@ -38,16 +38,11 @@ public class EligibilityController {
         try {
             var companyProfile = companyProfileService.getCompanyProfile(companyNumber);
             var companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile);
-
-            if (EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE == companyValidationResponse.getEligibilityStatusCode()) {
-                return ResponseEntity.ok().body(companyValidationResponse);
-            } else {
-                return ResponseEntity.badRequest().body(companyValidationResponse);
-            }
+            return ResponseEntity.ok().body(companyValidationResponse);
         } catch (CompanyNotFoundException e) {
             var companyNotFoundResponse = new CompanyValidationResponse();
             companyNotFoundResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_NOT_FOUND);
-            return ResponseEntity.badRequest().body(companyNotFoundResponse);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(companyNotFoundResponse);
         } catch (Exception e) {
             ApiLogger.errorContext(requestId, "Error checking eligibility of company.", e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

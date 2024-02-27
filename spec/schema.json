@@ -232,16 +232,16 @@
         ],
         "responses": {
           "200": {
-            "description": "The Company can use this service to file a Confirmation Statement",
+            "description": "The eligibility check was successful - response body indicates whether this company can use this service to file a Confirmation Statement",
             "schema": {
               "$ref": "#/definitions/CompanyValidationResponse"
             }
           },
           "400": {
-            "description": "The Company can not use this service to file a Confirmation Statement",
-            "schema": {
-              "$ref": "#/definitions/CompanyValidationResponse"
-            }
+            "description": "The provided Company Number failed validation"
+          },
+          "404": {
+            "description": "Company not found"
           }
         }
       }
@@ -686,7 +686,6 @@
     "EligibilityStatusCode": {
       "type": "string",
       "enum": [
-        "COMPANY_NOT_FOUND",
         "COMPANY_VALID_FOR_SERVICE",
         "INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS",
         "INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC",
@@ -696,7 +695,8 @@
         "INVALID_COMPANY_TRADED_STATUS_USE_WEBFILING",
         "INVALID_COMPANY_TYPE_CS01_FILING_NOT_REQUIRED",
         "INVALID_COMPANY_TYPE_PAPER_FILING_ONLY",
-        "INVALID_COMPANY_TYPE_USE_WEB_FILING"
+        "INVALID_COMPANY_TYPE_USE_WEB_FILING",
+        "COMPANY_NOT_FOUND"
       ]
     },
     "CostsResponse": {
