@@ -8,7 +8,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -25,7 +25,6 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
     @Value("${COMPANY_NUMBER_PATTERN}")
     private String companyNumberPattern;
 
-    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);

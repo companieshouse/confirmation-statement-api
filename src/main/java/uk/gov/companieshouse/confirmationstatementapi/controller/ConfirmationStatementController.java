@@ -19,7 +19,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatem
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;

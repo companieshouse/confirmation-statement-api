@@ -7,8 +7,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +21,6 @@ public class TransactionIdValidationInterceptor implements HandlerInterceptor {
     @Value("${MAX_ID_LENGTH}")
     private int maxIdLength;
 
-    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
