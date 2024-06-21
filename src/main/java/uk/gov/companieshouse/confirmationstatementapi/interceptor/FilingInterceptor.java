@@ -6,8 +6,8 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
+import jakarta.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
@@ -16,7 +16,6 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRA
 @Component
 public class FilingInterceptor implements HandlerInterceptor {
 
-    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final var transaction = (Transaction) request.getAttribute("transaction");
         final String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
