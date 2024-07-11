@@ -8,8 +8,8 @@ locals {
   eric_port                  = "10000"
   docker_repo                = "confirmation-statement-api"
   kms_alias                  = "alias/${var.aws_profile}/environment-services-kms"
-  lb_listener_rule_priority  = 55
-  lb_listener_paths          = ["/transactions/*/confirmation-statement/*", "confirmation-statement/*", "/private/confirmation-statement/*", "/private/transactions/*/confirmation-statement/*/filings"]
+  lb_listener_rule_priority  = 63
+  lb_listener_paths          = ["/transactions/*/confirmation-statement/*", "/confirmation-statement/*", "/private/confirmation-statement/*", "/private/transactions/*/confirmation-statement/*/filings"]
   healthcheck_path           = "" #healthcheck path for confirmation-statement-api (confirm with devs actual path)
   healthcheck_matcher        = "200"
   vpc_name                   = local.stack_secrets["vpc_name"]
