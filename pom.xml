@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.6</version> <!-- lookup parent from repository -->
+        <version>2.1.5</version> <!-- lookup parent from repository -->
     </parent>
     <artifactId>confirmation-statement-api</artifactId>
     <version>unversioned</version>
@@ -13,19 +13,15 @@
     <description>API for confirmation statement service</description>
     <properties>
         <java.version>21</java.version>
-        <spring-boot-dependencies.version>3.3.1</spring-boot-dependencies.version>
-        <api-sdk-java.version>6.0.17</api-sdk-java.version>
-        <private-api-sdk-java.version>4.0.76</private-api-sdk-java.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <spring-boot-dependencies.version>3.3.0</spring-boot-dependencies.version>
+        <api-sdk-java.version>4.3.35</api-sdk-java.version>
+        <private-api-sdk-java.version>2.0.313</private-api-sdk-java.version>
+        <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <spring-boot-maven-plugin.version>2.7.18</spring-boot-maven-plugin.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <api-security-java.version>2.0.4</api-security-java.version>
         <structured-logging.version>3.0.8</structured-logging.version>
-        <dependency-check-plugin.version>10.0.2</dependency-check-plugin.version>
-        <apache-log4j.version>2.20.0</apache-log4j.version>
-        <api-sdk-manager-java-library.version>3.0.5</api-sdk-manager-java-library.version>
-        <jib-maven-plugin.version>3.4.1</jib-maven-plugin.version>
     </properties>
     <profiles>
         <profile>
@@ -40,7 +36,7 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
-                <version>${apache-log4j.version}</version>
+                <version>2.20.0</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -88,7 +84,7 @@
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-sdk-manager-java-library</artifactId>
-            <version>${api-sdk-manager-java-library.version}</version>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -131,8 +127,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>21</source>
+                    <target>21</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct</groupId>
@@ -145,7 +141,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>${jib-maven-plugin.version}</version>
+                <version>3.3.2</version>
                 <configuration>
                     <container>
                         <expandClasspathDependencies>true</expandClasspathDependencies>
@@ -160,31 +156,6 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>${dependency-check-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>${jib-maven-plugin.version}</version>
-                <configuration>
-                    <from>
-                        <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-corretto-build-21:latest</image>
-                    </from>
-                    <to>
-                        <image>169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/confirmation-statement-api:latest</image>
-                    </to>
-                </configuration>
             </plugin>
         </plugins>
     </build>
