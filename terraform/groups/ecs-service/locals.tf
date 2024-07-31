@@ -10,7 +10,7 @@ locals {
   kms_alias                  = "alias/${var.aws_profile}/environment-services-kms"
   lb_listener_rule_priority  = 63
   lb_listener_paths          = ["/transactions/*/confirmation-statement/*", "/confirmation-statement/*", "/private/confirmation-statement/*", "/private/transactions/*/confirmation-statement/*/filings"]
-  healthcheck_path           = "" #healthcheck path for confirmation-statement-api (confirm with devs actual path)
+  healthcheck_path           = "/confirmation-statement-api/healthcheck"
   healthcheck_matcher        = "200"
   vpc_name                   = local.stack_secrets["vpc_name"]
   s3_config_bucket           = data.vault_generic_secret.shared_s3.data["config_bucket_name"]
