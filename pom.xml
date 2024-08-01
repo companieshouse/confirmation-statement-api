@@ -16,10 +16,10 @@
         <spring-boot-dependencies.version>3.3.1</spring-boot-dependencies.version>
         <api-sdk-java.version>6.0.17</api-sdk-java.version>
         <private-api-sdk-java.version>4.0.76</private-api-sdk-java.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <spring-boot-maven-plugin.version>2.7.18</spring-boot-maven-plugin.version>
-        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
+        <spring-boot-maven-plugin.version>3.3.1</spring-boot-maven-plugin.version>
+        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <api-security-java.version>2.0.4</api-security-java.version>
         <structured-logging.version>3.0.8</structured-logging.version>
         <jib-maven-plugin.version>3.4.1</jib-maven-plugin.version>
