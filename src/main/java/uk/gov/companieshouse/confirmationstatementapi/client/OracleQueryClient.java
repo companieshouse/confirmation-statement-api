@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +24,9 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 
 @Component
@@ -72,7 +76,7 @@ public class OracleQueryClient {
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, statementOfCapitalUrl));
 
         ResponseEntity<StatementOfCapitalJson> response = restTemplate.getForEntity(statementOfCapitalUrl, StatementOfCapitalJson.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode() == OK) {
             var statementOfCapitalJson = response.getBody();
             if (statementOfCapitalJson != null) {
                 return statementOfCapitalJson;
@@ -91,14 +95,13 @@ public class OracleQueryClient {
 
         ResponseEntity<ActiveOfficerDetails> response = restTemplate.getForEntity(directorDetailsUrl, ActiveOfficerDetails.class);
 
-        switch (response.getStatusCode()) {
-            case OK:
-                return response.getBody();
-            case NOT_FOUND:
-                throw new ActiveOfficerNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
-            default:
-                throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
+        HttpStatusCode statusCode = response.getStatusCode();
+        if (statusCode.equals(OK)) {
+            return response.getBody();
+        } else if (statusCode.equals(NOT_FOUND)) {
+            throw new ActiveOfficerNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
         }
+        throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
     }
 
     public List<ActiveOfficerDetails> getActiveOfficersDetails(String companyNumber) throws ServiceException {
@@ -106,7 +109,7 @@ public class OracleQueryClient {
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, officersDetailsUrl));
 
         ResponseEntity<ActiveOfficerDetails[]> response = restTemplate.getForEntity(officersDetailsUrl, ActiveOfficerDetails[].class);
-        if (response.getStatusCode() != HttpStatus.OK) {
+        if (response.getStatusCode() != OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
         if (response.getBody() == null) {
@@ -120,7 +123,7 @@ public class OracleQueryClient {
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl));
 
         ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
-        if (response.getStatusCode() != HttpStatus.OK) {
+        if (response.getStatusCode() != OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
         if (response.getBody() == null) {
@@ -135,7 +138,7 @@ public class OracleQueryClient {
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, regLocUrl));
 
         ResponseEntity<RegisterLocationJson[]> response = restTemplate.getForEntity(regLocUrl, RegisterLocationJson[].class);
-        if (response.getStatusCode() != HttpStatus.OK) {
+        if (response.getStatusCode() != OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
         if (response.getBody() == null) {
@@ -149,7 +152,7 @@ public class OracleQueryClient {
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, shareholdersUrl));
 
         ResponseEntity<ShareholderJson[]> response = restTemplate.getForEntity(shareholdersUrl, ShareholderJson[].class);
-        if (response.getStatusCode() != HttpStatus.OK) {
+        if (response.getStatusCode() != OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
         }
         if (response.getBody() == null) {
@@ -164,7 +167,7 @@ public class OracleQueryClient {
 
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, paymentsUrl));
         ResponseEntity<ConfirmationStatementPaymentJson> response = restTemplate.getForEntity(paymentsUrl, ConfirmationStatementPaymentJson.class);
-        if (response.getStatusCode() != HttpStatus.OK) {
+        if (response.getStatusCode() != OK) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE + " with due date %s", response.getStatusCode(), companyNumber, dueDate));
         }
         var confirmationStatementPaymentJson = response.getBody();
@@ -185,7 +188,7 @@ public class OracleQueryClient {
                     .execute()
                     .getData();
         } catch (ApiErrorResponseException aere) {
-            if (aere.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+            if (aere.getStatusCode() == NOT_FOUND.value()) {
                 throw new RegisteredEmailNotFoundException(REGISTERED_EMAIL_ADDRESS_NOT_FOUND);
             } else {
                 throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber));
