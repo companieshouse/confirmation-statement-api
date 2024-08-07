@@ -20,7 +20,7 @@ import static uk.gov.companieshouse.api.util.security.Permission.Key.COMPANY_CON
 import static uk.gov.companieshouse.api.util.security.Permission.Key.USER_PROFILE;
 
 @Configuration
-@ComponentScan("uk.gov.companieshouse.api.interceptor")
+@ComponentScan(basePackages = {"uk.gov.companieshouse.api", "uk.gov.companieshouse.confirmationstatementapi"})
 public class InterceptorConfig implements WebMvcConfigurer {
 
     static final String COMPANY_NUMBER = "/**/company/**";
