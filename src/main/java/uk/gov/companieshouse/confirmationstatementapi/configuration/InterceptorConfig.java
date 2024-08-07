@@ -20,7 +20,7 @@ import static uk.gov.companieshouse.api.util.security.Permission.Key.COMPANY_CON
 import static uk.gov.companieshouse.api.util.security.Permission.Key.USER_PROFILE;
 
 @Configuration
-@ComponentScan("uk.gov.companieshouse.api.interceptor")
+@ComponentScan(basePackages = {"uk.gov.companieshouse.api", "uk.gov.companieshouse.confirmationstatementapi"})
 public class InterceptorConfig implements WebMvcConfigurer {
 
     static final String COMPANY_NUMBER = "/**/company/**";
@@ -69,6 +69,24 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     private SubmissionInterceptor submissionInterceptor;
 
+//    @Autowired
+//    public InterceptorConfig( TransactionIdValidationInterceptor transactionIdValidationInterceptor,
+//                              TransactionInterceptor transactionInterceptor,
+//                              LoggingInterceptor loggingInterceptor,
+//                              FilingInterceptor filingInterceptor,
+//                              InternalUserInterceptor internalUserInterceptor,
+//                              SubmissionIdValidationInterceptor submissionIdValidationInterceptor,
+//                              SubmissionInterceptor submissionInterceptor,
+//                              CompanyNumberValidationInterceptor companyNumberValidationInterceptor){
+//        this.transactionInterceptor = transactionInterceptor;
+//        this.transactionIdValidationInterceptor = transactionIdValidationInterceptor;
+//        this.loggingInterceptor = loggingInterceptor;
+//        this.filingInterceptor = filingInterceptor;
+//        this.internalUserInterceptor = internalUserInterceptor;
+//        this.submissionInterceptor = submissionInterceptor;
+//        this.submissionIdValidationInterceptor = submissionIdValidationInterceptor;
+//        this.companyNumberValidationInterceptor = companyNumberValidationInterceptor;
+//    }
     /**
      * Setup the interceptors to run against endpoints when the endpoints are called
      * Interceptors are executed in order of configuration
