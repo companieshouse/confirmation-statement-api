@@ -10,7 +10,7 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import jakarta.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 

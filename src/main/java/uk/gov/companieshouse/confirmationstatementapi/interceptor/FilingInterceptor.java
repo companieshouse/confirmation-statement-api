@@ -7,7 +7,7 @@ import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import jakarta.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;

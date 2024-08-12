@@ -86,9 +86,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
         addCompanyAuthenticationEndpointsInterceptor(registry);
 
-        addTransactionIdValidationInterceptor(registry);
-
         addTransactionInterceptor(registry);
+
+        addTransactionIdValidationInterceptor(registry);
 
         addFilingsEndpointInterceptor(registry);
 

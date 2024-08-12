@@ -9,11 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
