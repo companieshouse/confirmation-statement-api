@@ -93,14 +93,14 @@ class InterceptorConfigTest {
         inOrder.verify(interceptorRegistry).addInterceptor(any(CRUDAuthenticationInterceptor.class));
         inOrder.verify(interceptorRegistration).excludePathPatterns(InterceptorConfig.NOT_COMPANY_AUTH_ENDPOINTS);
 
+        // Transactions endpoints interceptor check
+        inOrder.verify(interceptorRegistry).addInterceptor(transactionInterceptor);
+        inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.TRANSACTIONS);
+
         // Transaction id validation interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(transactionIdValidationInterceptor);
         inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.TRANSACTIONS);
         inOrder.verify(interceptorRegistration).excludePathPatterns(InterceptorConfig.FILINGS);
-
-        // Transactions endpoints interceptor check
-        inOrder.verify(interceptorRegistry).addInterceptor(transactionInterceptor);
-        inOrder.verify(interceptorRegistration).addPathPatterns(InterceptorConfig.TRANSACTIONS);
 
         // Filings endpoint interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(filingInterceptor);
