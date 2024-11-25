@@ -5,7 +5,8 @@
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.6</version> <!-- lookup parent from repository -->
+        <version>2.1.9</version>
+        <!-- lookup parent from repository -->
     </parent>
     <artifactId>confirmation-statement-api</artifactId>
     <version>unversioned</version>
@@ -13,20 +14,19 @@
     <description>API for confirmation statement service</description>
     <properties>
         <java.version>21</java.version>
-        <spring-boot-dependencies.version>3.3.1</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>3.3.5</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>3.3.5</spring-boot-maven-plugin.version>
         <api-sdk-java.version>6.0.17</api-sdk-java.version>
-        <private-api-sdk-java.version>4.0.76</private-api-sdk-java.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
-        <spring-boot-maven-plugin.version>3.3.1</spring-boot-maven-plugin.version>
-        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
+        <org.mapstruct.version>1.6.2</org.mapstruct.version>
+        <private-api-sdk-java.version>4.0.99</private-api-sdk-java.version>
         <api-security-java.version>2.0.4</api-security-java.version>
-        <structured-logging.version>3.0.8</structured-logging.version>
-        <jib-maven-plugin.version>3.4.1</jib-maven-plugin.version>
-        <dependency-check-plugin.version>10.0.2</dependency-check-plugin.version>
-        <apache-log4j.version>2.20.0</apache-log4j.version>
         <api-sdk-manager-java-library.version>3.0.5</api-sdk-manager-java-library.version>
-        <jib-maven-plugin.version>3.4.1</jib-maven-plugin.version>
+        <structured-logging.version>3.0.20</structured-logging.version>
+        <dependency-check-plugin.version>10.0.2</dependency-check-plugin.version>
+        <apache-log4j.version>2.24.1</apache-log4j.version>
+        <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
     </properties>
     <profiles>
         <profile>
@@ -45,6 +45,7 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -52,14 +53,17 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
     <dependencies>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -79,37 +83,44 @@
             <artifactId>api-sdk-java</artifactId>
             <version>${api-sdk-java.version}</version>
         </dependency>
+
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-security-java</artifactId>
             <version>${api-security-java.version}</version>
         </dependency>
+
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>private-api-sdk-java</artifactId>
             <version>${private-api-sdk-java.version}</version>
         </dependency>
+
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-sdk-manager-java-library</artifactId>
             <version>${api-sdk-manager-java-library.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${org.mapstruct.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.sonarsource.scanner.maven</groupId>
             <artifactId>sonar-maven-plugin</artifactId>
             <version>${sonar-maven-plugin.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -164,7 +175,7 @@
                         <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-corretto-build-21:latest</image>
                     </from>
                     <to>
-                        <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/local/confirmation-statement-api:latest</image>
+                        <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/confirmation-statement-api:latest</image>
                     </to>
                 </configuration>
             </plugin>

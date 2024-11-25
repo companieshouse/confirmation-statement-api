@@ -12,11 +12,20 @@ In order to run the service locally you will need the following:
 ### Getting started
 To checkout and build the service:
 1. Clone [Docker CHS Development](https://github.com/companieshouse/docker-chs-development) and follow the steps in the README.
-2. Run ./bin/chs-dev modules enable confirmation-statement
-3. Run ./bin/chs-dev development enable confirmation-statement-api
-4. Run docker using "tilt up" in the docker-chs-development directory.
-5. Use spacebar in the command line to open tilt window - wait for confirmation-statement-api to become green.
-6. Open your browser and go to page http://chs.local/confirmation-statement/
+2. Run chs-dev modules enable confirmation-statement
+3. Run chs-dev development enable confirmation-statement-api
+4. Manually enable the following services:
+- chs-dev services enable company-appointments-api-ch-gov-uk
+- company-metrics-api
+- psc-data-api
+- psc-statement-data-api
+- chs-delta-api
+- resource-change-publisher
+- stream-router
+- company-appointments-consumer
+5. Run docker using "chs-dev up" in the docker-chs-development directory.
+6. Run "chs-dev status" to check all required services are running and healthy
+7. Open your browser and go to page http://chs.local/confirmation-statement/
 
 These instructions are for a local docker environment.
 
