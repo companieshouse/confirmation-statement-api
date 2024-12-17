@@ -38,6 +38,7 @@ module "ecs-service" {
   ecs_cluster_id          = data.aws_ecs_cluster.ecs_cluster.id
   task_execution_role_arn = data.aws_iam_role.ecs_cluster_iam_role.arn
 
+
   # Load balancer configuration
   lb_listener_arn           = data.aws_lb_listener.service_lb_listener.arn
   lb_listener_rule_priority = local.lb_listener_rule_priority
@@ -80,6 +81,7 @@ module "ecs-service" {
   use_capacity_provider              = var.use_capacity_provider
   use_fargate                        = var.use_fargate
   fargate_subnets                    = local.application_subnet_ids
+  read_only_root_filesystem          = false
 
   # Cloudwatch
   cloudwatch_alarms_enabled = var.cloudwatch_alarms_enabled
