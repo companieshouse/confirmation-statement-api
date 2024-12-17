@@ -2,6 +2,6 @@ environment = "live"
 aws_profile = "live-eu-west-2"
 
 # service configs
-log_level = "info"
+log_level = "trace"
 desired_task_count = 2
 min_task_count = 2
