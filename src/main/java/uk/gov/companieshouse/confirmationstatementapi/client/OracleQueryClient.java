@@ -62,13 +62,19 @@ public class OracleQueryClient {
         return response.getBody();
     }
 
-    public Integer getShareholderCount(String companyNumber) {
+    public Integer getShareholderCount(String companyNumber) throws ServiceException {
+        try {
+            var internalApiClient = apiClientService.getInternalApiClient();
+            internalApiClient.setBasePath(oracleQueryApiUrl);
 
-        var shareholderCountUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, shareholderCountUrl));
-
-        ResponseEntity<Integer> response = restTemplate.getForEntity(shareholderCountUrl, Integer.class);
-        return response.getBody();
+            return internalApiClient
+                    .privateCompanyResourceHandler()
+                    .getCompanyShareHoldersCount(String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber))
+                    .execute()
+                    .getData();
+        } catch (Exception e) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
+        }
     }
 
     public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {

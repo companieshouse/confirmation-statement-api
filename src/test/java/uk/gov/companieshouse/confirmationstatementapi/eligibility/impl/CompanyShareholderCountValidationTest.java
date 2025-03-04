@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Description;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -42,7 +43,7 @@ class CompanyShareholderCountValidationTest {
 
     @Test
     @Description("Should not throw exception on company with no shareholders")
-    void validateDoesNotThrowOnZeroShareholders() {
+    void validateDoesNotThrowOnZeroShareholders() throws ServiceException {
         when(shareholderService.getShareholderCount(COMPANY_NUMBER)).thenReturn(0);
 
         assertDoesNotThrow(() -> validation.validate(profile));
@@ -50,7 +51,7 @@ class CompanyShareholderCountValidationTest {
 
     @Test
     @Description("Should not throw exception on company with a single shareholder")
-    void validateDoesNotThrowOnSingleShareholders() {
+    void validateDoesNotThrowOnSingleShareholders() throws ServiceException {
         when(shareholderService.getShareholderCount(COMPANY_NUMBER)).thenReturn(1);
 
         assertDoesNotThrow(() -> validation.validate(profile));
@@ -58,7 +59,7 @@ class CompanyShareholderCountValidationTest {
 
     @Test
     @Description("Should throw exception on company with multiple shareholders")
-    void validateThrowsOnMultipleShareholders() {
+    void validateThrowsOnMultipleShareholders() throws ServiceException {
         when(shareholderService.getShareholderCount(COMPANY_NUMBER)).thenReturn(2);
 
         var ex = assertThrows(EligibilityException.class, () -> validation.validate(profile));
@@ -69,7 +70,7 @@ class CompanyShareholderCountValidationTest {
 
     @Test
     @Description("Should not check shareholder count for limited-by-gurantee company")
-    void validateDoesNotThrowOnMultipleShareholdersForLimitedByGuaranteeCompanyTest() throws EligibilityException {
+    void validateDoesNotThrowOnMultipleShareholdersForLimitedByGuaranteeCompanyTest() throws EligibilityException, ServiceException {
         profile.setType(LTD_BY_GUARANTEE);
         validation.validate(profile);
 
@@ -78,7 +79,7 @@ class CompanyShareholderCountValidationTest {
 
     @Test
     @Description("Should not check validation if flag is OFF")
-    void validateDoesNotRunIfFlagIsOffTest() throws EligibilityException {
+    void validateDoesNotRunIfFlagIsOffTest() throws EligibilityException, ServiceException {
         var mValidation = new CompanyShareholderCountValidation(shareholderService, false);
         mValidation.validate(profile);
 

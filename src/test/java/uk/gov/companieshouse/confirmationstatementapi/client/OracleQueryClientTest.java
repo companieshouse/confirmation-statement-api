@@ -18,6 +18,7 @@ import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.company.PrivateCompanyResourceHandler;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyEmailGet;
+import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyShareHoldersCountGet;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
@@ -65,10 +66,16 @@ class OracleQueryClientTest {
     private ApiResponse<uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson> apiPrivateCompanyEmailGetResponse;
 
     @Mock
+    private ApiResponse<Integer> apiPrivateCompanyShareholdersCountGetResponse;
+
+    @Mock
     private PrivateCompanyResourceHandler privateCompanyResourceHandler;
 
     @Mock
     private PrivateCompanyEmailGet privateCompanyEmailGet;
+
+    @Mock
+    private PrivateCompanyShareHoldersCountGet privateCompanyShareHoldersCountGet;
 
     @Mock
     private RestTemplate restTemplate;
@@ -83,6 +90,7 @@ class OracleQueryClientTest {
         lenient().when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
         lenient().when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
         lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
+        lenient().when(privateCompanyResourceHandler.getCompanyShareHoldersCount(Mockito.anyString())).thenReturn(privateCompanyShareHoldersCountGet);
     }
 
     @Test
@@ -97,13 +105,39 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetCompanyShareholdersCount() {
+    void testGetShareholderCount() throws ServiceException, ApiErrorResponseException, URIValidationException {
+        // GIVEN
         int expectedCount = 1;
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/shareholders/count", Integer.class))
-                .thenReturn(new ResponseEntity<>(expectedCount, HttpStatus.OK));
 
+        // WHEN
+        when(privateCompanyShareHoldersCountGet.execute()).thenReturn(apiPrivateCompanyShareholdersCountGetResponse);
+        when(apiPrivateCompanyShareholdersCountGetResponse.getData()).thenReturn(expectedCount);
+
+        // THEN
         int result = oracleQueryClient.getShareholderCount(COMPANY_NUMBER);
         assertEquals(expectedCount, result);
+    }
+
+    @Test
+    void testGetShareholderCountInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        when(privateCompanyShareHoldersCountGet.execute()).thenThrow(URIValidationException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholderCount(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetShareholderCountApiErrorResponseThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        when(privateCompanyShareHoldersCountGet.execute()).thenThrow(ApiErrorResponseException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholderCount(COMPANY_NUMBER));
     }
 
     @Test
@@ -343,11 +377,11 @@ class OracleQueryClientTest {
     @Test
     void testGetRegisteredEmailAddressUnexpectedResponse() throws RegisteredEmailNotFoundException, ApiErrorResponseException, URIValidationException {
         // GIVEN
-        ApiErrorResponseException BAD_REQUEST_Exception = ApiErrorResponseException.fromHttpResponseException(
+        ApiErrorResponseException BAD_REQUEST_EXCEPTION = ApiErrorResponseException.fromHttpResponseException(
                 new HttpResponseException.Builder(400, "ERROR", new HttpHeaders()).build());
 
         // WHEN
-        when(privateCompanyEmailGet.execute()).thenThrow(BAD_REQUEST_Exception);
+        when(privateCompanyEmailGet.execute()).thenThrow(BAD_REQUEST_EXCEPTION);
 
         // THEN
         try {
@@ -363,11 +397,11 @@ class OracleQueryClientTest {
     @Test
     void testGetRegisteredEmailAddressEmailAddressResponseNotFound() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
-        ApiErrorResponseException NOT_FOUND_Exception = ApiErrorResponseException.fromHttpResponseException(
+        ApiErrorResponseException NOT_FOUND_EXCEPTION = ApiErrorResponseException.fromHttpResponseException(
                 new HttpResponseException.Builder(404, "ERROR", new HttpHeaders()).build());
 
         // WHEN
-        when(privateCompanyEmailGet.execute()).thenThrow(NOT_FOUND_Exception);
+        when(privateCompanyEmailGet.execute()).thenThrow(NOT_FOUND_EXCEPTION);
 
         // THEN
         assertThrows(RegisteredEmailNotFoundException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));

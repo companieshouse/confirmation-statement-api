@@ -46,7 +46,7 @@ class ShareholderServiceTest {
     }
 
     @Test
-    void getCompanyShareholdersCountTest() {
+    void getCompanyShareholdersCountTest() throws ServiceException {
         when(oracleQueryClient.getShareholderCount(COMPANY_NUMBER)).thenReturn(0);
 
         var response = shareholderService.getShareholderCount(COMPANY_NUMBER);

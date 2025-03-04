@@ -22,7 +22,7 @@ public class ShareholderService {
         return oracleQueryClient.getShareholders(companyNumber);
     }
 
-    public int getShareholderCount(String companyNumber) {
+    public int getShareholderCount(String companyNumber) throws ServiceException {
         return oracleQueryClient.getShareholderCount(companyNumber);
     }
 
