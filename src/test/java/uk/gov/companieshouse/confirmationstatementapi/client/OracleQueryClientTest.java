@@ -2,6 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.client;
 
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponseException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,15 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.company.PrivateCompanyResourceHandler;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyEmailGet;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyShareHoldersCountGet;
+import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyStatementOfCapitalDataGet;
+import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyTradedStatusGet;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
+import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -32,7 +37,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantC
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -66,7 +70,13 @@ class OracleQueryClientTest {
     private ApiResponse<uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson> apiPrivateCompanyEmailGetResponse;
 
     @Mock
+    private ApiResponse<Long> apiPrivateCompanyTradedStatusGetResponse;
+
+    @Mock
     private ApiResponse<Integer> apiPrivateCompanyShareholdersCountGetResponse;
+
+    @Mock
+    private ApiResponse<StatementOfCapitalJson> apiPrivateCompanyStatementOfCapitalGetResponse;
 
     @Mock
     private PrivateCompanyResourceHandler privateCompanyResourceHandler;
@@ -75,7 +85,13 @@ class OracleQueryClientTest {
     private PrivateCompanyEmailGet privateCompanyEmailGet;
 
     @Mock
+    private PrivateCompanyTradedStatusGet privateCompanyTradedStatusGet;
+
+    @Mock
     private PrivateCompanyShareHoldersCountGet privateCompanyShareHoldersCountGet;
+
+    @Mock
+    private PrivateCompanyStatementOfCapitalDataGet privateCompanyStatementOfCapitalDataGet;
 
     @Mock
     private RestTemplate restTemplate;
@@ -89,77 +105,46 @@ class OracleQueryClientTest {
         ReflectionTestUtils.setField(oracleQueryClient, "oracleQueryApiUrl", DUMMY_URL);
         lenient().when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
         lenient().when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
-        lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
+        lenient().when(privateCompanyResourceHandler.getCompanyTradedStatus(Mockito.anyString())).thenReturn(privateCompanyTradedStatusGet);
         lenient().when(privateCompanyResourceHandler.getCompanyShareHoldersCount(Mockito.anyString())).thenReturn(privateCompanyShareHoldersCountGet);
+        lenient().when(privateCompanyResourceHandler.getStatementOfCapitalData(Mockito.anyString())).thenReturn(privateCompanyStatementOfCapitalDataGet);
+        lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
     }
 
     @Test
-    void testGetCompanyTradedStatus() {
-        var tradedStatus = 0L;
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + "/traded-status", Long.class))
-                .thenReturn(new ResponseEntity<>(tradedStatus, HttpStatus.OK));
-
-        Long result = oracleQueryClient.getCompanyTradedStatus(COMPANY_NUMBER);
-
-        assertEquals(tradedStatus, result);
-    }
-
-    @Test
-    void testGetShareholderCount() throws ServiceException, ApiErrorResponseException, URIValidationException {
+    void testGetTradedStatus() throws ApiErrorResponseException, URIValidationException, ServiceException {
         // GIVEN
-        int expectedCount = 1;
+        long expectedCount = 1;
 
         // WHEN
-        when(privateCompanyShareHoldersCountGet.execute()).thenReturn(apiPrivateCompanyShareholdersCountGetResponse);
-        when(apiPrivateCompanyShareholdersCountGetResponse.getData()).thenReturn(expectedCount);
+        when(privateCompanyTradedStatusGet.execute()).thenReturn(apiPrivateCompanyTradedStatusGetResponse);
+        when(apiPrivateCompanyTradedStatusGetResponse.getData()).thenReturn(expectedCount);
 
         // THEN
-        int result = oracleQueryClient.getShareholderCount(COMPANY_NUMBER);
+        long result = oracleQueryClient.getCompanyTradedStatus(COMPANY_NUMBER);
         assertEquals(expectedCount, result);
     }
 
     @Test
-    void testGetShareholderCountInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+    void testGetTradedStatusInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
 
         // WHEN
-        when(privateCompanyShareHoldersCountGet.execute()).thenThrow(URIValidationException.class);
+        when(privateCompanyTradedStatusGet.execute()).thenThrow(URIValidationException.class);
 
         // THEN
-        assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholderCount(COMPANY_NUMBER));
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getCompanyTradedStatus(COMPANY_NUMBER));
     }
 
     @Test
-    void testGetShareholderCountApiErrorResponseThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+    void testGetCompanyTradedStatusApiErrorResponseThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
 
         // WHEN
-        when(privateCompanyShareHoldersCountGet.execute()).thenThrow(ApiErrorResponseException.class);
+        when(privateCompanyTradedStatusGet.execute()).thenThrow(ApiErrorResponseException.class);
 
         // THEN
-        assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholderCount(COMPANY_NUMBER));
-    }
-
-    @Test
-    void testGetStatementOfCapitalData() throws ServiceException, StatementOfCapitalNotFoundException {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + SOC_PATH, StatementOfCapitalJson.class))
-                .thenReturn(new ResponseEntity<>(new StatementOfCapitalJson(), HttpStatus.OK));
-        StatementOfCapitalJson result = oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER);
-        assertNotNull(result);
-    }
-
-    @Test
-    void testGetStatementOfCapitalDataNullResponse() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + SOC_PATH, StatementOfCapitalJson.class))
-                .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
-        assertThrows(StatementOfCapitalNotFoundException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
-    }
-
-    @Test
-    void testGetStatementOfCapitalDataNotOkStatusResponse() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + SOC_PATH, StatementOfCapitalJson.class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getCompanyTradedStatus(COMPANY_NUMBER));
     }
 
     @Test
@@ -346,6 +331,102 @@ class OracleQueryClientTest {
                 ConfirmationStatementPaymentJson.class)).thenReturn(response);
         assertThrows(ServiceException.class, () ->
                 oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+    }
+
+    @Test
+    void testGetStatementOfCapitalData() throws ServiceException, ApiErrorResponseException, URIValidationException, StatementOfCapitalNotFoundException {
+        // GIVEN
+        StatementOfCapitalJson expectedJson = new StatementOfCapitalJson();
+
+        // WHEN
+        when(privateCompanyStatementOfCapitalDataGet.execute()).thenReturn(apiPrivateCompanyStatementOfCapitalGetResponse);
+        when(apiPrivateCompanyStatementOfCapitalGetResponse.getData()).thenReturn(expectedJson);
+
+        // THEN
+        StatementOfCapitalJson result = oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER);
+        assertEquals(expectedJson, result);
+    }
+
+    @Test
+    void testGetStatementOfCapitalDataServiceUnavailable() {
+        // GIVEN
+
+        // WHEN
+        lenient().when(apiPrivateCompanyStatementOfCapitalGetResponse.getData()).thenThrow(RestClientException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetStatementOfCapitalDataInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        lenient().when(privateCompanyStatementOfCapitalDataGet.execute()).thenThrow(URIValidationException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetStatementOfCapitalDataUnexpectedResponse() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        when(privateCompanyStatementOfCapitalDataGet.execute()).thenThrow(ApiErrorResponseException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetStatementOfCapitalDataResponseNotFound() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+        ApiErrorResponseException NOT_FOUND_EXCEPTION = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(404, "ERROR", new HttpHeaders()).build());
+
+        // WHEN
+        when(privateCompanyStatementOfCapitalDataGet.execute()).thenThrow(NOT_FOUND_EXCEPTION);
+
+        // THEN
+        assertThrows(StatementOfCapitalNotFoundException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetShareholderCount() throws ApiErrorResponseException, URIValidationException, ServiceException {
+        // GIVEN
+        int expectedCount = 1;
+
+        // WHEN
+        when(privateCompanyShareHoldersCountGet.execute()).thenReturn(apiPrivateCompanyShareholdersCountGetResponse);
+        when(apiPrivateCompanyShareholdersCountGetResponse.getData()).thenReturn(expectedCount);
+
+        // THEN
+        int result = oracleQueryClient.getShareholderCount(COMPANY_NUMBER);
+        assertEquals(expectedCount, result);
+    }
+
+    @Test
+    void testGetShareholderCountInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        when(privateCompanyShareHoldersCountGet.execute()).thenThrow(URIValidationException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholderCount(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetShareholderCountApiErrorResponseThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        when(privateCompanyShareHoldersCountGet.execute()).thenThrow(ApiErrorResponseException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholderCount(COMPANY_NUMBER));
     }
 
     @Test

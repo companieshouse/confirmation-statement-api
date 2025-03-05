@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
+import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -18,7 +20,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantC
 import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.ArrayList;
@@ -34,11 +35,13 @@ public class OracleQueryClient {
 
     private static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL: %s";
 
+    private static final String CALLING_INTERNAL_API_CLIENT_GET = "Calling Oracle Query API URL '%s' via Internal Api Client";
+
     private static final String ORACLE_QUERY_API_STATUS_MESSAGE = "Oracle query api returned with status = %s, companyNumber = %s";
 
-    private static final String ORACLE_QUERY_API_NO_DATA = "Oracle query api returned no data";
-
     private static final String REGISTERED_EMAIL_ADDRESS_NOT_FOUND = "Registered Email Address not found";
+
+    private static final String STATEMENT_OF_CAPITAL_NOT_FOUND = "Statement Of Capital not found";
 
     private static final String REGISTERED_EMAIL_ADDRESS_URI_SUFFIX = "/company/%s/registered-email-address";
 
@@ -54,46 +57,67 @@ public class OracleQueryClient {
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
 
-    public Long getCompanyTradedStatus(String companyNumber) {
-        var getCompanyTradedStatusUrl = String.format("%s/company/%s/traded-status", oracleQueryApiUrl, companyNumber);
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, getCompanyTradedStatusUrl));
+    public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
+        var tradedStatusUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, tradedStatusUrl));
 
-        ResponseEntity<Long> response = restTemplate.getForEntity(getCompanyTradedStatusUrl, Long.class);
-        return response.getBody();
-    }
-
-    public Integer getShareholderCount(String companyNumber) throws ServiceException {
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
             internalApiClient.setBasePath(oracleQueryApiUrl);
 
             return internalApiClient
                     .privateCompanyResourceHandler()
-                    .getCompanyShareHoldersCount(String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber))
+                    .getCompanyTradedStatus(tradedStatusUrl)
                     .execute()
                     .getData();
         } catch (Exception e) {
+            //todo ade - can not found happen?
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
+        }
+    }
+
+    public Integer getShareholderCount(String companyNumber) throws ServiceException {
+        var shareholderCountUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, shareholderCountUrl));
+
+        try {
+            var internalApiClient = apiClientService.getInternalApiClient();
+            internalApiClient.setBasePath(oracleQueryApiUrl);
+
+            return internalApiClient
+                    .privateCompanyResourceHandler()
+                    .getCompanyShareHoldersCount(shareholderCountUrl)
+                    .execute()
+                    .getData();
+        } catch (Exception e) {
+            //todo ade - not found happen?
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
         }
     }
 
     public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {
         var statementOfCapitalUrl = String.format("%s/company/%s/statement-of-capital", oracleQueryApiUrl, companyNumber);
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, statementOfCapitalUrl));
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, statementOfCapitalUrl));
 
-        ResponseEntity<StatementOfCapitalJson> response = restTemplate.getForEntity(statementOfCapitalUrl, StatementOfCapitalJson.class);
-        if (response.getStatusCode() == OK) {
-            var statementOfCapitalJson = response.getBody();
-            if (statementOfCapitalJson != null) {
-                return statementOfCapitalJson;
+        var internalApiClient = apiClientService.getInternalApiClient();
+        internalApiClient.setBasePath(oracleQueryApiUrl);
+
+        try {
+            return internalApiClient
+                    .privateCompanyResourceHandler()
+                    .getStatementOfCapitalData(statementOfCapitalUrl)
+                    .execute()
+                    .getData();
+        } catch (ApiErrorResponseException aere) {
+            if (aere.getStatusCode() == NOT_FOUND.value()) {
+                throw new StatementOfCapitalNotFoundException(STATEMENT_OF_CAPITAL_NOT_FOUND);
             } else {
-                throw new StatementOfCapitalNotFoundException(ORACLE_QUERY_API_NO_DATA);
+                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber));
             }
-        } else {
-            throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
+        } catch (Exception e) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
         }
     }
-
 
     public ActiveOfficerDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
         var directorDetailsUrl = String.format("%s/company/%s/director/active", oracleQueryApiUrl, companyNumber);

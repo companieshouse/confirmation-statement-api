@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+//todo ade - also now in private-api-sdk-java, refactor?
 public class StatementOfCapitalJson {
 
     @JsonProperty("class_of_shares")

@@ -6,10 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+
+import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapitalService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

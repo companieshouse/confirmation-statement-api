@@ -4,6 +4,7 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusType;
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -19,7 +20,7 @@ public class CompanyTradedStatusValidation implements EligibilityRule<CompanyPro
     }
 
     @Override
-    public void validate(CompanyProfileApi profileToValidate) throws EligibilityException {
+    public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
         var companyNumber = profileToValidate.getCompanyNumber();
         ApiLogger.info(String.format("Validating Company Traded Status for: %s", companyNumber));
         if (!tradedStatusEligibilityFlag) {
