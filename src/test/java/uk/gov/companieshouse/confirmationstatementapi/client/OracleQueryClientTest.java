@@ -30,6 +30,7 @@ import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.payment.ConfirmationStatementPaymentJson;
+import uk.gov.companieshouse.api.model.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -37,7 +38,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapit
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
