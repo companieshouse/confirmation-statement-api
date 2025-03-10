@@ -70,7 +70,6 @@ public class OracleQueryClient {
                     .execute()
                     .getData();
         } catch (Exception e) {
-            //todo ade - can not found happen?
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
         }
     }
@@ -89,7 +88,6 @@ public class OracleQueryClient {
                     .execute()
                     .getData();
         } catch (Exception e) {
-            //todo ade - not found happen?
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
         }
     }
@@ -118,6 +116,7 @@ public class OracleQueryClient {
         }
     }
 
+    //todo
     public ActiveOfficerDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
         var directorDetailsUrl = String.format("%s/company/%s/director/active", oracleQueryApiUrl, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl));
@@ -133,6 +132,7 @@ public class OracleQueryClient {
         throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
     }
 
+    //todo
     public List<ActiveOfficerDetails> getActiveOfficersDetails(String companyNumber) throws ServiceException {
         var officersDetailsUrl = String.format("%s/company/%s/officers/active", oracleQueryApiUrl, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, officersDetailsUrl));
@@ -147,6 +147,7 @@ public class OracleQueryClient {
         return Arrays.asList(response.getBody());
     }
 
+    //todo
     public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
         var pscUrl = String.format("%s/company/%s/corporate-body-appointments/persons-of-significant-control", oracleQueryApiUrl, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl));
@@ -161,6 +162,7 @@ public class OracleQueryClient {
         return Arrays.asList(response.getBody());
     }
 
+    //todo
     public List<RegisterLocationJson> getRegisterLocations(String companyNumber) throws ServiceException {
         var regLocUrl = String.format("%s/company/%s/register/location", oracleQueryApiUrl, companyNumber);
 
@@ -176,6 +178,7 @@ public class OracleQueryClient {
         return Arrays.asList(response.getBody());
     }
 
+    //todo - ShareholderJson moved to private-api-sdk-java
     public List<ShareholderJson> getShareholders(String companyNumber) throws ServiceException {
         var shareholdersUrl = String.format("%s/company/%s/shareholders", oracleQueryApiUrl, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, shareholdersUrl));
