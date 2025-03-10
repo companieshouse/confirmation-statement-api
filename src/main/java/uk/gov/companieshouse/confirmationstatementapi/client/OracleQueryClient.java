@@ -17,7 +17,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -192,29 +191,35 @@ public class OracleQueryClient {
     }
 
     public boolean isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
-        var paymentsUrl = String.format(
-                "%s/company/%s/confirmation-statement/paid?payment_period_made_up_to_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
+        var paymentsUrl = String.format("%s/company/%s/confirmation-statement/paid?payment_period_made_up_to_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, paymentsUrl));
 
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, paymentsUrl));
-        ResponseEntity<ConfirmationStatementPaymentJson> response = restTemplate.getForEntity(paymentsUrl, ConfirmationStatementPaymentJson.class);
-        if (response.getStatusCode() != OK) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE + " with due date %s", response.getStatusCode(), companyNumber, dueDate));
-        }
-        var confirmationStatementPaymentJson = response.getBody();
-        if (confirmationStatementPaymentJson == null || confirmationStatementPaymentJson.isPaid() == null) {
-            throw new ServiceException("Oracle query api returned null for " + companyNumber + " with due date " + dueDate + ", boolean values expected");
-        }
-        return confirmationStatementPaymentJson.isPaid();
-    }
-
-    public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
             internalApiClient.setBasePath(oracleQueryApiUrl);
 
             return internalApiClient
                     .privateCompanyResourceHandler()
-                    .getCompanyRegisteredEmailAddress(String.format(REGISTERED_EMAIL_ADDRESS_URI_SUFFIX, companyNumber))
+                    .getConfirmationStatementPayment(paymentsUrl)
+                    .execute()
+                    .getData()
+                    .isPaid();
+        } catch (Exception e) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber + " with due date " + dueDate));
+        }
+    }
+
+    public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
+        var registeredEmailAddressUrl = String.format(REGISTERED_EMAIL_ADDRESS_URI_SUFFIX, companyNumber);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, registeredEmailAddressUrl));
+
+        try {
+            var internalApiClient = apiClientService.getInternalApiClient();
+            internalApiClient.setBasePath(oracleQueryApiUrl);
+
+            return internalApiClient
+                    .privateCompanyResourceHandler()
+                    .getCompanyRegisteredEmailAddress(registeredEmailAddressUrl)
                     .execute()
                     .getData();
         } catch (ApiErrorResponseException aere) {

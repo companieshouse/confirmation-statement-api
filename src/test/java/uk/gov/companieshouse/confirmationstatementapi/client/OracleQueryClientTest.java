@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.company.PrivateCompanyResourceHandler;
+import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyConfirmationStatementPaymentGet;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyEmailGet;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyShareHoldersCountGet;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyStatementOfCapitalDataGet;
@@ -28,13 +29,13 @@ import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
+import uk.gov.companieshouse.api.model.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 
@@ -54,11 +55,10 @@ class OracleQueryClientTest {
     private static final String COMPANY_NUMBER = "12345678";
     private static final String DUMMY_URL = "http://test";
     private static final String PSC_PATH = "/corporate-body-appointments/persons-of-significant-control";
-    private static final String SOC_PATH = "/statement-of-capital";
     private static final String SHAREHOLDER_PATH = "/shareholders";
     private static final String REGISTER_LOCATIONS_PATH = "/register/location";
-    private static final String PAYMENT_PATH = "/company/" + COMPANY_NUMBER + "/confirmation-statement/paid?payment_period_made_up_to_date=2022-01-01";
     private static final String COMPANY_EMAIL = "info@acme.com";
+    public static final String DUE_DATE = "2022-01-01";
 
     @Mock
     private ApiClientService apiClientService;
@@ -79,6 +79,9 @@ class OracleQueryClientTest {
     private ApiResponse<StatementOfCapitalJson> apiPrivateCompanyStatementOfCapitalGetResponse;
 
     @Mock
+    private ApiResponse<ConfirmationStatementPaymentJson> apiConfirmationStatementPaymentJsonApiResponse;
+
+    @Mock
     private PrivateCompanyResourceHandler privateCompanyResourceHandler;
 
     @Mock
@@ -86,6 +89,9 @@ class OracleQueryClientTest {
 
     @Mock
     private PrivateCompanyTradedStatusGet privateCompanyTradedStatusGet;
+
+    @Mock
+    private PrivateCompanyConfirmationStatementPaymentGet privateCompanyConfirmationStatementPaymentGet;
 
     @Mock
     private PrivateCompanyShareHoldersCountGet privateCompanyShareHoldersCountGet;
@@ -109,6 +115,7 @@ class OracleQueryClientTest {
         lenient().when(privateCompanyResourceHandler.getCompanyShareHoldersCount(Mockito.anyString())).thenReturn(privateCompanyShareHoldersCountGet);
         lenient().when(privateCompanyResourceHandler.getStatementOfCapitalData(Mockito.anyString())).thenReturn(privateCompanyStatementOfCapitalDataGet);
         lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
+        lenient().when(privateCompanyResourceHandler.getConfirmationStatementPayment(Mockito.anyString())).thenReturn(privateCompanyConfirmationStatementPaymentGet);
     }
 
     @Test
@@ -302,35 +309,55 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testIsConfirmationStatementPaid() throws ServiceException {
+    void testIsConfirmationStatementIsPaid() throws ServiceException, ApiErrorResponseException, URIValidationException {
+        // GIVEN
         ConfirmationStatementPaymentJson confirmationStatementPaymentJson = new ConfirmationStatementPaymentJson();
-        confirmationStatementPaymentJson.setPaid(Boolean.TRUE);
-        ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(confirmationStatementPaymentJson);
-        when(restTemplate.getForEntity(
-                DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class)).thenReturn(response);
-        assertTrue(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+        confirmationStatementPaymentJson.setPaid(true);
+
+        // WHEN
+        when(privateCompanyConfirmationStatementPaymentGet.execute()).thenReturn(apiConfirmationStatementPaymentJsonApiResponse);
+        when(apiConfirmationStatementPaymentJsonApiResponse.getData()).thenReturn(confirmationStatementPaymentJson);
+
+        // THEN
+        boolean result = oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, DUE_DATE);
+        assertTrue(result);
     }
 
     @Test
-    void testIsNotConfirmationStatementPaid() throws ServiceException {
+    void testConfirmationStatementIsNotPaid() throws ServiceException, ApiErrorResponseException, URIValidationException {
+        // GIVEN
         ConfirmationStatementPaymentJson confirmationStatementPaymentJson = new ConfirmationStatementPaymentJson();
-        confirmationStatementPaymentJson.setPaid(Boolean.FALSE);
-        ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(confirmationStatementPaymentJson);
-        when(restTemplate.getForEntity(
-                DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class)).thenReturn(response);
-        assertFalse(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+        confirmationStatementPaymentJson.setPaid(false);
+
+        // WHEN
+        when(privateCompanyConfirmationStatementPaymentGet.execute()).thenReturn(apiConfirmationStatementPaymentJsonApiResponse);
+        when(apiConfirmationStatementPaymentJsonApiResponse.getData()).thenReturn(confirmationStatementPaymentJson);
+
+        // THEN
+        boolean result = oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, DUE_DATE);
+        assertFalse(result);
     }
 
     @Test
-    void testIsNullConfirmationStatementPaid() {
-        ResponseEntity<ConfirmationStatementPaymentJson> response = ResponseEntity.status(HttpStatus.OK).body(null);
-        when(restTemplate.getForEntity(
-                DUMMY_URL + PAYMENT_PATH,
-                ConfirmationStatementPaymentJson.class)).thenReturn(response);
-        assertThrows(ServiceException.class, () ->
-                oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2022-01-01"));
+    void testConfirmationStatementPaidInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        lenient().when(privateCompanyConfirmationStatementPaymentGet.execute()).thenThrow(URIValidationException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, DUE_DATE));
+    }
+
+    @Test
+    void testGetConfirmationStatementPaidUnexpectedResponse() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        when(privateCompanyConfirmationStatementPaymentGet.execute()).thenThrow(ApiErrorResponseException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, DUE_DATE));
     }
 
     @Test
