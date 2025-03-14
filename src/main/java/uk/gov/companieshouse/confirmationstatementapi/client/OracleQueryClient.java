@@ -73,12 +73,11 @@ public class OracleQueryClient {
     }
 
     public Integer getShareholderCount(String companyNumber) throws ServiceException {
-        var shareholderCountUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
+        var shareholderCountUrl = String.format("/company/%s/shareholders/count", companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, shareholderCountUrl));
 
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            internalApiClient.setBasePath(oracleQueryApiUrl);
 
             return internalApiClient
                     .privateCompanyResourceHandler()
