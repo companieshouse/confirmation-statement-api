@@ -90,11 +90,10 @@ public class OracleQueryClient {
     }
 
     public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {
-        var statementOfCapitalUrl = String.format("%s/company/%s/statement-of-capital", oracleQueryApiUrl, companyNumber);
+        var statementOfCapitalUrl = String.format("/company/%s/statement-of-capital", companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, statementOfCapitalUrl));
 
         var internalApiClient = apiClientService.getInternalApiClient();
-        internalApiClient.setBasePath(oracleQueryApiUrl);
 
         try {
             return internalApiClient
