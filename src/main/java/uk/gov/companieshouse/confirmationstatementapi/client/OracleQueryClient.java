@@ -1,13 +1,16 @@
 package uk.gov.companieshouse.confirmationstatementapi.client;
 
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.shareholder.ShareholderJson;
@@ -55,13 +58,14 @@ public class OracleQueryClient {
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
 
+    // prafull working on this
     public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
         var tradedStatusUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, tradedStatusUrl));
 
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            internalApiClient.setBasePath(oracleQueryApiUrl);
+//            internalApiClient.setBasePath(oracleQueryApiUrl);
 
             return internalApiClient
                     .privateCompanyResourceHandler()
@@ -115,20 +119,26 @@ public class OracleQueryClient {
         }
     }
 
-    //todo
     public ActiveOfficerDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
-        var directorDetailsUrl = String.format("%s/company/%s/director/active", oracleQueryApiUrl, companyNumber);
+        String directorDetailsUrl = String.format("/company/%s/director/active", companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl));
 
-        ResponseEntity<ActiveOfficerDetails> response = restTemplate.getForEntity(directorDetailsUrl, ActiveOfficerDetails.class);
+        try {
+            var internalApiClient = apiClientService.getInternalApiClient();
+//            internalApiClient.setBasePath(oracleQueryApiUrl); // unsure if this is needed
 
-        HttpStatusCode statusCode = response.getStatusCode();
-        if (statusCode.equals(OK)) {
-            return response.getBody();
-        } else if (statusCode.equals(NOT_FOUND)) {
-            throw new ActiveOfficerNotFoundException("Oracle query api returned no data. Company has either multiple or no active officers");
+            var director = internalApiClient.privateCompanyResourceHandler().getActiveDirector(directorDetailsUrl).execute().getData();
+            var activeDirectorDetails = new ActiveOfficerDetails();
+
+            // Copy properties from director to activeDirectorDetails
+            BeanUtils.copyProperties(director, activeDirectorDetails);
+
+            return activeDirectorDetails;
+        } catch (ApiErrorResponseException e) {
+            throw new RuntimeException(e);
+        } catch (URIValidationException e) {
+            throw new RuntimeException(e);
         }
-        throw new ServiceException("Oracle query api returned with status " + response.getStatusCode());
     }
 
     //todo
