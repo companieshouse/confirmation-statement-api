@@ -56,12 +56,11 @@ public class OracleQueryClient {
     private boolean multipleOfficerJourneyFeatureFlag;
 
     public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
-        var tradedStatusUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
+        var tradedStatusUrl = String.format("/company/%s/traded-status", companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, tradedStatusUrl));
 
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            internalApiClient.setBasePath(oracleQueryApiUrl);
 
             return internalApiClient
                     .privateCompanyResourceHandler()
