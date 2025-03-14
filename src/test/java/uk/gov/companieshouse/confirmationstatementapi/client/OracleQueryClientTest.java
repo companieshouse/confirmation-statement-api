@@ -115,7 +115,8 @@ class OracleQueryClientTest {
         lenient().when(privateCompanyResourceHandler.getCompanyShareHoldersCount(Mockito.anyString())).thenReturn(privateCompanyShareHoldersCountGet);
         lenient().when(privateCompanyResourceHandler.getStatementOfCapitalData(Mockito.anyString())).thenReturn(privateCompanyStatementOfCapitalDataGet);
         lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
-        lenient().when(privateCompanyResourceHandler.getConfirmationStatementPayment(Mockito.anyString())).thenReturn(privateCompanyConfirmationStatementPaymentGet);
+        lenient().when(privateCompanyResourceHandler.getConfirmationStatementPayment(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(privateCompanyConfirmationStatementPaymentGet);
     }
 
     @Test

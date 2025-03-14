@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
@@ -193,22 +192,21 @@ public class OracleQueryClient {
         return Arrays.asList(response.getBody());
     }
 
-    public boolean isConfirmationStatementPaid(String companyNumber, String dueDate) throws ServiceException {
-        var paymentsUrl = String.format("%s/company/%s/confirmation-statement/paid?payment_period_made_up_to_date=%s", oracleQueryApiUrl, companyNumber, dueDate);
+    public boolean isConfirmationStatementPaid(String companyNumber, String paymentPeriodMadeUpToDate) throws ServiceException {
+        var paymentsUrl = String.format("/company/%s/confirmation-statement/paid", companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, paymentsUrl));
 
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            internalApiClient.setBasePath(oracleQueryApiUrl);
-
             return internalApiClient
                     .privateCompanyResourceHandler()
-                    .getConfirmationStatementPayment(paymentsUrl)
+                    .getConfirmationStatementPayment(paymentsUrl, paymentPeriodMadeUpToDate)
                     .execute()
                     .getData()
                     .isPaid();
         } catch (Exception e) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber + " with due date " + dueDate));
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR,
+                    companyNumber + " with due date " + paymentPeriodMadeUpToDate));
         }
     }
 
