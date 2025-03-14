@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.client;
 
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.BeanUtils;
@@ -58,14 +57,12 @@ public class OracleQueryClient {
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
 
-    // prafull working on this
     public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
-        var tradedStatusUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
+        var tradedStatusUrl = String.format("/company/%s/traded-status", companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, tradedStatusUrl));
 
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-//            internalApiClient.setBasePath(oracleQueryApiUrl);
 
             return internalApiClient
                     .privateCompanyResourceHandler()
@@ -78,12 +75,11 @@ public class OracleQueryClient {
     }
 
     public Integer getShareholderCount(String companyNumber) throws ServiceException {
-        var shareholderCountUrl = String.format("%s/company/%s/shareholders/count", oracleQueryApiUrl, companyNumber);
+        var shareholderCountUrl = String.format("/company/%s/shareholders/count", companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, shareholderCountUrl));
 
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            internalApiClient.setBasePath(oracleQueryApiUrl);
 
             return internalApiClient
                     .privateCompanyResourceHandler()
@@ -96,11 +92,10 @@ public class OracleQueryClient {
     }
 
     public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {
-        var statementOfCapitalUrl = String.format("%s/company/%s/statement-of-capital", oracleQueryApiUrl, companyNumber);
+        var statementOfCapitalUrl = String.format("/company/%s/statement-of-capital", companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, statementOfCapitalUrl));
 
         var internalApiClient = apiClientService.getInternalApiClient();
-        internalApiClient.setBasePath(oracleQueryApiUrl);
 
         try {
             return internalApiClient
