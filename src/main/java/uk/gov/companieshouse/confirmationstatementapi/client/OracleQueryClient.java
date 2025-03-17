@@ -45,6 +45,9 @@ public class OracleQueryClient {
     private static final String API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC = "/company/%s/corporate-body-appointments/persons-of-significant-control";
     private static final String API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID = "/company/%s/confirmation-statement/paid";
     private static final String API_PATH_REGISTERED_EMAIL_ADDRESS = "/company/%s/registered-email-address";
+    private static final String EXCEPTION_INVALID_URI = "Invalid URI: %s";
+    private static final String GENERAL_EXCEPTION_API_CALL = "Error occurred while calling '%s'";
+
 
     @Autowired
     private ApiClientService apiClientService;
@@ -210,9 +213,13 @@ public class OracleQueryClient {
                     .execute()
                     .getData()
                     .isPaid();
+        } catch (ApiErrorResponseException aere) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(),
+                    companyNumber + " with due date " + paymentPeriodMadeUpToDate), aere);
+        } catch (URIValidationException urive) {
+            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, paymentsUrl), urive);
         } catch (Exception e) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR,
-                    companyNumber + " with due date " + paymentPeriodMadeUpToDate));
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID), e);
         }
     }
 
