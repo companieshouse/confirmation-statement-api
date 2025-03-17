@@ -127,16 +127,25 @@ public class OracleQueryClient {
 //            internalApiClient.setBasePath(oracleQueryApiUrl); // unsure if this is needed
 
             var director = internalApiClient.privateCompanyResourceHandler().getActiveDirector(directorDetailsUrl).execute().getData();
+
+            // Active officer not found handling
+            if (director == null) {
+                throw new ActiveOfficerNotFoundException(directorDetailsUrl);
+            }
+
             var activeDirectorDetails = new ActiveOfficerDetails();
 
             // Copy properties from director to activeDirectorDetails
             BeanUtils.copyProperties(director, activeDirectorDetails);
 
             return activeDirectorDetails;
-        } catch (ApiErrorResponseException e) {
-            throw new RuntimeException(e);
-        } catch (URIValidationException e) {
-            throw new RuntimeException(e);
+        } catch (ApiErrorResponseException aere) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(),
+                    companyNumber), aere);
+        }  catch (URIValidationException urive) {
+            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, directorDetailsUrl), urive);
+        } catch (Exception e) {
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, directorDetailsUrl), e);
         }
     }
 
