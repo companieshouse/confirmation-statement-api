@@ -219,7 +219,7 @@ public class OracleQueryClient {
         } catch (URIValidationException urive) {
             throw new ServiceException(String.format(EXCEPTION_INVALID_URI, paymentsUrl), urive);
         } catch (Exception e) {
-            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID), e);
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, paymentsUrl), e);
         }
     }
 
