@@ -34,16 +34,17 @@ import static org.springframework.http.HttpStatus.OK;
 public class OracleQueryClient {
 
     private static final String CALLING_ORACLE_QUERY_API_URL_GET = "Calling Oracle Query API URL: %s";
-
     private static final String CALLING_INTERNAL_API_CLIENT_GET = "Calling Oracle Query API URL '%s' via Internal Api Client";
-
     private static final String ORACLE_QUERY_API_STATUS_MESSAGE = "Oracle query api returned with status = %s, companyNumber = %s";
-
     private static final String REGISTERED_EMAIL_ADDRESS_NOT_FOUND = "Registered Email Address not found";
-
     private static final String STATEMENT_OF_CAPITAL_NOT_FOUND = "Statement Of Capital not found";
-
-    private static final String REGISTERED_EMAIL_ADDRESS_URI_SUFFIX = "/company/%s/registered-email-address";
+    private static final String API_PATH_COMPANY_TRADED_STATUS = "/company/%s/traded-status";
+    private static final String API_PATH_COMPANY_SHAREHOLDERS_COUNT = "/company/%s/shareholders/count";
+    private static final String API_PATH_COMPANY_STATEMENT_OF_CAPITAL = "/company/%s/statement-of-capital";
+    private static final String API_PATH_COMPANY_DIRECTOR_ACTIVE = "/company/%s/director/active";
+    private static final String API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC = "/company/%s/corporate-body-appointments/persons-of-significant-control";
+    private static final String API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID = "/company/%s/confirmation-statement/paid";
+    private static final String API_PATH_REGISTERED_EMAIL_ADDRESS = "/company/%s/registered-email-address";
 
     @Autowired
     private ApiClientService apiClientService;
@@ -58,7 +59,7 @@ public class OracleQueryClient {
     private boolean multipleOfficerJourneyFeatureFlag;
 
     public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
-        var tradedStatusUrl = String.format("/company/%s/traded-status", companyNumber);
+        var tradedStatusUrl = String.format(API_PATH_COMPANY_TRADED_STATUS, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, tradedStatusUrl));
 
         try {
@@ -75,7 +76,7 @@ public class OracleQueryClient {
     }
 
     public Integer getShareholderCount(String companyNumber) throws ServiceException {
-        var shareholderCountUrl = String.format("/company/%s/shareholders/count", companyNumber);
+        var shareholderCountUrl = String.format(API_PATH_COMPANY_SHAREHOLDERS_COUNT, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, shareholderCountUrl));
 
         try {
@@ -92,7 +93,7 @@ public class OracleQueryClient {
     }
 
     public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {
-        var statementOfCapitalUrl = String.format("/company/%s/statement-of-capital", companyNumber);
+        var statementOfCapitalUrl = String.format(API_PATH_COMPANY_STATEMENT_OF_CAPITAL, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, statementOfCapitalUrl));
 
         var internalApiClient = apiClientService.getInternalApiClient();
@@ -115,7 +116,7 @@ public class OracleQueryClient {
     }
 
     public ActiveOfficerDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
-        String directorDetailsUrl = String.format("/company/%s/director/active", companyNumber);
+        String directorDetailsUrl = String.format(API_PATH_COMPANY_DIRECTOR_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl));
 
         try {
@@ -153,7 +154,7 @@ public class OracleQueryClient {
 
     //todo
     public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
-        var pscUrl = String.format("%s/company/%s/corporate-body-appointments/persons-of-significant-control", oracleQueryApiUrl, companyNumber);
+        var pscUrl = String.format(API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC, oracleQueryApiUrl, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl));
 
         ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
@@ -198,7 +199,7 @@ public class OracleQueryClient {
     }
 
     public boolean isConfirmationStatementPaid(String companyNumber, String paymentPeriodMadeUpToDate) throws ServiceException {
-        var paymentsUrl = String.format("/company/%s/confirmation-statement/paid", companyNumber);
+        var paymentsUrl = String.format(API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, paymentsUrl));
 
         try {
@@ -216,7 +217,7 @@ public class OracleQueryClient {
     }
 
     public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {
-        var registeredEmailAddressUrl = String.format(REGISTERED_EMAIL_ADDRESS_URI_SUFFIX, companyNumber);
+        var registeredEmailAddressUrl = String.format(API_PATH_REGISTERED_EMAIL_ADDRESS, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, registeredEmailAddressUrl));
 
         try {
