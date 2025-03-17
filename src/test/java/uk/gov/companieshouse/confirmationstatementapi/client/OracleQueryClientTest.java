@@ -24,9 +24,11 @@ import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyEmailGet;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyShareHoldersCountGet;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyStatementOfCapitalDataGet;
 import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyTradedStatusGet;
+import uk.gov.companieshouse.api.handler.company.request.PrivateActiveDirectorGet;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
+import uk.gov.companieshouse.api.model.company.ActiveOfficerDetails;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.payment.ConfirmationStatementPaymentJson;
@@ -35,7 +37,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNot
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 
@@ -67,7 +68,7 @@ class OracleQueryClientTest {
     private InternalApiClient apiClient;
 
     @Mock
-    private ApiResponse<uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson> apiPrivateCompanyEmailGetResponse;
+    private ApiResponse<RegisteredEmailAddressJson> apiPrivateCompanyEmailGetResponse;
 
     @Mock
     private ApiResponse<Long> apiPrivateCompanyTradedStatusGetResponse;
@@ -77,6 +78,9 @@ class OracleQueryClientTest {
 
     @Mock
     private ApiResponse<StatementOfCapitalJson> apiPrivateCompanyStatementOfCapitalGetResponse;
+
+    @Mock
+    private ApiResponse<ActiveOfficerDetails> apiPrivateActiveDirectorGetResponse;
 
     @Mock
     private ApiResponse<ConfirmationStatementPaymentJson> apiConfirmationStatementPaymentJsonApiResponse;
@@ -100,6 +104,9 @@ class OracleQueryClientTest {
     private PrivateCompanyStatementOfCapitalDataGet privateCompanyStatementOfCapitalDataGet;
 
     @Mock
+    private PrivateActiveDirectorGet privateActiveDirectorGet;
+
+    @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
@@ -117,6 +124,7 @@ class OracleQueryClientTest {
         lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
         lenient().when(privateCompanyResourceHandler.getConfirmationStatementPayment(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(privateCompanyConfirmationStatementPaymentGet);
+        lenient().when(privateCompanyResourceHandler.getActiveDirector(Mockito.anyString())).thenReturn(privateActiveDirectorGet);
     }
 
     @Test
@@ -156,10 +164,11 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetActiveDirectorDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException {
+    void testGetActiveDirectorDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException, ApiErrorResponseException, URIValidationException {
+        ActiveOfficerDetails expectedActiveOfficerDetails = new ActiveOfficerDetails();
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveOfficerDetails.class))
-                .thenReturn(new ResponseEntity<>(new ActiveOfficerDetails(), HttpStatus.OK));
+        when(privateActiveDirectorGet.execute()).thenReturn(apiPrivateActiveDirectorGetResponse);
+        when(apiPrivateActiveDirectorGetResponse.getData()).thenReturn(expectedActiveOfficerDetails);
 
         var result = oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER);
         assertNotNull(result);
