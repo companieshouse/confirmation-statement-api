@@ -17,7 +17,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNot
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -119,8 +119,8 @@ public class OracleQueryClient {
         }
     }
 
-    //todo Migrate to private sdk ActiveOfficerDetails model
-    public ActiveOfficerDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
+    public ActiveOfficerDetailsJson getActiveDirectorDetails(String companyNumber) throws ServiceException,
+            ActiveOfficerNotFoundException {
         String directorDetailsUrl = String.format(API_PATH_COMPANY_DIRECTOR_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl));
 
@@ -133,15 +133,10 @@ public class OracleQueryClient {
             // Active officer not found handling
             if (director == null) {
 //                throw new ActiveOfficerNotFoundException(directorDetailsUrl);
-                return new ActiveOfficerDetails();
+                return new ActiveOfficerDetailsJson();
             }
 
-            var activeDirectorDetails = new ActiveOfficerDetails();
-
-            // Copy properties from director to activeDirectorDetails
-            BeanUtils.copyProperties(director, activeDirectorDetails);
-
-            return activeDirectorDetails;
+            return director;
         } catch (ApiErrorResponseException aere) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(),
                     companyNumber), aere);
@@ -152,15 +147,14 @@ public class OracleQueryClient {
         }
     }
 
-    //todo Migrate to private sdk ActiveOfficerDetails model
-    public List<ActiveOfficerDetails> getActiveOfficersDetails(String companyNumber) throws ServiceException {
+    public List<ActiveOfficerDetailsJson> getActiveOfficersDetails(String companyNumber) throws ServiceException {
         var officersDetailsUrl = String.format(API_PATH_OFFICERS_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, officersDetailsUrl));
 
         // NEW
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            uk.gov.companieshouse.api.model.company.ActiveOfficerDetails[] officers =
+            uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson[] officers =
                     internalApiClient.privateCompanyResourceHandler().getActiveOfficers(officersDetailsUrl).execute().getData();
 
             // Active officer not found handling
@@ -169,14 +163,7 @@ public class OracleQueryClient {
                 return new ArrayList<>();
             }
 
-            List<ActiveOfficerDetails> activeOfficersList = new ArrayList<>();
-            for (uk.gov.companieshouse.api.model.company.ActiveOfficerDetails officer : officers) {
-                ActiveOfficerDetails activeOfficer = new ActiveOfficerDetails();
-                BeanUtils.copyProperties(officer, activeOfficer);
-                activeOfficersList.add(activeOfficer);
-            }
-
-            return activeOfficersList;
+            return Arrays.asList(officers);
 
         } catch (ApiErrorResponseException aere) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(),
@@ -186,16 +173,6 @@ public class OracleQueryClient {
         } catch (Exception e) {
             throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, officersDetailsUrl), e);
         }
-
-//        // OLD
-//        ResponseEntity<ActiveOfficerDetails[]> response = restTemplate.getForEntity(officersDetailsUrl, ActiveOfficerDetails[].class);
-//        if (response.getStatusCode() != OK) {
-//            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
-//        }
-//        if (response.getBody() == null) {
-//            return new ArrayList<>();
-//        }
-//        return Arrays.asList(response.getBody());
     }
 
     //todo

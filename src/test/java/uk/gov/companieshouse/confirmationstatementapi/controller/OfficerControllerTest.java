@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ class OfficerControllerTest {
 
     @Test
     void testGetActiveOfficerDetails() throws ActiveOfficerNotFoundException, ServiceException {
-        when(officerService.getActiveOfficerDetails(transaction.getCompanyNumber())).thenReturn(new ActiveOfficerDetails());
+        when(officerService.getActiveOfficerDetails(transaction.getCompanyNumber())).thenReturn(new ActiveOfficerDetailsJson());
         var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -55,7 +55,7 @@ class OfficerControllerTest {
 
     @Test
     void testGetListActiveOfficersDetails() throws ServiceException {
-        var officers = Arrays.asList(new ActiveOfficerDetails(), new ActiveOfficerDetails());
+        var officers = Arrays.asList(new ActiveOfficerDetailsJson(), new ActiveOfficerDetailsJson());
         when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenReturn(officers);
         var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
