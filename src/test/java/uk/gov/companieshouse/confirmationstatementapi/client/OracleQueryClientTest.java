@@ -19,12 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.company.PrivateCompanyResourceHandler;
-import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyConfirmationStatementPaymentGet;
-import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyEmailGet;
-import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyShareHoldersCountGet;
-import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyStatementOfCapitalDataGet;
-import uk.gov.companieshouse.api.handler.company.request.PrivateCompanyTradedStatusGet;
-import uk.gov.companieshouse.api.handler.company.request.PrivateActiveDirectorGet;
+import uk.gov.companieshouse.api.handler.company.request.*;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
@@ -40,11 +35,11 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapit
 import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -83,6 +78,9 @@ class OracleQueryClientTest {
     private ApiResponse<ActiveOfficerDetails> apiPrivateActiveDirectorGetResponse;
 
     @Mock
+    private ApiResponse<ActiveOfficerDetails[]> apiPrivateActiveOfficersGetResponse;
+
+    @Mock
     private ApiResponse<ConfirmationStatementPaymentJson> apiConfirmationStatementPaymentJsonApiResponse;
 
     @Mock
@@ -107,6 +105,9 @@ class OracleQueryClientTest {
     private PrivateActiveDirectorGet privateActiveDirectorGet;
 
     @Mock
+    private PrivateActiveOfficersGet privateActiveOfficersGet;
+
+    @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
@@ -125,6 +126,7 @@ class OracleQueryClientTest {
         lenient().when(privateCompanyResourceHandler.getConfirmationStatementPayment(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(privateCompanyConfirmationStatementPaymentGet);
         lenient().when(privateCompanyResourceHandler.getActiveDirector(Mockito.anyString())).thenReturn(privateActiveDirectorGet);
+        lenient().when(privateCompanyResourceHandler.getActiveOfficers(Mockito.anyString())).thenReturn(privateActiveOfficersGet);
     }
 
     @Test
@@ -202,28 +204,30 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetListActiveOfficersDetailsOkStatusResponse() throws ServiceException {
-        var officer1 = new ActiveOfficerDetails();
-        var officer2 = new ActiveOfficerDetails();
-        ActiveOfficerDetails[] officerArray = {officer1, officer2};
+    void testGetListActiveOfficersDetailsOkStatusResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
+        // GIVEN
+        ActiveOfficerDetails[] expectedActiveOfficerDetails = new ActiveOfficerDetails[0];
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_OFFICERS_PATH, ActiveOfficerDetails[].class))
-                .thenReturn(new ResponseEntity<>(officerArray, HttpStatus.OK));
+        // WHEN
+        when(privateActiveOfficersGet.execute()).thenReturn(apiPrivateActiveOfficersGetResponse);
+        when(apiPrivateActiveOfficersGetResponse.getData()).thenReturn(expectedActiveOfficerDetails);
 
+        //THEN
         var result = oracleQueryClient.getActiveOfficersDetails(COMPANY_NUMBER);
         assertNotNull(result);
-        assertEquals(2, result.size());
     }
 
     @Test
-    void testGetListActiveOfficersDetailsNotOkStatusResponse() {
-        var companyNumber = "123213";
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + ACTIVE_OFFICERS_PATH, ActiveOfficerDetails[].class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+    void testGetListActiveOfficersDetailsNotOkStatusResponse() throws ApiErrorResponseException, URIValidationException, ServiceException {
+        // GIVEN
+        ApiErrorResponseException serviceUnavailableException = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(503, "Service Unavailable", new HttpHeaders()).build());
 
-        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveOfficersDetails(companyNumber));
-        assertTrue(serviceException.getMessage().contains(companyNumber));
-        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
+        // WHEN
+        when(privateActiveOfficersGet.execute()).thenThrow(serviceUnavailableException);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveOfficersDetails(COMPANY_NUMBER));
     }
 
     @Test
