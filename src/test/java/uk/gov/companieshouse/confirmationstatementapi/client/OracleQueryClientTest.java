@@ -174,19 +174,30 @@ class OracleQueryClientTest {
         assertNotNull(result);
     }
 
+    // Todo - test this
     @Test
-    void testGetActiveDirectorDetailsStatus400Response() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveOfficerDetails.class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    void testGetActiveDirectorDetailsStatus400Response() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+        ApiErrorResponseException badRequestException = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(400, "Bad Request", new HttpHeaders()).build());
 
-        assertThrows(ActiveOfficerNotFoundException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));
+        // WHEN
+        when(privateActiveDirectorGet.execute()).thenThrow(badRequestException);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));
     }
 
     @Test
-    void testGetActiveDirectorDetailsNotOkStatusResponse() {
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + COMPANY_NUMBER + ACTIVE_DIRECTOR_PATH, ActiveOfficerDetails.class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+    void testGetActiveDirectorDetailsNotOkStatusResponse() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+        ApiErrorResponseException serviceUnavailableException = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(503, "Service Unavailable", new HttpHeaders()).build());
 
+        // WHEN
+        when(privateActiveDirectorGet.execute()).thenThrow(serviceUnavailableException);
+
+        // THEN
         assertThrows(ServiceException.class, () -> oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER));
     }
 

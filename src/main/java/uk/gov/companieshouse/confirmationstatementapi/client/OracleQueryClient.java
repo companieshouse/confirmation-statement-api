@@ -42,6 +42,7 @@ public class OracleQueryClient {
     private static final String API_PATH_COMPANY_SHAREHOLDERS_COUNT = "/company/%s/shareholders/count";
     private static final String API_PATH_COMPANY_STATEMENT_OF_CAPITAL = "/company/%s/statement-of-capital";
     private static final String API_PATH_COMPANY_DIRECTOR_ACTIVE = "/company/%s/director/active";
+    private static final String API_PATH_OFFICERS_ACTIVE = "/company/%s/officers/active";
     private static final String API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC = "/company/%s/corporate-body-appointments/persons-of-significant-control";
     private static final String API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID = "/company/%s/confirmation-statement/paid";
     private static final String API_PATH_REGISTERED_EMAIL_ADDRESS = "/company/%s/registered-email-address";
@@ -118,6 +119,7 @@ public class OracleQueryClient {
         }
     }
 
+    //todo Migrate to private sdk ActiveOfficerDetails model
     public ActiveOfficerDetails getActiveDirectorDetails(String companyNumber) throws ServiceException, ActiveOfficerNotFoundException {
         String directorDetailsUrl = String.format(API_PATH_COMPANY_DIRECTOR_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl));
@@ -130,7 +132,8 @@ public class OracleQueryClient {
 
             // Active officer not found handling
             if (director == null) {
-                throw new ActiveOfficerNotFoundException(directorDetailsUrl);
+//                throw new ActiveOfficerNotFoundException(directorDetailsUrl);
+                return new ActiveOfficerDetails();
             }
 
             var activeDirectorDetails = new ActiveOfficerDetails();
@@ -149,19 +152,50 @@ public class OracleQueryClient {
         }
     }
 
-    //todo
+    //todo Migrate to private sdk ActiveOfficerDetails model
     public List<ActiveOfficerDetails> getActiveOfficersDetails(String companyNumber) throws ServiceException {
-        var officersDetailsUrl = String.format("%s/company/%s/officers/active", oracleQueryApiUrl, companyNumber);
+        var officersDetailsUrl = String.format(API_PATH_OFFICERS_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, officersDetailsUrl));
 
-        ResponseEntity<ActiveOfficerDetails[]> response = restTemplate.getForEntity(officersDetailsUrl, ActiveOfficerDetails[].class);
-        if (response.getStatusCode() != OK) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+        // NEW
+        try {
+            var internalApiClient = apiClientService.getInternalApiClient();
+            uk.gov.companieshouse.api.model.company.ActiveOfficerDetails[] officers =
+                    internalApiClient.privateCompanyResourceHandler().getActiveOfficers(officersDetailsUrl).execute().getData();
+
+            // Active officer not found handling
+            if (officers == null) {
+//                throw new ActiveOfficerNotFoundException(officersDetailsUrl);
+                return new ArrayList<>();
+            }
+
+            List<ActiveOfficerDetails> activeOfficersList = new ArrayList<>();
+            for (uk.gov.companieshouse.api.model.company.ActiveOfficerDetails officer : officers) {
+                ActiveOfficerDetails activeOfficer = new ActiveOfficerDetails();
+                BeanUtils.copyProperties(officer, activeOfficer);
+                activeOfficersList.add(activeOfficer);
+            }
+
+            return activeOfficersList;
+
+        } catch (ApiErrorResponseException aere) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(),
+                    companyNumber), aere);
+        }  catch (URIValidationException urive) {
+            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, officersDetailsUrl), urive);
+        } catch (Exception e) {
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, officersDetailsUrl), e);
         }
-        if (response.getBody() == null) {
-            return new ArrayList<>();
-        }
-        return Arrays.asList(response.getBody());
+
+//        // OLD
+//        ResponseEntity<ActiveOfficerDetails[]> response = restTemplate.getForEntity(officersDetailsUrl, ActiveOfficerDetails[].class);
+//        if (response.getStatusCode() != OK) {
+//            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+//        }
+//        if (response.getBody() == null) {
+//            return new ArrayList<>();
+//        }
+//        return Arrays.asList(response.getBody());
     }
 
     //todo
