@@ -2,14 +2,14 @@ package uk.gov.companieshouse.confirmationstatementapi.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
+import uk.gov.companieshouse.api.model.company.PersonOfSignificantControl;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.shareholder.ShareholderJson;
@@ -17,8 +17,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNot
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
@@ -175,19 +173,27 @@ public class OracleQueryClient {
         }
     }
 
-    //todo
     public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
-        var pscUrl = String.format(API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC, oracleQueryApiUrl, companyNumber);
+        PersonOfSignificantControl[] pscs;
+        var pscUrl = String.format(API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC, companyNumber);
+        var internalApiClient = apiClientService.getInternalApiClient();
+
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl));
 
-        ResponseEntity<PersonOfSignificantControl[]> response = restTemplate.getForEntity(pscUrl, PersonOfSignificantControl[].class);
-        if (response.getStatusCode() != OK) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+        try {
+            pscs = internalApiClient.privateCompanyResourceHandler().getPersonsOfSignificantControl(pscUrl).execute().getData();
+        } catch (ApiErrorResponseException aere) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber), aere);
+        } catch (URIValidationException urive) {
+            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, pscUrl), urive);
+        } catch (Exception e) {
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, pscUrl), e);
         }
-        if (response.getBody() == null) {
-            return new ArrayList<>();
+        if (null == pscs || pscs.length == 0) {
+            return List.of();
+        } else {
+            return Arrays.asList(pscs);
         }
-        return Arrays.asList(response.getBody());
     }
 
     //todo

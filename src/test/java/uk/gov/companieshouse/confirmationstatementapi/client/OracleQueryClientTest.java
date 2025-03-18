@@ -24,6 +24,7 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
 import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
+import uk.gov.companieshouse.api.model.company.PersonOfSignificantControl;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.payment.ConfirmationStatementPaymentJson;
@@ -32,12 +33,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNot
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
@@ -84,6 +80,9 @@ class OracleQueryClientTest {
     private ApiResponse<ConfirmationStatementPaymentJson> apiConfirmationStatementPaymentJsonApiResponse;
 
     @Mock
+    private ApiResponse<PersonOfSignificantControl[]> apiPersonOfSignificantControlApiResponse;
+
+    @Mock
     private PrivateCompanyResourceHandler privateCompanyResourceHandler;
 
     @Mock
@@ -108,6 +107,9 @@ class OracleQueryClientTest {
     private PrivateActiveOfficersGet privateActiveOfficersGet;
 
     @Mock
+    private PrivateCompanyPersonsOfSignificantControlGet privateCompanyPersonsOfSignificantControlGet;
+
+    @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
@@ -127,6 +129,8 @@ class OracleQueryClientTest {
                 .thenReturn(privateCompanyConfirmationStatementPaymentGet);
         lenient().when(privateCompanyResourceHandler.getActiveDirector(Mockito.anyString())).thenReturn(privateActiveDirectorGet);
         lenient().when(privateCompanyResourceHandler.getActiveOfficers(Mockito.anyString())).thenReturn(privateActiveOfficersGet);
+        lenient().when(privateCompanyResourceHandler.getPersonsOfSignificantControl(Mockito.anyString()))
+                .thenReturn(privateCompanyPersonsOfSignificantControlGet);
     }
 
     @Test
@@ -230,7 +234,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetPersonsOfSignificantControlResponse() throws ServiceException {
+    void testGetPersonsOfSignificantControlResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
         var psc1 = new PersonOfSignificantControl();
         psc1.setAppointmentTypeId("1");
         Address address = new Address();
@@ -238,31 +242,27 @@ class OracleQueryClientTest {
         address.setPostalCode("post code");
         psc1.setServiceAddress(address);
 
-
         var psc2 = new PersonOfSignificantControl();
         psc2.setAppointmentTypeId("1");
         psc2.setServiceAddress(address);
 
         PersonOfSignificantControl[] pscArray = {psc1, psc2};
-
         var companyNumber = "123213";
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + PSC_PATH, PersonOfSignificantControl[].class))
-                .thenReturn(new ResponseEntity<>(pscArray, HttpStatus.OK));
+        when(privateCompanyPersonsOfSignificantControlGet.execute()).thenReturn(apiPersonOfSignificantControlApiResponse);
+        when(apiPersonOfSignificantControlApiResponse.getData()).thenReturn(pscArray);
 
         var result = oracleQueryClient.getPersonsOfSignificantControl(companyNumber);
         assertEquals(2, result.size());
     }
 
     @Test
-    void testGetPersonsOfSignificantControlNotOkStatusResponse() {
-        var companyNumber = "123213";
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + PSC_PATH, PersonOfSignificantControl[].class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
-
-        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getPersonsOfSignificantControl(companyNumber));
-        assertTrue(serviceException.getMessage().contains(companyNumber));
-        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
+    void testGetPersonsOfSignificantControlNotOkStatusResponse() throws ApiErrorResponseException, URIValidationException {
+        //WHEN
+        lenient().when(privateCompanyPersonsOfSignificantControlGet.execute()).thenThrow(URIValidationException.class);
+        // THEN
+        assertThrowsExactly(ServiceException.class, () -> oracleQueryClient.getPersonsOfSignificantControl(COMPANY_NUMBER),
+                String.format("Invalid URI: %s", ""));
     }
 
     @Test
