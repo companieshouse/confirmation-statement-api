@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
@@ -28,7 +28,7 @@ public class OfficerController {
     private OfficerService officerService;
 
     @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/active-director-details")
-    public ResponseEntity<ActiveOfficerDetails> getActiveOfficersDetails(
+    public ResponseEntity<ActiveOfficerDetailsJson> getActiveOfficersDetails(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
@@ -50,7 +50,7 @@ public class OfficerController {
     }
 
     @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/active-officers-details")
-    public ResponseEntity<List<ActiveOfficerDetails>> getListActiveOfficersDetails(
+    public ResponseEntity<List<ActiveOfficerDetailsJson>> getListActiveOfficersDetails(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {

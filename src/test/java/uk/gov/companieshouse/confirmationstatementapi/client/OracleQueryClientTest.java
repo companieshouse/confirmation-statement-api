@@ -23,7 +23,7 @@ import uk.gov.companieshouse.api.handler.company.request.*;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
-import uk.gov.companieshouse.api.model.company.ActiveOfficerDetails;
+import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.payment.ConfirmationStatementPaymentJson;
@@ -75,10 +75,10 @@ class OracleQueryClientTest {
     private ApiResponse<StatementOfCapitalJson> apiPrivateCompanyStatementOfCapitalGetResponse;
 
     @Mock
-    private ApiResponse<ActiveOfficerDetails> apiPrivateActiveDirectorGetResponse;
+    private ApiResponse<ActiveOfficerDetailsJson> apiPrivateActiveDirectorGetResponse;
 
     @Mock
-    private ApiResponse<ActiveOfficerDetails[]> apiPrivateActiveOfficersGetResponse;
+    private ApiResponse<ActiveOfficerDetailsJson[]> apiPrivateActiveOfficersGetResponse;
 
     @Mock
     private ApiResponse<ConfirmationStatementPaymentJson> apiConfirmationStatementPaymentJsonApiResponse;
@@ -167,7 +167,7 @@ class OracleQueryClientTest {
 
     @Test
     void testGetActiveDirectorDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException, ApiErrorResponseException, URIValidationException {
-        ActiveOfficerDetails expectedActiveOfficerDetails = new ActiveOfficerDetails();
+        ActiveOfficerDetailsJson expectedActiveOfficerDetails = new ActiveOfficerDetailsJson();
 
         when(privateActiveDirectorGet.execute()).thenReturn(apiPrivateActiveDirectorGetResponse);
         when(apiPrivateActiveDirectorGetResponse.getData()).thenReturn(expectedActiveOfficerDetails);
@@ -206,7 +206,7 @@ class OracleQueryClientTest {
     @Test
     void testGetListActiveOfficersDetailsOkStatusResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
         // GIVEN
-        ActiveOfficerDetails[] expectedActiveOfficerDetails = new ActiveOfficerDetails[0];
+        ActiveOfficerDetailsJson[] expectedActiveOfficerDetails = new ActiveOfficerDetailsJson[0];
 
         // WHEN
         when(privateActiveOfficersGet.execute()).thenReturn(apiPrivateActiveOfficersGetResponse);
