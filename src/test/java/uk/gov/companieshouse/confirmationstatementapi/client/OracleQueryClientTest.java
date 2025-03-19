@@ -33,7 +33,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNot
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
+import uk.gov.companieshouse.api.model.company.RegisterLocationJson;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;

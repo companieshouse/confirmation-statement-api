@@ -13,11 +13,10 @@ import uk.gov.companieshouse.api.model.company.PersonOfSignificantControl;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.shareholder.ShareholderJson;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
+import uk.gov.companieshouse.api.model.company.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.util.ArrayList;
@@ -40,7 +39,8 @@ public class OracleQueryClient {
     private static final String API_PATH_COMPANY_SHAREHOLDERS_COUNT = "/company/%s/shareholders/count";
     private static final String API_PATH_COMPANY_STATEMENT_OF_CAPITAL = "/company/%s/statement-of-capital";
     private static final String API_PATH_COMPANY_DIRECTOR_ACTIVE = "/company/%s/director/active";
-    private static final String API_PATH_OFFICERS_ACTIVE = "/company/%s/officers/active";
+    private static final String API_PATH_COMPANY_OFFICERS_ACTIVE = "/company/%s/officers/active";
+    private static final String API_PATH_COMPANY_REGISTER_LOCATIONS = "/company/%s/register/location";
     private static final String API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC = "/company/%s/corporate-body-appointments/persons-of-significant-control";
     private static final String API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID = "/company/%s/confirmation-statement/paid";
     private static final String API_PATH_REGISTERED_EMAIL_ADDRESS = "/company/%s/registered-email-address";
@@ -142,7 +142,7 @@ public class OracleQueryClient {
     }
 
     public List<ActiveOfficerDetailsJson> getActiveOfficersDetails(String companyNumber) throws ServiceException {
-        var officersDetailsUrl = String.format(API_PATH_OFFICERS_ACTIVE, companyNumber);
+        var officersDetailsUrl = String.format(API_PATH_COMPANY_OFFICERS_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, officersDetailsUrl));
 
         try {
@@ -189,20 +189,27 @@ public class OracleQueryClient {
         }
     }
 
-    //todo
     public List<RegisterLocationJson> getRegisterLocations(String companyNumber) throws ServiceException {
-        var regLocUrl = String.format("%s/company/%s/register/location", oracleQueryApiUrl, companyNumber);
+        var regLocUrl = String.format(API_PATH_COMPANY_REGISTER_LOCATIONS, companyNumber);
+        var internalApiClient = apiClientService.getInternalApiClient();
+        RegisterLocationJson[] regLocs;
 
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, regLocUrl));
 
-        ResponseEntity<RegisterLocationJson[]> response = restTemplate.getForEntity(regLocUrl, RegisterLocationJson[].class);
-        if (response.getStatusCode() != OK) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+        try {
+            regLocs = internalApiClient.privateCompanyResourceHandler().getRegisterLocations(regLocUrl).execute().getData();
+        } catch (ApiErrorResponseException aere) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber), aere);
+        } catch (URIValidationException urive) {
+            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, regLocUrl), urive);
+        } catch (Exception e) {
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, regLocUrl), e);
         }
-        if (response.getBody() == null) {
-            return new ArrayList<>();
+        if (null == regLocs || regLocs.length == 0) {
+            return List.of();
+        } else {
+            return Arrays.asList(regLocs);
         }
-        return Arrays.asList(response.getBody());
     }
 
     //todo - ShareholderJson moved to private-api-sdk-java
