@@ -117,20 +117,16 @@ public class OracleQueryClient {
         }
     }
 
-    public ActiveOfficerDetailsJson getActiveDirectorDetails(String companyNumber) throws ServiceException,
-            ActiveOfficerNotFoundException {
+    public ActiveOfficerDetailsJson getActiveDirectorDetails(String companyNumber) throws ServiceException {
         String directorDetailsUrl = String.format(API_PATH_COMPANY_DIRECTOR_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl));
 
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-//            internalApiClient.setBasePath(oracleQueryApiUrl); // unsure if this is needed
 
             var director = internalApiClient.privateCompanyResourceHandler().getActiveDirector(directorDetailsUrl).execute().getData();
 
-            // Active officer not found handling
             if (director == null) {
-//                throw new ActiveOfficerNotFoundException(directorDetailsUrl);
                 return new ActiveOfficerDetailsJson();
             }
 
@@ -149,15 +145,12 @@ public class OracleQueryClient {
         var officersDetailsUrl = String.format(API_PATH_OFFICERS_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, officersDetailsUrl));
 
-        // NEW
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson[] officers =
+            ActiveOfficerDetailsJson[] officers =
                     internalApiClient.privateCompanyResourceHandler().getActiveOfficers(officersDetailsUrl).execute().getData();
 
-            // Active officer not found handling
             if (officers == null) {
-//                throw new ActiveOfficerNotFoundException(officersDetailsUrl);
                 return new ArrayList<>();
             }
 
