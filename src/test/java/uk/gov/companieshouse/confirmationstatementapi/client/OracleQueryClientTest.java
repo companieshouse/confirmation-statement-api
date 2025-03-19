@@ -83,6 +83,9 @@ class OracleQueryClientTest {
     private ApiResponse<PersonOfSignificantControl[]> apiPersonOfSignificantControlApiResponse;
 
     @Mock
+    private ApiResponse<RegisterLocationJson[]> apiRegisterLocationsApiResponse;
+
+    @Mock
     private PrivateCompanyResourceHandler privateCompanyResourceHandler;
 
     @Mock
@@ -110,6 +113,9 @@ class OracleQueryClientTest {
     private PrivateCompanyPersonsOfSignificantControlGet privateCompanyPersonsOfSignificantControlGet;
 
     @Mock
+    private PrivateRegisterLocationsGet privateRegisterLocationsGet;
+
+    @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
@@ -131,6 +137,7 @@ class OracleQueryClientTest {
         lenient().when(privateCompanyResourceHandler.getActiveOfficers(Mockito.anyString())).thenReturn(privateActiveOfficersGet);
         lenient().when(privateCompanyResourceHandler.getPersonsOfSignificantControl(Mockito.anyString()))
                 .thenReturn(privateCompanyPersonsOfSignificantControlGet);
+        lenient().when(privateCompanyResourceHandler.getRegisterLocations(Mockito.anyString())).thenReturn(privateRegisterLocationsGet);
     }
 
     @Test
@@ -300,36 +307,37 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetRegisterLocationsResponse() throws ServiceException {
+    void testGetRegisterLocationsResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
         var regLoc1 = new RegisterLocationJson();
         regLoc1.setRegisterTypeDesc("desc1");
         regLoc1.setSailAddress(new Address());
-
 
         var regLoc2 = new RegisterLocationJson();
         regLoc2.setRegisterTypeDesc("desc2");
         regLoc2.setSailAddress(new Address());
 
         RegisterLocationJson[] registerLocationsArray = {regLoc1, regLoc2};
+        ApiResponse<RegisterLocationJson[]> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), new HttpHeaders(), registerLocationsArray);
 
         var companyNumber = "123213";
 
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + REGISTER_LOCATIONS_PATH, RegisterLocationJson[].class))
-                .thenReturn(new ResponseEntity<>(registerLocationsArray, HttpStatus.OK));
+        when(privateRegisterLocationsGet.execute()).thenReturn(apiResponse);
 
         var result = oracleQueryClient.getRegisterLocations(companyNumber);
         assertEquals(2, result.size());
     }
 
     @Test
-    void testGetRegisterLocationsNotOkStatusResponse() {
-        var companyNumber = "123213";
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + REGISTER_LOCATIONS_PATH, RegisterLocationJson[].class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+    void testGetRegisterLocationsNotOkStatusResponse() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+        ApiErrorResponseException serviceUnavailableException = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(503, "Service Unavailable", new HttpHeaders()).build());
 
-        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getRegisterLocations(companyNumber));
-        assertTrue(serviceException.getMessage().contains(companyNumber));
-        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
+        // WHEN
+        when(privateRegisterLocationsGet.execute()).thenThrow(serviceUnavailableException);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getRegisterLocations(COMPANY_NUMBER));
     }
 
     @Test
