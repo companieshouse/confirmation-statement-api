@@ -56,131 +56,89 @@ public class OracleQueryClient {
     private boolean multipleOfficerJourneyFeatureFlag;
 
     public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
-        var tradedStatusUrl = String.format(API_PATH_COMPANY_TRADED_STATUS, companyNumber);
-        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, tradedStatusUrl));
+        String url = String.format(API_PATH_COMPANY_TRADED_STATUS, companyNumber);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
 
         try {
-            var internalApiClient = apiClientService.getInternalApiClient();
-
-            return internalApiClient
-                    .privateCompanyResourceHandler()
-                    .getCompanyTradedStatus(tradedStatusUrl)
-                    .execute()
-                    .getData();
+            var client = apiClientService.getInternalApiClient();
+            return client.privateCompanyResourceHandler().getCompanyTradedStatus(url).execute().getData();
         } catch (Exception e) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber), e);
         }
     }
 
     public Integer getShareholderCount(String companyNumber) throws ServiceException {
-        var shareholderCountUrl = String.format(API_PATH_COMPANY_SHAREHOLDERS_COUNT, companyNumber);
-        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, shareholderCountUrl));
+        String url = String.format(API_PATH_COMPANY_SHAREHOLDERS_COUNT, companyNumber);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
 
         try {
-            var internalApiClient = apiClientService.getInternalApiClient();
-
-            return internalApiClient
-                    .privateCompanyResourceHandler()
-                    .getCompanyShareHoldersCount(shareholderCountUrl)
-                    .execute()
-                    .getData();
+            var client = apiClientService.getInternalApiClient();
+            return client.privateCompanyResourceHandler().getCompanyShareHoldersCount(url).execute().getData();
         } catch (Exception e) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber), e);
         }
     }
 
     public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {
-        var statementOfCapitalUrl = String.format(API_PATH_COMPANY_STATEMENT_OF_CAPITAL, companyNumber);
-        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, statementOfCapitalUrl));
-
-        var internalApiClient = apiClientService.getInternalApiClient();
+        String url = String.format(API_PATH_COMPANY_STATEMENT_OF_CAPITAL, companyNumber);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
 
         try {
-            return internalApiClient
-                    .privateCompanyResourceHandler()
-                    .getStatementOfCapitalData(statementOfCapitalUrl)
-                    .execute()
-                    .getData();
-        } catch (ApiErrorResponseException aere) {
-            if (aere.getStatusCode() == NOT_FOUND.value()) {
+            var client = apiClientService.getInternalApiClient();
+            var data = client.privateCompanyResourceHandler().getStatementOfCapitalData(url).execute().getData();
+            if (data == null) {
                 throw new StatementOfCapitalNotFoundException(STATEMENT_OF_CAPITAL_NOT_FOUND);
-            } else {
-                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber));
             }
+            return data;
+        } catch (ApiErrorResponseException e) {
+            if (e.getStatusCode() == NOT_FOUND.value()) {
+                throw new StatementOfCapitalNotFoundException(STATEMENT_OF_CAPITAL_NOT_FOUND);
+            }
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, e.getStatusCode(), companyNumber), e);
         } catch (Exception e) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber), e);
         }
     }
 
     public ActiveOfficerDetailsJson getActiveDirectorDetails(String companyNumber) throws ServiceException {
-        String directorDetailsUrl = String.format(API_PATH_COMPANY_DIRECTOR_ACTIVE, companyNumber);
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, directorDetailsUrl));
+        String url = String.format(API_PATH_COMPANY_DIRECTOR_ACTIVE, companyNumber);
+        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         try {
-            var internalApiClient = apiClientService.getInternalApiClient();
+            var client = apiClientService.getInternalApiClient();
+            var director = client.privateCompanyResourceHandler().getActiveDirector(url).execute().getData();
+            return director != null ? director : new ActiveOfficerDetailsJson();
 
-            var director = internalApiClient.privateCompanyResourceHandler().getActiveDirector(directorDetailsUrl).execute().getData();
-
-            if (director == null) {
-                return new ActiveOfficerDetailsJson();
-            }
-
-            return director;
-        } catch (ApiErrorResponseException aere) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(),
-                    companyNumber), aere);
-        }  catch (URIValidationException urive) {
-            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, directorDetailsUrl), urive);
         } catch (Exception e) {
-            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, directorDetailsUrl), e);
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, url), e);
         }
     }
 
     public List<ActiveOfficerDetailsJson> getActiveOfficersDetails(String companyNumber) throws ServiceException {
-        var officersDetailsUrl = String.format(API_PATH_COMPANY_OFFICERS_ACTIVE, companyNumber);
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, officersDetailsUrl));
+        String url = String.format(API_PATH_COMPANY_OFFICERS_ACTIVE, companyNumber);
+        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         try {
-            var internalApiClient = apiClientService.getInternalApiClient();
-            ActiveOfficerDetailsJson[] officers =
-                    internalApiClient.privateCompanyResourceHandler().getActiveOfficers(officersDetailsUrl).execute().getData();
+            var client = apiClientService.getInternalApiClient();
+            ActiveOfficerDetailsJson[] officers = client.privateCompanyResourceHandler().getActiveOfficers(url).execute().getData();
+            return officers != null ? Arrays.asList(officers) : new ArrayList<>();
 
-            if (officers == null) {
-                return new ArrayList<>();
-            }
-
-            return Arrays.asList(officers);
-
-        } catch (ApiErrorResponseException aere) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(),
-                    companyNumber), aere);
-        }  catch (URIValidationException urive) {
-            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, officersDetailsUrl), urive);
         } catch (Exception e) {
-            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, officersDetailsUrl), e);
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, url), e);
         }
     }
 
     public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
-        PersonOfSignificantControl[] pscs;
-        var pscUrl = String.format(API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC, companyNumber);
-        var internalApiClient = apiClientService.getInternalApiClient();
-
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, pscUrl));
+        String url = String.format(API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC, companyNumber);
+        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         try {
-            pscs = internalApiClient.privateCompanyResourceHandler().getPersonsOfSignificantControl(pscUrl).execute().getData();
-        } catch (ApiErrorResponseException aere) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber), aere);
-        } catch (URIValidationException urive) {
-            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, pscUrl), urive);
+            var client = apiClientService.getInternalApiClient();
+            PersonOfSignificantControl[] pscs = client.privateCompanyResourceHandler().getPersonsOfSignificantControl(url).execute().getData();
+            return pscs != null ? Arrays.asList(pscs) : List.of();
+
         } catch (Exception e) {
-            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, pscUrl), e);
-        }
-        if (null == pscs || pscs.length == 0) {
-            return List.of();
-        } else {
-            return Arrays.asList(pscs);
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, url), e);
         }
     }
 
