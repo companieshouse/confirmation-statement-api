@@ -67,19 +67,14 @@ public class OracleQueryClient {
     }
 
     public Integer getShareholderCount(String companyNumber) throws ServiceException {
-        var shareholderCountUrl = String.format(API_PATH_COMPANY_SHAREHOLDERS_COUNT, companyNumber);
-        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, shareholderCountUrl));
+        String url = String.format(API_PATH_COMPANY_SHAREHOLDERS_COUNT, companyNumber);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
 
         try {
-            var internalApiClient = apiClientService.getInternalApiClient();
-
-            return internalApiClient
-                    .privateCompanyResourceHandler()
-                    .getCompanyShareHoldersCount(shareholderCountUrl)
-                    .execute()
-                    .getData();
+            var client = apiClientService.getInternalApiClient();
+            return client.privateCompanyResourceHandler().getCompanyShareHoldersCount(url).execute().getData();
         } catch (Exception e) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber), e);
         }
     }
 
