@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationJson;
+import uk.gov.companieshouse.api.model.company.RegisterLocationJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.RegisterLocationService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
