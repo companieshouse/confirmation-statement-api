@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 @Component
 public class OracleQueryClient {
@@ -218,41 +219,36 @@ public class OracleQueryClient {
                     .getCompanyShareHolders(shareholdersUrl)
                     .execute()
                     .getData();
-        } catch (ApiErrorResponseException aere) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber), aere);
-        } catch (URIValidationException urive) {
-            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, shareholdersUrl), urive);
         } catch (Exception e) {
             throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, shareholdersUrl), e);
         }
 
-        if (null == shareHolders || shareHolders.length == 0) {
-            return List.of();
-        } else {
-            return Arrays.asList(shareHolders);
-        }
+        return ((null == shareHolders || shareHolders.length == 0) ? List.of() : Arrays.asList(shareHolders));
     }
 
     public boolean isConfirmationStatementPaid(String companyNumber, String paymentPeriodMadeUpToDate) throws ServiceException {
         var paymentsUrl = String.format(API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, paymentsUrl));
 
+        boolean confirmationStatementPaid = false;
+
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            return internalApiClient
+            confirmationStatementPaid = internalApiClient
                     .privateCompanyResourceHandler()
                     .getConfirmationStatementPayment(paymentsUrl, paymentPeriodMadeUpToDate)
                     .execute()
                     .getData()
                     .isPaid();
         } catch (ApiErrorResponseException aere) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(),
-                    companyNumber + " with due date " + paymentPeriodMadeUpToDate), aere);
-        } catch (URIValidationException urive) {
-            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, paymentsUrl), urive);
+            if (aere.getStatusCode() != OK.value()) {
+                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber + " with due date " + paymentPeriodMadeUpToDate), aere);
+            }
         } catch (Exception e) {
             throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, paymentsUrl), e);
         }
+
+        return confirmationStatementPaid;
     }
 
     public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException, RegisteredEmailNotFoundException {

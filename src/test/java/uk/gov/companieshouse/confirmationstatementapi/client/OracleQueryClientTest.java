@@ -356,7 +356,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testConfirmationStatementIsNotPaid() throws ServiceException, ApiErrorResponseException, URIValidationException {
+    void testIsConfirmationStatementIsNotPaid() throws ServiceException, ApiErrorResponseException, URIValidationException {
         // GIVEN
         ConfirmationStatementPaymentJson confirmationStatementPaymentJson = new ConfirmationStatementPaymentJson();
         confirmationStatementPaymentJson.setPaid(false);
@@ -371,7 +371,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testConfirmationStatementPaidInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+    void testIsConfirmationStatementPaidInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
 
         // WHEN
@@ -382,7 +382,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetConfirmationStatementPaidUnexpectedResponse() throws ApiErrorResponseException, URIValidationException {
+    void testIsConfirmationStatementPaidApiErrorResponseThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
 
         // WHEN
