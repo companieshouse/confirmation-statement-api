@@ -189,9 +189,7 @@ public class OracleQueryClient {
                     .getData()
                     .isPaid();
         } catch (ApiErrorResponseException aere) {
-            if (aere.getStatusCode() != OK.value()) {
-                throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber + " with due date " + paymentPeriodMadeUpToDate), aere);
-            }
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE + " with due date %s", aere.getStatusCode(), companyNumber, paymentPeriodMadeUpToDate));
         } catch (Exception e) {
             throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, paymentsUrl), e);
         }
