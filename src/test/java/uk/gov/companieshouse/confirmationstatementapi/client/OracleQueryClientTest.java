@@ -11,10 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
@@ -29,7 +27,6 @@ import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.payment.ConfirmationStatementPaymentJson;
 import uk.gov.companieshouse.api.model.shareholder.ShareholderJson;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.RegisteredEmailNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
@@ -44,13 +41,8 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 class OracleQueryClientTest {
 
-    private static final String ACTIVE_DIRECTOR_PATH = "/director/active";
-    private static final String ACTIVE_OFFICERS_PATH = "/officers/active";
     private static final String COMPANY_NUMBER = "12345678";
     private static final String DUMMY_URL = "http://test";
-    private static final String PSC_PATH = "/corporate-body-appointments/persons-of-significant-control";
-    private static final String SHAREHOLDER_PATH = "/shareholders";
-    private static final String REGISTER_LOCATIONS_PATH = "/register/location";
     private static final String COMPANY_EMAIL = "info@acme.com";
     public static final String DUE_DATE = "2022-01-01";
 
@@ -88,9 +80,6 @@ class OracleQueryClientTest {
     private ApiResponse<PersonOfSignificantControl[]> apiPersonOfSignificantControlApiResponse;
 
     @Mock
-    private ApiResponse<RegisterLocationJson[]> apiRegisterLocationsApiResponse;
-
-    @Mock
     private PrivateCompanyResourceHandler privateCompanyResourceHandler;
 
     @Mock
@@ -122,9 +111,6 @@ class OracleQueryClientTest {
 
     @Mock
     private PrivateRegisterLocationsGet privateRegisterLocationsGet;
-
-    @Mock
-    private RestTemplate restTemplate;
 
     @InjectMocks
     private OracleQueryClient oracleQueryClient;
@@ -187,7 +173,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetActiveDirectorDetailsOkStatusResponse() throws ServiceException, ActiveOfficerNotFoundException, ApiErrorResponseException, URIValidationException {
+    void testGetActiveDirectorDetailsOkStatusResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
         ActiveOfficerDetailsJson expectedActiveOfficerDetails = new ActiveOfficerDetailsJson();
 
         when(privateActiveDirectorGet.execute()).thenReturn(apiPrivateActiveDirectorGetResponse);
@@ -238,7 +224,7 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetListActiveOfficersDetailsNotOkStatusResponse() throws ApiErrorResponseException, URIValidationException, ServiceException {
+    void testGetListActiveOfficersDetailsNotOkStatusResponse() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
         ApiErrorResponseException serviceUnavailableException = ApiErrorResponseException.fromHttpResponseException(
                 new HttpResponseException.Builder(503, "Service Unavailable", new HttpHeaders()).build());

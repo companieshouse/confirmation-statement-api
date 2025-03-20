@@ -3,9 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
@@ -24,8 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
-
 
 @Component
 public class OracleQueryClient {
@@ -51,9 +47,6 @@ public class OracleQueryClient {
 
     @Autowired
     private ApiClientService apiClientService;
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     @Value("${ORACLE_QUERY_API_URL}")
     private String oracleQueryApiUrl;
@@ -211,7 +204,6 @@ public class OracleQueryClient {
         } else {
             return Arrays.asList(regLocs);
         }
-        return Arrays.asList(response.getBody());
     }
 
     public List<ShareholderJson> getShareholders(String companyNumber) throws ServiceException {
@@ -226,11 +218,19 @@ public class OracleQueryClient {
                     .getCompanyShareHolders(shareholdersUrl)
                     .execute()
                     .getData();
+        } catch (ApiErrorResponseException aere) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber), aere);
+        } catch (URIValidationException urive) {
+            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, shareholdersUrl), urive);
         } catch (Exception e) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, shareholdersUrl), e);
         }
 
-        return (null == shareHolders ? new ArrayList<>(): Arrays.asList(shareHolders));
+        if (null == shareHolders || shareHolders.length == 0) {
+            return List.of();
+        } else {
+            return Arrays.asList(shareHolders);
+        }
     }
 
     public boolean isConfirmationStatementPaid(String companyNumber, String paymentPeriodMadeUpToDate) throws ServiceException {
