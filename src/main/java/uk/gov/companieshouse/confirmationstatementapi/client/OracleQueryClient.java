@@ -143,25 +143,15 @@ public class OracleQueryClient {
     }
 
     public List<RegisterLocationJson> getRegisterLocations(String companyNumber) throws ServiceException {
-        var regLocUrl = String.format(API_PATH_COMPANY_REGISTER_LOCATIONS, companyNumber);
-        var internalApiClient = apiClientService.getInternalApiClient();
-        RegisterLocationJson[] regLocs;
-
-        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, regLocUrl));
+        String url = String.format(API_PATH_COMPANY_REGISTER_LOCATIONS, companyNumber);
+        ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         try {
-            regLocs = internalApiClient.privateCompanyResourceHandler().getRegisterLocations(regLocUrl).execute().getData();
-        } catch (ApiErrorResponseException aere) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, aere.getStatusCode(), companyNumber), aere);
-        } catch (URIValidationException urive) {
-            throw new ServiceException(String.format(EXCEPTION_INVALID_URI, regLocUrl), urive);
+            var client = apiClientService.getInternalApiClient();
+            RegisterLocationJson[] regLocs = client.privateCompanyResourceHandler().getRegisterLocations(url).execute().getData();
+            return regLocs != null && regLocs.length > 0 ? Arrays.asList(regLocs) : List.of();
         } catch (Exception e) {
-            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, regLocUrl), e);
-        }
-        if (null == regLocs || regLocs.length == 0) {
-            return List.of();
-        } else {
-            return Arrays.asList(regLocs);
+            throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, url), e);
         }
     }
 
