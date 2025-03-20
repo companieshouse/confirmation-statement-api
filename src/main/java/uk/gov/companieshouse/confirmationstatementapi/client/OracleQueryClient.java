@@ -41,6 +41,7 @@ public class OracleQueryClient {
     private static final String API_PATH_COMPANY_STATEMENT_OF_CAPITAL = "/company/%s/statement-of-capital";
     private static final String API_PATH_COMPANY_DIRECTOR_ACTIVE = "/company/%s/director/active";
     private static final String API_PATH_OFFICERS_ACTIVE = "/company/%s/officers/active";
+    private static final String API_PATH_SHARE_HOLDERS = "/company/%s/shareholders";
     private static final String API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC = "/company/%s/corporate-body-appointments/persons-of-significant-control";
     private static final String API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID = "/company/%s/confirmation-statement/paid";
     private static final String API_PATH_REGISTERED_EMAIL_ADDRESS = "/company/%s/registered-email-address";
@@ -212,19 +213,23 @@ public class OracleQueryClient {
         return Arrays.asList(response.getBody());
     }
 
-    //todo - ShareholderJson moved to private-api-sdk-java
     public List<ShareholderJson> getShareholders(String companyNumber) throws ServiceException {
-        var shareholdersUrl = String.format("%s/company/%s/shareholders", oracleQueryApiUrl, companyNumber);
+        ShareholderJson[] shareHolders;
+        var shareholdersUrl = String.format(API_PATH_SHARE_HOLDERS, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, shareholdersUrl));
 
-        ResponseEntity<ShareholderJson[]> response = restTemplate.getForEntity(shareholdersUrl, ShareholderJson[].class);
-        if (response.getStatusCode() != OK) {
-            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, response.getStatusCode(), companyNumber));
+        try {
+            var internalApiClient = apiClientService.getInternalApiClient();
+            shareHolders = internalApiClient
+                    .privateCompanyResourceHandler()
+                    .getCompanyShareHolders(shareholdersUrl)
+                    .execute()
+                    .getData();
+        } catch (Exception e) {
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber));
         }
-        if (response.getBody() == null) {
-            return new ArrayList<>();
-        }
-        return Arrays.asList(response.getBody());
+
+        return (null == shareHolders ? new ArrayList<>(): Arrays.asList(shareHolders));
     }
 
     public boolean isConfirmationStatementPaid(String companyNumber, String paymentPeriodMadeUpToDate) throws ServiceException {

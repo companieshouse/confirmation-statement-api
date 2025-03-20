@@ -39,6 +39,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+
 @ExtendWith(MockitoExtension.class)
 class OracleQueryClientTest {
 
@@ -66,6 +68,9 @@ class OracleQueryClientTest {
 
     @Mock
     private ApiResponse<Integer> apiPrivateCompanyShareholdersCountGetResponse;
+
+    @Mock
+    private ApiResponse<ShareholderJson[]> apiPrivateCompanyShareholdersGetResponse;
 
     @Mock
     private ApiResponse<StatementOfCapitalJson> apiPrivateCompanyStatementOfCapitalGetResponse;
@@ -96,6 +101,9 @@ class OracleQueryClientTest {
 
     @Mock
     private PrivateCompanyShareHoldersCountGet privateCompanyShareHoldersCountGet;
+
+    @Mock
+    private PrivateCompanyShareHoldersGet privateCompanyShareHoldersGet;
 
     @Mock
     private PrivateCompanyStatementOfCapitalDataGet privateCompanyStatementOfCapitalDataGet;
@@ -131,6 +139,8 @@ class OracleQueryClientTest {
         lenient().when(privateCompanyResourceHandler.getActiveOfficers(Mockito.anyString())).thenReturn(privateActiveOfficersGet);
         lenient().when(privateCompanyResourceHandler.getPersonsOfSignificantControl(Mockito.anyString()))
                 .thenReturn(privateCompanyPersonsOfSignificantControlGet);
+        lenient().when(privateCompanyResourceHandler.getCompanyShareHolders(Mockito.anyString()))
+                .thenReturn(privateCompanyShareHoldersGet);
     }
 
     @Test
@@ -266,37 +276,41 @@ class OracleQueryClientTest {
     }
 
     @Test
-    void testGetShareholderResponse() throws ServiceException {
-        var shareholder1 = new ShareholderJson();
-        shareholder1.setForeName1("John");
-        shareholder1.setForeName2("K");
-        shareholder1.setSurname("Lewis");
+    void testGetShareholdersResponse() throws ServiceException, ApiErrorResponseException, URIValidationException {
 
+        // GIVEN
+        int expectedCount = 2;
+        ShareholderJson[] shareholderArray = {new ShareholderJson(), new ShareholderJson()};
 
-        var shareholder2 = new ShareholderJson();
-        shareholder2.setForeName1("James");
-        shareholder2.setSurname("Bond");
+        // WHEN
+        when(privateCompanyShareHoldersGet.execute()).thenReturn(apiPrivateCompanyShareholdersGetResponse);
+        when(apiPrivateCompanyShareholdersGetResponse.getData()).thenReturn(shareholderArray);
 
-        ShareholderJson[] shareholderArray = {shareholder1, shareholder2};
-
-        var companyNumber = "123213";
-
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + SHAREHOLDER_PATH, ShareholderJson[].class))
-                .thenReturn(new ResponseEntity<>(shareholderArray, HttpStatus.OK));
-
-        var result = oracleQueryClient.getShareholders(companyNumber);
-        assertEquals(2, result.size());
+        // THEN
+        List<ShareholderJson> result = oracleQueryClient.getShareholders(COMPANY_NUMBER);
+        assertEquals(expectedCount, result.size());
     }
 
     @Test
-    void testGetShareholderNotOkStatusResponse() {
-        var companyNumber = "123213";
-        when(restTemplate.getForEntity(DUMMY_URL + "/company/" + companyNumber + SHAREHOLDER_PATH, ShareholderJson[].class))
-                .thenReturn(new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+    void testGetShareholdersInvalidURIThrowsServiceException() throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
 
-        var serviceException = assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholders(companyNumber));
-        assertTrue(serviceException.getMessage().contains(companyNumber));
-        assertTrue(serviceException.getMessage().contains(HttpStatus.SERVICE_UNAVAILABLE.toString()));
+        // WHEN
+        when(privateCompanyShareHoldersGet.execute()).thenThrow(URIValidationException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholders(COMPANY_NUMBER));
+    }
+
+    @Test
+    void testGetShareholdersApiErrorResponseThrowsServiceException()  throws ApiErrorResponseException, URIValidationException {
+        // GIVEN
+
+        // WHEN
+        when(privateCompanyShareHoldersGet.execute()).thenThrow(ApiErrorResponseException.class);
+
+        // THEN
+        assertThrows(ServiceException.class, () -> oracleQueryClient.getShareholders(COMPANY_NUMBER));
     }
 
     @Test
