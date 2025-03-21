@@ -93,6 +93,7 @@ public class OracleQueryClient {
                 return new StatementOfCapitalJson();
             }
             return data;
+
         } catch (ApiErrorResponseException aere) {
             if (aere.getStatusCode() == NOT_FOUND.value()) {
                 throw new StatementOfCapitalNotFoundException(STATEMENT_OF_CAPITAL_NOT_FOUND);
