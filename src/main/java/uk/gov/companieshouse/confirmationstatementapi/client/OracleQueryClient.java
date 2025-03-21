@@ -192,7 +192,7 @@ public class OracleQueryClient {
             throw new ServiceException(String.format(GENERAL_EXCEPTION_API_CALL, shareholdersUrl), e);
         }
 
-        return ((null != shareHolders || shareHolders.length > 0) ? Arrays.asList(shareHolders) : List.of());
+        return ((null != shareHolders && shareHolders.length > 0) ? Arrays.asList(shareHolders) : List.of());
     }
 
     public boolean isConfirmationStatementPaid(String companyNumber, String paymentPeriodMadeUpToDate) throws ServiceException {
