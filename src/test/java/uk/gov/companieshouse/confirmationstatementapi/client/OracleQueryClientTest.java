@@ -452,6 +452,23 @@ class OracleQueryClientTest {
     }
 
     @Test
+    void testGetStatementOfCapitalDataReturnsEmptyObjectIfDataIsNull() throws Exception {
+        // GIVEN
+        when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
+        when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
+        when(privateCompanyResourceHandler.getStatementOfCapitalData(String.format("/company/%s/statement-of-capital", COMPANY_NUMBER)))
+                .thenReturn(privateCompanyStatementOfCapitalDataGet);
+        when(privateCompanyStatementOfCapitalDataGet.execute()).thenReturn(apiPrivateCompanyStatementOfCapitalGetResponse);
+        when(apiPrivateCompanyStatementOfCapitalGetResponse.getData()).thenReturn(null);
+
+        // WHEN
+        StatementOfCapitalJson result = oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER);
+
+        // THEN
+        assertInstanceOf(StatementOfCapitalJson.class, result);
+    }
+
+    @Test
     void testGetShareholderCount() throws ApiErrorResponseException, URIValidationException, ServiceException {
         // GIVEN
         int expectedCount = 1;
