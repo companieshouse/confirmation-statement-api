@@ -84,16 +84,16 @@ public class OracleQueryClient {
 
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
-            var data = internalApiClient
+            return internalApiClient
                     .privateCompanyResourceHandler()
                     .getStatementOfCapitalData(url)
                     .execute()
                     .getData();
-            if (data == null) {
-                return new StatementOfCapitalJson();
+        } catch (ApiErrorResponseException e) {
+            if (e.getStatusCode() == NOT_FOUND.value()) {
+                throw new StatementOfCapitalNotFoundException(STATEMENT_OF_CAPITAL_NOT_FOUND);
             }
-            return data;
-
+            throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, e.getStatusCode(), companyNumber), e);
         } catch (Exception e) {
             throw new ServiceException(String.format(ORACLE_QUERY_API_STATUS_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR, companyNumber), e);
         }
