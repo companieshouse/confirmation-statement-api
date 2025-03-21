@@ -118,7 +118,6 @@ class OracleQueryClientTest {
 
     @BeforeEach
     void setup() {
-        ReflectionTestUtils.setField(oracleQueryClient, "oracleQueryApiUrl", DUMMY_URL);
         lenient().when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
         lenient().when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
         lenient().when(privateCompanyResourceHandler.getCompanyTradedStatus(Mockito.anyString())).thenReturn(privateCompanyTradedStatusGet);
