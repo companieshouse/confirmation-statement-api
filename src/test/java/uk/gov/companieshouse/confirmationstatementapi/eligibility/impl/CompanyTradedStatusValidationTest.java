@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusType;
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
 
@@ -35,7 +36,7 @@ class CompanyTradedStatusValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnValidTradedStatus() {
+    void validateDoesNotThrowOnValidTradedStatus() throws ServiceException {
         when(companyProfileApi.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(corporateBodyService.getCompanyTradedStatus(COMPANY_NUMBER))
                 .thenReturn(CompanyTradedStatusType.NOT_ADMITTED_TO_TRADING);
@@ -50,7 +51,7 @@ class CompanyTradedStatusValidationTest {
     }
 
     @Test
-    void validateDoesThrowOnInvalidTradedStatus() {
+    void validateDoesThrowOnInvalidTradedStatus() throws ServiceException {
         when(companyProfileApi.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(corporateBodyService.getCompanyTradedStatus(COMPANY_NUMBER))
                 .thenReturn(CompanyTradedStatusType.ADMITTED_TO_TRADING_AND_DTR5_APPLIED);

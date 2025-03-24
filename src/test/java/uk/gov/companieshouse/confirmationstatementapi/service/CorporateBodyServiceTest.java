@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +23,7 @@ class CorporateBodyServiceTest {
     private CorporateBodyService corporateBodyService;
 
     @Test
-    void getCompanyTradedStatus() {
+    void getCompanyTradedStatus() throws ServiceException {
         when(oracleQueryClient.getCompanyTradedStatus(COMPANY_NUMBER)).thenReturn(0L);
         var companyTradedStatusType = corporateBodyService.getCompanyTradedStatus(COMPANY_NUMBER);
 

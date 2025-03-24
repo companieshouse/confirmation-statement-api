@@ -5,9 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import uk.gov.companieshouse.api.model.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +47,7 @@ class ShareholderServiceTest {
     }
 
     @Test
-    void getCompanyShareholdersCountTest() {
+    void getCompanyShareholdersCountTest() throws ServiceException {
         when(oracleQueryClient.getShareholderCount(COMPANY_NUMBER)).thenReturn(0);
 
         var response = shareholderService.getShareholderCount(COMPANY_NUMBER);

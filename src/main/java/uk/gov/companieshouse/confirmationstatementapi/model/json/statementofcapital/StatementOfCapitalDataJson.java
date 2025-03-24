@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 
 public class StatementOfCapitalDataJson extends SectionDataJson {

@@ -2,9 +2,10 @@ package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import uk.gov.companieshouse.api.model.shareholder.ShareholderJson;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderJson;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ShareholderService {
         return oracleQueryClient.getShareholders(companyNumber);
     }
 
-    public int getShareholderCount(String companyNumber) {
+    public int getShareholderCount(String companyNumber) throws ServiceException {
         return oracleQueryClient.getShareholderCount(companyNumber);
     }
 

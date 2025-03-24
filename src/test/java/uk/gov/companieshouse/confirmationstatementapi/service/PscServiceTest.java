@@ -14,11 +14,11 @@ import uk.gov.companieshouse.api.handler.psc.PscsResourceHandler;
 import uk.gov.companieshouse.api.handler.psc.request.PscsList;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.common.Address;
+import uk.gov.companieshouse.api.model.company.PersonOfSignificantControl;
 import uk.gov.companieshouse.api.model.psc.PscsApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.PscsMapper;
 

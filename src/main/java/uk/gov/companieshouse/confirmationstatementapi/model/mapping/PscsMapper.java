@@ -3,8 +3,8 @@ package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.model.common.DateOfBirth;
+import uk.gov.companieshouse.api.model.company.PersonOfSignificantControl;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
-import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 
 import java.sql.Timestamp;

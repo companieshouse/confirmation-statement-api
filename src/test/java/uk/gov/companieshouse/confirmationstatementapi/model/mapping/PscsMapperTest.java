@@ -2,7 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.model.common.Address;
-import uk.gov.companieshouse.confirmationstatementapi.model.PersonOfSignificantControl;
+import uk.gov.companieshouse.api.model.company.PersonOfSignificantControl;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 
 import java.util.ArrayList;

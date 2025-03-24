@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.model;
 import java.time.LocalDate;
 import java.util.Collections;
 
+import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.TradingStatusDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
@@ -28,7 +29,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.Sha
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 
 public class MockConfirmationStatementSubmissionData {
 
