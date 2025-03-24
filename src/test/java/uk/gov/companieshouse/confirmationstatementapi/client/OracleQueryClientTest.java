@@ -100,16 +100,16 @@ class OracleQueryClientTest {
     private PrivateCompanyStatementOfCapitalDataGet privateCompanyStatementOfCapitalDataGet;
 
     @Mock
-    private PrivateActiveDirectorGet privateActiveDirectorGet;
+    private PrivateCompanyActiveDirectorGet privateActiveDirectorGet;
 
     @Mock
-    private PrivateActiveOfficersGet privateActiveOfficersGet;
+    private PrivateCompanyActiveOfficersGet privateActiveOfficersGet;
 
     @Mock
     private PrivateCompanyPersonsOfSignificantControlGet privateCompanyPersonsOfSignificantControlGet;
 
     @Mock
-    private PrivateRegisterLocationsGet privateRegisterLocationsGet;
+    private PrivateCompanyRegisterLocationsGet privateRegisterLocationsGet;
 
     @InjectMocks
     private OracleQueryClient oracleQueryClient;
