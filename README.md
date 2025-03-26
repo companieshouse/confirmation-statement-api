@@ -23,9 +23,13 @@ To checkout and build the service:
 - resource-change-publisher
 - stream-router
 - company-appointments-consumer
-5. Run docker using "chs-dev up" in the docker-chs-development directory.
-6. Run "chs-dev status" to check all required services are running and healthy
-7. Open your browser and go to page http://chs.local/confirmation-statement/
+5. Change the value of `ORACLE_QUERY_API_URL` within `confirmation-statement-api.yaml`, in the `docker-chs-development/services/modules/confirmation-statement/` directory, to: 
+  - `ORACLE_QUERY_API_URL=http://api.chs.local:4001`
+6. Add the following to the `confirmation-statement-api.docker-compose.yaml` file:
+  - `DOCUMENT_API_LOCAL_URL=NOT-USED`
+7. Run docker using "chs-dev up" in the docker-chs-development directory.
+8. Run "chs-dev status" to check all required services are running and healthy
+9. Open your browser and go to page http://chs.local/confirmation-statement/
 
 These instructions are for a local docker environment.
 
@@ -133,6 +137,15 @@ Although now fixed, changing the image configuration within the pom.xml file may
         <image>mvn compile jib:dockerBuild -Dimage=416670754337.dkr.ecr.eu-west-2.amazonaws.com/charges-delta-consumer:latest</image>
     </to>
 </configuration>
+```
+
+#### Disable Document API
+
+Add the following to the `confirmation-statement-api.docker-compose.yaml` file
+
+```yaml
+# end of environment section
+  - DOCUMENT_API_LOCAL_URL=NOT-USED
 ```
 
 #### Enabling the Debug Port
