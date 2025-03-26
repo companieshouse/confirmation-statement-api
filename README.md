@@ -93,6 +93,74 @@ Application specific attributes | Value                                | Descrip
 ### Vault Configuration Updates
 - Any secrets required for this service will be stored in Vault. For any updates to the Vault configuration, please consult with the **#platform** team and submit a workflow request.
 
+### Local Dev Environment Troubleshooting
+
+#### AWS CLI
+
+If you are having issues with the AWS CLI authorisation, you can use the following commands to export your credentials:
+
+```shell
+l_aws # choose development-eu-west-2
+eval "$(aws configure export-credentials --format env)"
+```
+
+#### Docker Error Code 17
+
+If you encounter the following error, or similar error code 17, when running `chs-dev up` on your local machine:
+
+```error
+failed to solve: failed to compute cache key: failed to calculate checksum of r ef w7ku8z8s91nt5gefsc7foffdv::56zof7fesw33xLj94s8lahepr: "/app": not found
+Running chs-dev environment: docker-chs-development... !
+Error: Docker compose failed with status code: 17
+```
+
+run a `make` command within your confirmation-statement-api directory to resolve the issue.  Also ensure you are also using the correct jdk version when running `make`.
+
+```shell
+sdk use <latest jdk 21 release>
+make
+```
+
+#### Image Configuration within pom.xml
+
+Although now fixed, changing the image configuration within the pom.xml file may resolve some issues.  Near the end of the pom.xml in the confirmation-statement-api directory, change the image configuration to the following:
+
+```xml
+<configuration>
+    <from>
+        <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-corretto-build-21:latest</image>
+    </from>
+    <to>
+        <image>mvn compile jib:dockerBuild -Dimage=416670754337.dkr.ecr.eu-west-2.amazonaws.com/charges-delta-consumer:latest</image>
+    </to>
+</configuration>
+```
+
+#### Enabling the Debug Port
+
+If you are wanting to enable the debug port, you can do so by adding the following to the `confirmation-statement-api.docker-compose.yaml` file.
+The yaml is found within the `docker-chs-development/services/modules/confirmation-statement/` directory.
+
+```yaml
+# At the end of the `environment` section
+  JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9095
+expose:
+  - 8080
+  - 9095
+ports:
+  - "9095:9095"
+```
+
+#### Postman Authorisation
+
+In order to use Postman to test the endpoints, you will need to set up the authorisation.  This can be done by following the steps below:
+
+1. Open Postman and select the `confirmation-statement-api` collection.
+2. Click on the `Authorization` tab.
+3. Select `OAuth 2.0` from the `Auth Type` dropdown.
+4. Click on the `Get New Access Token` button.
+5. Sign in with appropriate credentials.
+
 ### Useful Links
 - [ECS service config dev repository](https://github.com/companieshouse/ecs-service-configs-dev)
 - [ECS service config production repository](https://github.com/companieshouse/ecs-service-configs-production)
