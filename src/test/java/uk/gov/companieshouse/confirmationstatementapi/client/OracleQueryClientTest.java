@@ -41,7 +41,6 @@ import java.util.List;
 class OracleQueryClientTest {
 
     private static final String COMPANY_NUMBER = "12345678";
-    private static final String DUMMY_URL = "http://test";
     private static final String COMPANY_EMAIL = "info@acme.com";
     public static final String DUE_DATE = "2022-01-01";
 
