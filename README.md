@@ -139,15 +139,6 @@ Although now fixed, changing the image configuration within the pom.xml file may
 </configuration>
 ```
 
-#### Disable Document API
-
-Add the following to the `confirmation-statement-api.docker-compose.yaml` file
-
-```yaml
-# end of environment section
-  - DOCUMENT_API_LOCAL_URL=NOT-USED
-```
-
 #### Enabling the Debug Port
 
 If you are wanting to enable the debug port, you can do so by adding the following to the `confirmation-statement-api.docker-compose.yaml` file.
