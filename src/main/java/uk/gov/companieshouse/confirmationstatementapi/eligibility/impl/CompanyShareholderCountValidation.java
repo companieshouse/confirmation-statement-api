@@ -4,6 +4,7 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
@@ -18,7 +19,7 @@ public class CompanyShareholderCountValidation implements EligibilityRule<Compan
     }
 
     @Override
-    public void validate(CompanyProfileApi companyProfile) throws EligibilityException {
+    public void validate(CompanyProfileApi companyProfile) throws EligibilityException, ServiceException {
         if (!validationFlag) {
             ApiLogger.debug("SHAREHOLDER COUNT VALIDATION FEATURE FLAG off skipping validation");
             return;

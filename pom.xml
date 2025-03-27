@@ -20,7 +20,7 @@
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
         <org.mapstruct.version>1.6.2</org.mapstruct.version>
-        <private-api-sdk-java.version>4.0.99</private-api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.288</private-api-sdk-java.version>
         <api-security-java.version>2.0.4</api-security-java.version>
         <api-sdk-manager-java-library.version>3.0.5</api-sdk-manager-java-library.version>
         <structured-logging.version>3.0.20</structured-logging.version>

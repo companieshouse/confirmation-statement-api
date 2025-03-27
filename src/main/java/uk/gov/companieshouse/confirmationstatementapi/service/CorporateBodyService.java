@@ -3,6 +3,7 @@ package uk.gov.companieshouse.confirmationstatementapi.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusType;
 
 @Service
@@ -15,7 +16,7 @@ public class CorporateBodyService {
         this.oracleQueryClient = oracleQueryClient;
     }
 
-    public CompanyTradedStatusType getCompanyTradedStatus(String companyNumber) {
+    public CompanyTradedStatusType getCompanyTradedStatus(String companyNumber) throws ServiceException {
         var companyTradedStatus = oracleQueryClient.getCompanyTradedStatus(companyNumber);
         return CompanyTradedStatusType.findByCompanyTradedStatusTypeId(companyTradedStatus);
     }

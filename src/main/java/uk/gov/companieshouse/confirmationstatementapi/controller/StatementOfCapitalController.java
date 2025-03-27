@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.StatementOfCapitalService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
@@ -43,9 +44,8 @@ public class StatementOfCapitalController {
             ApiLogger.infoContext(requestId, "Calling service to retrieve statement of capital data.", logMap);
             var statementOfCapital = statementOfCapitalService.getStatementOfCapital(transaction.getCompanyNumber());
             return ResponseEntity.status(HttpStatus.OK).body(statementOfCapital);
-        } catch (StatementOfCapitalNotFoundException e) {
-            ApiLogger.infoContext(requestId, e.getMessage(), logMap);
-            return ResponseEntity.notFound().build();
+        } catch (StatementOfCapitalNotFoundException socnfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (ServiceException e) {
             ApiLogger.errorContext(requestId, "Error retrieving statement of capital data.", e, logMap);
             return ResponseEntity.internalServerError().build();

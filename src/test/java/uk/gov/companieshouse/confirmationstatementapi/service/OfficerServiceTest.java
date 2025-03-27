@@ -18,7 +18,7 @@ import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
-import uk.gov.companieshouse.confirmationstatementapi.model.ActiveOfficerDetails;
+import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 
 import java.io.IOException;
@@ -119,7 +119,7 @@ class OfficerServiceTest {
 
     @Test
     void getActiveDirectorDetailsTest() throws ServiceException, ActiveOfficerNotFoundException {
-        ActiveOfficerDetails details = new ActiveOfficerDetails();
+        ActiveOfficerDetailsJson details = new ActiveOfficerDetailsJson();
         details.setForeName1("John");
         details.setSurname("Doe");
         when(oracleQueryClient.getActiveDirectorDetails(COMPANY_NUMBER)).thenReturn(details);
@@ -131,9 +131,9 @@ class OfficerServiceTest {
 
     @Test
     void getListActiveOfficersDetailsTest() throws ServiceException {
-        ActiveOfficerDetails officer1 = new ActiveOfficerDetails();
-        ActiveOfficerDetails officer2 = new ActiveOfficerDetails();
-        List<ActiveOfficerDetails> officers = Arrays.asList(officer1, officer2);
+        ActiveOfficerDetailsJson officer1 = new ActiveOfficerDetailsJson();
+        ActiveOfficerDetailsJson officer2 = new ActiveOfficerDetailsJson();
+        List<ActiveOfficerDetailsJson> officers = Arrays.asList(officer1, officer2);
         when(oracleQueryClient.getActiveOfficersDetails(COMPANY_NUMBER)).thenReturn(officers);
 
         var response = officerService.getListActiveOfficersDetails(COMPANY_NUMBER);
