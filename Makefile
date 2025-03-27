@@ -29,7 +29,7 @@ clean:
 build:
 	mvn versions:set -DnewVersion=$(version) -DgenerateBackupPoms=false
 	mvn package -DskipTests=true
-	cp ./target/$(artifact_name)-$(version).jar ./$(artifact_name).jar
+	cp ./target/$(artifact_name)-$(version).jar ./ecs-image-build/app/$(artifact_name).jar
 
 .PHONY: test
 test: test-unit
