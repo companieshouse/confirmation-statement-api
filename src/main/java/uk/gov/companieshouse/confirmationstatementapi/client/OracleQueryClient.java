@@ -47,7 +47,7 @@ public class OracleQueryClient {
     private ApiClientService apiClientService;
 
     public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
-        String url = String.format(API_PATH_COMPANY_TRADED_STATUS, companyNumber);
+        var url = String.format(API_PATH_COMPANY_TRADED_STATUS, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
 
         try {
@@ -63,7 +63,7 @@ public class OracleQueryClient {
     }
 
     public Integer getShareholderCount(String companyNumber) throws ServiceException {
-        String url = String.format(API_PATH_COMPANY_SHAREHOLDERS_COUNT, companyNumber);
+        var url = String.format(API_PATH_COMPANY_SHAREHOLDERS_COUNT, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
 
         try {
@@ -79,7 +79,7 @@ public class OracleQueryClient {
     }
 
     public StatementOfCapitalJson getStatementOfCapitalData(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {
-        String url = String.format(API_PATH_COMPANY_STATEMENT_OF_CAPITAL, companyNumber);
+        var url = String.format(API_PATH_COMPANY_STATEMENT_OF_CAPITAL, companyNumber);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
 
         try {
@@ -106,7 +106,7 @@ public class OracleQueryClient {
     }
 
     public ActiveOfficerDetailsJson getActiveDirectorDetails(String companyNumber) throws ServiceException {
-        String url = String.format(API_PATH_COMPANY_DIRECTOR_ACTIVE, companyNumber);
+        var url = String.format(API_PATH_COMPANY_DIRECTOR_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         try {
@@ -124,7 +124,7 @@ public class OracleQueryClient {
     }
 
     public List<ActiveOfficerDetailsJson> getActiveOfficersDetails(String companyNumber) throws ServiceException {
-        String url = String.format(API_PATH_COMPANY_OFFICERS_ACTIVE, companyNumber);
+        var url = String.format(API_PATH_COMPANY_OFFICERS_ACTIVE, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         try {
@@ -142,7 +142,7 @@ public class OracleQueryClient {
     }
 
     public List<PersonOfSignificantControl> getPersonsOfSignificantControl(String companyNumber) throws ServiceException {
-        String url = String.format(API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC, companyNumber);
+        var url = String.format(API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         try {
@@ -160,7 +160,7 @@ public class OracleQueryClient {
     }
 
     public List<RegisterLocationJson> getRegisterLocations(String companyNumber) throws ServiceException {
-        String url = String.format(API_PATH_COMPANY_REGISTER_LOCATIONS, companyNumber);
+        var url = String.format(API_PATH_COMPANY_REGISTER_LOCATIONS, companyNumber);
         ApiLogger.info(String.format(CALLING_ORACLE_QUERY_API_URL_GET, url));
 
         try {
