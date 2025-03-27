@@ -23,10 +23,6 @@ To checkout and build the service:
 - resource-change-publisher
 - stream-router
 - company-appointments-consumer
-5. Change the value of `ORACLE_QUERY_API_URL` within `confirmation-statement-api.yaml`, in the `docker-chs-development/services/modules/confirmation-statement/` directory, to: 
-  - `ORACLE_QUERY_API_URL=http://api.chs.local:4001`
-6. Add the following to the `confirmation-statement-api.docker-compose.yaml` file:
-  - `DOCUMENT_API_LOCAL_URL=NOT-USED`
 7. Run docker using "chs-dev up" in the docker-chs-development directory.
 8. Run "chs-dev status" to check all required services are running and healthy
 9. Open your browser and go to page http://chs.local/confirmation-statement/
