@@ -33,17 +33,6 @@ public class OracleQueryClient {
     private static final String STATEMENT_OF_CAPITAL_NOT_FOUND = "Statement Of Capital not found";
     private static final String GENERAL_EXCEPTION_API_CALL = "Error occurred while calling '%s'";
 
-//    private static final String API_PATH_COMPANY_TRADED_STATUS = "/company/%s/traded-status";
-//    private static final String API_PATH_COMPANY_SHAREHOLDERS_COUNT = "/company/%s/shareholders/count";
-//    private static final String API_PATH_COMPANY_STATEMENT_OF_CAPITAL = "/company/%s/statement-of-capital";
-//    private static final String API_PATH_COMPANY_DIRECTOR_ACTIVE = "/company/%s/director/active";
-//    private static final String API_PATH_COMPANY_OFFICERS_ACTIVE = "/company/%s/officers/active";
-//    private static final String API_PATH_COMPANY_REGISTER_LOCATIONS = "/company/%s/register/location";
-//    private static final String API_PATH_SHARE_HOLDERS = "/company/%s/shareholders";
-//    private static final String API_PATH_COMPANY_CORPORATE_BODY_APPOINTMENTS_PSC = "/company/%s/corporate-body-appointments/persons-of-significant-control";
-//    private static final String API_PATH_COMPANY_CONFIRMATION_STATEMENT_PAID = "/company/%s/confirmation-statement/paid";
-//    private static final String API_PATH_REGISTERED_EMAIL_ADDRESS = "/company/%s/registered-email-address";
-
     private final String apiPathCompanyDetails;
     private final String apiPathCompanyTradedStatus;
     private final String apiPathCompanyShareholdersCount;
