@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
@@ -116,21 +117,35 @@ class OracleQueryClientTest {
 
     @BeforeEach
     void setup() {
-        lenient().when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
-        lenient().when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
-        lenient().when(privateCompanyResourceHandler.getCompanyTradedStatus(Mockito.anyString())).thenReturn(privateCompanyTradedStatusGet);
-        lenient().when(privateCompanyResourceHandler.getCompanyShareHoldersCount(Mockito.anyString())).thenReturn(privateCompanyShareHoldersCountGet);
-        lenient().when(privateCompanyResourceHandler.getStatementOfCapitalData(Mockito.anyString())).thenReturn(privateCompanyStatementOfCapitalDataGet);
-        lenient().when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
-        lenient().when(privateCompanyResourceHandler.getConfirmationStatementPayment(Mockito.anyString(), Mockito.anyString()))
+        when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
+        when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
+        when(privateCompanyResourceHandler.getCompanyTradedStatus(Mockito.anyString())).thenReturn(privateCompanyTradedStatusGet);
+        when(privateCompanyResourceHandler.getCompanyShareHoldersCount(Mockito.anyString())).thenReturn(privateCompanyShareHoldersCountGet);
+        when(privateCompanyResourceHandler.getStatementOfCapitalData(Mockito.anyString())).thenReturn(privateCompanyStatementOfCapitalDataGet);
+        when(privateCompanyResourceHandler.getCompanyRegisteredEmailAddress(Mockito.anyString())).thenReturn(privateCompanyEmailGet);
+        when(privateCompanyResourceHandler.getConfirmationStatementPayment(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(privateCompanyConfirmationStatementPaymentGet);
-        lenient().when(privateCompanyResourceHandler.getActiveDirector(Mockito.anyString())).thenReturn(privateActiveDirectorGet);
-        lenient().when(privateCompanyResourceHandler.getActiveOfficers(Mockito.anyString())).thenReturn(privateActiveOfficersGet);
-        lenient().when(privateCompanyResourceHandler.getPersonsOfSignificantControl(Mockito.anyString()))
+        when(privateCompanyResourceHandler.getActiveDirector(Mockito.anyString())).thenReturn(privateActiveDirectorGet);
+        when(privateCompanyResourceHandler.getActiveOfficers(Mockito.anyString())).thenReturn(privateActiveOfficersGet);
+        when(privateCompanyResourceHandler.getPersonsOfSignificantControl(Mockito.anyString()))
                 .thenReturn(privateCompanyPersonsOfSignificantControlGet);
-        lenient().when(privateCompanyResourceHandler.getRegisterLocations(Mockito.anyString())).thenReturn(privateRegisterLocationsGet);
-        lenient().when(privateCompanyResourceHandler.getCompanyShareHolders(Mockito.anyString()))
+        when(privateCompanyResourceHandler.getRegisterLocations(Mockito.anyString())).thenReturn(privateRegisterLocationsGet);
+        when(privateCompanyResourceHandler.getCompanyShareHolders(Mockito.anyString()))
                 .thenReturn(privateCompanyShareHoldersGet);
+
+        oracleQueryClient = new OracleQueryClient(
+                "/company/%s",
+                "/traded-status",
+                "/shareholders/count",
+                "/statement-of-capital",
+                "/director/active",
+                "/officers/active",
+                "/register/location",
+                "/shareholders",
+                "/corporate-body-appointments/persons-of-significant-control",
+                "/confirmation-statement/paid",
+                "/registered-email-address"
+        );
     }
 
     @Test
