@@ -42,7 +42,7 @@ public class OracleQueryClient {
     private static final String API_PATH_REGISTERED_EMAIL_ADDRESS = "/company/%s/registered-email-address";
     private static final String GENERAL_EXCEPTION_API_CALL = "Error occurred while calling '%s'";
 
-//Ade: temp change to test sbom changes
+
     @Autowired
     private ApiClientService apiClientService;
 
