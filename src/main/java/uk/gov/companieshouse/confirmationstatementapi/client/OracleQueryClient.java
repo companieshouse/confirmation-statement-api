@@ -45,7 +45,6 @@ public class OracleQueryClient {
     private final String apiPathCompanyConfirmationStatementPaid;
     private final String apiPathRegisteredEmailAddress;
 
-
     @Autowired
     private ApiClientService apiClientService;
 
