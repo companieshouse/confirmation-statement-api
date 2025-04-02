@@ -52,6 +52,7 @@ public class OracleQueryClient {
     @Autowired
     public OracleQueryClient(
             // values are injected from application.properties
+            ApiClientService apiClientService,
             @Value("${api.path.company.details}") String apiPathCompanyDetails,
             @Value("${api.path.company.traded.status}") String apiPathCompanyTradedStatus,
             @Value("${api.path.company.shareholders.count}") String apiPathCompanyShareholdersCount,
@@ -74,6 +75,7 @@ public class OracleQueryClient {
         this.apiPathCompanyCorporateBodyAppointmentsPsc = apiPathCompanyCorporateBodyAppointmentsPsc;
         this.apiPathCompanyConfirmationStatementPaid = apiPathCompanyConfirmationStatementPaid;
         this.apiPathRegisteredEmailAddress = apiPathRegisteredEmailAddress;
+        this.apiClientService = apiClientService;
     }
 
     private String buildUrl(String companyNumber, String component) {
