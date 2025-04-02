@@ -132,7 +132,7 @@ class OracleQueryClientTest {
         lenient().when(privateCompanyResourceHandler.getRegisterLocations(Mockito.anyString())).thenReturn(privateRegisterLocationsGet);
         lenient().when(privateCompanyResourceHandler.getCompanyShareHolders(Mockito.anyString()))
                 .thenReturn(privateCompanyShareHoldersGet);
-
+      
         oracleQueryClient = new OracleQueryClient(
                 apiClientService,
                 "/company/%s",

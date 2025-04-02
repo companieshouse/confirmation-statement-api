@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -86,6 +85,13 @@ public class OracleQueryClient {
         var url = buildUrl(companyNumber, apiPathCompanyTradedStatus);
         ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
 
+//Ade: temp change to test sbom changes
+    @Autowired
+    private ApiClientService apiClientService;
+
+    public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
+        String url = String.format(API_PATH_COMPANY_TRADED_STATUS, companyNumber);
+        ApiLogger.info(String.format(CALLING_INTERNAL_API_CLIENT_GET, url));
         try {
             var internalApiClient = apiClientService.getInternalApiClient();
             return internalApiClient
