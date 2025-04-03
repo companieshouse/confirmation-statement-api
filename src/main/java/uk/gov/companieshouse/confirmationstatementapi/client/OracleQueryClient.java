@@ -45,8 +45,7 @@ public class OracleQueryClient {
     private final String apiPathCompanyConfirmationStatementPaid;
     private final String apiPathRegisteredEmailAddress;
 
-    @Autowired
-    private ApiClientService apiClientService;
+    private final ApiClientService apiClientService;
 
     @Autowired
     public OracleQueryClient(
@@ -78,7 +77,8 @@ public class OracleQueryClient {
     }
 
     private String buildUrl(String companyNumber, String component) {
-        return String.format(apiPathCompanyDetails + component, companyNumber);
+        var str = apiPathCompanyDetails + component;
+        return String.format(str, companyNumber);
     }
 
     public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
