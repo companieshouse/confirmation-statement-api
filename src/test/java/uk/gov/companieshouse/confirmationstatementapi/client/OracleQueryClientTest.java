@@ -454,11 +454,11 @@ class OracleQueryClientTest {
     @Test
     void testGetStatementOfCapitalDataResponseNotFound() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
-        ApiErrorResponseException NOT_FOUND_EXCEPTION = ApiErrorResponseException.fromHttpResponseException(
-                new HttpResponseException.Builder(404, "ERROR", new HttpHeaders()).build());
+        ApiErrorResponseException notFound = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(404, "NOT FOUND", new HttpHeaders()).build());
 
         // WHEN
-        when(privateCompanyStatementOfCapitalDataGet.execute()).thenThrow(NOT_FOUND_EXCEPTION);
+        when(privateCompanyStatementOfCapitalDataGet.execute()).thenThrow(notFound);
 
         // THEN
         assertThrows(StatementOfCapitalNotFoundException.class, () -> oracleQueryClient.getStatementOfCapitalData(COMPANY_NUMBER));
@@ -546,11 +546,11 @@ class OracleQueryClientTest {
     @Test
     void testGetRegisteredEmailAddressUnexpectedResponse() throws RegisteredEmailNotFoundException, ApiErrorResponseException, URIValidationException {
         // GIVEN
-        ApiErrorResponseException BAD_REQUEST_EXCEPTION = ApiErrorResponseException.fromHttpResponseException(
-                new HttpResponseException.Builder(400, "ERROR", new HttpHeaders()).build());
+        ApiErrorResponseException badRequestException = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(400, "BAD REQUEST", new HttpHeaders()).build());
 
         // WHEN
-        when(privateCompanyEmailGet.execute()).thenThrow(BAD_REQUEST_EXCEPTION);
+        when(privateCompanyEmailGet.execute()).thenThrow(badRequestException);
 
         // THEN
         try {
@@ -566,11 +566,11 @@ class OracleQueryClientTest {
     @Test
     void testGetRegisteredEmailAddressEmailAddressResponseNotFound() throws ApiErrorResponseException, URIValidationException {
         // GIVEN
-        ApiErrorResponseException NOT_FOUND_EXCEPTION = ApiErrorResponseException.fromHttpResponseException(
-                new HttpResponseException.Builder(404, "ERROR", new HttpHeaders()).build());
+        ApiErrorResponseException notFoundException = ApiErrorResponseException.fromHttpResponseException(
+                new HttpResponseException.Builder(404, "NOT FOUND", new HttpHeaders()).build());
 
         // WHEN
-        when(privateCompanyEmailGet.execute()).thenThrow(NOT_FOUND_EXCEPTION);
+        when(privateCompanyEmailGet.execute()).thenThrow(notFoundException);
 
         // THEN
         assertThrows(RegisteredEmailNotFoundException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
