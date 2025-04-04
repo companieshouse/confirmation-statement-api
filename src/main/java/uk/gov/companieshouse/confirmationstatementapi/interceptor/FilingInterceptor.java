@@ -16,6 +16,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRA
 @Component
 public class FilingInterceptor implements HandlerInterceptor {
 
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final var transaction = (Transaction) request.getAttribute("transaction");
         final String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);

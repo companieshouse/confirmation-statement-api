@@ -8,7 +8,6 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.officers.OfficersApi;
 import uk.gov.companieshouse.confirmationstatementapi.client.ApiClientService;
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -42,8 +41,7 @@ public class OfficerService {
         }
     }
 
-    public ActiveOfficerDetailsJson getActiveOfficerDetails(String companyNumber) throws ServiceException,
-            ActiveOfficerNotFoundException {
+    public ActiveOfficerDetailsJson getActiveOfficerDetails(String companyNumber) throws ServiceException {
         return oracleQueryClient.getActiveDirectorDetails(companyNumber);
     }
 

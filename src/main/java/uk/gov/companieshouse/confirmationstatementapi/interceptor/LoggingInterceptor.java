@@ -13,6 +13,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERI
 @Component
 public class LoggingInterceptor implements HandlerInterceptor{
 
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Long startTime = System.currentTimeMillis();
         request.getSession().setAttribute("start-time", startTime);
@@ -22,6 +23,7 @@ public class LoggingInterceptor implements HandlerInterceptor{
         return true;
     }
 
+    @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         Long startTime = (Long) request.getSession().getAttribute("start-time");
         long responseTime = System.currentTimeMillis() - startTime;
