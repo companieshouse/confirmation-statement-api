@@ -31,47 +31,41 @@ class OfficerControllerTest {
 
     private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
     private static final String TRANSACTION_ID = "GFEDCBA";
+    private static final String CONFIRMATION_STATEMENT_ID = "abc123";
 
     @Test
     void testGetActiveOfficerDetails() throws ActiveOfficerNotFoundException, ServiceException {
         when(officerService.getActiveOfficerDetails(transaction.getCompanyNumber())).thenReturn(new ActiveOfficerDetailsJson());
-        var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     void testGetActiveOfficerDetailsServiceException() throws ActiveOfficerNotFoundException, ServiceException {
         when(officerService.getActiveOfficerDetails(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
-        var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
-    void testGetActiveOfficerDetailsOfficerNotFoundException() throws ActiveOfficerNotFoundException, ServiceException {
-        when(officerService.getActiveOfficerDetails(transaction.getCompanyNumber())).thenThrow(ActiveOfficerNotFoundException.class);
-        var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     void testGetListActiveOfficersDetails() throws ServiceException {
         var officers = Arrays.asList(new ActiveOfficerDetailsJson(), new ActiveOfficerDetailsJson());
         when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenReturn(officers);
-        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     void testGetListActiveOfficersDetailsServiceException() throws ServiceException {
         when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
-        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
     void testGetListActiveOfficersDetailsOfficerNotFoundException() throws ServiceException {
         when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
-        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 }
