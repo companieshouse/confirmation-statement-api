@@ -10,7 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestClientException;
 
 import uk.gov.companieshouse.api.InternalApiClient;
@@ -38,6 +40,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
+@TestPropertySource(locations="classpath:application.properties")
 class OracleQueryClientTest {
 
     private static final String COMPANY_NUMBER = "12345678";
@@ -146,6 +149,15 @@ class OracleQueryClientTest {
                 "/confirmation-statement/paid",
                 "/registered-email-address"
         );
+    }
+
+    // Todo This is to check if the properties are loading correctly from application.properties
+    @Value("${api.path.company.details}")
+    private String apiPathCompanyDetails;
+
+    @Test
+    void testPropertyLoading() {
+        assertNotNull(apiPathCompanyDetails, "Property 'api.path.company.details' should not be null");
     }
 
     @Test

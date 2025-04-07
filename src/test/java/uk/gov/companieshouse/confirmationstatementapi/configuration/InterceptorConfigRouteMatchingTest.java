@@ -13,29 +13,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.ServletRequestPathUtils;
 
-@SpringBootTest
+import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
+import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
+
+// TODO Migrate this test to mockito and remove the need for the whole application context?
+
+@SpringBootTest(classes = ConfirmationStatementApiApplication.class)
+@TestPropertySource(locations="classpath:application.properties")
 class InterceptorConfigRouteMatchingTest {
 
     @Autowired
     @Qualifier("requestMappingHandlerMapping")
     private RequestMappingHandlerMapping mapping;
 
+    @Autowired
+    private OracleQueryClient oracleQueryClient;
+
     @Test
     void interceptorsMatchIntendedRoutesTest() throws Exception {
-
-        Map<String,Set<String>> testCases = new HashMap<>();
-        Set<String> COMPANY_NUMBER_INTERCEPTORS =
-            Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "CompanyNumberValidationInterceptor");
-        Set<String> TRANSACTION_INTERCEPTORS =
-            Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor");
-        Set<String> CS_ID_INTERCEPTORS =
-            Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor",
-                "SubmissionInterceptor", "SubmissionIdValidationInterceptor");
+        Map<String, Set<String>> testCases = new HashMap<>();
+        Set<String> COMPANY_NUMBER_INTERCEPTORS = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "CompanyNumberValidationInterceptor");
+        Set<String> TRANSACTION_INTERCEPTORS = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor");
+        Set<String> CS_ID_INTERCEPTORS = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor", "SubmissionInterceptor", "SubmissionIdValidationInterceptor");
 
         // company number
         testCases.put("/confirmation-statement/company/12345/eligibility", COMPANY_NUMBER_INTERCEPTORS);
@@ -51,17 +57,11 @@ class InterceptorConfigRouteMatchingTest {
         testCases.put("/transactions/12345/confirmation-statement/12345/shareholders", CS_ID_INTERCEPTORS);
         testCases.put("/transactions/12345/confirmation-statement/12345/register-locations", CS_ID_INTERCEPTORS);
         // internal endpoints
-        testCases.put("/private/transactions/12345/confirmation-statement/12345/filings",
-            Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "FilingInterceptor"));
-        testCases.put("/transactions/12345/confirmation-statement/12345/costs",
-            Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor",
-                "SubmissionInterceptor", "SubmissionIdValidationInterceptor"));
-        testCases.put("/private/confirmation-statement/company/12345/registered-email-address",
-            Set.of("LoggingInterceptor", "InternalUserInterceptor", "CompanyNumberValidationInterceptor"));
+        testCases.put("/private/transactions/12345/confirmation-statement/12345/filings", Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "FilingInterceptor"));
+        testCases.put("/transactions/12345/confirmation-statement/12345/costs", Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor", "SubmissionInterceptor", "SubmissionIdValidationInterceptor"));
+        testCases.put("/private/confirmation-statement/company/12345/registered-email-address", Set.of("LoggingInterceptor", "InternalUserInterceptor", "CompanyNumberValidationInterceptor"));
 
-
-        for (String requestPath : testCases.keySet()){
-
+        for (String requestPath : testCases.keySet()) {
             Set<String> expectedInterceptors = testCases.get(requestPath);
 
             MockHttpServletRequest request = new MockHttpServletRequest("GET", requestPath);
@@ -71,27 +71,23 @@ class InterceptorConfigRouteMatchingTest {
                 if (!ServletRequestPathUtils.hasParsedRequestPath(request)) {
                     ServletRequestPathUtils.parseAndCache(request);
                 }
-
-                 chain = mapping.getHandler(request);
+                chain = mapping.getHandler(request);
             } catch (HttpRequestMethodNotSupportedException e) {
                 request = new MockHttpServletRequest("POST", requestPath);
-
                 if (!ServletRequestPathUtils.hasParsedRequestPath(request)) {
                     ServletRequestPathUtils.parseAndCache(request);
                 }
-
                 chain = mapping.getHandler(request);
             }
-            assertNotNull(chain, "No handler found for path "+requestPath);
+            assertNotNull(chain, "No handler found for path " + requestPath);
 
-            Set<String> foundInterceptors = chain.getInterceptorList()
-                .stream()
-                .map((s) -> s.getClass())
-                .filter((s) -> s.getPackageName().startsWith("uk.gov.companieshouse"))
-                .map((s) -> s.getSimpleName())
-                .collect(Collectors.toSet());
+            Set<String> foundInterceptors = chain.getInterceptorList().stream()
+                    .map(HandlerInterceptor::getClass)
+                    .filter(s -> s.getPackageName().startsWith("uk.gov.companieshouse"))
+                    .map(Class::getSimpleName)
+                    .collect(Collectors.toSet());
 
-            assertEquals(expectedInterceptors, foundInterceptors, "Interceptors not as expected for path "+requestPath);
+            assertEquals(expectedInterceptors, foundInterceptors, "Interceptors not as expected for path " + requestPath);
         }
     }
 }

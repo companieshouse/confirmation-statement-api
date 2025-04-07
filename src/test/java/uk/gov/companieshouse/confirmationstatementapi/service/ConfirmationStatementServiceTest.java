@@ -138,7 +138,8 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void createPayableResourceConfirmationStatement() throws ServiceException, CompanyNotFoundException {
+    void createPayableResourceConfirmationStatementTest() throws ServiceException, CompanyNotFoundException {
+        // Arrange
         Transaction transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
@@ -156,13 +157,18 @@ class ConfirmationStatementServiceTest {
         LocalDate today = LocalDate.of(2022, 04, 14);
         when(localDateSupplier.get()).thenReturn(today);
 
+        // Act
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
+        // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         verify(transactionService, times(1)).updateTransaction(transactionCaptor.capture(), any());
 
         Transaction transactionSent = transactionCaptor.getValue();
-        Map<String, String> links = transactionSent.getResources().get("/transactions/abc/confirmation-statement/ID").getLinks();
+        Resource resource = transactionSent.getResources().get("/transactions/abc/confirmation-statement/ID");
+        assertNotNull(resource, "Resource should not be null");
+        Map<String, String> links = resource.getLinks();
+        assertNotNull(links, "Links should not be null");
         String costs = links.get("costs");
         assertEquals("/transactions/abc/confirmation-statement/ID/costs", costs);
 
