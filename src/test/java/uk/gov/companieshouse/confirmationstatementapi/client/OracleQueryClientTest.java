@@ -151,15 +151,6 @@ class OracleQueryClientTest {
         );
     }
 
-    // Todo This is to check if the properties are loading correctly from application.properties
-    @Value("${api.path.company.details}")
-    private String apiPathCompanyDetails;
-
-    @Test
-    void testPropertyLoading() {
-        assertNotNull(apiPathCompanyDetails, "Property 'api.path.company.details' should not be null");
-    }
-
     @Test
     void testGetTradedStatus() throws ApiErrorResponseException, URIValidationException, ServiceException {
         // GIVEN
