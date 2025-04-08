@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestClientException;
@@ -137,7 +136,7 @@ class OracleQueryClientTest {
       
         oracleQueryClient = new OracleQueryClient(
                 apiClientService,
-                "/company/%s",
+                "/company",
                 "/traded-status",
                 "/shareholders/count",
                 "/statement-of-capital",
@@ -472,7 +471,7 @@ class OracleQueryClientTest {
         // GIVEN
         when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
         when(apiClient.privateCompanyResourceHandler()).thenReturn(privateCompanyResourceHandler);
-        when(privateCompanyResourceHandler.getStatementOfCapitalData(String.format("/company/%s/statement-of-capital", COMPANY_NUMBER)))
+        lenient().when(privateCompanyResourceHandler.getStatementOfCapitalData(String.format("/company/%s/statement-of-capital", COMPANY_NUMBER)))
                 .thenReturn(privateCompanyStatementOfCapitalDataGet);
         when(privateCompanyStatementOfCapitalDataGet.execute()).thenReturn(apiPrivateCompanyStatementOfCapitalGetResponse);
         when(apiPrivateCompanyStatementOfCapitalGetResponse.getData()).thenReturn(null);
