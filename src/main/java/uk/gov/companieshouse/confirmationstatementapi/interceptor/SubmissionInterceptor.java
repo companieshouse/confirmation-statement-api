@@ -32,6 +32,7 @@ public class SubmissionInterceptor implements HandlerInterceptor {
         this.confirmationStatementService = confirmationStatementService;
     }
 
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);

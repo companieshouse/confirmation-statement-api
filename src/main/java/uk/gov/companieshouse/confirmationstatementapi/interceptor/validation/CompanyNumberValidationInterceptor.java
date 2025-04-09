@@ -25,6 +25,7 @@ public class CompanyNumberValidationInterceptor implements HandlerInterceptor {
     @Value("${COMPANY_NUMBER_PATTERN}")
     private String companyNumberPattern;
 
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);

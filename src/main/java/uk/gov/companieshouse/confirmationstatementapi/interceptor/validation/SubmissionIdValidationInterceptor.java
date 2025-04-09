@@ -25,6 +25,7 @@ public class SubmissionIdValidationInterceptor implements HandlerInterceptor {
     @Value("${SUBMISSION_ID_REGEX_PATTERN}")
     private String submissionIdRegexPattern;
 
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
