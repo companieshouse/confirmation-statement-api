@@ -16,13 +16,13 @@
         <java.version>21</java.version>
         <spring-boot-dependencies.version>3.3.5</spring-boot-dependencies.version>
         <spring-boot-maven-plugin.version>3.3.5</spring-boot-maven-plugin.version>
-        <api-sdk-java.version>6.0.17</api-sdk-java.version>
+        <api-sdk-java.version>6.2.7</api-sdk-java.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
         <org.mapstruct.version>1.6.2</org.mapstruct.version>
-        <private-api-sdk-java.version>4.0.288</private-api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.289</private-api-sdk-java.version>
         <api-security-java.version>2.0.4</api-security-java.version>
-        <api-sdk-manager-java-library.version>3.0.5</api-sdk-manager-java-library.version>
+        <api-sdk-manager-java-library.version>3.0.7</api-sdk-manager-java-library.version>
         <structured-logging.version>3.0.20</structured-logging.version>
         <dependency-check-plugin.version>10.0.2</dependency-check-plugin.version>
         <apache-log4j.version>2.24.1</apache-log4j.version>
