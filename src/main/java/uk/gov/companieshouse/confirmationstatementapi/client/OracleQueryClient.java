@@ -20,6 +20,7 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -49,7 +50,6 @@ public class OracleQueryClient {
 
     @Autowired
     public OracleQueryClient(
-            // values are injected from application.properties
             ApiClientService apiClientService,
             @Value("${api.path.company.details}") String apiPathCompanyDetails,
             @Value("${api.path.company.traded.status}") String apiPathCompanyTradedStatus,
@@ -62,18 +62,18 @@ public class OracleQueryClient {
             @Value("${api.path.company.corporate.body.appointments.psc}") String apiPathCompanyCorporateBodyAppointmentsPsc,
             @Value("${api.path.company.confirmation.statement.paid}") String apiPathCompanyConfirmationStatementPaid,
             @Value("${api.path.registered.email.address}") String apiPathRegisteredEmailAddress) {
-        this.apiPathCompanyDetails = apiPathCompanyDetails;
-        this.apiPathCompanyTradedStatus = apiPathCompanyTradedStatus;
-        this.apiPathCompanyShareholdersCount = apiPathCompanyShareholdersCount;
-        this.apiPathCompanyStatementOfCapital = apiPathCompanyStatementOfCapital;
-        this.apiPathCompanyDirectorActive = apiPathCompanyDirectorActive;
-        this.apiPathCompanyOfficersActive = apiPathCompanyOfficersActive;
-        this.apiPathCompanyRegisterLocations = apiPathCompanyRegisterLocations;
-        this.apiPathShareHolders = apiPathShareHolders;
-        this.apiPathCompanyCorporateBodyAppointmentsPsc = apiPathCompanyCorporateBodyAppointmentsPsc;
-        this.apiPathCompanyConfirmationStatementPaid = apiPathCompanyConfirmationStatementPaid;
-        this.apiPathRegisteredEmailAddress = apiPathRegisteredEmailAddress;
-        this.apiClientService = apiClientService;
+        this.apiClientService = Objects.requireNonNull(apiClientService, "apiClientService must not be null");
+        this.apiPathCompanyDetails = Objects.requireNonNull(apiPathCompanyDetails, "apiPathCompanyDetails must not be null");
+        this.apiPathCompanyTradedStatus = Objects.requireNonNull(apiPathCompanyTradedStatus, "apiPathCompanyTradedStatus must not be null");
+        this.apiPathCompanyShareholdersCount = Objects.requireNonNull(apiPathCompanyShareholdersCount, "apiPathCompanyShareholdersCount must not be null");
+        this.apiPathCompanyStatementOfCapital = Objects.requireNonNull(apiPathCompanyStatementOfCapital, "apiPathCompanyStatementOfCapital must not be null");
+        this.apiPathCompanyDirectorActive = Objects.requireNonNull(apiPathCompanyDirectorActive, "apiPathCompanyDirectorActive must not be null");
+        this.apiPathCompanyOfficersActive = Objects.requireNonNull(apiPathCompanyOfficersActive, "apiPathCompanyOfficersActive must not be null");
+        this.apiPathCompanyRegisterLocations = Objects.requireNonNull(apiPathCompanyRegisterLocations, "apiPathCompanyRegisterLocations must not be null");
+        this.apiPathShareHolders = Objects.requireNonNull(apiPathShareHolders, "apiPathShareHolders must not be null");
+        this.apiPathCompanyCorporateBodyAppointmentsPsc = Objects.requireNonNull(apiPathCompanyCorporateBodyAppointmentsPsc, "apiPathCompanyCorporateBodyAppointmentsPsc must not be null");
+        this.apiPathCompanyConfirmationStatementPaid = Objects.requireNonNull(apiPathCompanyConfirmationStatementPaid, "apiPathCompanyConfirmationStatementPaid must not be null");
+        this.apiPathRegisteredEmailAddress = Objects.requireNonNull(apiPathRegisteredEmailAddress, "apiPathRegisteredEmailAddress must not be null");
     }
 
     private String buildUrl(String companyNumber, String component) {

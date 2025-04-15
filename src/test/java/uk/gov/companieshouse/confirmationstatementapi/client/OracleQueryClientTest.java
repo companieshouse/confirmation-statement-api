@@ -10,7 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestClientException;
 
@@ -39,7 +42,8 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
-@TestPropertySource(locations="classpath:application.properties")
+@TestPropertySource(locations = "classpath:application.properties")
+@SpringBootTest
 class OracleQueryClientTest {
 
     private static final String COMPANY_NUMBER = "12345678";
@@ -112,9 +116,20 @@ class OracleQueryClientTest {
     @Mock
     private PrivateCompanyRegisterLocationsGet privateRegisterLocationsGet;
 
-    @InjectMocks
-    private OracleQueryClient oracleQueryClient;
+    @Value("${api.path.company.details}") String apiPathCompanyDetails;
+    @Value("${api.path.company.traded.status}") String apiPathCompanyTradedStatus;
+    @Value("${api.path.company.shareholders.count}") String apiPathCompanyShareholdersCount;
+    @Value("${api.path.company.statement.of.capital}") String apiPathCompanyStatementOfCapital;
+    @Value("${api.path.company.director.active}") String apiPathCompanyDirectorActive;
+    @Value("${api.path.company.officers.active}") String apiPathCompanyOfficersActive;
+    @Value("${api.path.company.register.locations}") String apiPathCompanyRegisterLocations;
+    @Value("${api.path.share.holders}") String apiPathShareHolders;
+    @Value("${api.path.company.corporate.body.appointments.psc}") String apiPathCompanyCorporateBodyAppointmentsPsc;
+    @Value("${api.path.company.confirmation.statement.paid}") String apiPathCompanyConfirmationStatementPaid;
+    @Value("${api.path.registered.email.address}") String apiPathRegisteredEmailAddress;
 
+
+    private OracleQueryClient oracleQueryClient;
 
     @BeforeEach
     void setup() {
@@ -133,21 +148,20 @@ class OracleQueryClientTest {
         lenient().when(privateCompanyResourceHandler.getRegisterLocations(Mockito.anyString())).thenReturn(privateRegisterLocationsGet);
         lenient().when(privateCompanyResourceHandler.getCompanyShareHolders(Mockito.anyString()))
                 .thenReturn(privateCompanyShareHoldersGet);
-      
-        oracleQueryClient = new OracleQueryClient(
-                apiClientService,
-                "/company",
-                "/traded-status",
-                "/shareholders/count",
-                "/statement-of-capital",
-                "/director/active",
-                "/officers/active",
-                "/register/location",
-                "/shareholders",
-                "/corporate-body-appointments/persons-of-significant-control",
-                "/confirmation-statement/paid",
-                "/registered-email-address"
-        );
+
+        oracleQueryClient= new OracleQueryClient(apiClientService,
+                apiPathCompanyDetails,
+                apiPathCompanyTradedStatus,
+                apiPathCompanyShareholdersCount,
+                apiPathCompanyStatementOfCapital,
+                apiPathCompanyDirectorActive,
+                apiPathCompanyOfficersActive,
+                apiPathCompanyRegisterLocations,
+                apiPathShareHolders,
+                apiPathCompanyCorporateBodyAppointmentsPsc,
+                apiPathCompanyConfirmationStatementPaid,
+                apiPathRegisteredEmailAddress
+                );
     }
 
     @Test
