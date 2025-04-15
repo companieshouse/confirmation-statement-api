@@ -6,14 +6,12 @@ import com.google.api.client.http.HttpResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestClientException;
 
@@ -35,9 +33,16 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapitalNotFoundException;
 import uk.gov.companieshouse.api.model.company.RegisterLocationJson;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
+
 
 import java.util.List;
 
@@ -128,8 +133,8 @@ class OracleQueryClientTest {
     @Value("${api.path.company.confirmation.statement.paid}") String apiPathCompanyConfirmationStatementPaid;
     @Value("${api.path.registered.email.address}") String apiPathRegisteredEmailAddress;
 
-
     private OracleQueryClient oracleQueryClient;
+
 
     @BeforeEach
     void setup() {
@@ -161,7 +166,13 @@ class OracleQueryClientTest {
                 apiPathCompanyCorporateBodyAppointmentsPsc,
                 apiPathCompanyConfirmationStatementPaid,
                 apiPathRegisteredEmailAddress
-                );
+        );
+
+        // Assertions
+        assertNotNull(apiClientService, "ApiClientService should not be null");
+        assertNotNull(apiClient, "InternalApiClient should not be null");
+        assertNotNull(privateCompanyResourceHandler, "PrivateCompanyResourceHandler should not be null");
+        assertNotNull(oracleQueryClient, "OracleQueryClient should not be null");
     }
 
     @Test
