@@ -22,9 +22,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.util.ServletRequestPathUtils;
 
 import uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication;
-import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
-
-// TODO Migrate this test to mockito and remove the need for the whole application context?
 
 @SpringBootTest(classes = ConfirmationStatementApiApplication.class)
 @TestPropertySource(locations="classpath:application.properties")
@@ -34,9 +31,6 @@ class InterceptorConfigRouteMatchingTest {
     @Autowired
     @Qualifier("requestMappingHandlerMapping")
     private RequestMappingHandlerMapping mapping;
-
-    @Autowired
-    private OracleQueryClient oracleQueryClient;
 
     @Test
     void interceptorsMatchIntendedRoutesTest() throws Exception {

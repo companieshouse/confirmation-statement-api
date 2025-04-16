@@ -19,6 +19,7 @@ import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 
 @RestController
 public class OfficerController {
@@ -33,13 +34,13 @@ public class OfficerController {
     @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/active-director-details")
     public ResponseEntity<ActiveOfficerDetailsJson> getActiveOfficersDetails(
             @RequestAttribute("transaction") Transaction transaction,
-            @PathVariable(TRANSACTION_ID_KEY) String transactionId,
-            @PathVariable("confirmation_statement_id") String confirmationStatementId,
+            @PathVariable(TRANSACTION_ID_KEY) final String transactionId,
+            @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String confirmationStatementId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        logMap.put("confirmation_statement_id", confirmationStatementId);
+        logMap.put(CONFIRMATION_STATEMENT_ID_KEY, confirmationStatementId);
 
         try {
             ApiLogger.infoContext(requestId, "Calling service to retrieve the active director details.", logMap);
@@ -55,12 +56,12 @@ public class OfficerController {
     public ResponseEntity<List<ActiveOfficerDetailsJson>> getListActiveOfficersDetails(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
-            @PathVariable("confirmation_statement_id") String confirmationStatementId,
+            @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String confirmationStatementId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY, transactionId);
-        logMap.put("confirmation_statement_id", confirmationStatementId);
+        logMap.put(CONFIRMATION_STATEMENT_ID_KEY, confirmationStatementId);
 
         try {
             ApiLogger.infoContext(requestId, "Calling service to retrieve the active officers details.", logMap);
