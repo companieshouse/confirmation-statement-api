@@ -77,7 +77,7 @@ public class OracleQueryClient {
     }
 
     private String buildUrl(String companyNumber, String component) {
-        return String.format("%s/%s/%s", apiPathCompanyDetails, companyNumber, component);
+        return String.format("/%s/%s/%s", apiPathCompanyDetails, companyNumber, component);
     }
 
     public Long getCompanyTradedStatus(String companyNumber) throws ServiceException {
