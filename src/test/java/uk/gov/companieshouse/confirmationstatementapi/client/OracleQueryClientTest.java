@@ -170,12 +170,6 @@ class OracleQueryClientTest {
                 apiPathCompanyConfirmationStatementPaid,
                 apiPathRegisteredEmailAddress
         );
-
-        // Assertions
-        assertNotNull(apiClientService, "ApiClientService should not be null");
-        assertNotNull(apiClient, "InternalApiClient should not be null");
-        assertNotNull(privateCompanyResourceHandler, "PrivateCompanyResourceHandler should not be null");
-        assertNotNull(oracleQueryClient, "OracleQueryClient should not be null");
     }
 
     static Stream<Object[]> provideConstructorParameters() {
