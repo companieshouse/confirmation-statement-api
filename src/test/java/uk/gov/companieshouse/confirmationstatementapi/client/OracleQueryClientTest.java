@@ -6,6 +6,8 @@ import com.google.api.client.http.HttpResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,6 +47,7 @@ import static org.mockito.Mockito.when;
 
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(locations = "classpath:application.properties")
@@ -601,5 +604,54 @@ class OracleQueryClientTest {
 
         // THEN
         assertThrows(RegisteredEmailNotFoundException.class, () -> oracleQueryClient.getRegisteredEmailAddress(COMPANY_NUMBER));
+    }
+
+    static Stream<Object[]> provideConstructorParameters() {
+        return Stream.of(
+                new Object[]{null, "details", "tradedStatus", "shareholdersCount", "statementOfCapital", "directorActive", "officersActive", "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), null, "tradedStatus", "shareholdersCount", "statementOfCapital", "directorActive", "officersActive", "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", null, "shareholdersCount", "statementOfCapital", "directorActive", "officersActive", "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", null, "statementOfCapital", "directorActive", "officersActive", "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", "shareholdersCount", null, "directorActive", "officersActive", "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", "shareholdersCount", "statementOfCapital", null, "officersActive", "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", "shareholdersCount", "statementOfCapital", "directorActive", null, "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", "shareholdersCount", "statementOfCapital", "directorActive", "officersActive", null, "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", "shareholdersCount", "statementOfCapital", "directorActive", "officersActive", "registerLocations", null, "corporateBodyAppointmentsPsc", "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", "shareholdersCount", "statementOfCapital", "directorActive", "officersActive", "registerLocations", "shareHolders", null, "confirmationStatementPaid", "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", "shareholdersCount", "statementOfCapital", "directorActive", "officersActive", "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", null, "registeredEmailAddress"},
+                new Object[]{new ApiClientService(), "details", "tradedStatus", "shareholdersCount", "statementOfCapital", "directorActive", "officersActive", "registerLocations", "shareHolders", "corporateBodyAppointmentsPsc", "confirmationStatementPaid", null}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideConstructorParameters")
+    void testConstructorThrowsExceptionWhenParameterIsNull(
+            ApiClientService apiClientService,
+            String apiPathCompanyDetails,
+            String apiPathCompanyTradedStatus,
+            String apiPathCompanyShareholdersCount,
+            String apiPathCompanyStatementOfCapital,
+            String apiPathCompanyDirectorActive,
+            String apiPathCompanyOfficersActive,
+            String apiPathCompanyRegisterLocations,
+            String apiPathShareHolders,
+            String apiPathCompanyCorporateBodyAppointmentsPsc,
+            String apiPathCompanyConfirmationStatementPaid,
+            String apiPathRegisteredEmailAddress
+    ) {
+        assertThrows(NullPointerException.class, () -> new OracleQueryClient(
+                apiClientService,
+                apiPathCompanyDetails,
+                apiPathCompanyTradedStatus,
+                apiPathCompanyShareholdersCount,
+                apiPathCompanyStatementOfCapital,
+                apiPathCompanyDirectorActive,
+                apiPathCompanyOfficersActive,
+                apiPathCompanyRegisterLocations,
+                apiPathShareHolders,
+                apiPathCompanyCorporateBodyAppointmentsPsc,
+                apiPathCompanyConfirmationStatementPaid,
+                apiPathRegisteredEmailAddress
+        ));
     }
 }
