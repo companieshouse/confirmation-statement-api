@@ -27,6 +27,11 @@
         <dependency-check-plugin.version>10.0.2</dependency-check-plugin.version>
         <apache-log4j.version>2.24.1</apache-log4j.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
+        <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+        <sonar.login></sonar.login>
+        <sonar.password></sonar.password>
+        <sonar.projectName>confirmation-statement-api</sonar.projectName>
+        <sonar.projectKey>uk.gov.companieshouse:confirmation-statement-api</sonar.projectKey>
     </properties>
     <profiles>
         <profile>
