@@ -57,12 +57,12 @@ endif
 dist: clean build package
 
 .PHONY: sonar
-sonar:
-	mvn sonar:sonar
+sonar: dependency-check
+	mvn sonar:sonar -Dsonar.dependencyCheck.htmlReportPath=./target/dependency-check-report.html
 
 .PHONY: sonar-pr-analysis
-sonar-pr-analysis:
-	mvn sonar:sonar -P sonar-pr-analysis
+sonar-pr-analysis: dependency-check
+	mvn sonar:sonar -P sonar-pr-analysis -Dsonar.dependencyCheck.htmlReportPath=./target/dependency-check-report.html
 
 .PHONY: dependency-check
 dependency-check:
@@ -75,13 +75,8 @@ dependency-check:
 			suppressions_home="$${suppressions_home_target_dir}"; \
 		else \
 			mkdir -p "./target"; \
-			git clone $(dependency_check_suppressions_repo_url) "$${suppressions_home_target_dir}" && \
+			git clone git@github.com:companieshouse/dependency-check-suppressions.git "$${suppressions_home_target_dir}" && \
 				suppressions_home="$${suppressions_home_target_dir}"; \
-			if [ -d "$${suppressions_home_target_dir}" ] && [ -n "$(dependency_check_suppressions_repo_branch)" ]; then \
-				cd "$${suppressions_home}"; \
-				git checkout $(dependency_check_suppressions_repo_branch); \
-				cd -; \
-			fi; \
 		fi; \
 	fi; \
 	suppressions_path="$${suppressions_home}/suppressions/$(dependency_check_base_suppressions)"; \
