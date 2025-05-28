@@ -15,8 +15,6 @@
     <properties>
         <java.version>21</java.version>
         <spring-boot-starter.version>3.4.5</spring-boot-starter.version>
-        <spring-boot-dependencies.version>${spring-boot-starter.version}</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>${spring-boot-starter.version}</spring-boot-maven-plugin.version>
         <api-sdk-java.version>6.2.7</api-sdk-java.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
@@ -55,7 +53,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot-dependencies.version}</version>
+                <version>${spring-boot-starter.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -134,7 +132,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
+                <version>${spring-boot-starter.version}</version>
                 <configuration>
                     <mainClass>uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication
                     </mainClass>
