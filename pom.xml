@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.9</version>
+        <version>2.1.11</version>
         <!-- lookup parent from repository -->
     </parent>
     <artifactId>confirmation-statement-api</artifactId>
@@ -14,8 +14,8 @@
     <description>API for confirmation statement service</description>
     <properties>
         <java.version>21</java.version>
-        <spring-boot-dependencies.version>3.3.5</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>3.3.5</spring-boot-maven-plugin.version>
+        <spring-boot-starter.version>3.4.5</spring-boot-starter.version>
+        <spring-context.version>6.2.7</spring-context.version>
         <api-sdk-java.version>6.2.7</api-sdk-java.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
@@ -27,6 +27,11 @@
         <dependency-check-plugin.version>10.0.2</dependency-check-plugin.version>
         <apache-log4j.version>2.24.1</apache-log4j.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
+        <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+        <sonar.login></sonar.login>
+        <sonar.password></sonar.password>
+        <sonar.projectName>confirmation-statement-api</sonar.projectName>
+        <sonar.projectKey>uk.gov.companieshouse:confirmation-statement-api</sonar.projectKey>
     </properties>
     <profiles>
         <profile>
@@ -49,9 +54,15 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot-dependencies.version}</version>
+                <version>${spring-boot-starter.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring-context.version}</version>
             </dependency>
 
         </dependencies>
@@ -128,7 +139,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
+                <version>${spring-boot-starter.version}</version>
                 <configuration>
                     <mainClass>uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication
                     </mainClass>
