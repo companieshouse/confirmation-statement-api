@@ -21,6 +21,7 @@
         <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
         <org.mapstruct.version>1.6.2</org.mapstruct.version>
         <tomcat-embed-core.version>11.0.7</tomcat-embed-core.version>
+        <spring-web.version>6.2.8</spring-web.version>
         <private-api-sdk-java.version>4.0.289</private-api-sdk-java.version>
         <api-security-java.version>2.0.4</api-security-java.version>
         <api-sdk-manager-java-library.version>3.0.7</api-sdk-manager-java-library.version>
@@ -77,6 +78,12 @@
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-core</artifactId>
                 <version>${tomcat-embed-core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring-web.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
