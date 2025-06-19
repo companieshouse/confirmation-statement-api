@@ -26,7 +26,6 @@
         <api-security-java.version>2.0.4</api-security-java.version>
         <api-sdk-manager-java-library.version>3.0.7</api-sdk-manager-java-library.version>
         <structured-logging.version>3.0.20</structured-logging.version>
-        <dependency-check-plugin.version>10.0.2</dependency-check-plugin.version>
         <apache-log4j.version>2.24.1</apache-log4j.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
