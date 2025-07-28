@@ -14,21 +14,25 @@
     <description>API for confirmation statement service</description>
     <properties>
         <java.version>21</java.version>
-        <spring-boot-starter.version>3.4.5</spring-boot-starter.version>
-        <spring-context.version>6.2.7</spring-context.version>
-        <api-sdk-java.version>6.2.7</api-sdk-java.version>
+        <spring-boot-starter.version>3.5.3</spring-boot-starter.version>
+        <spring-context.version>6.2.9</spring-context.version>
+        <api-sdk-java.version>6.3.5</api-sdk-java.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
-        <org.mapstruct.version>1.6.2</org.mapstruct.version>
-        <tomcat-embed-core.version>11.0.7</tomcat-embed-core.version>
-        <spring-web.version>6.2.8</spring-web.version>
-        <private-api-sdk-java.version>4.0.289</private-api-sdk-java.version>
-        <api-security-java.version>2.0.4</api-security-java.version>
-        <api-sdk-manager-java-library.version>3.0.7</api-sdk-manager-java-library.version>
-        <structured-logging.version>3.0.20</structured-logging.version>
-        <apache-log4j.version>2.24.1</apache-log4j.version>
-        <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
+        <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <tomcat-embed-core.version>11.0.9</tomcat-embed-core.version>
+        <spring-web.version>6.2.9</spring-web.version>
+        <private-api-sdk-java.version>4.0.328</private-api-sdk-java.version>
+        <api-security-java.version>2.0.10</api-security-java.version>
+        <api-sdk-manager-java-library.version>3.0.9</api-sdk-manager-java-library.version>
+        <structured-logging.version>3.0.37</structured-logging.version>
+        <apache-log4j.version>2.25.1</apache-log4j.version>
+        <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <opentelemetry-version>2.14.0</opentelemetry-version>
+
+
         <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
         <sonar.login></sonar.login>
         <sonar.password></sonar.password>
@@ -45,6 +49,13 @@
     </profiles>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-bom</artifactId>
+                <version>${opentelemetry-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
@@ -149,6 +160,26 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <artifactId>structured-logging</artifactId>
+            <groupId>uk.gov.companieshouse</groupId>
+            <version>${structured-logging.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
