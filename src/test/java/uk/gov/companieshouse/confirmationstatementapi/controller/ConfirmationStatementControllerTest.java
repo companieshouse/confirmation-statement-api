@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
+import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
@@ -83,23 +84,43 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmission() {
-        when(confirmationStatementService.updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson))
+    void updateSubmission() throws NewConfirmationDateInvalidException, ServiceException {
+        when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(UPDATED_SUCCESS_RESPONSE);
 
-        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = confirmationStatementController.updateSubmission(transaction, confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(UPDATED_SUCCESS_RESPONSE, response);
     }
 
     @Test
-    void updateSubmissionIdNotFound() {
-        when(confirmationStatementService.updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson))
+    void updateSubmissionIdNotFound() throws ServiceException, NewConfirmationDateInvalidException {
+        when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(NOT_FOUND_RESPONSE);
 
-        var response = confirmationStatementController.updateSubmission(confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = confirmationStatementController.updateSubmission(transaction, confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
 
         assertEquals(NOT_FOUND_RESPONSE, response);
+    }
+
+    @Test
+    void updateSubmissionServiceException() throws ServiceException, NewConfirmationDateInvalidException {
+        when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
+                .thenThrow(new ServiceException("ERROR", new IOException()));
+
+        var response = confirmationStatementController.updateSubmission(transaction, confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    void updateSubmissionNewConfirmationDateInvalidException() throws ServiceException, NewConfirmationDateInvalidException {
+        when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
+                .thenThrow(new NewConfirmationDateInvalidException("ERROR"));
+
+        var response = confirmationStatementController.updateSubmission(transaction, confirmationStatementSubmissionJson, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test

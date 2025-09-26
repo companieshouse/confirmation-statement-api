@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
@@ -60,6 +61,7 @@ public class ConfirmationStatementController {
 
     @PostMapping("/{confirmation_statement_id}")
     public ResponseEntity<Object> updateSubmission(
+            @RequestAttribute("transaction") Transaction transaction,
             @RequestBody ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson,
             @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String submissionId,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
@@ -70,7 +72,14 @@ public class ConfirmationStatementController {
         logMap.put(TRANSACTION_ID_KEY, transactionId);
         ApiLogger.infoContext(requestId, "Calling service to update confirmation statement data", logMap);
 
-        return confirmationStatementService.updateConfirmationStatement(submissionId, confirmationStatementSubmissionJson);
+        try {
+            return confirmationStatementService.updateConfirmationStatement(transaction, submissionId, confirmationStatementSubmissionJson);
+        } catch (ServiceException | NewConfirmationDateInvalidException e) {
+            String errorMessage = (e instanceof NewConfirmationDateInvalidException) ?
+                    "Invalid New Confirmation Date" : "Error Updating Confirmation Statement";
+            ApiLogger.errorContext(requestId, errorMessage, e, logMap);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{confirmation_statement_id}")

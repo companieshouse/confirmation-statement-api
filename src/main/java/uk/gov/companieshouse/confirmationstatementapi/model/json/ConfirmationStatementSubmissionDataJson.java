@@ -50,6 +50,9 @@ public class ConfirmationStatementSubmissionDataJson {
     @JsonProperty("accept_lawful_purpose_statement")
     private Boolean acceptLawfulPurposeStatement;
 
+    @JsonProperty("new_confirmation_date")
+    private String newConfirmationDate;
+
     public StatementOfCapitalDataJson getStatementOfCapitalData() {
         return statementOfCapitalData;
     }
@@ -138,5 +141,11 @@ public class ConfirmationStatementSubmissionDataJson {
         this.acceptLawfulPurposeStatement = acceptLawfulPurposeStatement;
     }
 
+    public String getNewConfirmationDate() {
+        return newConfirmationDate;
+    }
 
+    public void setNewConfirmationDate(String newConfirmationDate) {
+        this.newConfirmationDate = newConfirmationDate;
+    }
 }

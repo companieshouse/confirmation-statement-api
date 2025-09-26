@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -43,11 +44,13 @@ import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
@@ -62,6 +65,7 @@ class ConfirmationStatementServiceTest {
     private static final String PASS_THROUGH = "13456";
     private static final String SUBMISSION_ID = "abcdefg";
     private static final LocalDate NEXT_MADE_UP_TO_DATE = LocalDate.of(2022, 2, 27);
+    private static final LocalDate LAST_MADE_UP_TO_DATE = LocalDate.of(2021, 2, 27);
     private static final String NEXT_MADE_UP_TO_DATE_STRING = NEXT_MADE_UP_TO_DATE.format(DateTimeFormatter.ISO_DATE);
 
     @Mock
@@ -96,11 +100,15 @@ class ConfirmationStatementServiceTest {
 
     private ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson;
 
+    private Transaction transaction;
+
     @BeforeEach
     void init() {
         ConfirmationStatementSubmissionDataJson confirmationStatementSubmissionDataJson =
                 MockConfirmationStatementSubmissionData.getMockJsonData();
 
+        transaction = new Transaction();
+        transaction.setCompanyNumber(COMPANY_NUMBER);
         confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         confirmationStatementSubmissionJson.setId(SUBMISSION_ID);
         confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
@@ -274,7 +282,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void updateConfirmationSubmission() {
+    void updateConfirmationSubmission() throws ServiceException, NewConfirmationDateInvalidException {
         // GIVEN
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
@@ -285,20 +293,73 @@ class ConfirmationStatementServiceTest {
 
         // WHEN
         var result = confirmationStatementService
-                .updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson);
+                .updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
 
         // THEN
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
+
+    @ParameterizedTest
+    @CsvSource({
+            "2025-09-01",
+            "2025-2-3",
+            "2025-03-2",
+            "2025-5-02",
+    })
+    void updateConfirmationSubmissionWithNewConfirmationStatementDate(String inputStringDate) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException {
+        // GIVEN
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        confirmationStatementSubmissionJson.getData().setNewConfirmationDate(inputStringDate);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+
+        // WHEN
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(confirmationStatementSubmission);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
+
+        // WHEN
+        var result = confirmationStatementService
+                .updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        // THEN
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2025-09-01a, Confirmation statement date must be a real date",
+            "2025-2-31, Confirmation statement date must be a real date",
+            "2099-1-1, Confirmation statement date must be today or in the past",
+            "2020-3-13, The date you enter must be after the date of the last confirmation statement",
+            "2022-2-27, A confirmation statement has already been filed for the date you’ve entered",
+    })
+    void updateConfirmationSubmissionWithNewConfirmationDateInvalidException(String inputNewCsDateString, String errorMessage) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException {
+        // GIVEN
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        companyProfileApi.getConfirmationStatement().setLastMadeUpTo(LAST_MADE_UP_TO_DATE);
+        confirmationStatementSubmissionJson.getData().setNewConfirmationDate(inputNewCsDateString);
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+
+        // WHEN
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+
+        // THEN
+        NewConfirmationDateInvalidException exception = assertThrows(NewConfirmationDateInvalidException.class, () -> confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson));
+        assertEquals(errorMessage, exception.getMessage());
+
+    }
+
     @Test
-    void updateConfirmationSubmissionNotFound() {
+    void updateConfirmationSubmissionNotFound() throws ServiceException, NewConfirmationDateInvalidException  {
         // GIVEN
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
 
         // WHEN
         var result = confirmationStatementService
-                .updateConfirmationStatement(SUBMISSION_ID, confirmationStatementSubmissionJson);
+                .updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
 
         // THEN
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());

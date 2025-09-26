@@ -5,6 +5,8 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FIL
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
@@ -25,6 +28,7 @@ import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse
 import uk.gov.companieshouse.confirmationstatementapi.client.OracleQueryClient;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
@@ -104,13 +108,8 @@ public class ConfirmationStatementService {
     }
 
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
-        CompanyProfileApi companyProfile;
         String companyNumber = transaction.getCompanyNumber();
-        try {
-            companyProfile = companyProfileService.getCompanyProfile(companyNumber);
-        } catch (CompanyNotFoundException e) {
-            throw new ServiceException("Error retrieving company profile", e);
-        }
+        CompanyProfileApi companyProfile = getCompanyProfile(transaction);
         var companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
 
         if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != companyValidationResponse.getEligibilityStatusCode()) {
@@ -177,13 +176,16 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ResponseEntity<Object> updateConfirmationStatement(String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) {
+    public ResponseEntity<Object> updateConfirmationStatement(Transaction transaction, String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) throws ServiceException, NewConfirmationDateInvalidException {
         // Check Submission exists
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
         if (submission.isPresent()) {
             // Save updated submission to database
             ApiLogger.info(String.format("%s: Confirmation Statement Submission found. About to update",  submission.get().getId()));
+
+            isValidNewConfirmationDate(transaction, confirmationStatementSubmissionJson);
+
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
@@ -312,5 +314,56 @@ public class ConfirmationStatementService {
         }
 
         return nextMadeUpToDateJson;
+    }
+
+    private CompanyProfileApi getCompanyProfile(Transaction transaction) throws ServiceException {
+        CompanyProfileApi companyProfile;
+        String companyNumber = transaction.getCompanyNumber();
+        try {
+            companyProfile = companyProfileService.getCompanyProfile(companyNumber);
+        } catch (CompanyNotFoundException e) {
+            throw new ServiceException("Error retrieving company profile", e);
+        }
+        return companyProfile;
+    }
+
+    private void isValidNewConfirmationDate(Transaction transaction, ConfirmationStatementSubmissionJson jsonObject) throws NewConfirmationDateInvalidException, ServiceException {
+        if (jsonObject.getData() != null && jsonObject.getData().getNewConfirmationDate() != null) {
+            CompanyProfileApi companyProfile = getCompanyProfile(transaction);
+            String newCsDate = jsonObject.getData().getNewConfirmationDate();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-M-d").withResolverStyle ( ResolverStyle.STRICT );
+            try {
+                LocalDate newCsDateLocalDate = LocalDate.parse(newCsDate, formatter);
+
+                if (newCsDateLocalDate.isAfter(LocalDate.now())) {
+                    throw new NewConfirmationDateInvalidException("Confirmation statement date must be today or in the past");
+                }
+
+                if (companyProfile != null &&
+                        companyProfile.getConfirmationStatement() != null &&
+                        companyProfile.getConfirmationStatement().getNextMadeUpTo() != null &&
+                        companyProfile.getConfirmationStatement().getLastMadeUpTo() != null) {
+
+                    ConfirmationStatementApi confirmationStatement = companyProfile.getConfirmationStatement();
+
+                    LocalDate lastOrNextMadeUpDate = (LocalDate.now().isBefore(confirmationStatement.getNextMadeUpTo())) ?
+                            confirmationStatement.getLastMadeUpTo() :
+                            confirmationStatement.getNextMadeUpTo();
+
+                    if (newCsDateLocalDate.isEqual(lastOrNextMadeUpDate)) {
+                        throw new NewConfirmationDateInvalidException("A confirmation statement has already been filed for the date you’ve entered");
+                    }
+
+                    if (newCsDateLocalDate.isBefore(lastOrNextMadeUpDate)) {
+                        throw new NewConfirmationDateInvalidException("The date you enter must be after the date of the last confirmation statement");
+                    }
+                }
+            } catch (DateTimeParseException e) {
+                throw new NewConfirmationDateInvalidException("Confirmation statement date must be a real date");
+            }
+
+
+        }
     }
 }

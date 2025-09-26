@@ -8,15 +8,20 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStat
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 
 @Component
 @Mapper(componentModel = "spring")
 public interface ConfirmationStatementJsonDaoMapper {
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
+      @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateLocalDateToString")
       ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmissionDao confirmationStatementSubmissionDao);
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
+      @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateStringToLocalDate")
       ConfirmationStatementSubmissionDao jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson);
 
       @Named("localDate")
@@ -26,4 +31,22 @@ public interface ConfirmationStatementJsonDaoMapper {
             }
             return LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
       }
+
+      @Named("newCsDateStringToLocalDate")
+      static LocalDate newCsDateStringToLocalDate(String newCsDateString) {
+            if (newCsDateString == null || newCsDateString.isBlank()) {
+                  return null;
+            }
+            return LocalDate.parse(newCsDateString, DateTimeFormatter.ofPattern(DATE_FORMAT_YYYYMD));
+      }
+
+
+      @Named("newCsDateLocalDateToString")
+      static String newCsDateLocalDateToString(LocalDate newCsDateLocalDate) {
+            if (newCsDateLocalDate == null) {
+                  return null;
+            }
+            return newCsDateLocalDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_YYYYMD));
+      }
+
 }
