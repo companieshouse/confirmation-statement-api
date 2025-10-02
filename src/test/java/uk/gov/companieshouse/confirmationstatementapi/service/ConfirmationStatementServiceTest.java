@@ -50,7 +50,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFou
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
@@ -335,7 +334,7 @@ class ConfirmationStatementServiceTest {
             "2020-3-13, The date you enter must be after the date of the last confirmation statement",
             "2022-2-27, A confirmation statement has already been filed for the date you’ve entered",
     })
-    void updateConfirmationSubmissionWithNewConfirmationDateInvalidException(String inputNewCsDateString, String errorMessage) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException {
+    void updateConfirmationSubmissionWithNewConfirmationDateInvalidException(String inputNewCsDateString, String errorMessage) throws ServiceException, CompanyNotFoundException {
         // GIVEN
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         companyProfileApi.getConfirmationStatement().setLastMadeUpTo(LAST_MADE_UP_TO_DATE);
