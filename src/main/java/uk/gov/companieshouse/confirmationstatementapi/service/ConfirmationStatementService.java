@@ -328,42 +328,45 @@ public class ConfirmationStatementService {
     }
 
     private void isValidNewConfirmationDate(Transaction transaction, ConfirmationStatementSubmissionJson jsonObject) throws NewConfirmationDateInvalidException, ServiceException {
-        if (jsonObject.getData() != null && jsonObject.getData().getNewConfirmationDate() != null) {
-            CompanyProfileApi companyProfile = getCompanyProfile(transaction);
-            String newCsDate = jsonObject.getData().getNewConfirmationDate();
+        if (jsonObject.getData() == null || jsonObject.getData().getNewConfirmationDate() == null) {
+            return;
+        }
+        CompanyProfileApi companyProfile = getCompanyProfile(transaction);
+        String newCsDate = jsonObject.getData().getNewConfirmationDate();
+        LocalDate newCsDateLocalDate = parseNewCsDate(newCsDate);
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-M-d").withResolverStyle ( ResolverStyle.STRICT );
-            try {
-                LocalDate newCsDateLocalDate = LocalDate.parse(newCsDate, formatter);
+        if (newCsDateLocalDate.isAfter(LocalDate.now())) {
+            throw new NewConfirmationDateInvalidException("Confirmation statement date must be today or in the past");
+        }
 
-                if (newCsDateLocalDate.isAfter(LocalDate.now())) {
-                    throw new NewConfirmationDateInvalidException("Confirmation statement date must be today or in the past");
-                }
+        if (companyProfile == null
+                || companyProfile.getConfirmationStatement() == null
+                || companyProfile.getConfirmationStatement().getNextMadeUpTo() == null
+                || companyProfile.getConfirmationStatement().getLastMadeUpTo() == null) {
+            return;
+        }
 
-                if (companyProfile != null &&
-                        companyProfile.getConfirmationStatement() != null &&
-                        companyProfile.getConfirmationStatement().getNextMadeUpTo() != null &&
-                        companyProfile.getConfirmationStatement().getLastMadeUpTo() != null) {
+        ConfirmationStatementApi confirmationStatement = companyProfile.getConfirmationStatement();
+        LocalDate lastOrNextMadeUpDate = (LocalDate.now().isBefore(confirmationStatement.getNextMadeUpTo())) ?
+                confirmationStatement.getLastMadeUpTo() :
+                confirmationStatement.getNextMadeUpTo();
 
-                    ConfirmationStatementApi confirmationStatement = companyProfile.getConfirmationStatement();
+        if (newCsDateLocalDate.isEqual(lastOrNextMadeUpDate)) {
+            throw new NewConfirmationDateInvalidException("A confirmation statement has already been filed for the date you’ve entered");
+        }
 
-                    LocalDate lastOrNextMadeUpDate = (LocalDate.now().isBefore(confirmationStatement.getNextMadeUpTo())) ?
-                            confirmationStatement.getLastMadeUpTo() :
-                            confirmationStatement.getNextMadeUpTo();
+        if (newCsDateLocalDate.isBefore(lastOrNextMadeUpDate)) {
+            throw new NewConfirmationDateInvalidException("The date you enter must be after the date of the last confirmation statement");
+        }
 
-                    if (newCsDateLocalDate.isEqual(lastOrNextMadeUpDate)) {
-                        throw new NewConfirmationDateInvalidException("A confirmation statement has already been filed for the date you’ve entered");
-                    }
+    }
 
-                    if (newCsDateLocalDate.isBefore(lastOrNextMadeUpDate)) {
-                        throw new NewConfirmationDateInvalidException("The date you enter must be after the date of the last confirmation statement");
-                    }
-                }
-            } catch (DateTimeParseException e) {
-                throw new NewConfirmationDateInvalidException("Confirmation statement date must be a real date");
-            }
-
-
+    private LocalDate parseNewCsDate(String newCsDate) throws NewConfirmationDateInvalidException {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-M-d").withResolverStyle(ResolverStyle.STRICT);
+            return LocalDate.parse(newCsDate, formatter);
+        } catch (DateTimeParseException e) {
+            throw new NewConfirmationDateInvalidException("Confirmation statement date must be a real date");
         }
     }
 }
