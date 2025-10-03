@@ -672,6 +672,10 @@
         },
         "accept_lawful_purpose_statement": {
           "type": "boolean"
+        },
+        "new_confirmation_date": {
+          "type": "string",
+          "format": "date"
         }
       }
     },

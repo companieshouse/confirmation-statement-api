@@ -48,6 +48,9 @@ public class ConfirmationStatementSubmissionDataDao {
     @Field("accept_lawful_purpose_statement")
     private Boolean acceptLawfulPurposeStatement;
 
+    @Field("new_confirmation_date")
+    private LocalDate newConfirmationDate;
+
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;
     }
@@ -136,4 +139,11 @@ public class ConfirmationStatementSubmissionDataDao {
         this.acceptLawfulPurposeStatement = acceptLawfulPurposeStatement;
     }
 
+    public LocalDate getNewConfirmationDate() {
+        return newConfirmationDate;
+    }
+
+    public void setNewConfirmationDate(LocalDate newConfirmationDate) {
+        this.newConfirmationDate = newConfirmationDate;
+    }
 }
