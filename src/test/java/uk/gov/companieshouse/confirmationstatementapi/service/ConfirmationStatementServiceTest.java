@@ -118,9 +118,8 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         ReflectionTestUtils.setField(confirmationStatementService, "isValidationStatusEnabled", true);
-        Transaction theTransaction = new Transaction();
-        theTransaction.setId("abc");
-        theTransaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setId("abc");
+        transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         var eligibilityResponse = new CompanyValidationResponse();
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
@@ -135,7 +134,7 @@ class ConfirmationStatementServiceTest {
         LocalDate today = LocalDate.of(2021, 04, 14);
         when(localDateSupplier.get()).thenReturn(today);
 
-        var response = this.confirmationStatementService.createConfirmationStatement(theTransaction, PASS_THROUGH);
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         verify(transactionService, times(1)).updateTransaction(transactionCaptor.capture(), any());
@@ -151,9 +150,8 @@ class ConfirmationStatementServiceTest {
     @Test
     void createPayableResourceConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction theTransaction = new Transaction();
-        theTransaction.setId("abc");
-        theTransaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setId("abc");
+        transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         var eligibilityResponse = new CompanyValidationResponse();
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
@@ -169,7 +167,7 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(today);
 
 // WHEN
-        var response = this.confirmationStatementService.createConfirmationStatement(theTransaction, PASS_THROUGH);
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
 // THEN
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -192,9 +190,8 @@ class ConfirmationStatementServiceTest {
     void doesNotCheckPaymentWhenFeatureFlaggedOff() throws ServiceException, CompanyNotFoundException {
         // GIVEN
         ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", false);
-        Transaction theTransaction = new Transaction();
-        theTransaction.setId("abc");
-        theTransaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setId("abc");
+        transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         var eligibilityResponse = new CompanyValidationResponse();
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
@@ -209,7 +206,7 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(today);
 
 // WHEN
-        var response = this.confirmationStatementService.createConfirmationStatement(theTransaction, PASS_THROUGH);
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
 // THEN
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -220,8 +217,7 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementFailingStatusValidation() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction theTransaction = new Transaction();
-        theTransaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("FailureValue");
 
@@ -233,7 +229,7 @@ class ConfirmationStatementServiceTest {
                 .thenReturn(companyValidationResponse);
 
         // WHEN
-        var response = this.confirmationStatementService.createConfirmationStatement(theTransaction, PASS_THROUGH);
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
         // THEN
         CompanyValidationResponse responseBody = (CompanyValidationResponse) response.getBody();
@@ -245,14 +241,13 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementExistingStatementError() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction theTransaction = new Transaction();
-        theTransaction.setCompanyNumber(COMPANY_NUMBER);
-        theTransaction.setId("abc");
+        transaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setId("abc");
         Resource resource = new Resource();
         resource.setKind("confirmation-statement");
         Map<String, Resource> resourceMap = new HashMap<>();
         resourceMap.put("/transactions/abc/confirmation-statement/ID", resource);
-        theTransaction.setResources(resourceMap);
+        transaction.setResources(resourceMap);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         var eligibilityResponse = new CompanyValidationResponse();
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
@@ -261,7 +256,7 @@ class ConfirmationStatementServiceTest {
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
 
         // WHEN
-        var response = this.confirmationStatementService.createConfirmationStatement(theTransaction, PASS_THROUGH);
+        var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
         // THEN
         var responseBody = response.getBody();
@@ -272,12 +267,11 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementCompanyNotFound() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction theTransaction = new Transaction();
-        theTransaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setCompanyNumber(COMPANY_NUMBER);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
 
         // THEN
-        assertThrows(ServiceException.class, () -> this.confirmationStatementService.createConfirmationStatement(theTransaction, PASS_THROUGH));
+        assertThrows(ServiceException.class, () -> this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH));
     }
 
     @Test
