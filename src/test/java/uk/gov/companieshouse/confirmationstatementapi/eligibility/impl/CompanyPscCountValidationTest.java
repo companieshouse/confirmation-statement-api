@@ -39,10 +39,10 @@ class CompanyPscCountValidationTest {
 
     @ParameterizedTest
     @ValueSource(longs = {0l, 1l})
-    void validateDoesNotThrow(long PSCs) throws ServiceException {
+    void validateDoesNotThrow(long pscs) throws ServiceException {
         when(pscService.getPSCsFromCHS(any())).thenReturn(pscsApi);
         companyPscCountValidation = new CompanyPscCountValidation(pscService, true, false);
-        pscsApi.setActiveCount(PSCs);
+        pscsApi.setActiveCount(pscs);
         assertDoesNotThrow(() -> companyPscCountValidation.validate(companyProfileApi));
     }
 

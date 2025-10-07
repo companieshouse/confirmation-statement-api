@@ -1,9 +1,13 @@
 package uk.gov.companieshouse.confirmationstatementapi.configuration;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
@@ -18,10 +22,6 @@ import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyServi
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Configuration
 public class ConfirmationStatementServiceEligibilityConfig {
@@ -51,7 +51,6 @@ public class ConfirmationStatementServiceEligibilityConfig {
     private boolean multipleOfficerJourneyFeatureFlag;
 
     @Bean
-    @Qualifier("confirmation-statement-eligibility-rules")
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService,
             PscService pscService, CorporateBodyService corporateBodyService, ShareholderService shareholderService) {
         var listOfRules = new ArrayList<EligibilityRule<CompanyProfileApi>>();
@@ -83,5 +82,5 @@ public class ConfirmationStatementServiceEligibilityConfig {
         listOfRules.add(companyTradedStatusValidation);
 
         return listOfRules;
-        }
+    }
 }

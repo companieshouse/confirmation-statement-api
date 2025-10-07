@@ -1,21 +1,21 @@
 package uk.gov.companieshouse.confirmationstatementapi.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ActiveOfficerNotFoundException;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+
 import uk.gov.companieshouse.api.model.company.ActiveOfficerDetailsJson;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
-
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OfficerControllerTest {
@@ -34,14 +34,14 @@ class OfficerControllerTest {
     private static final String CONFIRMATION_STATEMENT_ID = "abc123";
 
     @Test
-    void testGetActiveOfficerDetails() throws ActiveOfficerNotFoundException, ServiceException {
+    void testGetActiveOfficerDetails() throws ServiceException {
         when(officerService.getActiveOfficerDetails(transaction.getCompanyNumber())).thenReturn(new ActiveOfficerDetailsJson());
         var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void testGetActiveOfficerDetailsServiceException() throws ActiveOfficerNotFoundException, ServiceException {
+    void testGetActiveOfficerDetailsServiceException() throws ServiceException {
         when(officerService.getActiveOfficerDetails(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
         var response = officerController.getActiveOfficersDetails(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -62,10 +62,4 @@ class OfficerControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    @Test
-    void testGetListActiveOfficersDetailsOfficerNotFoundException() throws ServiceException {
-        when(officerService.getListActiveOfficersDetails(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
-        var response = officerController.getListActiveOfficersDetails(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
 }
