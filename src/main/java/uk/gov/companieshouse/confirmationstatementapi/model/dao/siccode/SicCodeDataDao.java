@@ -1,18 +1,20 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.SectionDataDao;
 
 public class SicCodeDataDao extends SectionDataDao{
 
-    @Field("sic_code")
-    private SicCodeDao sicCode;
+    @Field("sic_codes")
+    private List<SicCodeDao> sicCodes;
 
-    public SicCodeDao getSicCode() {
-        return sicCode;
+    public List<SicCodeDao> getSicCode() {
+        return sicCodes;
     }
 
-    public void setSicCode(SicCodeDao sicCode) {
-        this.sicCode = sicCode;
+    public void setSicCode(List<SicCodeDao> sicCodes) {
+        this.sicCodes = sicCodes;
     }
 }

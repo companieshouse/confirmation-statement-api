@@ -4,8 +4,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
+
+import uk.gov.companieshouse.api.delta.SicCodes;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,10 +22,12 @@ public interface ConfirmationStatementJsonDaoMapper {
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateLocalDateToString")
+      @Mapping(source = "data.sicCodeData", target = "data.sicCodeData", qualifiedByName = "newCSSicCodeData")
       ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmissionDao confirmationStatementSubmissionDao);
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateStringToLocalDate")
+      @Mapping(source = "data.sicCodeData", target = "data.sicCodeData", qualifiedByName = "newCSSicCodeData")
       ConfirmationStatementSubmissionDao jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson);
 
       @Named("localDate")

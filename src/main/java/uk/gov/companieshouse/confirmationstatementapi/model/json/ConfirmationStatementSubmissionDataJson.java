@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +24,7 @@ public class ConfirmationStatementSubmissionDataJson {
     private PersonsSignificantControlDataJson personsSignificantControlData;
 
     @JsonProperty("sic_code_data")
-    private SicCodeDataJson sicCodeData;
+    private List<SicCodeDataJson> sicCodeData;
 
     @JsonProperty("registered_office_address_data")
     private RegisteredOfficeAddressDataJson registeredOfficeAddressData;
@@ -69,11 +70,11 @@ public class ConfirmationStatementSubmissionDataJson {
         this.personsSignificantControlData = personsSignificantControlData;
     }
 
-    public SicCodeDataJson getSicCodeData() {
+    public List<SicCodeDataJson> getSicCodeData() {
         return sicCodeData;
     }
 
-    public void setSicCodeData(SicCodeDataJson sicCodeData) {
+    public void setSicCodeData(List<SicCodeDataJson> sicCodeData) {
         this.sicCodeData = sicCodeData;
     }
 

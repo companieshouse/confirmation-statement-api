@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -22,7 +23,7 @@ public class ConfirmationStatementSubmissionDataDao {
     private PersonsSignificantControlDataDao personsSignificantControlData;
 
     @Field("sic_code_data")
-    private SicCodeDataDao sicCodeData;
+    private List<SicCodeDataDao> sicCodeData;
 
     @Field("registered_office_address_data")
     private RegisteredOfficeAddressDataDao registeredOfficeAddressData;
@@ -67,11 +68,11 @@ public class ConfirmationStatementSubmissionDataDao {
         this.personsSignificantControlData = personsSignificantControlData;
     }
 
-    public SicCodeDataDao getSicCodeData() {
+    public List<SicCodeDataDao> getSicCodeData() {
         return sicCodeData;
     }
 
-    public void setSicCodeData(SicCodeDataDao sicCodeData) {
+    public void setSicCodeData(List<SicCodeDataDao> sicCodeData) {
         this.sicCodeData = sicCodeData;
     }
 

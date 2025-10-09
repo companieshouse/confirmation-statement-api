@@ -9,8 +9,11 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,15 +33,20 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -52,6 +60,16 @@ public class ConfirmationStatementService {
         return (sectionData != null) &&
                 (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
                  sectionData.getSectionStatus() == SectionStatus.RECENT_FILING);
+    }
+
+    private static boolean isConfirmedSicCode(List<SicCodeDataJson> sicCodeDataList) {
+        return sicCodeDataList != null &&
+            !sicCodeDataList.isEmpty() &&
+            sicCodeDataList.stream().allMatch(
+                sectionData -> sectionData != null &&
+                    (sectionData.getSectionStatus() == SectionStatus.CONFIRMED ||
+                     sectionData.getSectionStatus() == SectionStatus.RECENT_FILING)   
+            );
     }
 
     /**
@@ -176,7 +194,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ResponseEntity<Object> updateConfirmationStatement(Transaction transaction, String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) throws ServiceException, NewConfirmationDateInvalidException {
+    public ResponseEntity<Object> updateConfirmationStatement(Transaction transaction, String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         // Check Submission exists
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
@@ -185,8 +203,31 @@ public class ConfirmationStatementService {
             ApiLogger.info(String.format("%s: Confirmation Statement Submission found. About to update",  submission.get().getId()));
 
             isValidNewConfirmationDate(transaction, confirmationStatementSubmissionJson);
+            isValidNewSicCodes(confirmationStatementSubmissionJson);
 
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
+
+            var newSicCodeData = confirmationStatementSubmissionJson.getData().getSicCodeData();
+
+            if (newSicCodeData != null ) {
+                List<SicCodeDataDao> newSicCodeDataDaoList = newSicCodeData.stream().map(dataJson -> {
+                    SicCodeDataDao dataDao = new SicCodeDataDao();
+
+                    List<SicCodeDao> sicCodeDaoList = dataJson.getSicCode().stream().map(codeJson -> {
+                        SicCodeDao daoCode = new SicCodeDao();
+                        daoCode.setCode(codeJson.getCode());
+                        daoCode.setDescription(codeJson.getDescription());
+                        return daoCode;
+                    }).toList();
+
+                    dataDao.setSicCode(sicCodeDaoList);
+                    return dataDao;
+                }).toList();
+
+                dao.getData().setSicCodeData(newSicCodeDataDaoList);
+                
+            }
+
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
             return ResponseEntity.ok(savedResponse);
@@ -207,7 +248,7 @@ public class ConfirmationStatementService {
                 validationStatus.setValid(false);
             } else {
                 boolean isValid = isConfirmed(submissionData.getShareholderData()) &&
-                        isConfirmed(submissionData.getSicCodeData()) &&
+                        isConfirmedSicCode(submissionData.getSicCodeData()) &&
                         isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
                         isConfirmed(submissionData.getStatementOfCapitalData()) &&
                         isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
@@ -361,6 +402,35 @@ public class ConfirmationStatementService {
 
     }
 
+    private void isValidNewSicCodes(ConfirmationStatementSubmissionJson jsonObject) throws SicCodeInvalidException
+    {
+        if(jsonObject.getData() == null || jsonObject.getData().getSicCodeData() == null){
+            return;
+        }
+
+        List<SicCodeDataJson> newSicCodeData = jsonObject.getData().getSicCodeData(); 
+        Set<String> uniqueSicCodes = new HashSet<>();
+
+        for (SicCodeDataJson sicCodeData : newSicCodeData) {
+            List<SicCodeJson> sicCodes = sicCodeData.getSicCode();
+
+            if (sicCodes == null || sicCodes.isEmpty()) {
+                throw new SicCodeInvalidException("At least one SIC Code must be associated.");
+            }
+
+            if(sicCodes.size() > 4) {
+                throw new SicCodeInvalidException("Maximum of 4 SIC Codes must be associated");
+            }
+
+            for(SicCodeJson code : sicCodes) {
+                if (!uniqueSicCodes.add(code.getCode())) {
+                    throw new SicCodeInvalidException("Can not have duplicate SIC Codes.");
+                }
+            }
+        }
+
+    }
+
     private LocalDate parseNewCsDate(String newCsDate) throws NewConfirmationDateInvalidException {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-M-d").withResolverStyle(ResolverStyle.STRICT);
@@ -368,5 +438,32 @@ public class ConfirmationStatementService {
         } catch (DateTimeParseException e) {
             throw new NewConfirmationDateInvalidException("Confirmation statement date must be a real date");
         }
+    }
+
+    private List<SicCodeDataDao> updateSicCodes(ConfirmationStatementSubmissionJson jsonObject) throws SicCodeInvalidException {
+        isValidNewSicCodes(jsonObject);
+
+        var newSicCodeData = jsonObject.getData().getSicCodeData();
+
+            if (newSicCodeData != null ) {
+                List<SicCodeDataDao> newSicCodeDataDaoList = newSicCodeData.stream().map(dataJson -> {
+                    SicCodeDataDao dataDao = new SicCodeDataDao();
+
+                    List<SicCodeDao> sicCodeDaoList = dataJson.getSicCode().stream().map(codeJson -> {
+                        SicCodeDao daoCode = new SicCodeDao();
+                        daoCode.setCode(codeJson.getCode());
+                        daoCode.setDescription(codeJson.getDescription());
+                        return daoCode;
+                    }).toList();
+
+                    dataDao.setSicCode(sicCodeDaoList);
+                    return dataDao;
+                }).toList();
+
+                // dao.getData().setSicCodeData(newSicCodeDataDaoList);
+                
+            }
+
+        
     }
 }

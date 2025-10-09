@@ -1,18 +1,20 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.json.siccode;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 
 public class SicCodeDataJson extends SectionDataJson {
 
-    @JsonProperty("sic_code")
-    private SicCodeJson sicCode;
+    @JsonProperty("sic_codes")
+    private List<SicCodeJson> sicCodes;
 
-    public SicCodeJson getSicCode() {
-        return sicCode;
+    public List<SicCodeJson> getSicCode() {
+        return sicCodes;
     }
 
-    public void setSicCode(SicCodeJson sicCode) {
-        this.sicCode = sicCode;
+    public void setSicCode(List<SicCodeJson> sicCodes) {
+        this.sicCodes = sicCodes;
     }
 }
