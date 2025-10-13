@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.SectionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.TradingStatusDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.activedirectordetails.ActiveOfficerDetailsDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.registeredemailaddress.RegisteredEmailAddressDataDao;
@@ -69,9 +71,23 @@ class JsonDaoMappingTest {
         StatementOfCapitalDataJson socJson = json.getData().getStatementOfCapitalData();
         StatementOfCapitalDataDao socDao = dao.getData().getStatementOfCapitalData();
         assertEquals(socJson.getSectionStatus(), socDao.getSectionStatus());
-        SicCodeDataJson sicDataJson = json.getData().getSicCodeData();
-        SicCodeDataDao sicDataDao = dao.getData().getSicCodeData();
-        assertEquals(sicDataJson.getSectionStatus(), sicDataDao.getSectionStatus());
+        List<SicCodeDataJson> sicCodeJsonList = json.getData().getSicCodeData();
+        List<SicCodeDataDao> sicCodeDaoList = dao.getData().getSicCodeData();
+        for (int i = 0; i < sicCodeJsonList.size(); i++) {
+            SicCodeDataJson sicDataJson = sicCodeJsonList.get(i);
+            SicCodeDataDao sicDataDao = sicCodeDaoList.get(i);
+
+            assertEquals(sicDataJson.getSectionStatus(), sicDataDao.getSectionStatus());
+
+            List<SicCodeJson> jsonSicCodes = sicDataJson.getSicCode();
+            List<SicCodeDao> daoSicCodes = sicDataDao.getSicCode();
+
+            for (int j = 0; j < jsonSicCodes.size(); j++) {
+                assertEquals(jsonSicCodes.get(j).getCode(), daoSicCodes.get(j).getCode());
+                assertEquals(jsonSicCodes.get(j).getDescription(), daoSicCodes.get(j).getDescription());
+            }
+
+        }
         StatementOfCapitalJson statementOfCapitalJson = socJson.getStatementOfCapital();
         StatementOfCapitalDao statementOfSubmissionCapital = socDao.getStatementOfCapital();
         assertEquals(statementOfCapitalJson.getClassOfShares(), statementOfSubmissionCapital.getClassOfShares());
@@ -83,8 +99,6 @@ class JsonDaoMappingTest {
         assertEquals(statementOfCapitalJson.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
         assertEquals(statementOfCapitalJson.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
 
-        SicCodeJson sicJson = sicDataJson.getSicCode();
-        SicCodeDao sicDao = sicDataDao.getSicCode();
         RegisteredOfficeAddressDataJson roaJson = json.getData().getRegisteredOfficeAddressData();
         RegisteredOfficeAddressDataDao roaDao = dao.getData().getRegisteredOfficeAddressData();
         RegisteredEmailAddressDataJson reaJson = json.getData().getRegisteredEmailAddressData();
@@ -100,9 +114,6 @@ class JsonDaoMappingTest {
         TradingStatusDataJson tsJson = json.getData().getTradingStatusData();
         TradingStatusDataDao tsDao = dao.getData().getTradingStatusData();
 
-
-        assertEquals(sicJson.getCode(), sicDao.getCode());
-        assertEquals(sicJson.getDescription(), sicDao.getDescription());
         assertEquals(roaJson.getSectionStatus(), roaDao.getSectionStatus());
         assertEquals(reaJson.getSectionStatus(), reaDao.getSectionStatus());
         assertEquals(reaJson.getRegisteredEmailAddress(), reaDao.getRegisteredEmailAddress());

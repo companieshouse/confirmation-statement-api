@@ -1,7 +1,9 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
@@ -80,17 +82,22 @@ public class MockConfirmationStatementSubmissionData {
         return personsSignificantControlDataJson;
     }
 
-    private static SicCodeDataJson getSicCodeJsonData() {
-        var sicCodeDataJson = new SicCodeDataJson();
+    private static List<SicCodeDataJson> getSicCodeJsonData() {
+        SicCodeDataJson sicCodeDataJson = new SicCodeDataJson();
         sicCodeDataJson.setSectionStatus(SectionStatus.NOT_CONFIRMED);
 
-        var sicCode = new SicCodeJson();
+        SicCodeJson sicCode = new SicCodeJson();
         sicCode.setCode("123");
         sicCode.setDescription("TEST SIC CODE DETAILS");
 
-        sicCodeDataJson.setSicCode(sicCode);
+        List<SicCodeJson> sicCodeList = new ArrayList<>();
+        sicCodeList.add(sicCode);
+        sicCodeDataJson.setSicCode(sicCodeList);
 
-        return sicCodeDataJson;
+        List<SicCodeDataJson> result = new ArrayList<>();
+        result.add(sicCodeDataJson);
+
+        return result;
     }
 
     private static RegisteredOfficeAddressDataJson getRegisteredOfficeAddressJsonData() {
@@ -183,17 +190,22 @@ public class MockConfirmationStatementSubmissionData {
         return personsSignificantControlDataDao;
     }
 
-    private static SicCodeDataDao getSicCodeDaoData() {
-        var sicCodeDataDao = new SicCodeDataDao();
+    private static List<SicCodeDataDao> getSicCodeDaoData() {
+        SicCodeDataDao sicCodeDataDao = new SicCodeDataDao();
         sicCodeDataDao.setSectionStatus(SectionStatus.NOT_CONFIRMED);
 
-        var sicCode = new SicCodeDao();
+        SicCodeDao sicCode = new SicCodeDao();
         sicCode.setCode("123");
         sicCode.setDescription("TEST SIC CODE DETAILS");
 
-        sicCodeDataDao.setSicCode(sicCode);
+        List<SicCodeDao> sicCodeList = new ArrayList<>();
+        sicCodeList.add(sicCode);
+        sicCodeDataDao.setSicCode(sicCodeList);
 
-        return sicCodeDataDao;
+        List<SicCodeDataDao> result = new ArrayList<>();
+        result.add(sicCodeDataDao);
+
+        return result;
     }
 
     private static RegisteredOfficeAddressDataDao getRegisteredOfficeAddressDaoData() {

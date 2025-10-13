@@ -22,6 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.ConfirmationStatementApi;
 import uk.gov.companieshouse.api.model.transaction.Resource;
@@ -201,31 +204,26 @@ public class ConfirmationStatementService {
         if (submission.isPresent()) {
             // Save updated submission to database
             ApiLogger.info(String.format("%s: Confirmation Statement Submission found. About to update",  submission.get().getId()));
-
+            
             isValidNewConfirmationDate(transaction, confirmationStatementSubmissionJson);
-            isValidNewSicCodes(confirmationStatementSubmissionJson);
-
+            
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
+            ApiLogger.info(String.format("DAVE --- In API - dao - ", dao.getData()));
+            try {
+                ApiLogger.info("DAVE --- In API");
+                List<SicCodeDataDao> updatedSicCodes = updateSicCodes(confirmationStatementSubmissionJson);
 
-            var newSicCodeData = confirmationStatementSubmissionJson.getData().getSicCodeData();
+                ApiLogger.info("DAVE --- In API");
+                if (updatedSicCodes != null && !updatedSicCodes.isEmpty()) {
+                    dao.getData().setSicCodeData(updatedSicCodes);
+                }
 
-            if (newSicCodeData != null ) {
-                List<SicCodeDataDao> newSicCodeDataDaoList = newSicCodeData.stream().map(dataJson -> {
-                    SicCodeDataDao dataDao = new SicCodeDataDao();
-
-                    List<SicCodeDao> sicCodeDaoList = dataJson.getSicCode().stream().map(codeJson -> {
-                        SicCodeDao daoCode = new SicCodeDao();
-                        daoCode.setCode(codeJson.getCode());
-                        daoCode.setDescription(codeJson.getDescription());
-                        return daoCode;
-                    }).toList();
-
-                    dataDao.setSicCode(sicCodeDaoList);
-                    return dataDao;
-                }).toList();
-
-                dao.getData().setSicCodeData(newSicCodeDataDaoList);
-                
+                for (SicCodeDataDao sicCode : updatedSicCodes){
+                    ApiLogger.info(String.format("DAVE ---: %s", sicCode.toString()));
+                }
+            } catch (Exception e) {
+                ApiLogger.errorContext("DAVE -- ERROR", e);
+                throw e;
             }
 
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
@@ -460,9 +458,10 @@ public class ConfirmationStatementService {
                     return dataDao;
                 }).toList();
 
-                // dao.getData().setSicCodeData(newSicCodeDataDaoList);
+                return newSicCodeDataDaoList;
                 
             }
+            return null;
 
         
     }

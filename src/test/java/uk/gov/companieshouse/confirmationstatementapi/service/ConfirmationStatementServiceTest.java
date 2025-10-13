@@ -46,13 +46,17 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
@@ -281,10 +285,13 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void updateConfirmationSubmission() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateConfirmationSubmission() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         // GIVEN
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
+
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        confirmationStatementSubmission.setData(dataDao);
 
         when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
@@ -306,11 +313,14 @@ class ConfirmationStatementServiceTest {
             "2025-03-2",
             "2025-5-02",
     })
-    void updateConfirmationSubmissionWithNewConfirmationStatementDate(String inputStringDate) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException {
+    void updateConfirmationSubmissionWithNewConfirmationStatementDate(String inputStringDate) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException, SicCodeInvalidException {
         // GIVEN
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         confirmationStatementSubmissionJson.getData().setNewConfirmationDate(inputStringDate);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        confirmationStatementSubmission.setData(dataDao);
 
         // WHEN
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
@@ -341,6 +351,9 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmissionJson.getData().setNewConfirmationDate(inputNewCsDateString);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
 
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        confirmationStatementSubmission.setData(dataDao);
+
         // WHEN
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
@@ -352,7 +365,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void updateConfirmationSubmissionNotFound() throws ServiceException, NewConfirmationDateInvalidException  {
+    void updateConfirmationSubmissionNotFound() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException  {
         // GIVEN
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
 
@@ -883,7 +896,9 @@ class ConfirmationStatementServiceTest {
         ConfirmationStatementSubmissionDataJson data = confirmationStatementSubmissionJson.getData();
         data.getActiveOfficerDetailsData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getStatementOfCapitalData().setSectionStatus(SectionStatus.CONFIRMED);
-        data.getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
+        for (SicCodeDataJson sicCode : data.getSicCodeData()) {
+            sicCode.setSectionStatus(SectionStatus.CONFIRMED);
+        }
         data.getShareholderData() .setSectionStatus(SectionStatus.CONFIRMED);
         data.getRegisteredOfficeAddressData().setSectionStatus(SectionStatus.CONFIRMED);
         data.getRegisteredEmailAddressData().setSectionStatus(SectionStatus.CONFIRMED);
