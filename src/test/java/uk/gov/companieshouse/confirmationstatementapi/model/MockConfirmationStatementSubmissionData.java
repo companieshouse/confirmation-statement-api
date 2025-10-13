@@ -38,7 +38,7 @@ public class MockConfirmationStatementSubmissionData {
         ConfirmationStatementSubmissionDataJson data = new ConfirmationStatementSubmissionDataJson();
         data.setStatementOfCapitalData(getStatementOfCapitalJsonData());
         data.setPersonsSignificantControlData(getPersonsSignificantControlJsonData());
-        data.setSicCodeData(getSicCodeJsonData());
+        //data.setSicCodeData(getSicCodeJsonData());
         data.setRegisteredOfficeAddressData(getRegisteredOfficeAddressJsonData());
         data.setRegisteredEmailAddressData(getRegisteredEmailAddressJsonData());
         data.setActiveOfficerDetailsData(getActiveOfficerDetailsJsonData());

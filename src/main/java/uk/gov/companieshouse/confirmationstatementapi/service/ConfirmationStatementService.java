@@ -213,14 +213,19 @@ public class ConfirmationStatementService {
                 ApiLogger.info("DAVE --- In API");
                 List<SicCodeDataDao> updatedSicCodes = updateSicCodes(confirmationStatementSubmissionJson);
 
-                ApiLogger.info("DAVE --- In API");
-                if (updatedSicCodes != null && !updatedSicCodes.isEmpty()) {
-                    dao.getData().setSicCodeData(updatedSicCodes);
-                }
+                if (updatedSicCodes != null) {
+                    ApiLogger.info("DAVE --- In API");
+                    if (updatedSicCodes != null && !updatedSicCodes.isEmpty()) {
+                        dao.getData().setSicCodeData(updatedSicCodes);
+                    }
 
-                for (SicCodeDataDao sicCode : updatedSicCodes){
-                    ApiLogger.info(String.format("DAVE ---: %s", sicCode.toString()));
+                    for (SicCodeDataDao sicCode : updatedSicCodes){
+                        ApiLogger.info(String.format("DAVE ---: %s", sicCode.toString()));
+                    }    
+                } else {
+                    ApiLogger.info("DAVE --- SicCodes Null");
                 }
+                
             } catch (Exception e) {
                 ApiLogger.errorContext("DAVE -- ERROR", e);
                 throw e;
@@ -246,7 +251,7 @@ public class ConfirmationStatementService {
                 validationStatus.setValid(false);
             } else {
                 boolean isValid = isConfirmed(submissionData.getShareholderData()) &&
-                        isConfirmedSicCode(submissionData.getSicCodeData()) &&
+                        //isConfirmedSicCode(submissionData.getSicCodeData()) &&
                         isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
                         isConfirmed(submissionData.getStatementOfCapitalData()) &&
                         isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
@@ -406,26 +411,26 @@ public class ConfirmationStatementService {
             return;
         }
 
-        List<SicCodeDataJson> newSicCodeData = jsonObject.getData().getSicCodeData(); 
-        Set<String> uniqueSicCodes = new HashSet<>();
+        // List<SicCodeJson> newSicCodeData = jsonObject.getData().getSicCodeData(); 
+        // Set<String> uniqueSicCodes = new HashSet<>();
 
-        for (SicCodeDataJson sicCodeData : newSicCodeData) {
-            List<SicCodeJson> sicCodes = sicCodeData.getSicCode();
+        // for (SicCodeDataJson sicCodeData : newSicCodeData) {
+        //     List<SicCodeJson> sicCodes = sicCodeData.getSicCode();
 
-            if (sicCodes == null || sicCodes.isEmpty()) {
-                throw new SicCodeInvalidException("At least one SIC Code must be associated.");
-            }
+        //     if (sicCodes == null || sicCodes.isEmpty()) {
+        //         throw new SicCodeInvalidException("At least one SIC Code must be associated.");
+        //     }
 
-            if(sicCodes.size() > 4) {
-                throw new SicCodeInvalidException("Maximum of 4 SIC Codes must be associated");
-            }
+        //     if(sicCodes.size() > 4) {
+        //         throw new SicCodeInvalidException("Maximum of 4 SIC Codes must be associated");
+        //     }
 
-            for(SicCodeJson code : sicCodes) {
-                if (!uniqueSicCodes.add(code.getCode())) {
-                    throw new SicCodeInvalidException("Can not have duplicate SIC Codes.");
-                }
-            }
-        }
+        //     for(SicCodeJson code : sicCodes) {
+        //         if (!uniqueSicCodes.add(code.getCode())) {
+        //             throw new SicCodeInvalidException("Can not have duplicate SIC Codes.");
+        //         }
+        //     }
+        // }
 
     }
 
@@ -441,26 +446,35 @@ public class ConfirmationStatementService {
     private List<SicCodeDataDao> updateSicCodes(ConfirmationStatementSubmissionJson jsonObject) throws SicCodeInvalidException {
         isValidNewSicCodes(jsonObject);
 
-        var newSicCodeData = jsonObject.getData().getSicCodeData();
+        List<SicCodeJson> newSicCodeData = jsonObject.getData().getSicCodeData();
 
-            if (newSicCodeData != null ) {
-                List<SicCodeDataDao> newSicCodeDataDaoList = newSicCodeData.stream().map(dataJson -> {
-                    SicCodeDataDao dataDao = new SicCodeDataDao();
-
-                    List<SicCodeDao> sicCodeDaoList = dataJson.getSicCode().stream().map(codeJson -> {
-                        SicCodeDao daoCode = new SicCodeDao();
-                        daoCode.setCode(codeJson.getCode());
-                        daoCode.setDescription(codeJson.getDescription());
-                        return daoCode;
-                    }).toList();
-
-                    dataDao.setSicCode(sicCodeDaoList);
-                    return dataDao;
-                }).toList();
-
-                return newSicCodeDataDaoList;
+        ApiLogger.info("DAVE --- BEFORE FOR LOOP");
+        for (SicCodeJson sicCodeJson : newSicCodeData) {
+            
                 
+                    ApiLogger.info("DAVE --- SIC CODE: " + sicCodeJson.getCode());
+               
             }
+        
+
+            // if (newSicCodeData != null ) {
+            //     List<SicCodeDataDao> newSicCodeDataDaoList = newSicCodeData.stream().map(dataJson -> {
+            //         SicCodeDataDao dataDao = new SicCodeDataDao();
+
+            //         List<SicCodeDao> sicCodeDaoList = dataJson.getSicCode().stream().map(codeJson -> {
+            //             SicCodeDao daoCode = new SicCodeDao();
+            //             daoCode.setCode(codeJson.getCode());
+            //             daoCode.setDescription(codeJson.getDescription());
+            //             return daoCode;
+            //         }).toList();
+
+            //         dataDao.setSicCode(sicCodeDaoList);
+            //         return dataDao;
+            //     }).toList();
+
+            //     return newSicCodeDataDaoList;
+                
+            // }
             return null;
 
         

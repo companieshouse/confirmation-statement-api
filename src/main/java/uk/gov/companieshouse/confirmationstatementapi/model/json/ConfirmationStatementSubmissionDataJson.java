@@ -13,6 +13,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredoffic
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 
 public class ConfirmationStatementSubmissionDataJson {
@@ -24,7 +25,7 @@ public class ConfirmationStatementSubmissionDataJson {
     private PersonsSignificantControlDataJson personsSignificantControlData;
 
     @JsonProperty("sic_code_data")
-    private List<SicCodeDataJson> sicCodeData;
+    private List<SicCodeJson> sicCodeData;
 
     @JsonProperty("registered_office_address_data")
     private RegisteredOfficeAddressDataJson registeredOfficeAddressData;
@@ -70,11 +71,11 @@ public class ConfirmationStatementSubmissionDataJson {
         this.personsSignificantControlData = personsSignificantControlData;
     }
 
-    public List<SicCodeDataJson> getSicCodeData() {
+    public List<SicCodeJson> getSicCodeData() {
         return sicCodeData;
     }
 
-    public void setSicCodeData(List<SicCodeDataJson> sicCodeData) {
+    public void setSicCodeData(List<SicCodeJson> sicCodeData) {
         this.sicCodeData = sicCodeData;
     }
 
