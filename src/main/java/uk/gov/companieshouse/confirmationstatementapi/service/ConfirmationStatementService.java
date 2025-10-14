@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFou
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
@@ -194,16 +192,10 @@ public class ConfirmationStatementService {
             isValidNewConfirmationDate(transaction, confirmationStatementSubmissionJson);
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
 
-            ConfirmationStatementSubmissionDataJson data = confirmationStatementSubmissionJson.getData();
+            isValidSicCodes(confirmationStatementSubmissionJson.getData());
 
-            SicCodeDataDao sicCodeDataDao = updateSicCodes(data);
+            ApiLogger.info("Mapped SIC codes: " + dao.getData().getSicCodes());
 
-            if (sicCodeDataDao != null) {
-                dao.getData().setSicCodeData(sicCodeDataDao);
-            }
-
-            ApiLogger.info(String.format("SIC CODE: %s ", dao.getData().getSicCodeData().getSicCodes()));
-            
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
             return ResponseEntity.ok(savedResponse);
@@ -408,32 +400,6 @@ public class ConfirmationStatementService {
                 throw new SicCodeInvalidException("Can not have duplicate SIC Codes.");
             }
         }
-    }
-
-    private SicCodeDataDao updateSicCodes(ConfirmationStatementSubmissionDataJson jsonData) throws SicCodeInvalidException {
-        isValidSicCodes(jsonData);
-
-        if (jsonData != null && jsonData.getSicCodeData() != null && jsonData.getSicCodeData().getSicCode() != null) {
-            List<SicCodeJson> sicCodes = jsonData.getSicCodeData().getSicCode();
-            for (SicCodeJson code : sicCodes) {
-                ApiLogger.info(String.format("SIC CODE: %s - %s", code.getCode(), code.getDescription()));
-            }
-
-            List<String> sicCodeStrings = sicCodes.stream()
-                .map(SicCodeJson::getCode)
-                .collect(Collectors.toList());
-
-        
-            SicCodeDataDao sicCodeDataDao = new SicCodeDataDao();
-            sicCodeDataDao.setSicCodes(sicCodeStrings);
-
-            ApiLogger.info(String.format("SIC CODE: %s ", sicCodeDataDao.getSicCodes()));
-
-            return sicCodeDataDao;
-        } else {
-            throw new SicCodeInvalidException("SIC Code data is missing or incomplete.");
-        }
-        
     }
 
 }

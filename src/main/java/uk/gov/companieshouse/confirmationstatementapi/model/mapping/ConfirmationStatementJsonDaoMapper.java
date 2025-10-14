@@ -6,10 +6,12 @@ import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 
@@ -19,11 +21,24 @@ public interface ConfirmationStatementJsonDaoMapper {
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateLocalDateToString")
+      @Mapping(target = "data.sicCodeData", ignore = true)
       ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmissionDao confirmationStatementSubmissionDao);
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateStringToLocalDate")
+      @Mapping(target = "data.sicCodeData", ignore = true)
+      @Mapping(source = "data.sicCodeData.sicCode", target = "data.sicCodes", qualifiedByName = "extractSicCodes")
       ConfirmationStatementSubmissionDao jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson);
+
+      @Named("extractSicCodes")
+      static List<String> extractSicCodes(List<SicCodeJson> sicCodeJsonList) {
+            if (sicCodeJsonList == null) {
+                  return null;
+            }
+            return sicCodeJsonList.stream()
+                        .map(SicCodeJson::getCode)
+                        .collect(Collectors.toList());
+      }
 
       @Named("localDate")
       static LocalDate localDate(LocalDate date) {
