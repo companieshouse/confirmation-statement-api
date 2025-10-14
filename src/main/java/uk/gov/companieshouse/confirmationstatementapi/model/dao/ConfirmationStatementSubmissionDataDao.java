@@ -159,22 +159,4 @@ public class ConfirmationStatementSubmissionDataDao {
         this.newConfirmationDate = newConfirmationDate;
     }
 
-    @Override
-    public String toString() {
-        return "ConfirmationStatementSubmissionDataDao{" +
-                "statementOfCapitalData=" + statementOfCapitalData +
-                ", personsSignificantControlData=" + personsSignificantControlData +
-                ", sicCodeData=" + sicCodeData +
-                ", registeredOfficeAddressData=" + registeredOfficeAddressData +
-                ", registeredEmailAddressData=" + registeredEmailAddressData +
-                ", activeOfficerDetailsData=" + activeOfficerDetailsData +
-                ", shareholderData=" + shareholderData +
-                ", registerLocationsData=" + registerLocationsData +
-                ", madeUpToDate=" + madeUpToDate +
-                ", tradingStatusData=" + tradingStatusData +
-                ", acceptLawfulPurposeStatement=" + acceptLawfulPurposeStatement +
-                ", newConfirmationDate=" + newConfirmationDate +
-                ", sicCodes=" + sicCodes +
-                '}';
-    }
 }
