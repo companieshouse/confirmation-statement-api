@@ -1,8 +1,11 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,6 +32,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemail
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapperImpl;
@@ -71,6 +75,89 @@ class JsonDaoMappingTest {
         ConfirmationStatementSubmissionDao dao =
                 confirmationStatementJsonDaoMapper.jsonToDao(json);
         testContentIsEqual(json, dao);
+    }
+
+    @Test
+    void shouldParseValidDateString() {
+        String input = "2025-10-15";
+        LocalDate expected = LocalDate.of(2025, 10, 15);
+        LocalDate result = ConfirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(input);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void testNewCsDateStringToLocalDate_null() {
+        LocalDate result = ConfirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(null);
+        assertNull(result);
+    }
+        
+    @Test
+    void testNewCsDateLocalDateToString_valid() {
+        String result = ConfirmationStatementJsonDaoMapper.newCsDateLocalDateToString(LocalDate.of(2025, 10, 15));
+        assertEquals("2025-10-15", result);
+    }
+
+    @Test
+    void testNewCsDateLocalDateToString_null() {
+        String result = ConfirmationStatementJsonDaoMapper.newCsDateLocalDateToString(null);
+        assertNull(result);
+    }
+
+    @Test
+    void shouldReturnNullForNullInput() {
+        assertNull(ConfirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(null));
+    }
+
+    @Test
+    void shouldReturnNullForEmptyInput() {
+        assertNull(ConfirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(""));
+    }
+
+    @Test
+    void shouldReturnNullForWhitespaceInput() {
+        assertNull(ConfirmationStatementJsonDaoMapper.newCsDateStringToLocalDate("   "));
+    }
+
+    @Test
+    void shouldThrowExceptionForInvalidDateFormat() {
+        String input = "15-10-2025";
+        assertThrows(DateTimeParseException.class, () -> ConfirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(input));
+    }
+
+    @Test
+    void testLocalDate_valid() {
+        LocalDate input = LocalDate.of(2025, 10, 15);
+        LocalDate result = ConfirmationStatementJsonDaoMapper.localDate(input);
+        assertEquals(input, result);
+    }
+
+    @Test
+    void testLocalDate_null() {
+        LocalDate result = ConfirmationStatementJsonDaoMapper.localDate(null);
+        assertNull(result);
+    }
+
+    @Test
+    void testExtractSicCodes_validList() {
+        SicCodeJson code1 = new SicCodeJson();
+        code1.setCode("12345");
+        SicCodeJson code2 = new SicCodeJson();
+        code2.setCode("67890");
+
+        List<String> result = ConfirmationStatementJsonDaoMapper.extractSicCodes(List.of(code1, code2));
+        assertEquals(List.of("12345", "67890"), result);
+    }
+
+    @Test
+    void testExtractSicCodes_nullList() {
+        List<String> result = ConfirmationStatementJsonDaoMapper.extractSicCodes(null);
+        assertEquals(List.of(), result);
+    }
+
+    @Test
+    void testExtractSicCodes_emptyList() {
+        List<String> result = ConfirmationStatementJsonDaoMapper.extractSicCodes(List.of());
+        assertEquals(List.of(), result);
     }
 
     private void testContentIsEqual(ConfirmationStatementSubmissionJson json, ConfirmationStatementSubmissionDao dao) {
