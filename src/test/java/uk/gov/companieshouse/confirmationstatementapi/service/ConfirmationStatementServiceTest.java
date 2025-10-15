@@ -53,9 +53,12 @@ import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStat
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
@@ -901,6 +904,30 @@ class ConfirmationStatementServiceTest {
         assertEquals(SUBMISSION_ID, savedDao.getId());
         assertNotNull(savedDao.getData());
         assertEquals(List.of("12345", "67890"), savedDao.getData().getSicCodes());
+    }
+
+    @Test
+    void testGetDescription() {
+        SicCodeDao sicCodeDao = new SicCodeDao();
+        sicCodeDao.setDescription("TEST DESCRIPTION");
+        assertEquals("TEST DESCRIPTION", sicCodeDao.getDescription());
+    }
+
+    @Test
+    void testSicCodeJsonGetDescription() {
+        SicCodeJson sicCodeJson = new SicCodeJson();
+        sicCodeJson.setDescription("TEST DESCRIPTION");
+
+        assertEquals("TEST DESCRIPTION", sicCodeJson.getDescription());
+    }
+    
+    @Test
+    void testGetSicCodesFromSicCodeDataDao() {
+        SicCodeDataDao sicCodeDataDao = new SicCodeDataDao();
+        List<String> codes = List.of("123");
+        sicCodeDataDao.setSicCodes(codes);
+
+        assertEquals(codes, sicCodeDataDao.getSicCodes());
     }
 
     private CompanyProfileApi getTestCompanyProfileApi() {
