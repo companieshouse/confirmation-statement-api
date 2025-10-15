@@ -86,19 +86,19 @@ class JsonDaoMappingTest {
     }
 
     @Test
-    void testNewCsDateStringToLocalDate_null() {
+    void testNullNewCsDateStringToLocalDate() {
         LocalDate result = ConfirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(null);
         assertNull(result);
     }
         
     @Test
-    void testNewCsDateLocalDateToString_valid() {
+    void testValidNewCsDateLocalDateToString() {
         String result = ConfirmationStatementJsonDaoMapper.newCsDateLocalDateToString(LocalDate.of(2025, 10, 15));
         assertEquals("2025-10-15", result);
     }
 
     @Test
-    void testNewCsDateLocalDateToString_null() {
+    void testNullNewCsDateLocalDateToString() {
         String result = ConfirmationStatementJsonDaoMapper.newCsDateLocalDateToString(null);
         assertNull(result);
     }
@@ -125,20 +125,20 @@ class JsonDaoMappingTest {
     }
 
     @Test
-    void testLocalDate_valid() {
+    void testValidLocalDate() {
         LocalDate input = LocalDate.of(2025, 10, 15);
         LocalDate result = ConfirmationStatementJsonDaoMapper.localDate(input);
         assertEquals(input, result);
     }
 
     @Test
-    void testLocalDate_null() {
+    void testNullLocalDate() {
         LocalDate result = ConfirmationStatementJsonDaoMapper.localDate(null);
         assertNull(result);
     }
 
     @Test
-    void testExtractSicCodes_validList() {
+    void testValidExtractSicCodes() {
         SicCodeJson code1 = new SicCodeJson();
         code1.setCode("12345");
         SicCodeJson code2 = new SicCodeJson();
@@ -149,13 +149,13 @@ class JsonDaoMappingTest {
     }
 
     @Test
-    void testExtractSicCodes_nullList() {
+    void testNullExtractSicCodes() {
         List<String> result = ConfirmationStatementJsonDaoMapper.extractSicCodes(null);
         assertEquals(List.of(), result);
     }
 
     @Test
-    void testExtractSicCodes_emptyList() {
+    void testEmptyExtractSicCodes() {
         List<String> result = ConfirmationStatementJsonDaoMapper.extractSicCodes(List.of());
         assertEquals(List.of(), result);
     }
