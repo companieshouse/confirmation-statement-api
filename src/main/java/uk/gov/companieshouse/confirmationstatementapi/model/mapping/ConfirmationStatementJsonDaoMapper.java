@@ -10,8 +10,8 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCode
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 
@@ -33,11 +33,11 @@ public interface ConfirmationStatementJsonDaoMapper {
       @Named("extractSicCodes")
       static List<String> extractSicCodes(List<SicCodeJson> sicCodeJsonList) {
             if (sicCodeJsonList == null) {
-                  return null;
+                  return Collections.emptyList();
             }
             return sicCodeJsonList.stream()
                         .map(SicCodeJson::getCode)
-                        .collect(Collectors.toList());
+                        .toList();
       }
 
       @Named("localDate")
