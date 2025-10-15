@@ -1,7 +1,9 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
@@ -88,7 +90,9 @@ public class MockConfirmationStatementSubmissionData {
         sicCode.setCode("123");
         sicCode.setDescription("TEST SIC CODE DETAILS");
 
-        sicCodeDataJson.setSicCode(sicCode);
+        List<SicCodeJson> sicCodeList = new ArrayList<>();
+        sicCodeList.add(sicCode);
+        sicCodeDataJson.setSicCode(sicCodeList);
 
         return sicCodeDataJson;
     }
@@ -135,7 +139,7 @@ public class MockConfirmationStatementSubmissionData {
         return tradingStatusData;
     }
 
-    static ConfirmationStatementSubmissionDataDao getMockDaoData() {
+    public static ConfirmationStatementSubmissionDataDao getMockDaoData() {
         ConfirmationStatementSubmissionDataDao data = new ConfirmationStatementSubmissionDataDao();
         data.setStatementOfCapitalData(getStatementOfCapitalDaoData());
         data.setPersonsSignificantControlData(getPersonsSignificantControlDaoData());
@@ -191,7 +195,7 @@ public class MockConfirmationStatementSubmissionData {
         sicCode.setCode("123");
         sicCode.setDescription("TEST SIC CODE DETAILS");
 
-        sicCodeDataDao.setSicCode(sicCode);
+        sicCodeDataDao.setSicCodes(List.of(sicCode.getCode()));
 
         return sicCodeDataDao;
     }
