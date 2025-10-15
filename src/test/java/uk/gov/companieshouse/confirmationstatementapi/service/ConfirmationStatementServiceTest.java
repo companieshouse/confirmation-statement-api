@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -907,6 +908,60 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
+    void shouldPassWithUnqiueSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12121", "21212").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertDoesNotThrow(() -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void shouldFailWithEmptySicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void shouldFailWithMoreThanFourSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12121", "21212", "55661").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void shouldFailWithDuplicateSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12345").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
     void testGetDescription() {
         SicCodeDao sicCodeDao = new SicCodeDao();
         sicCodeDao.setDescription("TEST DESCRIPTION");
@@ -930,6 +985,7 @@ class ConfirmationStatementServiceTest {
         assertEquals(codes, sicCodeDataDao.getSicCodes());
     }
 
+    
     private CompanyProfileApi getTestCompanyProfileApi() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);

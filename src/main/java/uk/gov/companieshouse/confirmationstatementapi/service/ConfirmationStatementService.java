@@ -379,7 +379,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    private void isValidSicCodes(ConfirmationStatementSubmissionDataJson jsonData) throws SicCodeInvalidException {
+    static void isValidSicCodes(ConfirmationStatementSubmissionDataJson jsonData) throws SicCodeInvalidException {
         if (jsonData == null || jsonData.getSicCodeData() == null) {
             return;
         }
