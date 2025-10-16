@@ -14,6 +14,7 @@ import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
@@ -84,7 +85,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmission() throws NewConfirmationDateInvalidException, ServiceException {
+    void updateSubmission() throws NewConfirmationDateInvalidException, ServiceException, SicCodeInvalidException {
         when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(UPDATED_SUCCESS_RESPONSE);
 
@@ -94,7 +95,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmissionIdNotFound() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateSubmissionIdNotFound() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(NOT_FOUND_RESPONSE);
 
@@ -104,7 +105,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmissionServiceException() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateSubmissionServiceException() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenThrow(new ServiceException("ERROR", new IOException()));
 
@@ -114,7 +115,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmissionNewConfirmationDateInvalidException() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateSubmissionNewConfirmationDateInvalidException() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenThrow(new NewConfirmationDateInvalidException("ERROR"));
 

@@ -10,8 +10,11 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,15 +34,18 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -177,7 +183,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ResponseEntity<Object> updateConfirmationStatement(Transaction transaction, String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) throws ServiceException, NewConfirmationDateInvalidException {
+    public ResponseEntity<Object> updateConfirmationStatement(Transaction transaction, String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         // Check Submission exists
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
@@ -186,8 +192,17 @@ public class ConfirmationStatementService {
             ApiLogger.info(String.format("%s: Confirmation Statement Submission found. About to update",  submission.get().getId()));
 
             isValidNewConfirmationDate(transaction, confirmationStatementSubmissionJson);
-
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
+
+            isValidSicCodes(confirmationStatementSubmissionJson.getData());
+
+            ApiLogger.info("Mapped SIC codes: " + dao.getData().getSicCodes());
+
+            if (dao.getData().getSicCodeData() == null) {
+                dao.getData().setSicCodeData(new SicCodeDataDao());
+            }
+            dao.getData().getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
+
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
             return ResponseEntity.ok(savedResponse);
@@ -394,4 +409,28 @@ public class ConfirmationStatementService {
         }
         return isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate());
     }
+    static void isValidSicCodes(ConfirmationStatementSubmissionDataJson jsonData) throws SicCodeInvalidException {
+        if (jsonData == null || jsonData.getSicCodeData() == null || 
+            jsonData.getSicCodeData().getSicCode() == null) {
+            return;
+        }
+
+        List<SicCodeJson> newSicCodes = jsonData.getSicCodeData().getSicCode(); 
+        Set<String> uniqueSicCodes = new HashSet<>();
+
+        if (newSicCodes == null || newSicCodes.isEmpty()) {
+            throw new SicCodeInvalidException("At least one SIC Code must be associated.");
+        }
+
+        if (newSicCodes.size() > 4) {
+            throw new SicCodeInvalidException("Maximum of 4 SIC Codes must be associated");
+        }
+
+        for (SicCodeJson code : newSicCodes) {
+            if (!uniqueSicCodes.add(code.getCode())) {
+                throw new SicCodeInvalidException("Can not have duplicate SIC Codes.");
+            }
+        }
+    }
+
 }

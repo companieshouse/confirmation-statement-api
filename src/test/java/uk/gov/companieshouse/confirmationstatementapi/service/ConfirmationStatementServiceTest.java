@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -17,6 +18,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIM
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -47,13 +49,18 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
@@ -282,9 +289,15 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void updateConfirmationSubmission() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateConfirmationSubmission() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         // GIVEN
+        var sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setData(new ConfirmationStatementSubmissionDataDao());
         confirmationStatementSubmission.setId(SUBMISSION_ID);
 
         when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(confirmationStatementSubmission);
@@ -307,11 +320,12 @@ class ConfirmationStatementServiceTest {
             "2025-03-2",
             "2025-5-02",
     })
-    void updateConfirmationSubmissionWithNewConfirmationStatementDate(String inputStringDate) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException {
+    void updateConfirmationSubmissionWithNewConfirmationStatementDate(String inputStringDate) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException, SicCodeInvalidException {
         // GIVEN
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         confirmationStatementSubmissionJson.getData().setNewConfirmationDate(inputStringDate);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setData(new ConfirmationStatementSubmissionDataDao());
 
         // WHEN
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
@@ -353,7 +367,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void updateConfirmationSubmissionNotFound() throws ServiceException, NewConfirmationDateInvalidException  {
+    void updateConfirmationSubmissionNotFound() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException  {
         // GIVEN
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
 
@@ -896,6 +910,115 @@ class ConfirmationStatementServiceTest {
         assertEquals(expectedResult, validationStatusResponse.isValid());
     }
 
+    @Test
+    void updateConfirmationStatementUpdateSicCodes() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
+        // Given
+        var existingDao = new ConfirmationStatementSubmissionDao();
+        existingDao.setId(SUBMISSION_ID);
+
+        var updatedDao = new ConfirmationStatementSubmissionDao();
+        updatedDao.setId(SUBMISSION_ID);
+
+        var updatedData = MockConfirmationStatementSubmissionData.getMockDaoData();
+        updatedData.setSicCodes(List.of("12345", "67890"));
+        updatedDao.setData(updatedData);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(existingDao));
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(updatedDao);
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(updatedDao);
+
+        // When
+        var response = confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        // Then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(confirmationStatementSubmissionsRepository).save(submissionCaptor.capture());
+
+        var savedDao = submissionCaptor.getValue();
+        assertEquals(SUBMISSION_ID, savedDao.getId());
+        assertNotNull(savedDao.getData());
+        assertEquals(List.of("12345", "67890"), savedDao.getData().getSicCodes());
+    }
+
+    @Test
+    void shouldPassWithUnqiueSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12121", "21212").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertDoesNotThrow(() -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void shouldFailWithEmptySicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void shouldFailWithMoreThanFourSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12121", "21212", "55661").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void shouldFailWithDuplicateSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12345").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void testGetDescription() {
+        SicCodeDao sicCodeDao = new SicCodeDao();
+        sicCodeDao.setDescription("TEST DESCRIPTION");
+        assertEquals("TEST DESCRIPTION", sicCodeDao.getDescription());
+    }
+
+    @Test
+    void testSicCodeJsonGetDescription() {
+        SicCodeJson sicCodeJson = new SicCodeJson();
+        sicCodeJson.setDescription("TEST DESCRIPTION");
+
+        assertEquals("TEST DESCRIPTION", sicCodeJson.getDescription());
+    }
+    
+    @Test
+    void testGetSicCodesFromSicCodeDataDao() {
+        SicCodeDataDao sicCodeDataDao = new SicCodeDataDao();
+        List<String> codes = List.of("123");
+        sicCodeDataDao.setSicCodes(codes);
+
+        assertEquals(codes, sicCodeDataDao.getSicCodes());
+    }
+
+    
     private CompanyProfileApi getTestCompanyProfileApi() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
