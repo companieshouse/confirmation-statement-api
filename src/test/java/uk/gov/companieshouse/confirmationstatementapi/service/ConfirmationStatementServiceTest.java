@@ -290,6 +290,11 @@ class ConfirmationStatementServiceTest {
     @Test
     void updateConfirmationSubmission() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         // GIVEN
+        var sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setData(new ConfirmationStatementSubmissionDataDao());
         confirmationStatementSubmission.setId(SUBMISSION_ID);

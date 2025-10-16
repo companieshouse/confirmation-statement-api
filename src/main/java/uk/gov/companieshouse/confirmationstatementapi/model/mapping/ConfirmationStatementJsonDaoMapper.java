@@ -21,12 +21,12 @@ public interface ConfirmationStatementJsonDaoMapper {
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateLocalDateToString")
-      @Mapping(target = "data.sicCodeData", ignore = true)
+      @Mapping(source = "data.sicCodeData", target = "data.sicCodeData")
       ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmissionDao confirmationStatementSubmissionDao);
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateStringToLocalDate")
-      @Mapping(target = "data.sicCodeData", ignore = true)
+      @Mapping(source = "data.sicCodeData", target = "data.sicCodeData")
       @Mapping(source = "data.sicCodeData.sicCode", target = "data.sicCodes", qualifiedByName = "extractSicCodes")
       ConfirmationStatementSubmissionDao jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson);
 
