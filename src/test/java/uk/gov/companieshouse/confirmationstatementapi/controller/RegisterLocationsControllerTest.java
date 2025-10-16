@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 class RegisterLocationsControllerTest {
 
     private static final String TRANSACTION_ID = "GFEDCBA";
+    private static final String CONFIRMATION_STATEMENT_ID = "ignored";
     private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @Mock
@@ -36,7 +37,7 @@ class RegisterLocationsControllerTest {
     void testGetRegisterLocationsOKResponse() throws ServiceException {
         var registerLocations = Arrays.asList(new RegisterLocationJson(), new RegisterLocationJson());
         when(regLocService.getRegisterLocations(transaction.getCompanyNumber())).thenReturn(registerLocations);
-        var response = regLocController.getRegisterLocations(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = regLocController.getRegisterLocations(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(registerLocations, response.getBody());
@@ -45,7 +46,7 @@ class RegisterLocationsControllerTest {
     @Test
     void testGetRegisterLocationsServiceException() throws ServiceException {
         when(regLocService.getRegisterLocations(transaction.getCompanyNumber())).thenThrow(new ServiceException("Internal Server Error"));
-        var response = regLocController.getRegisterLocations(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = regLocController.getRegisterLocations(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -54,7 +55,7 @@ class RegisterLocationsControllerTest {
     void testGetRegisterLocationsUncheckedException() throws ServiceException {
         var runtimeException = new RuntimeException("Runtime Error");
         when(regLocService.getRegisterLocations(transaction.getCompanyNumber())).thenThrow(runtimeException);
-        var thrown = assertThrows(Exception.class, () -> regLocController.getRegisterLocations(transaction, TRANSACTION_ID, ERIC_REQUEST_ID));
+        var thrown = assertThrows(Exception.class, () -> regLocController.getRegisterLocations(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID));
 
         assertEquals(runtimeException, thrown);
     }

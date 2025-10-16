@@ -42,9 +42,9 @@ class CompanyOfficerValidationTest {
     @BeforeEach
     void init() {
         OFFICER_LIST.clear();
-        CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
-        MOCK_OFFICER.setOfficerRole(OfficerRoleApi.DIRECTOR);
-        OFFICER_LIST.add(MOCK_OFFICER);
+        CompanyOfficerApi mockOfficer = new CompanyOfficerApi();
+        mockOfficer.setOfficerRole(OfficerRoleApi.DIRECTOR);
+        OFFICER_LIST.add(mockOfficer);
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
     }
 
@@ -63,9 +63,9 @@ class CompanyOfficerValidationTest {
     void validateThrowsExceptionOnSingleOfficerCompanyWithSecretaryWithMultipleOfficerJourneyFlagOff() throws ServiceException {
         companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         OFFICER_LIST.clear();
-        CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
-        MOCK_OFFICER.setOfficerRole(OfficerRoleApi.SECRETARY);
-        OFFICER_LIST.add(MOCK_OFFICER);
+        CompanyOfficerApi mockOfficer = new CompanyOfficerApi();
+        mockOfficer.setOfficerRole(OfficerRoleApi.SECRETARY);
+        OFFICER_LIST.add(mockOfficer);
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 
@@ -192,9 +192,9 @@ class CompanyOfficerValidationTest {
     void isOfficerDirectorReturnsFalseForCompanyWithOneSecretary() {
         companyOfficerValidation = new CompanyOfficerValidation(officerService,false);
         OFFICER_LIST.clear();
-        CompanyOfficerApi MOCK_OFFICER = new CompanyOfficerApi();
-        MOCK_OFFICER.setOfficerRole(OfficerRoleApi.SECRETARY);
-        OFFICER_LIST.add(MOCK_OFFICER);
+        CompanyOfficerApi mockOfficer = new CompanyOfficerApi();
+        mockOfficer.setOfficerRole(OfficerRoleApi.SECRETARY);
+        OFFICER_LIST.add(mockOfficer);
         mockOfficers.setItems(OFFICER_LIST);
         mockOfficers.setActiveCount((long) OFFICER_LIST.size());
 

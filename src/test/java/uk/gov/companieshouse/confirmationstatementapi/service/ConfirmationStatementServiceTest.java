@@ -125,7 +125,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         ReflectionTestUtils.setField(confirmationStatementService, "isValidationStatusEnabled", true);
-        Transaction transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -158,7 +157,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createPayableResourceConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -199,7 +197,6 @@ class ConfirmationStatementServiceTest {
     void doesNotCheckPaymentWhenFeatureFlaggedOff() throws ServiceException, CompanyNotFoundException {
         // GIVEN
         ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", false);
-        Transaction transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -227,7 +224,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementFailingStatusValidation() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("FailureValue");
@@ -252,7 +248,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementExistingStatementError() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         transaction.setId("abc");
         Resource resource = new Resource();
@@ -279,7 +274,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementCompanyNotFound() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
 

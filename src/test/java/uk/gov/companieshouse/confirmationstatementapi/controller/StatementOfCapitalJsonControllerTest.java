@@ -29,26 +29,27 @@ class StatementOfCapitalJsonControllerTest {
     private StatementOfCapitalController statementOfCapitalController;
 
     private static final String TRANSACTION_ID = "GFEDCBA";
+    private static final String CONFIRMATION_STATEMENT_ID = "ignored";
     private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @Test
     void getStatementOfCapital() throws ServiceException, StatementOfCapitalNotFoundException {
         when(statementOfCapitalService.getStatementOfCapital(transaction.getCompanyNumber())).thenReturn(new StatementOfCapitalJson());
-        var response = statementOfCapitalController.getStatementOfCapital(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = statementOfCapitalController.getStatementOfCapital(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     void getStatementOfCapitalServiceException() throws ServiceException, StatementOfCapitalNotFoundException {
         when(statementOfCapitalService.getStatementOfCapital(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
-        var response = statementOfCapitalController.getStatementOfCapital(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = statementOfCapitalController.getStatementOfCapital(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
     void getStatementOfCapitalStatementOfCapitalNotFoundException() throws ServiceException, StatementOfCapitalNotFoundException {
         when(statementOfCapitalService.getStatementOfCapital(transaction.getCompanyNumber())).thenThrow(StatementOfCapitalNotFoundException.class);
-        var response = statementOfCapitalController.getStatementOfCapital(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = statementOfCapitalController.getStatementOfCapital(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 

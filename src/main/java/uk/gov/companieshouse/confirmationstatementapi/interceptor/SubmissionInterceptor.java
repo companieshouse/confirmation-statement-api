@@ -34,6 +34,7 @@ public class SubmissionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        @SuppressWarnings("unchecked")
         final Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var submissionId = pathVariables.get(CONFIRMATION_STATEMENT_ID_KEY);

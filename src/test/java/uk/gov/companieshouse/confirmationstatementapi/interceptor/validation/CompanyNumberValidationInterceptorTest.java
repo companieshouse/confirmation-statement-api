@@ -62,6 +62,10 @@ class CompanyNumberValidationInterceptorTest {
     @ParameterizedTest
     @MethodSource("invalidStrings")
     void preHandleTrueForInvalidStrings(String company) {
+        preHandleForInvalidStrings(company);
+    }
+
+    private void preHandleForInvalidStrings(String company) {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 
@@ -75,14 +79,7 @@ class CompanyNumberValidationInterceptorTest {
     @ParameterizedTest
     @MethodSource("blankStrings")
     void preHandleFalseForBlankString(String company) {
-        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
-        Object mockHandler = new Object();
-
-        var pathParams = new HashMap<String, String>();
-        pathParams.put(COMPANY_NUMBER, company);
-        when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
-
-        assertFalse(companyNumberValidationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
+        preHandleForInvalidStrings(company);
     }
 
 }

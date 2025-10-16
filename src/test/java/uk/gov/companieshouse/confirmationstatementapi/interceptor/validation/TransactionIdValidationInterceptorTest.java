@@ -41,7 +41,7 @@ class TransactionIdValidationInterceptorTest {
     }
 
     @Test
-    void preHandleTrueForStringWithSpecialChars() throws Exception {
+    void preHandleTrueForStringWithSpecialChars() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 
@@ -54,7 +54,7 @@ class TransactionIdValidationInterceptorTest {
     }
 
     @Test
-    void preHandleTrueForFiftyLengthString() throws Exception {
+    void preHandleTrueForFiftyLengthString() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 

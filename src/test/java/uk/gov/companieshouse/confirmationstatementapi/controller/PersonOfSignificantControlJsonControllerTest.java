@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 class PersonOfSignificantControlJsonControllerTest {
 
     private static final String TRANSACTION_ID = "GFEDCBA";
+    private static final String CONFIRMATION_STATEMENT_ID = "ignored";
     private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
 
     @Mock
@@ -37,7 +38,7 @@ class PersonOfSignificantControlJsonControllerTest {
     void testGetPersonsOfSignificantControlOKResponse() throws ServiceException {
         var pscs = Arrays.asList(new PersonOfSignificantControlJson(), new PersonOfSignificantControlJson());
         when(pscService.getPSCsFromOracle(transaction.getCompanyNumber())).thenReturn(pscs);
-        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(pscs, response.getBody());
@@ -48,7 +49,7 @@ class PersonOfSignificantControlJsonControllerTest {
         when(transaction.getCompanyNumber()).thenReturn("\n\r\t12345678");
         var pscs = Arrays.asList(new PersonOfSignificantControlJson(), new PersonOfSignificantControlJson());
         when(pscService.getPSCsFromOracle("___12345678")).thenReturn(pscs);
-        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(pscs, response.getBody());
@@ -57,7 +58,7 @@ class PersonOfSignificantControlJsonControllerTest {
     @Test
     void testGetPersonsOfSignificantControlServiceException() throws ServiceException {
         when(pscService.getPSCsFromOracle(transaction.getCompanyNumber())).thenThrow(new ServiceException("Message"));
-        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -66,7 +67,7 @@ class PersonOfSignificantControlJsonControllerTest {
     void testGetPersonsOfSignificantControlUncheckedException() throws ServiceException {
         var runtimeException = new RuntimeException("Message");
         when(pscService.getPSCsFromOracle(transaction.getCompanyNumber())).thenThrow(runtimeException);
-        var thrown = assertThrows(Exception.class, () -> personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, ERIC_REQUEST_ID));
+        var thrown = assertThrows(Exception.class, () -> personsOfSignificantControlController.getPersonsOfSignificantControl(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID));
 
         assertEquals(runtimeException, thrown);
     }

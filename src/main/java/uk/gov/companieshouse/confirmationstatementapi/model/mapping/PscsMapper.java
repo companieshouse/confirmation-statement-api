@@ -1,18 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.model.common.DateOfBirth;
-import uk.gov.companieshouse.api.model.company.PersonOfSignificantControl;
-import uk.gov.companieshouse.api.model.psc.NameElementsApi;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
-
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+import uk.gov.companieshouse.api.model.common.DateOfBirth;
+import uk.gov.companieshouse.api.model.company.PersonOfSignificantControl;
+import uk.gov.companieshouse.api.model.psc.NameElementsApi;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.PersonOfSignificantControlJson;
 
 @Component
 public class PscsMapper {
@@ -25,7 +25,7 @@ public class PscsMapper {
         }
         return pscList.stream()
                .map(this::mapToPscJson)
-               .collect(Collectors.toList());
+               .toList();
     }
 
     private PersonOfSignificantControlJson mapToPscJson(PersonOfSignificantControl psc) {
@@ -93,7 +93,7 @@ public class PscsMapper {
 
         Arrays.stream(names).forEach(name -> {
             if (StringUtils.isNotBlank(name)) {
-                if (fullName.length() > 0) {
+                if (!fullName.isEmpty()) {
                     fullName.append(" ");
                 }
                 fullName.append(name);

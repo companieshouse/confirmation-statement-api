@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.confirmationstatementapi.interceptor;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,16 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 
 @ExtendWith(MockitoExtension.class)
 class FilingInterceptorTest {
@@ -39,7 +39,7 @@ class FilingInterceptorTest {
     }
 
     @Test
-    void preHandleClosed() throws IOException {
+    void preHandleClosed() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 
@@ -49,7 +49,7 @@ class FilingInterceptorTest {
     }
 
     @Test
-    void preHandleOpen() throws IOException {
+    void preHandleOpen() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 
@@ -60,7 +60,7 @@ class FilingInterceptorTest {
     }
 
     @Test
-    void preHandleNoTransaction() throws IOException {
+    void preHandleNoTransaction() {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
         Object mockHandler = new Object();
 

@@ -1,5 +1,9 @@
 package uk.gov.companieshouse.confirmationstatementapi.controller;
 
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
@@ -14,18 +19,19 @@ import uk.gov.companieshouse.confirmationstatementapi.service.CompanyProfileServ
 import uk.gov.companieshouse.confirmationstatementapi.service.EligibilityService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-import java.util.HashMap;
-
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
-
 @RestController
 public class EligibilityController {
 
-    @Autowired
-    private CompanyProfileService companyProfileService;
+    private final CompanyProfileService companyProfileService;
+
+    private final EligibilityService eligibilityService;
 
     @Autowired
-    private EligibilityService eligibilityService;
+    public EligibilityController(CompanyProfileService companyProfileService, EligibilityService eligibilityService) {
+        super();
+        this.companyProfileService = companyProfileService;
+        this.eligibilityService = eligibilityService;
+    }
 
     @GetMapping("/confirmation-statement/company/{company-number}/eligibility")
     public ResponseEntity<CompanyValidationResponse> getEligibility(@PathVariable("company-number") String companyNumber,

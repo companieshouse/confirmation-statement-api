@@ -1,15 +1,14 @@
 package uk.gov.companieshouse.confirmationstatementapi.utils;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ApiLoggerTest {
@@ -18,9 +17,6 @@ class ApiLoggerTest {
     private static final String TEST_MESSAGE = "TEST";
     private static final String LOG_MAP_KEY = "COMPANY_NUMBER";
     private static final String LOG_MAP_VALUE = "00006400";
-
-    @InjectMocks
-    private static ApiLogger apiLogger;
 
     private Map<String, Object> logMap;
 
@@ -32,7 +28,7 @@ class ApiLoggerTest {
 
     @Test
     void testDebugContextLoggingDoesNotModifyLogMap() {
-        apiLogger.debugContext(CONTEXT, TEST_MESSAGE, logMap);
+        ApiLogger.debugContext(CONTEXT, TEST_MESSAGE, logMap);
 
         assertEquals(1, logMap.size());
         assertEquals(LOG_MAP_VALUE, logMap.get(LOG_MAP_KEY));
@@ -40,7 +36,7 @@ class ApiLoggerTest {
 
     @Test
     void testInfoLoggingDoesNotModifyLogMap() {
-        apiLogger.info(TEST_MESSAGE, logMap);
+        ApiLogger.info(TEST_MESSAGE, logMap);
 
         assertEquals(1, logMap.size());
         assertEquals(LOG_MAP_VALUE, logMap.get(LOG_MAP_KEY));
@@ -48,7 +44,7 @@ class ApiLoggerTest {
 
     @Test
     void testInfoContextLoggingDoesNotModifyLogMap() {
-        apiLogger.infoContext(CONTEXT, TEST_MESSAGE, logMap);
+        ApiLogger.infoContext(CONTEXT, TEST_MESSAGE, logMap);
 
         assertEquals(1, logMap.size());
         assertEquals(LOG_MAP_VALUE, logMap.get(LOG_MAP_KEY));
@@ -56,7 +52,7 @@ class ApiLoggerTest {
 
     @Test
     void testErrorContextLoggingDoesNotModifyLogMap() {
-        apiLogger.errorContext(CONTEXT, TEST_MESSAGE, new Exception("TEST"), logMap);
+        ApiLogger.errorContext(CONTEXT, TEST_MESSAGE, new Exception("TEST"), logMap);
 
         assertEquals(1, logMap.size());
         assertEquals(LOG_MAP_VALUE, logMap.get(LOG_MAP_KEY));

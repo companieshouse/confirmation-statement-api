@@ -40,34 +40,43 @@ public class InterceptorConfig implements WebMvcConfigurer {
         PRIVATE,
         COSTS
     };
-    static final String[] NOT_COMPANY_AUTH_ENDPOINTS = (String[]) ArrayUtils.addAll(
+    static final String[] NOT_COMPANY_AUTH_ENDPOINTS = ArrayUtils.addAll(
         USER_AUTH_ENDPOINTS,
         INTERNAL_AUTH_ENDPOINTS
     );
 
-    @Autowired
-    private CompanyNumberValidationInterceptor companyNumberValidationInterceptor;
+    private final CompanyNumberValidationInterceptor companyNumberValidationInterceptor;
+
+    private final TransactionIdValidationInterceptor transactionIdValidationInterceptor;
+
+    private final TransactionInterceptor transactionInterceptor;
+
+    private final LoggingInterceptor loggingInterceptor;
+
+    private final FilingInterceptor filingInterceptor;
+
+    private final InternalUserInterceptor internalUserInterceptor;
+
+    private final SubmissionIdValidationInterceptor submissionIdValidationInterceptor;
+
+    private final SubmissionInterceptor submissionInterceptor;
 
     @Autowired
-    private TransactionIdValidationInterceptor transactionIdValidationInterceptor;
-
-    @Autowired
-    private TransactionInterceptor transactionInterceptor;
-
-    @Autowired
-    private LoggingInterceptor loggingInterceptor;
-
-    @Autowired
-    private FilingInterceptor filingInterceptor;
-
-    @Autowired
-    private InternalUserInterceptor internalUserInterceptor;
-
-    @Autowired
-    private SubmissionIdValidationInterceptor submissionIdValidationInterceptor;
-
-    @Autowired
-    private SubmissionInterceptor submissionInterceptor;
+    public InterceptorConfig(CompanyNumberValidationInterceptor companyNumberValidationInterceptor,
+            TransactionIdValidationInterceptor transactionIdValidationInterceptor, TransactionInterceptor transactionInterceptor,
+            LoggingInterceptor loggingInterceptor, FilingInterceptor filingInterceptor,
+            InternalUserInterceptor internalUserInterceptor, SubmissionIdValidationInterceptor submissionIdValidationInterceptor,
+            SubmissionInterceptor submissionInterceptor) {
+        super();
+        this.companyNumberValidationInterceptor = companyNumberValidationInterceptor;
+        this.transactionIdValidationInterceptor = transactionIdValidationInterceptor;
+        this.transactionInterceptor = transactionInterceptor;
+        this.loggingInterceptor = loggingInterceptor;
+        this.filingInterceptor = filingInterceptor;
+        this.internalUserInterceptor = internalUserInterceptor;
+        this.submissionIdValidationInterceptor = submissionIdValidationInterceptor;
+        this.submissionInterceptor = submissionInterceptor;
+    }
 
     /**
      * Setup the interceptors to run against endpoints when the endpoints are called

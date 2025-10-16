@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 class ShareholderJsonControllerTest {
 
     private static final String ERIC_REQUEST_ID = "XaBcDeF12345";
+    private static final String CONFIRMATION_STATEMENT_ID = "ignored";
     private static final String TRANSACTION_ID = "GFEDCBA";
 
     @Mock
@@ -37,7 +38,7 @@ class ShareholderJsonControllerTest {
     void testGetShareholderOKResponse() throws ServiceException {
         var shareholder = Arrays.asList(new ShareholderJson(), new ShareholderJson());
         when(shareholderService.getShareholders(transaction.getCompanyNumber())).thenReturn(shareholder);
-        var response = shareholderController.getShareholders(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = shareholderController.getShareholders(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(shareholder, response.getBody());
@@ -46,7 +47,7 @@ class ShareholderJsonControllerTest {
     @Test
     void testGetShareholderServiceException() throws ServiceException {
         when(shareholderService.getShareholders(transaction.getCompanyNumber())).thenThrow(new ServiceException("Internal Server Error"));
-        var response = shareholderController.getShareholders(transaction, TRANSACTION_ID, ERIC_REQUEST_ID);
+        var response = shareholderController.getShareholders(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -55,7 +56,7 @@ class ShareholderJsonControllerTest {
     void testGetShareholderUncheckedException() throws ServiceException {
         var runtimeException = new RuntimeException("Runtime Error");
         when(shareholderService.getShareholders(transaction.getCompanyNumber())).thenThrow(runtimeException);
-        var thrown = assertThrows(Exception.class, () -> shareholderController.getShareholders(transaction, TRANSACTION_ID, ERIC_REQUEST_ID));
+        var thrown = assertThrows(Exception.class, () -> shareholderController.getShareholders(transaction, TRANSACTION_ID, CONFIRMATION_STATEMENT_ID, ERIC_REQUEST_ID));
 
         assertEquals(runtimeException, thrown);
     }

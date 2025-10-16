@@ -45,7 +45,7 @@ class CompanyTypeCS01FilingNotRequiredValidationTest {
     }
 
     @Test
-    void validateDoesNotThrowOnNullType() throws EligibilityException {
+    void validateDoesNotThrowOnNullType() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setType(null);
 

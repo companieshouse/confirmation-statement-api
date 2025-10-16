@@ -11,8 +11,13 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.StatementOfCapit
 @Service
 public class StatementOfCapitalService {
 
+    private final OracleQueryClient oracleQueryClient;
+
     @Autowired
-    private OracleQueryClient oracleQueryClient;
+    public StatementOfCapitalService(OracleQueryClient oracleQueryClient) {
+        super();
+        this.oracleQueryClient = oracleQueryClient;
+    }
 
     public StatementOfCapitalJson getStatementOfCapital(String companyNumber) throws ServiceException, StatementOfCapitalNotFoundException {
         return oracleQueryClient.getStatementOfCapitalData(companyNumber);

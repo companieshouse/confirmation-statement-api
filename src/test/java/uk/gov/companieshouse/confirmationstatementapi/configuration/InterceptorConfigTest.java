@@ -60,7 +60,7 @@ class InterceptorConfigTest {
     private CRUDAuthenticationInterceptor crudAuthenticationInterceptor;
 
     @InjectMocks
-    private InterceptorConfig interceptorConfig = new InterceptorConfig();
+    private InterceptorConfig interceptorConfig;
 
     @Test
     void addInterceptorsTest() {
