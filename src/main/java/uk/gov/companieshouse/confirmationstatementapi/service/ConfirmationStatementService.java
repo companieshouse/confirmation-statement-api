@@ -38,6 +38,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFou
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
@@ -195,6 +196,11 @@ public class ConfirmationStatementService {
             isValidSicCodes(confirmationStatementSubmissionJson.getData());
 
             ApiLogger.info("Mapped SIC codes: " + dao.getData().getSicCodes());
+
+            if (dao.getData().getSicCodeData() == null) {
+                dao.getData().setSicCodeData(new SicCodeDataDao());
+            }
+            dao.getData().getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
 
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
@@ -380,7 +386,8 @@ public class ConfirmationStatementService {
     }
 
     static void isValidSicCodes(ConfirmationStatementSubmissionDataJson jsonData) throws SicCodeInvalidException {
-        if (jsonData == null || jsonData.getSicCodeData() == null) {
+        if (jsonData == null || jsonData.getSicCodeData() == null || 
+            jsonData.getSicCodeData().getSicCode() == null) {
             return;
         }
 
