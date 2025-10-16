@@ -22,6 +22,7 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
 
 @Service
@@ -72,7 +73,12 @@ public class FilingService {
             LocalDate madeUpToDate = submissionData.getMadeUpToDate();
 
             data.put("confirmation_statement_date", madeUpToDate );
-            data.put("trading_on_market", !submissionData.getTradingStatusData().getTradingStatusAnswer());
+
+            TradingStatusDataJson tradingStatusData = submissionData.getTradingStatusData();
+            if (tradingStatusData != null && tradingStatusData.getTradingStatusAnswer() != null) {
+                data.put("trading_on_market", !tradingStatusData.getTradingStatusAnswer());
+            }
+
             data.put("dtr5_ind", false);
 
             RegisteredEmailAddressDataJson registeredEmailAddressData = submissionData.getRegisteredEmailAddressData();

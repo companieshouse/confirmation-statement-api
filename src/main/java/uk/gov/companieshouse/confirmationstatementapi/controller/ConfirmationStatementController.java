@@ -100,6 +100,7 @@ public class ConfirmationStatementController {
 
     @GetMapping("/{confirmation_statement_id}/validation-status")
     public ResponseEntity<Object> getValidationStatus(
+            @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String submissionId,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
@@ -110,7 +111,7 @@ public class ConfirmationStatementController {
         ApiLogger.infoContext(requestId, "Calling service to get validation status", logMap);
 
         try {
-            var validationStatusResponse = confirmationStatementService.isValid(submissionId);
+            var validationStatusResponse = confirmationStatementService.isValid(transaction, submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (SubmissionNotFoundException e) {
             ApiLogger.errorContext(requestId,e.getMessage(), e, logMap);
