@@ -244,6 +244,37 @@ class FilingServiceTest {
         assertTrue(submissionNotFoundException.getMessage().contains("Submission contains no data " + CONFIRMATION_STATEMENT_ID));
     }
 
+    @Test
+    void testWhenPayableSubmissionIsReturnedSuccessfullyForLpJourney() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException {
+        paymentGetMocks();
+        getTransactionPaymentLinkMock();
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJsonForLpJourney();
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
+        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        assertEquals("Confirmation statement made on 1 October 2024 with no updates", filing.getDescription());
+        assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
+        assertTrue((Boolean) filing.getData().get("accept_lawful_purpose_statement"));
+        assertEquals("payment-method", filing.getData().get("payment_method"));
+        assertEquals("reference", filing.getData().get("payment_reference"));
+    }
+
+    private static ConfirmationStatementSubmissionJson buildSubmissionJsonForLpJourney() {
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
+        ConfirmationStatementSubmissionDataJson confirmationStatementSubmissionDataJson = new ConfirmationStatementSubmissionDataJson();
+
+        confirmationStatementSubmissionDataJson.setMadeUpToDate(LocalDate.of(2024, 10, 1));
+        confirmationStatementSubmissionDataJson.setAcceptLawfulPurposeStatement(Boolean.TRUE);
+        confirmationStatementSubmissionDataJson.setNewConfirmationDate("2025-10-01");
+
+        confirmationStatementSubmissionJson.setData(confirmationStatementSubmissionDataJson);
+
+        return confirmationStatementSubmissionJson;
+    }
+
     private static ConfirmationStatementSubmissionJson buildSubmissionJson(String initialRea, String confirmedRea) {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
 

@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_TYPE;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -212,7 +213,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ValidationStatusResponse isValid(String submissionId) throws SubmissionNotFoundException {
+    public ValidationStatusResponse isValid(Transaction transaction, String submissionId) throws ServiceException, SubmissionNotFoundException {
         Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
 
         if (submissionJsonOptional.isPresent()) {
@@ -223,17 +224,16 @@ public class ConfirmationStatementService {
             if (submissionData == null) {
                 validationStatus.setValid(false);
             } else {
-                boolean isValid = isConfirmed(submissionData.getShareholderData()) &&
-                        isConfirmed(submissionData.getSicCodeData()) &&
-                        isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
-                        isConfirmed(submissionData.getStatementOfCapitalData()) &&
-                        isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
-                        isConfirmed(submissionData.getPersonsSignificantControlData()) &&
-                        isConfirmed(submissionData.getRegisterLocationsData()) &&
-                        isConfirmed(submissionData.getRegisteredEmailAddressData(), submissionData.getMadeUpToDate()) &&
-                        isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate()) &&
-                        Boolean.TRUE.equals(submissionData.getTradingStatusData().getTradingStatusAnswer()) &&
-                        isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
+                boolean isValid;
+                CompanyProfileApi companyProfile = getCompanyProfile(transaction);
+                if (companyProfile != null &&
+                        companyProfile.getType() != null &&
+                        companyProfile.getType().equals(LIMITED_PARTNERSHIP_TYPE)) {
+
+                    isValid = isValidForLimitedPartnershipJourney(submissionData);
+                } else {
+                    isValid = isValidForCsNoChangeJourney(submissionData);
+                }
                 validationStatus.setValid(isValid);
             }
 
@@ -385,6 +385,31 @@ public class ConfirmationStatementService {
         } catch (DateTimeParseException e) {
             throw new NewConfirmationDateInvalidException("Confirmation statement date must be a real date");
         }
+    }
+
+    public boolean isValidForCsNoChangeJourney(ConfirmationStatementSubmissionDataJson submissionData) {
+        if (submissionData == null) {
+            return false;
+        }
+
+        return isConfirmed(submissionData.getShareholderData()) &&
+                isConfirmed(submissionData.getSicCodeData()) &&
+                isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
+                isConfirmed(submissionData.getStatementOfCapitalData()) &&
+                isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
+                isConfirmed(submissionData.getPersonsSignificantControlData()) &&
+                isConfirmed(submissionData.getRegisterLocationsData()) &&
+                isConfirmed(submissionData.getRegisteredEmailAddressData(), submissionData.getMadeUpToDate()) &&
+                isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate()) &&
+                Boolean.TRUE.equals(submissionData.getTradingStatusData().getTradingStatusAnswer()) &&
+                isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
+    }
+
+    public boolean isValidForLimitedPartnershipJourney(ConfirmationStatementSubmissionDataJson submissionData) {
+        if (submissionData == null) {
+            return false;
+        }
+        return isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate());
     }
 
     static void isValidSicCodes(ConfirmationStatementSubmissionDataJson jsonData) throws SicCodeInvalidException {

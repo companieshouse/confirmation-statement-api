@@ -143,16 +143,16 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getTrueValidationStatus() throws SubmissionNotFoundException {
+    void getTrueValidationStatus() throws SubmissionNotFoundException, ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
-        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
+        when(confirmationStatementService.isValid(transaction, SUBMISSION_ID)).thenReturn(validationStatus);
+        var response = confirmationStatementController.getValidationStatus(transaction, SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
 
     @Test
-    void getFalseValidationStatus() throws SubmissionNotFoundException {
+    void getFalseValidationStatus() throws SubmissionNotFoundException, ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(false);
         ValidationStatusError[] errors = new ValidationStatusError[1];
@@ -160,18 +160,18 @@ class ConfirmationStatementControllerTest {
         error.setType("ch:validation");
         errors[0] = error;
         validationStatus.setValidationStatusError(errors);
-        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
+        when(confirmationStatementService.isValid(transaction, SUBMISSION_ID)).thenReturn(validationStatus);
+        var response = confirmationStatementController.getValidationStatus(transaction, SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
 
     @Test
-    void getValidationStatusNotFound() throws SubmissionNotFoundException {
+    void getValidationStatusNotFound() throws SubmissionNotFoundException, ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
-        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
-        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(SUBMISSION_ID));
+        when(confirmationStatementService.isValid(transaction, SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
+        var response = confirmationStatementController.getValidationStatus(transaction, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
+        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(transaction, SUBMISSION_ID));
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
 }
