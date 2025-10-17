@@ -257,7 +257,7 @@ class FilingServiceTest {
 
         assertEquals("Confirmation statement made on 1 October 2024 with no updates", filing.getDescription());
         assertEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
-        assertEquals(Boolean.TRUE, filing.getData().get("accept_lawful_purpose_statement"));
+        assertTrue((Boolean) filing.getData().get("accept_lawful_purpose_statement"));
         assertEquals("payment-method", filing.getData().get("payment_method"));
         assertEquals("reference", filing.getData().get("payment_reference"));
     }
