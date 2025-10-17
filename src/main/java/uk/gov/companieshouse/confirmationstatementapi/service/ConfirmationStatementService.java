@@ -197,10 +197,12 @@ public class ConfirmationStatementService {
 
             ApiLogger.info("Mapped SIC codes: " + dao.getData().getSicCodes());
 
-            if (dao.getData().getSicCodeData() == null) {
-                dao.getData().setSicCodeData(new SicCodeDataDao());
+            if (dao.getData().getSicCodeData() != null && 
+                dao.getData().getSicCodeData().getSicCodes() != null && 
+                !dao.getData().getSicCodeData().getSicCodes().isEmpty()) {
+                
+                dao.getData().getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
             }
-            dao.getData().getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
 
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
