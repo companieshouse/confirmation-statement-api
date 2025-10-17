@@ -409,6 +409,7 @@ public class ConfirmationStatementService {
         }
         return isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate());
     }
+
     static void isValidSicCodes(ConfirmationStatementSubmissionDataJson jsonData) throws SicCodeInvalidException {
         if (jsonData == null || jsonData.getSicCodeData() == null || 
             jsonData.getSicCodeData().getSicCode() == null) {
