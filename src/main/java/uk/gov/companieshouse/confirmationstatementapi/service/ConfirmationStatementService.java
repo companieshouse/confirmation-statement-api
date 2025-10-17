@@ -385,7 +385,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    private boolean isValidForCsNoChangeJourney(ConfirmationStatementSubmissionDataJson submissionData) {
+    public boolean isValidForCsNoChangeJourney(ConfirmationStatementSubmissionDataJson submissionData) {
         if (submissionData == null) {
             return false;
         }
@@ -403,7 +403,7 @@ public class ConfirmationStatementService {
                 isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
     }
 
-    private boolean isValidForLimitedPartnershipJourney(ConfirmationStatementSubmissionDataJson submissionData) {
+    public boolean isValidForLimitedPartnershipJourney(ConfirmationStatementSubmissionDataJson submissionData) {
         if (submissionData == null) {
             return false;
         }

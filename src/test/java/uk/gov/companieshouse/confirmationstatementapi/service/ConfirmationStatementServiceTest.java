@@ -911,6 +911,26 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
+    void returnFalseIfMissingSubmissionDataWhenValidateLpAndNoChangeJourney(){
+
+        // WHEN
+        boolean isValidForNoChangeJourney = confirmationStatementService.isValidForCsNoChangeJourney(null);
+
+        // THEN
+        assertFalse(isValidForNoChangeJourney);
+    }
+
+    @Test
+    void returnFalseIfMissingSubmissionDataWhenValidateLpJourney(){
+
+        // WHEN
+        boolean isValidForLpjourney = confirmationStatementService.isValidForLimitedPartnershipJourney(null);
+
+        // THEN
+        assertFalse(isValidForLpjourney);
+    }
+
+    @Test
     void updateConfirmationStatementUpdateSicCodes() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         // Given
         var existingDao = new ConfirmationStatementSubmissionDao();
