@@ -60,6 +60,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeD
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
@@ -1036,6 +1037,95 @@ class ConfirmationStatementServiceTest {
         sicCodeDataDao.setSicCodes(codes);
 
         assertEquals(codes, sicCodeDataDao.getSicCodes());
+    }
+
+    @Test
+    void updateConfirmationSubmissionWhenSicCodesPresent() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
+        // GIVEN
+        var sicCodeJson1 = new SicCodeJson();
+        sicCodeJson1.setCode("12345");
+        var sicCodeJson2 = new SicCodeJson();
+        sicCodeJson2.setCode("67890");
+
+        var sicCodeDataJson = new SicCodeDataJson();
+        sicCodeDataJson.setSicCode(List.of(sicCodeJson1, sicCodeJson2));
+
+        var dataJson = confirmationStatementSubmissionJson.getData();
+        dataJson.setSicCodeData(sicCodeDataJson);
+
+        var dao = new ConfirmationStatementSubmissionDao();
+        dao.setId(SUBMISSION_ID);
+
+        var sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSicCodes(List.of("12345", "67890"));
+
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+        dao.setData(dataDao);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(dao));
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(dao);
+        when(confirmationStatementSubmissionsRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // WHEN
+        var response = confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        // THEN
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        var savedDao = (ConfirmationStatementSubmissionDao) response.getBody();
+        assertNotNull(savedDao);
+        assertEquals(SectionStatus.CONFIRMED, savedDao.getData().getSicCodeData().getSectionStatus());
+    }
+
+    @Test
+    void updateConfirmationSubmissionExistingSicCodeDataAndSetsStatus() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
+        // GIVEN: existing submission in DB
+        var existingDao = new ConfirmationStatementSubmissionDao();
+        existingDao.setId(SUBMISSION_ID);
+        existingDao.setData(new ConfirmationStatementSubmissionDataDao());
+
+        // Incoming mapped DAO with SIC codes
+        var sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSicCodes(List.of("12345", "67890"));
+
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+
+        var updatedDao = new ConfirmationStatementSubmissionDao();
+        updatedDao.setId(SUBMISSION_ID);
+        updatedDao.setData(dataDao);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(existingDao));
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(updatedDao);
+        when(confirmationStatementSubmissionsRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // WHEN
+        var response = confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        // THEN
+        var savedDao = (ConfirmationStatementSubmissionDao) response.getBody();
+        assertNotNull(savedDao);
+        assertEquals(SectionStatus.CONFIRMED, savedDao.getData().getSicCodeData().getSectionStatus());
+    }
+
+    @Test
+    void updateConfirmationSubmissionNoSetSectionStatusWhenSicCodesMissing() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
+        var sicCodeDataDao = new SicCodeDataDao();
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+
+        var dao = new ConfirmationStatementSubmissionDao();
+        dao.setId(SUBMISSION_ID);
+        dao.setData(dataDao);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(dao));
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(dao);
+        when(confirmationStatementSubmissionsRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        var savedDao = (ConfirmationStatementSubmissionDao) response.getBody();
+        assertNull(savedDao.getData().getSicCodeData().getSectionStatus());
     }
 
     
