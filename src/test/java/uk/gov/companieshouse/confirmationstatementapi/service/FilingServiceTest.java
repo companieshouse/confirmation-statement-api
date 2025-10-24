@@ -203,7 +203,7 @@ class FilingServiceTest {
     }
 
     @Test
-    void testWhenNonPayableSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
+    void testWhenNonPayableSubmissionIsReturnedSuccessfully() throws SubmissionNotFoundException, ServiceException, CompanyNotFoundException {
         transaction.getLinks().setPayment(null);
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null, null);
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
