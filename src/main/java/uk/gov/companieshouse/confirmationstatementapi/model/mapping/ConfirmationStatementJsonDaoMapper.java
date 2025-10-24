@@ -1,12 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
+
+import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
+import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +33,7 @@ public interface ConfirmationStatementJsonDaoMapper {
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateStringToLocalDate")
       @Mapping(source = "data.sicCodeData", target = "data.sicCodeData")
-      @Mapping(source = "data.sicCodeData.sicCode", target = "data.sicCodes", qualifiedByName = "extractSicCodes")
+      @Mapping(source = "data.sicCodeData.sicCode", target = "data.sicCodeData.sicCodes", qualifiedByName = "extractSicCodes")
       ConfirmationStatementSubmissionDao jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson);
 
       @Named("extractSicCodes")
@@ -38,6 +44,27 @@ public interface ConfirmationStatementJsonDaoMapper {
             return sicCodeJsonList.stream()
                         .map(SicCodeJson::getCode)
                         .toList();
+      }
+
+      @AfterMapping
+      default void enrichSicCodeData(ConfirmationStatementSubmissionJson json,
+                                    @MappingTarget ConfirmationStatementSubmissionDao dao) {
+            if (json.getData() == null || json.getData().getSicCodeData() == null) {
+                  ApiLogger.info("AfterMapping: No SIC code data found in JSON");
+                  return;
+            }                              
+            var sicCodeJsonList = json.getData().getSicCodeData().getSicCode();
+            var codes = extractSicCodes(sicCodeJsonList);
+
+            if (dao.getData().getSicCodeData() == null) {
+                  dao.getData().setSicCodeData(new SicCodeDataDao());
+            }
+
+            dao.getData().getSicCodeData().setSicCodes(codes);
+
+            if (!codes.isEmpty()) {
+                  dao.getData().getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
+            }
       }
 
       @Named("localDate")

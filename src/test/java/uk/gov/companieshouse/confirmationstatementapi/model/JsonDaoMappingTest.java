@@ -60,7 +60,7 @@ class JsonDaoMappingTest {
         sicCodeDataDao.setSicCodes(List.of(sicCode.getCode()));
         sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
         data.setSicCodeData(sicCodeDataDao);
-        data.setSicCodes(List.of(sicCode.getCode()));       
+        data.getSicCodeData().setSicCodes(List.of(sicCode.getCode()));       
         ConfirmationStatementSubmissionDao dao =
                 new ConfirmationStatementSubmissionDao(SUBMISSION_ID, data, new HashMap<>());
         ConfirmationStatementSubmissionJson json =
@@ -165,7 +165,7 @@ class JsonDaoMappingTest {
         StatementOfCapitalDataDao socDao = dao.getData().getStatementOfCapitalData();
         assertEquals(socJson.getSectionStatus(), socDao.getSectionStatus());
         List<String> expectedSicCodes = List.of("123");
-        List<String> actualSicCodes = dao.getData().getSicCodes();
+        List<String> actualSicCodes = dao.getData().getSicCodeData().getSicCodes();
         assertEquals(expectedSicCodes, actualSicCodes);
         StatementOfCapitalJson statementOfCapitalJson = socJson.getStatementOfCapital();
         StatementOfCapitalDao statementOfSubmissionCapital = socDao.getStatementOfCapital();
@@ -178,7 +178,7 @@ class JsonDaoMappingTest {
         assertEquals(statementOfCapitalJson.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
         assertEquals(statementOfCapitalJson.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
 
-        List<String> sicDao = dao.getData().getSicCodes();
+        List<String> sicDao = dao.getData().getSicCodeData().getSicCodes();
         RegisteredOfficeAddressDataJson roaJson = json.getData().getRegisteredOfficeAddressData();
         RegisteredOfficeAddressDataDao roaDao = dao.getData().getRegisteredOfficeAddressData();
         RegisteredEmailAddressDataJson reaJson = json.getData().getRegisteredEmailAddressData();
