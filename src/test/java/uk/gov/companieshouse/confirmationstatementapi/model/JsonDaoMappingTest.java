@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeD
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.statementofcapital.StatementOfCapitalDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.activedirectordetails.ActiveOfficerDetailsDataJson;
@@ -32,6 +34,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemail
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
@@ -158,6 +161,92 @@ class JsonDaoMappingTest {
     void testEmptyExtractSicCodes() {
         List<String> result = ConfirmationStatementJsonDaoMapper.extractSicCodes(List.of());
         assertEquals(List.of(), result);
+    }
+
+    @Test
+    void enrichSicCodeDataSicCodesPresent() {
+        // GIVEN
+        SicCodeJson code1 = new SicCodeJson();
+        code1.setCode("12345");
+        SicCodeJson code2 = new SicCodeJson();
+        code2.setCode("67890");
+
+        SicCodeDataJson sicCodeDataJson = new SicCodeDataJson();
+        sicCodeDataJson.setSicCode(List.of(code1, code2));
+
+        ConfirmationStatementSubmissionDataJson dataJson = new ConfirmationStatementSubmissionDataJson();
+        dataJson.setSicCodeData(sicCodeDataJson);
+
+        ConfirmationStatementSubmissionJson json = new ConfirmationStatementSubmissionJson();
+        json.setData(dataJson);
+
+        ConfirmationStatementSubmissionDao dao = new ConfirmationStatementSubmissionDao();
+        dao.setData(new ConfirmationStatementSubmissionDataDao());
+
+        // WHEN
+        confirmationStatementJsonDaoMapper.enrichSicCodeData(json, dao);
+
+        // THEN
+        assertEquals(List.of("12345", "67890"), dao.getData().getSicCodeData().getSicCodes());
+        assertEquals(SectionStatus.CONFIRMED, dao.getData().getSicCodeData().getSectionStatus());
+    }
+
+    @Test
+    void enrichSicCodeDataSicCodeListIsEmpty() {
+        // GIVEN
+        SicCodeDataJson sicCodeDataJson = new SicCodeDataJson();
+        sicCodeDataJson.setSicCode(Collections.emptyList());
+
+        ConfirmationStatementSubmissionDataJson dataJson = new ConfirmationStatementSubmissionDataJson();
+        dataJson.setSicCodeData(sicCodeDataJson);
+
+        ConfirmationStatementSubmissionJson json = new ConfirmationStatementSubmissionJson();
+        json.setData(dataJson);
+
+        ConfirmationStatementSubmissionDao dao = new ConfirmationStatementSubmissionDao();
+        dao.setData(new ConfirmationStatementSubmissionDataDao());
+
+        // WHEN
+        confirmationStatementJsonDaoMapper.enrichSicCodeData(json, dao);
+
+        // THEN
+        assertEquals(Collections.emptyList(), dao.getData().getSicCodeData().getSicCodes());
+        assertNull(dao.getData().getSicCodeData().getSectionStatus());
+    }
+
+    @Test
+    void enrichSicCodeDataJsonDataIsNull() {
+        // GIVEN
+        ConfirmationStatementSubmissionJson json = new ConfirmationStatementSubmissionJson();
+        json.setData(null);
+
+        ConfirmationStatementSubmissionDao dao = new ConfirmationStatementSubmissionDao();
+        dao.setData(new ConfirmationStatementSubmissionDataDao());
+
+        // WHEN
+        confirmationStatementJsonDaoMapper.enrichSicCodeData(json, dao);
+
+        // THEN
+        assertNull(dao.getData().getSicCodeData());
+    }
+
+    @Test
+    void enrichSicCodeDataSicCodeDataIsNull() {
+        // GIVEN
+        ConfirmationStatementSubmissionDataJson dataJson = new ConfirmationStatementSubmissionDataJson();
+        dataJson.setSicCodeData(null);
+
+        ConfirmationStatementSubmissionJson json = new ConfirmationStatementSubmissionJson();
+        json.setData(dataJson);
+
+        ConfirmationStatementSubmissionDao dao = new ConfirmationStatementSubmissionDao();
+        dao.setData(new ConfirmationStatementSubmissionDataDao());
+
+        // WHEN
+        confirmationStatementJsonDaoMapper.enrichSicCodeData(json, dao);
+
+        // THEN
+        assertNull(dao.getData().getSicCodeData());
     }
 
     private void testContentIsEqual(ConfirmationStatementSubmissionJson json, ConfirmationStatementSubmissionDao dao) {
