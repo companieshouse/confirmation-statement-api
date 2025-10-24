@@ -1,27 +1,16 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.springframework.stereotype.Component;
-
-import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
-import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 
-@Component
 @Mapper(uses = SicCodeJsonDaoMapper.class)
 public interface ConfirmationStatementJsonDaoMapper {
 

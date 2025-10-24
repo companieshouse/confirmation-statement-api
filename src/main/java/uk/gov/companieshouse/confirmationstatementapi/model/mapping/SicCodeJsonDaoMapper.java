@@ -17,7 +17,6 @@ import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 
-@Component
 @Mapper
 public interface SicCodeJsonDaoMapper {
 
