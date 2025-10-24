@@ -39,7 +39,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFou
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
@@ -195,15 +194,6 @@ public class ConfirmationStatementService {
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
 
             isValidSicCodes(confirmationStatementSubmissionJson.getData());
-
-            ApiLogger.info("Mapped SIC codes: " + dao.getData().getSicCodes());
-
-            if (dao.getData().getSicCodeData() != null && 
-                dao.getData().getSicCodeData().getSicCodes() != null && 
-                !dao.getData().getSicCodeData().getSicCodes().isEmpty()) {
-                
-                dao.getData().getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
-            }
 
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
