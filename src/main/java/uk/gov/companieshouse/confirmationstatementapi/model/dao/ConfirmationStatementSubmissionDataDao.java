@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.dao;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -51,17 +50,6 @@ public class ConfirmationStatementSubmissionDataDao {
 
     @Field("new_confirmation_date")
     private LocalDate newConfirmationDate;
-
-    @Field("sic_codes")
-    private List<String> sicCodes;
-
-    public List<String> getSicCodes() {
-        return sicCodes;
-    }
-
-    public void setSicCodes(List<String> sicCodes) {
-        this.sicCodes = sicCodes;
-    }
 
     public StatementOfCapitalDataDao getStatementOfCapitalData() {
         return statementOfCapitalData;

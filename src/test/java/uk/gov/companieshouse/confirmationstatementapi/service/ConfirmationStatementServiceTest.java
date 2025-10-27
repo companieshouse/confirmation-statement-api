@@ -127,7 +127,7 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         ReflectionTestUtils.setField(confirmationStatementService, "isValidationStatusEnabled", true);
-        Transaction transaction = new Transaction();
+        transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -160,7 +160,7 @@ class ConfirmationStatementServiceTest {
     @Test
     void createPayableResourceConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction transaction = new Transaction();
+        transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -201,7 +201,7 @@ class ConfirmationStatementServiceTest {
     void doesNotCheckPaymentWhenFeatureFlaggedOff() throws ServiceException, CompanyNotFoundException {
         // GIVEN
         ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", false);
-        Transaction transaction = new Transaction();
+        transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -229,7 +229,7 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementFailingStatusValidation() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction transaction = new Transaction();
+        transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("FailureValue");
@@ -254,7 +254,7 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementExistingStatementError() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction transaction = new Transaction();
+        transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         transaction.setId("abc");
         Resource resource = new Resource();
@@ -281,7 +281,7 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementCompanyNotFound() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        Transaction transaction = new Transaction();
+        transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
 
@@ -941,7 +941,7 @@ class ConfirmationStatementServiceTest {
         updatedDao.setId(SUBMISSION_ID);
 
         var updatedData = MockConfirmationStatementSubmissionData.getMockDaoData();
-        updatedData.setSicCodes(List.of("12345", "67890"));
+        updatedData.getSicCodeData().setSicCodes(List.of("12345", "67890"));
         updatedDao.setData(updatedData);
 
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(existingDao));
@@ -958,7 +958,7 @@ class ConfirmationStatementServiceTest {
         var savedDao = submissionCaptor.getValue();
         assertEquals(SUBMISSION_ID, savedDao.getId());
         assertNotNull(savedDao.getData());
-        assertEquals(List.of("12345", "67890"), savedDao.getData().getSicCodes());
+        assertEquals(List.of("12345", "67890"), savedDao.getData().getSicCodeData().getSicCodes());
     }
 
     @Test
@@ -974,15 +974,6 @@ class ConfirmationStatementServiceTest {
 
         updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
         assertDoesNotThrow(() -> ConfirmationStatementService.isValidSicCodes(updatedData));
-    }
-
-    @Test
-    void shouldFailWithEmptySicCodes() {
-        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
-        List<SicCodeJson> sicCodeJsonList = List.of();
-
-        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
-        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
     }
 
     @Test
@@ -1058,6 +1049,7 @@ class ConfirmationStatementServiceTest {
 
         var sicCodeDataDao = new SicCodeDataDao();
         sicCodeDataDao.setSicCodes(List.of("12345", "67890"));
+        sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
 
         var dataDao = new ConfirmationStatementSubmissionDataDao();
         dataDao.setSicCodeData(sicCodeDataDao);
@@ -1087,6 +1079,7 @@ class ConfirmationStatementServiceTest {
         // Incoming mapped DAO with SIC codes
         var sicCodeDataDao = new SicCodeDataDao();
         sicCodeDataDao.setSicCodes(List.of("12345", "67890"));
+        sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
 
         var dataDao = new ConfirmationStatementSubmissionDataDao();
         dataDao.setSicCodeData(sicCodeDataDao);

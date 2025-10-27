@@ -39,7 +39,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFou
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
@@ -194,15 +193,9 @@ public class ConfirmationStatementService {
             isValidNewConfirmationDate(transaction, confirmationStatementSubmissionJson);
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
 
-            isValidSicCodes(confirmationStatementSubmissionJson.getData());
-
-            ApiLogger.info("Mapped SIC codes: " + dao.getData().getSicCodes());
-
-            if (dao.getData().getSicCodeData() != null && 
-                dao.getData().getSicCodeData().getSicCodes() != null && 
-                !dao.getData().getSicCodeData().getSicCodes().isEmpty()) {
-                
-                dao.getData().getSicCodeData().setSectionStatus(SectionStatus.CONFIRMED);
+            var sicCodeData = confirmationStatementSubmissionJson.getData().getSicCodeData();
+            if (sicCodeData != null && sicCodeData.getSicCode() != null) {
+                isValidSicCodes(confirmationStatementSubmissionJson.getData());
             }
 
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
@@ -421,7 +414,7 @@ public class ConfirmationStatementService {
         List<SicCodeJson> newSicCodes = jsonData.getSicCodeData().getSicCode(); 
         Set<String> uniqueSicCodes = new HashSet<>();
 
-        if (newSicCodes == null || newSicCodes.isEmpty()) {
+        if (newSicCodes == null) {
             throw new SicCodeInvalidException("At least one SIC Code must be associated.");
         }
 

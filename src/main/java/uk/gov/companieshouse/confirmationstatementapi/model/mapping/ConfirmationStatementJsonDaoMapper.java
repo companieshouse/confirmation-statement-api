@@ -3,20 +3,15 @@ package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 
-@Component
-@Mapper(componentModel = "spring")
+@Mapper(uses = SicCodeJsonDaoMapper.class)
 public interface ConfirmationStatementJsonDaoMapper {
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
@@ -27,18 +22,7 @@ public interface ConfirmationStatementJsonDaoMapper {
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateStringToLocalDate")
       @Mapping(source = "data.sicCodeData", target = "data.sicCodeData")
-      @Mapping(source = "data.sicCodeData.sicCode", target = "data.sicCodes", qualifiedByName = "extractSicCodes")
       ConfirmationStatementSubmissionDao jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson);
-
-      @Named("extractSicCodes")
-      static List<String> extractSicCodes(List<SicCodeJson> sicCodeJsonList) {
-            if (sicCodeJsonList == null) {
-                  return Collections.emptyList();
-            }
-            return sicCodeJsonList.stream()
-                        .map(SicCodeJson::getCode)
-                        .toList();
-      }
 
       @Named("localDate")
       static LocalDate localDate(LocalDate date) {
@@ -49,7 +33,7 @@ public interface ConfirmationStatementJsonDaoMapper {
       }
 
       @Named("newCsDateStringToLocalDate")
-      static LocalDate newCsDateStringToLocalDate(String newCsDateString) {
+      default LocalDate newCsDateStringToLocalDate(String newCsDateString) {
             if (newCsDateString == null || newCsDateString.isBlank()) {
                   return null;
             }
@@ -58,7 +42,7 @@ public interface ConfirmationStatementJsonDaoMapper {
 
 
       @Named("newCsDateLocalDateToString")
-      static String newCsDateLocalDateToString(LocalDate newCsDateLocalDate) {
+      default String newCsDateLocalDateToString(LocalDate newCsDateLocalDate) {
             if (newCsDateLocalDate == null) {
                   return null;
             }
