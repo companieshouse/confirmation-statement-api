@@ -85,11 +85,9 @@ public class FilingService {
 
             LocalDate madeUpToDate = submissionData.getMadeUpToDate();
 
-            if (companyProfile != null &&
-                    companyProfile.getType() != null &&
-                    companyProfile.getType().equals(LIMITED_PARTNERSHIP_TYPE)) {
-
-                madeUpToDate = setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
+            if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
+                setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
+                madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
             } else {
                 setNoChangeJourneyFilingData(data, submissionData, madeUpToDate);
             }
@@ -123,18 +121,13 @@ public class FilingService {
 
     }
 
-    private LocalDate setLimitedPartnershipFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate) {
-        if (submissionData.getNewConfirmationDate() != null) {
-            madeUpToDate = LocalDate.parse(submissionData.getNewConfirmationDate(), DateTimeFormatter.ofPattern(DATE_FORMAT_YYYYMD));
-        }
-        data.put("confirmation_statement_date", madeUpToDate );
+    private void setLimitedPartnershipFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate) {
+        data.put("confirmation_statement_date", getMadeUpToDate(submissionData, madeUpToDate) );
 
         if (submissionData.getSicCodeData() != null && submissionData.getSicCodeData().getSicCode() != null) {
             List<SicCodeJson> sicCodeJsonList = submissionData.getSicCodeData().getSicCode();
             data.put("sic_codes",  sicCodeJsonList.stream().map(SicCodeJson::getCode).toList() );
         }
-
-        return madeUpToDate;
     }
 
     private void setDescription(FilingApi filing, LocalDate madeUpToDate) {
@@ -144,6 +137,13 @@ public class FilingService {
         Map<String, String> values = new HashMap<>();
         values.put("made up date", madeUpToDateStr);
         filing.setDescriptionValues(values);
+    }
+
+    private LocalDate getMadeUpToDate(ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate) {
+        if (submissionData.getNewConfirmationDate() != null) {
+            madeUpToDate = LocalDate.parse(submissionData.getNewConfirmationDate(), DateTimeFormatter.ofPattern(DATE_FORMAT_YYYYMD));
+        }
+        return madeUpToDate;
     }
 
     private PaymentApi getPayment(String paymentReference) throws ServiceException {
