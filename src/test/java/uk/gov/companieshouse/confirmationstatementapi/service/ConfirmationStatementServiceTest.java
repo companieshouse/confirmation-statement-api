@@ -977,15 +977,6 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void shouldFailWithEmptySicCodes() {
-        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
-        List<SicCodeJson> sicCodeJsonList = List.of();
-
-        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
-        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
-    }
-
-    @Test
     void shouldFailWithMoreThanFourSicCodes() {
         var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
         List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12121", "21212", "55661").stream()

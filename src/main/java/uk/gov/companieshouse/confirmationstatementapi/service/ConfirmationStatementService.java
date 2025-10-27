@@ -193,7 +193,10 @@ public class ConfirmationStatementService {
             isValidNewConfirmationDate(transaction, confirmationStatementSubmissionJson);
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
 
-            isValidSicCodes(confirmationStatementSubmissionJson.getData());
+            var sicCodeData = confirmationStatementSubmissionJson.getData().getSicCodeData();
+            if (sicCodeData != null && sicCodeData.getSicCode() != null) {
+                isValidSicCodes(confirmationStatementSubmissionJson.getData());
+            }
 
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
@@ -411,7 +414,7 @@ public class ConfirmationStatementService {
         List<SicCodeJson> newSicCodes = jsonData.getSicCodeData().getSicCode(); 
         Set<String> uniqueSicCodes = new HashSet<>();
 
-        if (newSicCodes == null || newSicCodes.isEmpty()) {
+        if (newSicCodes == null) {
             throw new SicCodeInvalidException("At least one SIC Code must be associated.");
         }
 
