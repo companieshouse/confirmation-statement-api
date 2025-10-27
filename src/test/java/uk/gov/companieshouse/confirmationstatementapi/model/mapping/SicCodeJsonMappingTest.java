@@ -6,23 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 
+@SpringBootTest
 class SicCodeJsonMappingTest {
     
+    @Autowired
     private SicCodeJsonDaoMapper sicCodeJsonDaoMapper;
-
-    @BeforeEach
-    void setUp() {
-        sicCodeJsonDaoMapper = Mappers.getMapper(SicCodeJsonDaoMapper.class);
-    }
 
     @Test
     void testValidExtractSicCodes() {
