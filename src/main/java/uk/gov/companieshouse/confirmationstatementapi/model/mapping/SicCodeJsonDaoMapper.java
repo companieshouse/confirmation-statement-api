@@ -1,21 +1,15 @@
 package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 
 import org.mapstruct.*;
-import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
-import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 
 @Mapper
 public interface SicCodeJsonDaoMapper {
@@ -26,19 +20,25 @@ public interface SicCodeJsonDaoMapper {
       @Mapping(source = "sicCode", target = "sicCodes", qualifiedByName = "mapSicCodeJsonToStrings")
       SicCodeDataDao jsonToDao(SicCodeDataJson sicCodeDataJson);
 
-    @Named("mapSicCodeStringsToJson")
-    default List<SicCodeJson> mapSicCodeStringsToJson(List<String> sicCodes) {
-        return sicCodes.stream()
-                .map(s -> {
-                    SicCodeJson sicCodeJson = new SicCodeJson();
-                    sicCodeJson.setCode(s);
-                    return sicCodeJson;
-                })
-                .toList();
-    }
+      @Named("mapSicCodeStringsToJson")
+      default List<SicCodeJson> mapSicCodeStringsToJson(List<String> sicCodes) {
+            if (sicCodes == null) {
+                  return Collections.emptyList();
+            }
+            return sicCodes.stream()
+                  .map(s -> {
+                        SicCodeJson sicCodeJson = new SicCodeJson();
+                        sicCodeJson.setCode(s);
+                        return sicCodeJson;
+                  })
+                  .toList();
+      }
 
       @Named("mapSicCodeJsonToStrings")
       default List<String> mapSicCodeJsonToStrings(List<SicCodeJson> sicCodeJsonList) {
+            if (sicCodeJsonList == null) {
+                  return Collections.emptyList();
+            }
             return sicCodeJsonList.stream()
                         .map(SicCodeJson::getCode)
                         .toList();
