@@ -5,9 +5,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
-import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
-
-import java.util.Collections;
 import java.util.List;
 
 
@@ -21,6 +18,7 @@ public interface SicCodeJsonDaoMapper {
       SicCodeDataDao jsonToDao(SicCodeDataJson sicCodeDataJson);
 
       @Named("mapSicCodeStringsToJson")
+      @SuppressWarnings("java:S1168")
       default List<SicCodeJson> mapSicCodeStringsToJson(List<String> sicCodes) {
             if (sicCodes == null) {
                   return null;
@@ -35,6 +33,7 @@ public interface SicCodeJsonDaoMapper {
       }
 
       @Named("mapSicCodeJsonToStrings")
+      @SuppressWarnings("java:S1168")
       default List<String> mapSicCodeJsonToStrings(List<SicCodeJson> sicCodeJsonList) {
             if (sicCodeJsonList == null) {
                   return null;
