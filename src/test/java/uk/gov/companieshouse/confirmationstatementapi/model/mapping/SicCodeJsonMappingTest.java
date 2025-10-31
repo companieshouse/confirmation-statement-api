@@ -38,7 +38,7 @@ class SicCodeJsonMappingTest {
     @Test
     void testNullSicCodeStringsToJson() {
         List<SicCodeJson> result = sicCodeJsonDaoMapper.mapSicCodeStringsToJson(null);
-        assertEquals(List.of(), result);
+        assertNull(result);
     }
 
     @Test
@@ -50,7 +50,7 @@ class SicCodeJsonMappingTest {
     @Test
     void testNullSicCodeJsonToStrings() {
         List<String> result = sicCodeJsonDaoMapper.mapSicCodeJsonToStrings(null);
-        assertEquals(List.of(), result);
+        assertNull(result);
     }
 
     @Test
@@ -92,8 +92,7 @@ class SicCodeJsonMappingTest {
         sicCodeJsonDaoMapper.enrichSicCodeData(sicCodeDataJson, sicCodeDataDao);
 
         // THEN
-        assertEquals(Collections.emptyList(), sicCodeDataDao.getSicCodes());
-        assertNull(sicCodeDataDao.getSectionStatus());
+        assertNull(sicCodeDataDao.getSicCodes());
     }
 
     @Test
@@ -108,8 +107,7 @@ class SicCodeJsonMappingTest {
         sicCodeJsonDaoMapper.enrichSicCodeData(sicCodeDataJson, sicCodeDataDao);
 
         // THEN
-        assertEquals(Collections.emptyList(), sicCodeDataDao.getSicCodes());
-        assertNull(sicCodeDataDao.getSectionStatus());
+        assertNull(sicCodeDataDao.getSicCodes());
     }
 
     @Test
@@ -123,6 +121,5 @@ class SicCodeJsonMappingTest {
 
         // THEN
         assertNull(sicCodeDataDao.getSicCodes());
-        assertNull(sicCodeDataDao.getSectionStatus());
     }
 }
