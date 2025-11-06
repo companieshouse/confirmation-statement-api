@@ -19,7 +19,7 @@ class CostServiceTest {
 
     @BeforeEach
     void init() {
-        ReflectionTestUtils.setField(costService, "costAmount", "34.00");
+        ReflectionTestUtils.setField(costService, "costAmount", "50.00");
     }
     @Test
     void getCosts() {
