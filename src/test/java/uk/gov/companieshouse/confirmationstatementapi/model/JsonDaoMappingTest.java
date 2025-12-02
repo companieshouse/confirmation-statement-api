@@ -1,13 +1,18 @@
 package uk.gov.companieshouse.confirmationstatementapi.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
+import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.companieshouse.api.model.company.StatementOfCapitalJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
@@ -28,27 +33,31 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemail
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredofficeaddress.RegisteredOfficeAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registerlocation.RegisterLocationsDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.shareholder.ShareholderDataJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
-import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.statementofcapital.StatementOfCapitalDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
-import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapperImpl;
 
+@SpringBootTest
 class JsonDaoMappingTest {
 
     private static final String SUBMISSION_ID = "abcdefg";
 
-    private ConfirmationStatementJsonDaoMapper confirmationStatementJsonDaoMapper;
 
-    @BeforeEach
-    void init() {
-        confirmationStatementJsonDaoMapper = new ConfirmationStatementJsonDaoMapperImpl();
-    }
+    @Autowired
+    private ConfirmationStatementJsonDaoMapper confirmationStatementJsonDaoMapper;
 
     @Test
     void testDaoToJson() {
         ConfirmationStatementSubmissionDataDao data =
                 MockConfirmationStatementSubmissionData.getMockDaoData();
+        var sicCode = new SicCodeDao();
+        sicCode.setCode("123");
+        sicCode.setDescription("TEST SIC CODE DETAILS");
+
+        SicCodeDataDao sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSicCodes(List.of(sicCode.getCode()));
+        sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
+        data.setSicCodeData(sicCodeDataDao);
+        data.getSicCodeData().setSicCodes(List.of(sicCode.getCode()));
         ConfirmationStatementSubmissionDao dao =
                 new ConfirmationStatementSubmissionDao(SUBMISSION_ID, data, new HashMap<>());
         ConfirmationStatementSubmissionJson json =
@@ -65,13 +74,73 @@ class JsonDaoMappingTest {
         testContentIsEqual(json, dao);
     }
 
+    @Test
+    void shouldParseValidDateString() {
+        String input = "2025-10-15";
+        LocalDate expected = LocalDate.of(2025, 10, 15);
+        LocalDate result = confirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(input);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void testNullNewCsDateStringToLocalDate() {
+        LocalDate result = confirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(null);
+        assertNull(result);
+    }
+
+    @Test
+    void testValidNewCsDateLocalDateToString() {
+        String result = confirmationStatementJsonDaoMapper.newCsDateLocalDateToString(LocalDate.of(2025, 10, 15));
+        assertEquals("2025-10-15", result);
+    }
+
+    @Test
+    void testNullNewCsDateLocalDateToString() {
+        String result = confirmationStatementJsonDaoMapper.newCsDateLocalDateToString(null);
+        assertNull(result);
+    }
+
+    @Test
+    void shouldReturnNullForNullInput() {
+        assertNull(confirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(null));
+    }
+
+    @Test
+    void shouldReturnNullForEmptyInput() {
+        assertNull(confirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(""));
+    }
+
+    @Test
+    void shouldReturnNullForWhitespaceInput() {
+        assertNull(confirmationStatementJsonDaoMapper.newCsDateStringToLocalDate("   "));
+    }
+
+    @Test
+    void shouldThrowExceptionForInvalidDateFormat() {
+        String input = "15-10-2025";
+        assertThrows(DateTimeParseException.class, () -> confirmationStatementJsonDaoMapper.newCsDateStringToLocalDate(input));
+    }
+
+    @Test
+    void testValidLocalDate() {
+        LocalDate input = LocalDate.of(2025, 10, 15);
+        LocalDate result = ConfirmationStatementJsonDaoMapper.localDate(input);
+        assertEquals(input, result);
+    }
+
+    @Test
+    void testNullLocalDate() {
+        LocalDate result = ConfirmationStatementJsonDaoMapper.localDate(null);
+        assertNull(result);
+    }
+
     private void testContentIsEqual(ConfirmationStatementSubmissionJson json, ConfirmationStatementSubmissionDao dao) {
         StatementOfCapitalDataJson socJson = json.getData().getStatementOfCapitalData();
         StatementOfCapitalDataDao socDao = dao.getData().getStatementOfCapitalData();
         assertEquals(socJson.getSectionStatus(), socDao.getSectionStatus());
-        SicCodeDataJson sicDataJson = json.getData().getSicCodeData();
-        SicCodeDataDao sicDataDao = dao.getData().getSicCodeData();
-        assertEquals(sicDataJson.getSectionStatus(), sicDataDao.getSectionStatus());
+        List<String> expectedSicCodes = List.of("123");
+        List<String> actualSicCodes = dao.getData().getSicCodeData().getSicCodes();
+        assertEquals(expectedSicCodes, actualSicCodes);
         StatementOfCapitalJson statementOfCapitalJson = socJson.getStatementOfCapital();
         StatementOfCapitalDao statementOfSubmissionCapital = socDao.getStatementOfCapital();
         assertEquals(statementOfCapitalJson.getClassOfShares(), statementOfSubmissionCapital.getClassOfShares());
@@ -83,8 +152,7 @@ class JsonDaoMappingTest {
         assertEquals(statementOfCapitalJson.getTotalAggregateNominalValue(), statementOfSubmissionCapital.getTotalAggregateNominalValue());
         assertEquals(statementOfCapitalJson.getTotalAmountUnpaidForCurrency(), statementOfSubmissionCapital.getTotalAmountUnpaidForCurrency());
 
-        SicCodeJson sicJson = sicDataJson.getSicCode();
-        SicCodeDao sicDao = sicDataDao.getSicCode();
+        List<String> sicDao = dao.getData().getSicCodeData().getSicCodes();
         RegisteredOfficeAddressDataJson roaJson = json.getData().getRegisteredOfficeAddressData();
         RegisteredOfficeAddressDataDao roaDao = dao.getData().getRegisteredOfficeAddressData();
         RegisteredEmailAddressDataJson reaJson = json.getData().getRegisteredEmailAddressData();
@@ -101,8 +169,7 @@ class JsonDaoMappingTest {
         TradingStatusDataDao tsDao = dao.getData().getTradingStatusData();
 
 
-        assertEquals(sicJson.getCode(), sicDao.getCode());
-        assertEquals(sicJson.getDescription(), sicDao.getDescription());
+        assertEquals(expectedSicCodes.get(0), sicDao.get(0));
         assertEquals(roaJson.getSectionStatus(), roaDao.getSectionStatus());
         assertEquals(reaJson.getSectionStatus(), reaDao.getSectionStatus());
         assertEquals(reaJson.getRegisteredEmailAddress(), reaDao.getRegisteredEmailAddress());

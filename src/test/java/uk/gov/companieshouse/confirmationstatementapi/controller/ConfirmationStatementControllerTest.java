@@ -14,6 +14,7 @@ import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
@@ -84,7 +85,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmission() throws NewConfirmationDateInvalidException, ServiceException {
+    void updateSubmission() throws NewConfirmationDateInvalidException, ServiceException, SicCodeInvalidException {
         when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(UPDATED_SUCCESS_RESPONSE);
 
@@ -94,7 +95,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmissionIdNotFound() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateSubmissionIdNotFound() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenReturn(NOT_FOUND_RESPONSE);
 
@@ -104,7 +105,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmissionServiceException() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateSubmissionServiceException() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenThrow(new ServiceException("ERROR", new IOException()));
 
@@ -114,7 +115,7 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void updateSubmissionNewConfirmationDateInvalidException() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateSubmissionNewConfirmationDateInvalidException() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         when(confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson))
                 .thenThrow(new NewConfirmationDateInvalidException("ERROR"));
 
@@ -142,16 +143,16 @@ class ConfirmationStatementControllerTest {
     }
 
     @Test
-    void getTrueValidationStatus() throws SubmissionNotFoundException {
+    void getTrueValidationStatus() throws SubmissionNotFoundException, ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
-        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
+        when(confirmationStatementService.isValid(transaction, SUBMISSION_ID)).thenReturn(validationStatus);
+        var response = confirmationStatementController.getValidationStatus(transaction, SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
 
     @Test
-    void getFalseValidationStatus() throws SubmissionNotFoundException {
+    void getFalseValidationStatus() throws SubmissionNotFoundException, ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(false);
         ValidationStatusError[] errors = new ValidationStatusError[1];
@@ -159,18 +160,18 @@ class ConfirmationStatementControllerTest {
         error.setType("ch:validation");
         errors[0] = error;
         validationStatus.setValidationStatusError(errors);
-        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenReturn(validationStatus);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
+        when(confirmationStatementService.isValid(transaction, SUBMISSION_ID)).thenReturn(validationStatus);
+        var response = confirmationStatementController.getValidationStatus(transaction, SUBMISSION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
         assertEquals(ResponseEntity.ok().body(validationStatus), response);
     }
 
     @Test
-    void getValidationStatusNotFound() throws SubmissionNotFoundException {
+    void getValidationStatusNotFound() throws SubmissionNotFoundException, ServiceException {
         ValidationStatusResponse validationStatus = new ValidationStatusResponse();
         validationStatus.setValid(true);
-        when(confirmationStatementService.isValid(SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
-        var response = confirmationStatementController.getValidationStatus(SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
-        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(SUBMISSION_ID));
+        when(confirmationStatementService.isValid(transaction, SUBMISSION_ID)).thenThrow(SubmissionNotFoundException.class);
+        var response = confirmationStatementController.getValidationStatus(transaction, SUBMISSION_ID,TRANSACTION_ID, ERIC_REQUEST_ID);
+        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(transaction, SUBMISSION_ID));
         assertEquals(NOT_FOUND_RESPONSE, response);
     }
 }

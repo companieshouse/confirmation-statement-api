@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_TYPE;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -9,8 +10,11 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +34,7 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
@@ -39,6 +44,7 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationSta
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.SectionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
@@ -176,7 +182,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ResponseEntity<Object> updateConfirmationStatement(Transaction transaction, String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) throws ServiceException, NewConfirmationDateInvalidException {
+    public ResponseEntity<Object> updateConfirmationStatement(Transaction transaction, String submissionId, ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson) throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         // Check Submission exists
         var submission = confirmationStatementSubmissionsRepository.findById(submissionId);
 
@@ -185,8 +191,13 @@ public class ConfirmationStatementService {
             ApiLogger.info(String.format("%s: Confirmation Statement Submission found. About to update",  submission.get().getId()));
 
             isValidNewConfirmationDate(transaction, confirmationStatementSubmissionJson);
-
             var dao = confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson);
+
+            var sicCodeData = confirmationStatementSubmissionJson.getData().getSicCodeData();
+            if (sicCodeData != null && sicCodeData.getSicCode() != null) {
+                isValidSicCodes(confirmationStatementSubmissionJson.getData());
+            }
+
             var savedResponse = confirmationStatementSubmissionsRepository.save(dao);
             ApiLogger.info(String.format("%s: Confirmation Statement Submission updated",  savedResponse.getId()));
             return ResponseEntity.ok(savedResponse);
@@ -195,7 +206,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    public ValidationStatusResponse isValid(String submissionId) throws SubmissionNotFoundException {
+    public ValidationStatusResponse isValid(Transaction transaction, String submissionId) throws ServiceException, SubmissionNotFoundException {
         Optional<ConfirmationStatementSubmissionJson> submissionJsonOptional = getConfirmationStatement(submissionId);
 
         if (submissionJsonOptional.isPresent()) {
@@ -206,17 +217,16 @@ public class ConfirmationStatementService {
             if (submissionData == null) {
                 validationStatus.setValid(false);
             } else {
-                boolean isValid = isConfirmed(submissionData.getShareholderData()) &&
-                        isConfirmed(submissionData.getSicCodeData()) &&
-                        isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
-                        isConfirmed(submissionData.getStatementOfCapitalData()) &&
-                        isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
-                        isConfirmed(submissionData.getPersonsSignificantControlData()) &&
-                        isConfirmed(submissionData.getRegisterLocationsData()) &&
-                        isConfirmed(submissionData.getRegisteredEmailAddressData(), submissionData.getMadeUpToDate()) &&
-                        isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate()) &&
-                        Boolean.TRUE.equals(submissionData.getTradingStatusData().getTradingStatusAnswer()) &&
-                        isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
+                boolean isValid;
+                CompanyProfileApi companyProfile = getCompanyProfile(transaction);
+                if (companyProfile != null &&
+                        companyProfile.getType() != null &&
+                        companyProfile.getType().equals(LIMITED_PARTNERSHIP_TYPE)) {
+
+                    isValid = isValidForLimitedPartnershipJourney(submissionData);
+                } else {
+                    isValid = isValidForCsNoChangeJourney(submissionData);
+                }
                 validationStatus.setValid(isValid);
             }
 
@@ -369,4 +379,54 @@ public class ConfirmationStatementService {
             throw new NewConfirmationDateInvalidException("Confirmation statement date must be a real date");
         }
     }
+
+    public boolean isValidForCsNoChangeJourney(ConfirmationStatementSubmissionDataJson submissionData) {
+        if (submissionData == null) {
+            return false;
+        }
+
+        return isConfirmed(submissionData.getShareholderData()) &&
+                isConfirmed(submissionData.getSicCodeData()) &&
+                isConfirmed(submissionData.getActiveOfficerDetailsData()) &&
+                isConfirmed(submissionData.getStatementOfCapitalData()) &&
+                isConfirmed(submissionData.getRegisteredOfficeAddressData()) &&
+                isConfirmed(submissionData.getPersonsSignificantControlData()) &&
+                isConfirmed(submissionData.getRegisterLocationsData()) &&
+                isConfirmed(submissionData.getRegisteredEmailAddressData(), submissionData.getMadeUpToDate()) &&
+                isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate()) &&
+                Boolean.TRUE.equals(submissionData.getTradingStatusData().getTradingStatusAnswer()) &&
+                isBeforeOrEqual(localDateNow.get(), submissionData.getMadeUpToDate());
+    }
+
+    public boolean isValidForLimitedPartnershipJourney(ConfirmationStatementSubmissionDataJson submissionData) {
+        if (submissionData == null) {
+            return false;
+        }
+        return isValid(submissionData.getAcceptLawfulPurposeStatement(), submissionData.getMadeUpToDate());
+    }
+
+    static void isValidSicCodes(ConfirmationStatementSubmissionDataJson jsonData) throws SicCodeInvalidException {
+        if (jsonData == null || jsonData.getSicCodeData() == null || 
+            jsonData.getSicCodeData().getSicCode() == null) {
+            return;
+        }
+
+        List<SicCodeJson> newSicCodes = jsonData.getSicCodeData().getSicCode(); 
+        Set<String> uniqueSicCodes = new HashSet<>();
+
+        if (newSicCodes == null) {
+            throw new SicCodeInvalidException("At least one SIC Code must be associated.");
+        }
+
+        if (newSicCodes.size() > 4) {
+            throw new SicCodeInvalidException("Maximum of 4 SIC Codes must be associated");
+        }
+
+        for (SicCodeJson code : newSicCodes) {
+            if (!uniqueSicCodes.add(code.getCode())) {
+                throw new SicCodeInvalidException("Can not have duplicate SIC Codes.");
+            }
+        }
+    }
+
 }

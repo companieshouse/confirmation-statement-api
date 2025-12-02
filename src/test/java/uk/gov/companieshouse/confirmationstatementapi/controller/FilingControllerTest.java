@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
+import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.service.FilingService;
@@ -43,7 +44,7 @@ class FilingControllerTest {
     }
 
     @Test
-    void getFiling() throws SubmissionNotFoundException, ServiceException {
+    void getFiling() throws SubmissionNotFoundException, ServiceException, CompanyNotFoundException {
         FilingApi filing = new FilingApi();
         filing.setDescription("12345678");
         when(filingService.generateConfirmationFiling(CONFIRMATION_ID, transaction)).thenReturn(filing);
@@ -56,7 +57,7 @@ class FilingControllerTest {
 
 
     @Test
-    void getFilingSubmissionNotFound() throws SubmissionNotFoundException, ServiceException {
+    void getFilingSubmissionNotFound() throws SubmissionNotFoundException, ServiceException, CompanyNotFoundException {
         when(filingService.generateConfirmationFiling(CONFIRMATION_ID, transaction)).thenThrow(SubmissionNotFoundException.class);
         var result = filingController.getFiling(transaction, CONFIRMATION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 
@@ -65,7 +66,7 @@ class FilingControllerTest {
     }
 
     @Test
-    void getFilingException() throws SubmissionNotFoundException, ServiceException {
+    void getFilingException() throws SubmissionNotFoundException, ServiceException, CompanyNotFoundException {
         when(filingService.generateConfirmationFiling(CONFIRMATION_ID, transaction)).thenThrow(RuntimeException.class);
         var result = filingController.getFiling(transaction, CONFIRMATION_ID, TRANSACTION_ID, ERIC_REQUEST_ID);
 

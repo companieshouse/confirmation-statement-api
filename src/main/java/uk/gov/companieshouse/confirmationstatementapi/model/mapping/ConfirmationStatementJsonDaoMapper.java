@@ -3,7 +3,6 @@ package uk.gov.companieshouse.confirmationstatementapi.model.mapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 
@@ -12,16 +11,17 @@ import java.time.format.DateTimeFormatter;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 
-@Component
-@Mapper(componentModel = "spring")
+@Mapper(uses = SicCodeJsonDaoMapper.class)
 public interface ConfirmationStatementJsonDaoMapper {
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateLocalDateToString")
+      @Mapping(source = "data.sicCodeData", target = "data.sicCodeData")
       ConfirmationStatementSubmissionJson daoToJson(ConfirmationStatementSubmissionDao confirmationStatementSubmissionDao);
 
       @Mapping(source = "data.madeUpToDate", target = "data.madeUpToDate", qualifiedByName = "localDate")
       @Mapping(source = "data.newConfirmationDate", target = "data.newConfirmationDate", qualifiedByName = "newCsDateStringToLocalDate")
+      @Mapping(source = "data.sicCodeData", target = "data.sicCodeData")
       ConfirmationStatementSubmissionDao jsonToDao(ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson);
 
       @Named("localDate")
@@ -33,7 +33,7 @@ public interface ConfirmationStatementJsonDaoMapper {
       }
 
       @Named("newCsDateStringToLocalDate")
-      static LocalDate newCsDateStringToLocalDate(String newCsDateString) {
+      default LocalDate newCsDateStringToLocalDate(String newCsDateString) {
             if (newCsDateString == null || newCsDateString.isBlank()) {
                   return null;
             }
@@ -42,7 +42,7 @@ public interface ConfirmationStatementJsonDaoMapper {
 
 
       @Named("newCsDateLocalDateToString")
-      static String newCsDateLocalDateToString(LocalDate newCsDateLocalDate) {
+      default String newCsDateLocalDateToString(LocalDate newCsDateLocalDate) {
             if (newCsDateLocalDate == null) {
                   return null;
             }

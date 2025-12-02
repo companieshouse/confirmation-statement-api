@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
@@ -74,9 +75,17 @@ public class ConfirmationStatementController {
 
         try {
             return confirmationStatementService.updateConfirmationStatement(transaction, submissionId, confirmationStatementSubmissionJson);
-        } catch (ServiceException | NewConfirmationDateInvalidException e) {
-            String errorMessage = (e instanceof NewConfirmationDateInvalidException) ?
-                    "Invalid New Confirmation Date" : "Error Updating Confirmation Statement";
+        } catch (ServiceException | NewConfirmationDateInvalidException | SicCodeInvalidException e) {
+            String errorMessage;
+
+            if (e instanceof NewConfirmationDateInvalidException) {
+                errorMessage = "Invalid New Confirmation Date";
+            } else if (e instanceof SicCodeInvalidException) {
+                errorMessage = "Invalid Sic Code";
+            } else {
+                errorMessage = "Error Updating Confirmation Statement";
+            }
+
             ApiLogger.errorContext(requestId, errorMessage, e, logMap);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -100,6 +109,7 @@ public class ConfirmationStatementController {
 
     @GetMapping("/{confirmation_statement_id}/validation-status")
     public ResponseEntity<Object> getValidationStatus(
+            @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String submissionId,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
@@ -110,7 +120,7 @@ public class ConfirmationStatementController {
         ApiLogger.infoContext(requestId, "Calling service to get validation status", logMap);
 
         try {
-            var validationStatusResponse = confirmationStatementService.isValid(submissionId);
+            var validationStatusResponse = confirmationStatementService.isValid(transaction, submissionId);
             return ResponseEntity.ok().body(validationStatusResponse);
         } catch (SubmissionNotFoundException e) {
             ApiLogger.errorContext(requestId,e.getMessage(), e, logMap);

@@ -146,4 +146,5 @@ public class ConfirmationStatementSubmissionDataDao {
     public void setNewConfirmationDate(LocalDate newConfirmationDate) {
         this.newConfirmationDate = newConfirmationDate;
     }
+
 }

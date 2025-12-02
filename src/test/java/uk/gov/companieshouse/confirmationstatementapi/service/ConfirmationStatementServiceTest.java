@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -7,15 +8,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
-
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_TYPE;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -46,13 +48,19 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilitySta
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.NewConfirmationDateInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
+import uk.gov.companieshouse.confirmationstatementapi.exception.SicCodeInvalidException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.MockConfirmationStatementSubmissionData;
 import uk.gov.companieshouse.confirmationstatementapi.model.SectionStatus;
 import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.ConfirmationStatementSubmissionDataDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDao;
+import uk.gov.companieshouse.confirmationstatementapi.model.dao.siccode.SicCodeDataDao;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationStatementSubmissionJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeDataJson;
+import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.mapping.ConfirmationStatementJsonDaoMapper;
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.repository.ConfirmationStatementSubmissionsRepository;
@@ -275,9 +283,15 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void updateConfirmationSubmission() throws ServiceException, NewConfirmationDateInvalidException {
+    void updateConfirmationSubmission() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
         // GIVEN
+        var sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setData(new ConfirmationStatementSubmissionDataDao());
         confirmationStatementSubmission.setId(SUBMISSION_ID);
 
         when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(confirmationStatementSubmission);
@@ -300,11 +314,12 @@ class ConfirmationStatementServiceTest {
             "2025-03-2",
             "2025-5-02",
     })
-    void updateConfirmationSubmissionWithNewConfirmationStatementDate(String inputStringDate) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException {
+    void updateConfirmationSubmissionWithNewConfirmationStatementDate(String inputStringDate) throws ServiceException, NewConfirmationDateInvalidException, CompanyNotFoundException, SicCodeInvalidException {
         // GIVEN
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         confirmationStatementSubmissionJson.getData().setNewConfirmationDate(inputStringDate);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        confirmationStatementSubmission.setData(new ConfirmationStatementSubmissionDataDao());
 
         // WHEN
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
@@ -346,7 +361,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void updateConfirmationSubmissionNotFound() throws ServiceException, NewConfirmationDateInvalidException  {
+    void updateConfirmationSubmissionNotFound() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException  {
         // GIVEN
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
 
@@ -386,7 +401,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksComplete() throws SubmissionNotFoundException {
+    void areTasksComplete() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -396,14 +411,14 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertTrue(validationStatusResponse.isValid());
     }
 
     @Test
-    void areTasksCompleteWithSomeNotConfirmed() throws SubmissionNotFoundException {
+    void areTasksCompleteWithSomeNotConfirmed() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
@@ -411,7 +426,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
@@ -420,7 +435,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithSomeRecentFiling() throws SubmissionNotFoundException {
+    void areTasksCompleteWithSomeRecentFiling() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
@@ -433,14 +448,14 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertTrue(validationStatusResponse.isValid());
     }
 
     @Test
-    void areTasksCompleteWithREANotConfirmed_madeUpBeforeDayOne() throws SubmissionNotFoundException {
+    void areTasksCompleteWithREANotConfirmed_madeUpBeforeDayOne() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
         var ecctStartDate = LocalDate.parse(String.valueOf(ecctStartDateStr), ConfirmationStatementService.DATE_TIME_FORMATTER);
@@ -457,14 +472,14 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertTrue(validationStatusResponse.isValid());
     }
 
     @Test
-    void areTasksCompleteWithREANotConfirmed_madeUpOnDayOne() throws SubmissionNotFoundException {
+    void areTasksCompleteWithREANotConfirmed_madeUpOnDayOne() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
 
         var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
@@ -480,7 +495,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
@@ -489,7 +504,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithREANotConfirmed_madeUpAfterDayOne() throws SubmissionNotFoundException {
+    void areTasksCompleteWithREANotConfirmed_madeUpAfterDayOne() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
         var ecctStartDate = LocalDate.parse(String.valueOf(ecctStartDateStr), ConfirmationStatementService.DATE_TIME_FORMATTER);
@@ -505,7 +520,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
@@ -536,7 +551,7 @@ class ConfirmationStatementServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideArgumentsForAcceptLawfulPurpose")
-    void areTasksCompleteWithAcceptLawfulPurposeStatementNotPresent(int madeUpDateOffset, Boolean acceptLawfulPurposeStatement, LocalDate today, boolean valid) throws SubmissionNotFoundException {
+    void areTasksCompleteWithAcceptLawfulPurposeStatementNotPresent(int madeUpDateOffset, Boolean acceptLawfulPurposeStatement, LocalDate today, boolean valid) throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         var ecctStartDateStr = ReflectionTestUtils.getField(confirmationStatementService, "ecctStartDateStr");
         var ecctStartDate = LocalDate.parse((String) ecctStartDateStr, ConfirmationStatementService.DATE_TIME_FORMATTER);
@@ -555,14 +570,14 @@ class ConfirmationStatementServiceTest {
         }
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertEquals(valid, validationStatusResponse.isValid());
     }
 
     @Test
-    void areTasksIncompleteWithREAInitialFiling() throws SubmissionNotFoundException {
+    void areTasksIncompleteWithREAInitialFiling() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
 
         makeAllMockTasksConfirmed();
@@ -575,7 +590,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
 
@@ -585,7 +600,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithREAInitialFiling() throws SubmissionNotFoundException {
+    void areTasksCompleteWithREAInitialFiling() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setSectionStatus(SectionStatus.INITIAL_FILING);
@@ -598,14 +613,14 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 10, 12));
 
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertTrue(validationStatusResponse.isValid());
     }
 
     @Test
-    void areTasksCompleteWithSomeNotPresent() throws SubmissionNotFoundException {
+    void areTasksCompleteWithSomeNotPresent() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().setActiveOfficerDetailsData(null);
@@ -616,7 +631,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
@@ -625,7 +640,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithREANotPresent() throws SubmissionNotFoundException {
+    void areTasksCompleteWithREANotPresent() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().setRegisteredEmailAddressData(null);
@@ -636,7 +651,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
 
@@ -645,7 +660,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithNoSubmissionData() throws SubmissionNotFoundException {
+    void areTasksCompleteWithNoSubmissionData() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
@@ -654,7 +669,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
@@ -663,7 +678,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithTradingStatusAnswerFalse() throws SubmissionNotFoundException {
+    void areTasksCompleteWithTradingStatusAnswerFalse() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().getPersonsSignificantControlData().setSectionStatus(SectionStatus.RECENT_FILING);
@@ -674,7 +689,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
@@ -682,7 +697,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void areTasksCompleteWithMadeUpToDateEqual() throws SubmissionNotFoundException {
+    void areTasksCompleteWithMadeUpToDateEqual() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -692,14 +707,14 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 9, 12));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertTrue(validationStatusResponse.isValid());
     }
 
     @Test
-    void areTasksCompleteWithFutureMadeUpToDate() throws SubmissionNotFoundException {
+    void areTasksCompleteWithFutureMadeUpToDate() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -709,14 +724,14 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 4, 12));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
     }
 
     @Test
-    void areTasksCompleteWithNullLocalDate() throws SubmissionNotFoundException {
+    void areTasksCompleteWithNullLocalDate() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -727,14 +742,14 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(null);
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
     }
 
     @Test
-    void areTasksCompleteWithNullMadeUpToDate() throws SubmissionNotFoundException {
+    void areTasksCompleteWithNullMadeUpToDate() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
         makeAllMockTasksConfirmed();
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
@@ -746,7 +761,7 @@ class ConfirmationStatementServiceTest {
         when(localDateSupplier.get()).thenReturn(LocalDate.of(2021, 9, 12));
 
         // WHEN
-        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(SUBMISSION_ID);
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
         assertFalse(validationStatusResponse.isValid());
@@ -758,7 +773,7 @@ class ConfirmationStatementServiceTest {
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.empty());
 
         // THEN
-        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(SUBMISSION_ID));
+        assertThrows(SubmissionNotFoundException.class, () -> confirmationStatementService.isValid(transaction, SUBMISSION_ID));
     }
 
     @Test
@@ -862,6 +877,244 @@ class ConfirmationStatementServiceTest {
         assertThrows(ServiceException.class, () -> this.confirmationStatementService.getNextMadeUpToDate(COMPANY_NUMBER));
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "true, true",
+            "false, false"
+    })
+    void validateStatusForLimitedPartnershipJourney(boolean acceptLawfulPurposeStatement, boolean expectedResult) throws ServiceException, SubmissionNotFoundException, CompanyNotFoundException {
+        // GIVEN
+        ConfirmationStatementSubmissionJson lpConfirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
+        lpConfirmationStatementSubmissionJson.setData(new ConfirmationStatementSubmissionDataJson());
+        lpConfirmationStatementSubmissionJson.getData().setMadeUpToDate(LocalDate.of(2021, 9, 12));
+        if (acceptLawfulPurposeStatement) {
+            lpConfirmationStatementSubmissionJson.getData().setAcceptLawfulPurposeStatement(acceptLawfulPurposeStatement);
+        }
+        var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
+        when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(lpConfirmationStatementSubmissionJson);
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
+        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        // WHEN
+        ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
+
+        // THEN
+        assertEquals(expectedResult, validationStatusResponse.isValid());
+    }
+
+    @Test
+    void returnFalseIfMissingSubmissionDataWhenValidateLpAndNoChangeJourney(){
+
+        // WHEN
+        boolean isValidForNoChangeJourney = confirmationStatementService.isValidForCsNoChangeJourney(null);
+
+        // THEN
+        assertFalse(isValidForNoChangeJourney);
+    }
+
+    @Test
+    void returnFalseIfMissingSubmissionDataWhenValidateLpJourney(){
+
+        // WHEN
+        boolean isValidForLpjourney = confirmationStatementService.isValidForLimitedPartnershipJourney(null);
+
+        // THEN
+        assertFalse(isValidForLpjourney);
+    }
+
+    @Test
+    void updateConfirmationStatementUpdateSicCodes() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
+        // Given
+        var existingDao = new ConfirmationStatementSubmissionDao();
+        existingDao.setId(SUBMISSION_ID);
+
+        var updatedDao = new ConfirmationStatementSubmissionDao();
+        updatedDao.setId(SUBMISSION_ID);
+
+        var updatedData = MockConfirmationStatementSubmissionData.getMockDaoData();
+        updatedData.getSicCodeData().setSicCodes(List.of("12345", "67890"));
+        updatedDao.setData(updatedData);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(existingDao));
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(updatedDao);
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(updatedDao);
+
+        // When
+        var response = confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        // Then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(confirmationStatementSubmissionsRepository).save(submissionCaptor.capture());
+
+        var savedDao = submissionCaptor.getValue();
+        assertEquals(SUBMISSION_ID, savedDao.getId());
+        assertNotNull(savedDao.getData());
+        assertEquals(List.of("12345", "67890"), savedDao.getData().getSicCodeData().getSicCodes());
+    }
+
+    @Test
+    void shouldPassWithUnqiueSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12121", "21212").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertDoesNotThrow(() -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void shouldFailWithMoreThanFourSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12121", "21212", "55661").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void shouldFailWithDuplicateSicCodes() {
+        var updatedData = MockConfirmationStatementSubmissionData.getMockJsonData();
+        List<SicCodeJson> sicCodeJsonList = List.of("12345", "67890", "12345").stream()
+            .map(code -> {
+                SicCodeJson sic = new SicCodeJson();
+                sic.setCode(code);
+                return sic;
+            })
+            .toList();
+
+        updatedData.getSicCodeData().setSicCode(sicCodeJsonList);
+        assertThrows(SicCodeInvalidException.class, () -> ConfirmationStatementService.isValidSicCodes(updatedData));
+    }
+
+    @Test
+    void testGetDescription() {
+        SicCodeDao sicCodeDao = new SicCodeDao();
+        sicCodeDao.setDescription("TEST DESCRIPTION");
+        assertEquals("TEST DESCRIPTION", sicCodeDao.getDescription());
+    }
+
+    @Test
+    void testSicCodeJsonGetDescription() {
+        SicCodeJson sicCodeJson = new SicCodeJson();
+        sicCodeJson.setDescription("TEST DESCRIPTION");
+
+        assertEquals("TEST DESCRIPTION", sicCodeJson.getDescription());
+    }
+    
+    @Test
+    void testGetSicCodesFromSicCodeDataDao() {
+        SicCodeDataDao sicCodeDataDao = new SicCodeDataDao();
+        List<String> codes = List.of("123");
+        sicCodeDataDao.setSicCodes(codes);
+
+        assertEquals(codes, sicCodeDataDao.getSicCodes());
+    }
+
+    @Test
+    void updateConfirmationSubmissionWhenSicCodesPresent() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
+        // GIVEN
+        var sicCodeJson1 = new SicCodeJson();
+        sicCodeJson1.setCode("12345");
+        var sicCodeJson2 = new SicCodeJson();
+        sicCodeJson2.setCode("67890");
+
+        var sicCodeDataJson = new SicCodeDataJson();
+        sicCodeDataJson.setSicCode(List.of(sicCodeJson1, sicCodeJson2));
+
+        var dataJson = confirmationStatementSubmissionJson.getData();
+        dataJson.setSicCodeData(sicCodeDataJson);
+
+        var dao = new ConfirmationStatementSubmissionDao();
+        dao.setId(SUBMISSION_ID);
+
+        var sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSicCodes(List.of("12345", "67890"));
+        sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
+
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+        dao.setData(dataDao);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(dao));
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(dao);
+        when(confirmationStatementSubmissionsRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // WHEN
+        var response = confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        // THEN
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        var savedDao = (ConfirmationStatementSubmissionDao) response.getBody();
+        assertNotNull(savedDao);
+        assertEquals(SectionStatus.CONFIRMED, savedDao.getData().getSicCodeData().getSectionStatus());
+    }
+
+    @Test
+    void updateConfirmationSubmissionExistingSicCodeDataAndSetsStatus() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
+        // GIVEN: existing submission in DB
+        var existingDao = new ConfirmationStatementSubmissionDao();
+        existingDao.setId(SUBMISSION_ID);
+        existingDao.setData(new ConfirmationStatementSubmissionDataDao());
+
+        // Incoming mapped DAO with SIC codes
+        var sicCodeDataDao = new SicCodeDataDao();
+        sicCodeDataDao.setSicCodes(List.of("12345", "67890"));
+        sicCodeDataDao.setSectionStatus(SectionStatus.CONFIRMED);
+
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+
+        var updatedDao = new ConfirmationStatementSubmissionDao();
+        updatedDao.setId(SUBMISSION_ID);
+        updatedDao.setData(dataDao);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(existingDao));
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(updatedDao);
+        when(confirmationStatementSubmissionsRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // WHEN
+        var response = confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        // THEN
+        var savedDao = (ConfirmationStatementSubmissionDao) response.getBody();
+        assertNotNull(savedDao);
+        assertEquals(SectionStatus.CONFIRMED, savedDao.getData().getSicCodeData().getSectionStatus());
+    }
+
+    @Test
+    void updateConfirmationSubmissionNoSetSectionStatusWhenSicCodesMissing() throws ServiceException, NewConfirmationDateInvalidException, SicCodeInvalidException {
+        var sicCodeDataDao = new SicCodeDataDao();
+        var dataDao = new ConfirmationStatementSubmissionDataDao();
+        dataDao.setSicCodeData(sicCodeDataDao);
+
+        var dao = new ConfirmationStatementSubmissionDao();
+        dao.setId(SUBMISSION_ID);
+        dao.setData(dataDao);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(dao));
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson)).thenReturn(dao);
+        when(confirmationStatementSubmissionsRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson);
+
+        var savedDao = (ConfirmationStatementSubmissionDao) response.getBody();
+        assertNull(savedDao.getData().getSicCodeData().getSectionStatus());
+    }
+
+    
     private CompanyProfileApi getTestCompanyProfileApi() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
