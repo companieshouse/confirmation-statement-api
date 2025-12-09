@@ -29,9 +29,11 @@
         <apache-log4j.version>2.25.1</apache-log4j.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
         <opentelemetry-version>2.14.0</opentelemetry-version>
         <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
+        <plexus-utils.version>4.0.2</plexus-utils.version>
+        <guava.version>33.5.0-android</guava.version>
 
         <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
         <sonar.login></sonar.login>
@@ -129,7 +131,19 @@
           <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
-            <version>4.0.2</version>
+            <version>${plexus-utils.version}</version>
+          </dependency>
+
+          <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+          </dependency>
+
+          <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
           </dependency>
         </dependencies>
     </dependencyManagement>
@@ -198,11 +212,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-        </dependency>
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-spring-boot-starter</artifactId>
