@@ -1,25 +1,31 @@
 package uk.gov.companieshouse.confirmationstatementapi.controller;
 
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
 import uk.gov.companieshouse.confirmationstatementapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.NextMadeUpToDateJson;
 import uk.gov.companieshouse.confirmationstatementapi.service.ConfirmationStatementService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-import java.util.HashMap;
-
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
-
 @RestController
 public class NextMadeUpToDateController {
 
+    private final ConfirmationStatementService confirmationStatementService;
+
     @Autowired
-    private ConfirmationStatementService confirmationStatementService;
+    public NextMadeUpToDateController(ConfirmationStatementService confirmationStatementService) {
+        super();
+        this.confirmationStatementService = confirmationStatementService;
+    }
 
     @GetMapping("/confirmation-statement/company/{company-number}/next-made-up-to-date")
     public ResponseEntity<NextMadeUpToDateJson> getNextMadeUpToDate(

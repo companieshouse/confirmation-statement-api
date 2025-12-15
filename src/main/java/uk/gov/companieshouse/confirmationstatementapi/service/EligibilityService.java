@@ -1,8 +1,10 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
@@ -11,16 +13,13 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.model.response.CompanyValidationResponse;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-import java.util.List;
-
 @Service
 public class EligibilityService {
 
     private final List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
 
     @Autowired
-    public EligibilityService(@Qualifier("confirmation-statement-eligibility-rules")
-                                                    List<EligibilityRule<CompanyProfileApi>> eligibilityRules){
+    public EligibilityService(List<EligibilityRule<CompanyProfileApi>> eligibilityRules){
         this.eligibilityRules = eligibilityRules;
     }
 

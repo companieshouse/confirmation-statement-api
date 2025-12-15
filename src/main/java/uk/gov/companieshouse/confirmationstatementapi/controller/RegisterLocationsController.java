@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @RestController
@@ -34,6 +35,7 @@ public class RegisterLocationsController {
     public ResponseEntity<List<RegisterLocationJson>> getRegisterLocations(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
+            @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String confirmationStatementId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();

@@ -35,23 +35,23 @@ class InterceptorConfigRouteMatchingTest {
     @Test
     void interceptorsMatchIntendedRoutesTest() throws Exception {
         Map<String, Set<String>> testCases = new HashMap<>();
-        Set<String> COMPANY_NUMBER_INTERCEPTORS = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "CompanyNumberValidationInterceptor");
-        Set<String> TRANSACTION_INTERCEPTORS = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor");
-        Set<String> CS_ID_INTERCEPTORS = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor", "SubmissionInterceptor", "SubmissionIdValidationInterceptor");
+        Set<String> companyNumberInterceptors = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "CompanyNumberValidationInterceptor");
+        Set<String> transactionInterceptors = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor");
+        Set<String> csIdInterceptors = Set.of("LoggingInterceptor", "CRUDAuthenticationInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor", "SubmissionInterceptor", "SubmissionIdValidationInterceptor");
 
         // company number
-        testCases.put("/confirmation-statement/company/12345/eligibility", COMPANY_NUMBER_INTERCEPTORS);
-        testCases.put("/confirmation-statement/company/12345/next-made-up-to-date", COMPANY_NUMBER_INTERCEPTORS);
+        testCases.put("/confirmation-statement/company/12345/eligibility", companyNumberInterceptors);
+        testCases.put("/confirmation-statement/company/12345/next-made-up-to-date", companyNumberInterceptors);
         // txn id
-        testCases.put("/transactions/12345/confirmation-statement/", TRANSACTION_INTERCEPTORS); // note trailing slash required
+        testCases.put("/transactions/12345/confirmation-statement/", transactionInterceptors); // note trailing slash required
         // txn id + cs id
-        testCases.put("/transactions/12345/confirmation-statement/12345", CS_ID_INTERCEPTORS);
-        testCases.put("/transactions/12345/confirmation-statement/12345/validation-status", CS_ID_INTERCEPTORS);
-        testCases.put("/transactions/12345/confirmation-statement/12345/statement-of-capital", CS_ID_INTERCEPTORS);
-        testCases.put("/transactions/12345/confirmation-statement/12345/active-director-details", CS_ID_INTERCEPTORS);
-        testCases.put("/transactions/12345/confirmation-statement/12345/persons-of-significant-control", CS_ID_INTERCEPTORS);
-        testCases.put("/transactions/12345/confirmation-statement/12345/shareholders", CS_ID_INTERCEPTORS);
-        testCases.put("/transactions/12345/confirmation-statement/12345/register-locations", CS_ID_INTERCEPTORS);
+        testCases.put("/transactions/12345/confirmation-statement/12345", csIdInterceptors);
+        testCases.put("/transactions/12345/confirmation-statement/12345/validation-status", csIdInterceptors);
+        testCases.put("/transactions/12345/confirmation-statement/12345/statement-of-capital", csIdInterceptors);
+        testCases.put("/transactions/12345/confirmation-statement/12345/active-director-details", csIdInterceptors);
+        testCases.put("/transactions/12345/confirmation-statement/12345/persons-of-significant-control", csIdInterceptors);
+        testCases.put("/transactions/12345/confirmation-statement/12345/shareholders", csIdInterceptors);
+        testCases.put("/transactions/12345/confirmation-statement/12345/register-locations", csIdInterceptors);
         // internal endpoints
         testCases.put("/private/transactions/12345/confirmation-statement/12345/filings", Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "FilingInterceptor"));
         testCases.put("/transactions/12345/confirmation-statement/12345/costs", Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "TransactionIdValidationInterceptor", "SubmissionInterceptor", "SubmissionIdValidationInterceptor"));

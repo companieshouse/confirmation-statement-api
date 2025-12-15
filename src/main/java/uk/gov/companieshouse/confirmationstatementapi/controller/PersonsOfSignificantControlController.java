@@ -18,18 +18,25 @@ import java.util.HashMap;
 import java.util.List;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.CONFIRMATION_STATEMENT_ID_KEY;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.TRANSACTION_ID_KEY;
 
 @RestController
 class PersonsOfSignificantControlController {
 
+    private final PscService pscService;
+
     @Autowired
-    private PscService pscService;
+    public PersonsOfSignificantControlController(PscService pscService) {
+        super();
+        this.pscService = pscService;
+    }
 
     @GetMapping("/transactions/{transaction_id}/confirmation-statement/{confirmation_statement_id}/persons-of-significant-control")
     public ResponseEntity<List<PersonOfSignificantControlJson>> getPersonsOfSignificantControl(
             @RequestAttribute("transaction") Transaction transaction,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
+            @PathVariable(CONFIRMATION_STATEMENT_ID_KEY) String confirmationStatementId,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();

@@ -8,12 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_TYPE;
-
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -127,7 +126,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         ReflectionTestUtils.setField(confirmationStatementService, "isValidationStatusEnabled", true);
-        transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -160,7 +158,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createPayableResourceConfirmationStatement() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -201,7 +198,6 @@ class ConfirmationStatementServiceTest {
     void doesNotCheckPaymentWhenFeatureFlaggedOff() throws ServiceException, CompanyNotFoundException {
         // GIVEN
         ReflectionTestUtils.setField(confirmationStatementService, "isPaymentCheckFeatureEnabled", false);
-        transaction = new Transaction();
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
@@ -229,7 +225,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementFailingStatusValidation() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("FailureValue");
@@ -254,7 +249,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementExistingStatementError() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         transaction.setId("abc");
         Resource resource = new Resource();
@@ -281,7 +275,6 @@ class ConfirmationStatementServiceTest {
     @Test
     void createConfirmationStatementCompanyNotFound() throws ServiceException, CompanyNotFoundException {
         // GIVEN
-        transaction = new Transaction();
         transaction.setCompanyNumber(COMPANY_NUMBER);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
 

@@ -24,8 +24,8 @@ class CompanyShareholderCountValidationTest {
 
     private static final String COMPANY_NUMBER = "12345678";
 
-    private static String LTD_BY_GUARANTEE = "test-private-limited-guarant-nsc";
-    private static String NOT_LTD_BY_GUARANTEE = "test-not-limited-guarant-nsc";
+    private static final String LTD_BY_GUARANTEE = "test-private-limited-guarant-nsc";
+    private static final String NOT_LTD_BY_GUARANTEE = "test-not-limited-guarant-nsc";
 
     private CompanyProfileApi profile;
     private CompanyShareholderCountValidation validation;
