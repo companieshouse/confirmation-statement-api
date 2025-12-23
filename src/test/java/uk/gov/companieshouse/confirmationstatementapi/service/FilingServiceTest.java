@@ -257,7 +257,7 @@ class FilingServiceTest {
     }
 
     @Test
-    void testWhenPayableSubmissionIsReturnedSuccessfullyForLpJourney() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
+    void testWhenPayableSubmissionIsReturnedSuccessfullyForNonLpJourney() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
         paymentGetMocks();
         getTransactionPaymentLinkMock();
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJsonForLpJourney();
@@ -297,6 +297,7 @@ class FilingServiceTest {
         assertTrue((Boolean) filing.getData().get("accept_lawful_purpose_statement"));
         assertEquals("payment-method", filing.getData().get("payment_method"));
         assertEquals("reference", filing.getData().get("payment_reference"));
+        assertEquals("limited-partnership-confirmation-statement", filing.getKind());
     }
 
     private static ConfirmationStatementSubmissionJson buildSubmissionJsonForLpJourney() {

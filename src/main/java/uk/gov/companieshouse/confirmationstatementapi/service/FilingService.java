@@ -2,6 +2,7 @@ package uk.gov.companieshouse.confirmationstatementapi.service;
 
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DATE_FORMAT_YYYYMD;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_LPCS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_TYPE;
 
 import java.time.LocalDate;
@@ -86,6 +87,7 @@ public class FilingService {
             LocalDate madeUpToDate = submissionData.getMadeUpToDate();
 
             if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
+                filing.setKind(FILING_KIND_LPCS);
                 setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
                 madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
             } else {
