@@ -34,7 +34,6 @@ import uk.gov.companieshouse.confirmationstatementapi.model.json.ConfirmationSta
 import uk.gov.companieshouse.confirmationstatementapi.model.json.TradingStatusDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.registeredemailaddress.RegisteredEmailAddressDataJson;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
-import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 @Service
 public class FilingService {
