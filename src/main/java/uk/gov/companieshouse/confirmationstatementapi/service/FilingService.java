@@ -4,8 +4,10 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DAT
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_LPCS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_SLPCS;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_PFLP_SUBTYPE;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SLP_SUBTYPE;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SPFLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_TYPE;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.SCOTTISH_LIMITED_PARTNERSHIP_TYPE;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -87,13 +89,10 @@ public class FilingService {
             CompanyProfileApi companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
 
             LocalDate madeUpToDate = submissionData.getMadeUpToDate();
+            String filingType = determineFilingType(companyProfile);
 
-            if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
-                filing.setKind(FILING_KIND_LPCS);
-                setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
-                madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
-            } else if (companyProfile != null && SCOTTISH_LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
-                filing.setKind(FILING_KIND_SLPCS);
+            if (filingType != null) {
+                filing.setKind(filingType);
                 setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
                 madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
             } else {
@@ -173,5 +172,23 @@ public class FilingService {
             throw new ServiceException(e.getMessage(), e);
         }
 
+    }
+
+    public String determineFilingType(CompanyProfileApi companyProfile) {
+        if (companyProfile == null || companyProfile.getSubtype() == null) {
+            return null;
+        }
+
+        if (LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getSubtype()) || 
+                LIMITED_PARTNERSHIP_PFLP_SUBTYPE.equals(companyProfile.getSubtype())) {
+            return FILING_KIND_LPCS;
+        }
+
+        if (LIMITED_PARTNERSHIP_SLP_SUBTYPE.equals(companyProfile.getSubtype()) || 
+                LIMITED_PARTNERSHIP_SPFLP_SUBTYPE.equals(companyProfile.getSubtype())) {
+            return FILING_KIND_SLPCS;
+        }
+        
+        return null;
     }
 }
