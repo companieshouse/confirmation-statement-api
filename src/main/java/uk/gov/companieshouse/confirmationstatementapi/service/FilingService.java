@@ -4,6 +4,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DAT
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_LPCS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_SLPCS;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_LP_TYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_PFLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SPFLP_SUBTYPE;
@@ -91,10 +92,12 @@ public class FilingService {
             LocalDate madeUpToDate = submissionData.getMadeUpToDate();
             String filingType = determineFilingType(companyProfile);
 
-            if (filingType != null) {
-                filing.setKind(filingType);
-                setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
-                madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
+            if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
+                if (filingType != null) {
+                    filing.setKind(filingType);
+                    setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
+                    madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
+                }    
             } else {
                 setNoChangeJourneyFilingData(data, submissionData, madeUpToDate);
             }
@@ -179,7 +182,7 @@ public class FilingService {
             return null;
         }
 
-        if (LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getSubtype()) || 
+        if (LIMITED_PARTNERSHIP_LP_TYPE.equals(companyProfile.getSubtype()) || 
                 LIMITED_PARTNERSHIP_PFLP_SUBTYPE.equals(companyProfile.getSubtype())) {
             return FILING_KIND_LPCS;
         }

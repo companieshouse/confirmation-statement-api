@@ -11,6 +11,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_LPCS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_SLPCS;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_LP_TYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_PFLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SPFLP_SUBTYPE;
@@ -315,7 +316,7 @@ class FilingServiceTest {
     void testDetermineFilingTypeReturnsNullWhenSubtypeIsNull() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
         companyProfileApi.setSubtype(null);
         assertNull(filingService.determineFilingType(null)); 
     }
@@ -324,8 +325,8 @@ class FilingServiceTest {
     void testDetermineFilingTypeReturnsLpcsForLpSubtype() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_LP_TYPE);
         assertEquals(FILING_KIND_LPCS, filingService.determineFilingType(companyProfileApi));
     }
 
@@ -333,7 +334,7 @@ class FilingServiceTest {
     void testDetermineFilingTypeReturnsLpcsForPflpSubtype() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
         companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_PFLP_SUBTYPE);
         assertEquals(FILING_KIND_LPCS, filingService.determineFilingType(companyProfileApi));
     }
@@ -342,7 +343,7 @@ class FilingServiceTest {
     void testDetermineFilingTypeReturnsSlpcsForSlpSubtype() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
         companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_SLP_SUBTYPE);
         assertEquals(FILING_KIND_SLPCS, filingService.determineFilingType(companyProfileApi));
     }
@@ -351,7 +352,7 @@ class FilingServiceTest {
     void testDetermineFilingTypeReturnsSlpcsForSpflpSubtype() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
         companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_SPFLP_SUBTYPE);
         assertEquals(FILING_KIND_SLPCS, filingService.determineFilingType(companyProfileApi));
     }
@@ -360,7 +361,7 @@ class FilingServiceTest {
     void testDetermineFilingTypeReturnsNullForUnknownSubtype() {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
         companyProfileApi.setSubtype("UNKNOWN");
         assertNull(filingService.determineFilingType(companyProfileApi));
     }
