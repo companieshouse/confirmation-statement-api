@@ -182,16 +182,13 @@ public class FilingService {
             return null;
         }
 
-        if (LIMITED_PARTNERSHIP_LP_TYPE.equals(companyProfile.getSubtype()) || 
-                LIMITED_PARTNERSHIP_PFLP_SUBTYPE.equals(companyProfile.getSubtype())) {
-            return FILING_KIND_LPCS;
+        switch(companyProfile.getSubtype()) {
+            case LIMITED_PARTNERSHIP_LP_TYPE, LIMITED_PARTNERSHIP_PFLP_SUBTYPE:
+                return FILING_KIND_LPCS;
+            case LIMITED_PARTNERSHIP_SLP_SUBTYPE, LIMITED_PARTNERSHIP_SPFLP_SUBTYPE:
+                return FILING_KIND_SLPCS;
+            default: 
+                return null;    
         }
-
-        if (LIMITED_PARTNERSHIP_SLP_SUBTYPE.equals(companyProfile.getSubtype()) || 
-                LIMITED_PARTNERSHIP_SPFLP_SUBTYPE.equals(companyProfile.getSubtype())) {
-            return FILING_KIND_SLPCS;
-        }
-        
-        return null;
     }
 }
