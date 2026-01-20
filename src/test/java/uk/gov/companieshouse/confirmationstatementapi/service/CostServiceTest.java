@@ -19,13 +19,13 @@ class CostServiceTest {
 
     @BeforeEach
     void init() {
-        ReflectionTestUtils.setField(costService, "costAmount", "34.00");
+        ReflectionTestUtils.setField(costService, "costAmount", "50.00");
     }
     @Test
     void getCosts() {
         var result = costService.getCosts();
 
-        assertEquals("34.00", result.getAmount());
+        assertEquals("50.00", result.getAmount());
         assertEquals(Collections.singletonList("credit-card"), result.getAvailablePaymentMethods());
         assertEquals(Collections.singletonList("data-maintenance"), result.getClassOfPayment());
     }
