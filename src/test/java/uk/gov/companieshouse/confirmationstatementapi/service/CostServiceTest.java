@@ -25,7 +25,7 @@ class CostServiceTest {
     void getCosts() {
         var result = costService.getCosts();
 
-        assertEquals("34.00", result.getAmount());
+        assertEquals("50.00", result.getAmount());
         assertEquals(Collections.singletonList("credit-card"), result.getAvailablePaymentMethods());
         assertEquals(Collections.singletonList("data-maintenance"), result.getClassOfPayment());
     }
