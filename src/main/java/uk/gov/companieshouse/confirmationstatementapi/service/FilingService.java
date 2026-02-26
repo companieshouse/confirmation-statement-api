@@ -110,7 +110,13 @@ public class FilingService {
             }
 
             filing.setData(data);
-            filing.setCost(costAmount);
+
+            if (isPayable) {
+                filing.setCost(costAmount);
+            } else {
+                filing.setCost("0");
+            }
+
             setDescription(filing, madeUpToDate);
         } else {
             throw new SubmissionNotFoundException(
