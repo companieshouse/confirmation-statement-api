@@ -44,7 +44,7 @@ public class FilingService {
     @Value("${CONFIRMATION_STATEMENT_DESCRIPTION_NO_UPDATES}")
     private String filingDescription;
 
-    @Value("${OE01_COST}")
+    @Value("${CS01_COST}")
     private String costAmount;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
