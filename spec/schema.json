@@ -1045,8 +1045,8 @@
         "kind": {
           "type": "string"
         },
-          "cost": {
-            "type": "string"
+        "cost": {
+          "type": "string"
       }
     },
     "registeredEmailAddressResponse": {

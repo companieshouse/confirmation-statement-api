@@ -44,6 +44,9 @@ public class FilingService {
     @Value("${CONFIRMATION_STATEMENT_DESCRIPTION_NO_UPDATES}")
     private String filingDescription;
 
+    @Value("${OE01_COST}")
+    private String costAmount;
+
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
 
     private final ConfirmationStatementService confirmationStatementService;
@@ -107,6 +110,7 @@ public class FilingService {
             }
 
             filing.setData(data);
+            filing.setCost(costAmount);
             setDescription(filing, madeUpToDate);
         } else {
             throw new SubmissionNotFoundException(
