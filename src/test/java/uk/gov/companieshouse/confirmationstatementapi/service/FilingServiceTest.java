@@ -98,6 +98,11 @@ class FilingServiceTest {
         transactionLinks.setPayment("/12345678/payment");
         transaction.setLinks(transactionLinks);
         transaction.setCompanyNumber(COMPANY_NUMBER);
+
+
+        ReflectionTestUtils.setField(filingService, "costAmount", "34.00");
+        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
+
     }
 
     private void getTransactionPaymentLinkMock() throws ApiErrorResponseException, URIValidationException {
@@ -366,6 +371,86 @@ class FilingServiceTest {
         assertNull(filingService.determineFilingType(companyProfileApi));
     }
 
+    @Test
+    void testCostIsSetWhenPayable() throws Exception {
+        paymentGetMocks();
+        getTransactionPaymentLinkMock();
+
+        ReflectionTestUtils.setField(filingService, "costAmount", "34.00");
+
+        ConfirmationStatementSubmissionJson submission = buildSubmissionJson(null, null);
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(submission);
+
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        assertEquals("34.00", filing.getCost(), "Expected costAmount when payment link exists");
+    }
+
+    @Test
+    void testCostIsZeroWhenNonPayable() throws Exception {
+        transaction.getLinks().setPayment(null);
+
+        ReflectionTestUtils.setField(filingService, "costAmount", "34.00");
+
+        ConfirmationStatementSubmissionJson submission = buildSubmissionJson(null, null);
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(submission);
+
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        assertEquals("0", filing.getCost(), "Expected zero cost when no payment is taken");
+    }
+
+    @Test
+    void testCostIsZeroForLpJourneyWhenNonPayable() throws Exception {
+        transaction.getLinks().setPayment(null);
+
+        ReflectionTestUtils.setField(filingService, "costAmount", "34.00");
+
+        ConfirmationStatementSubmissionJson submission = buildSubmissionJsonForLpJourney();
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(submission);
+
+        CompanyProfileApi companyProfile = new CompanyProfileApi();
+        companyProfile.setCompanyNumber(COMPANY_NUMBER);
+        companyProfile.setType(LIMITED_PARTNERSHIP_TYPE);
+        companyProfile.setSubtype(LIMITED_PARTNERSHIP_LP_TYPE);
+
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        assertEquals("0", filing.getCost(), "LP journey should also return zero cost when no payment is taken");
+        assertEquals("limited-partnership-confirmation-statement", filing.getKind());
+    }
+
+    @Test
+    void testCostIsSetForLpJourneyWhenPayable() throws Exception {
+
+        paymentGetMocks();
+        getTransactionPaymentLinkMock();
+
+        ReflectionTestUtils.setField(filingService, "costAmount", "34.00");
+
+        ConfirmationStatementSubmissionJson submission = buildSubmissionJsonForLpJourney();
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(submission);
+
+        CompanyProfileApi companyProfile = new CompanyProfileApi();
+        companyProfile.setCompanyNumber(COMPANY_NUMBER);
+        companyProfile.setType(LIMITED_PARTNERSHIP_TYPE);
+        companyProfile.setSubtype(LIMITED_PARTNERSHIP_LP_TYPE);
+
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        assertEquals("34.00", filing.getCost());
+    }
+
     private static ConfirmationStatementSubmissionJson buildSubmissionJsonForLpJourney() {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         ConfirmationStatementSubmissionDataJson confirmationStatementSubmissionDataJson = new ConfirmationStatementSubmissionDataJson();
@@ -423,4 +508,6 @@ class FilingServiceTest {
 
         return sicCodeDataJson;
     }
+
+
 }
