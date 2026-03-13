@@ -5,42 +5,74 @@
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.12</version>
+        <version>2.1.13</version>
     </parent>
 
     <artifactId>confirmation-statement-api</artifactId>
     <version>unversioned</version>
     <name>confirmation-statement-api</name>
     <description>API for confirmation statement service</description>
+
     <properties>
         <java.version>21</java.version>
-        <spring-boot-starter.version>3.5.7</spring-boot-starter.version>
-        <spring-context.version>6.2.10</spring-context.version>
-        <api-sdk-java.version>6.4.1</api-sdk-java.version>
-        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-        <org.mapstruct.version>1.6.3</org.mapstruct.version>
-        <tomcat-embed-core.version>11.0.14</tomcat-embed-core.version>
-        <spring-web.version>6.2.10</spring-web.version>
-        <private-api-sdk-java.version>4.0.337</private-api-sdk-java.version>
-        <api-security-java.version>2.0.10</api-security-java.version>
-        <api-sdk-manager-java-library.version>3.0.10</api-sdk-manager-java-library.version>
-        <structured-logging.version>3.0.40</structured-logging.version>
-        <apache-log4j.version>2.25.1</apache-log4j.version>
-        <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
-        <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-lang3.version>3.20.0</commons-lang3.version>
-        <opentelemetry-version>2.14.0</opentelemetry-version>
-        <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
-        <plexus-utils.version>4.0.2</plexus-utils.version>
-        <guava.version>33.5.0-android</guava.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <!-- Plugin Versions -->
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
+        <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
+        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
+
+        <!-- Companies House Internal Dependency Versions -->
+        <api-sdk-java.version>6.6.9</api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.477</private-api-sdk-java.version>
+        <api-security-java.version>2.0.24</api-security-java.version>
+        <api-sdk-manager-java-library.version>3.0.16</api-sdk-manager-java-library.version>
+        <structured-logging.version>3.0.51</structured-logging.version>
+
+        <!-- Dependency Versions -->
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
+        <spring-boot.version>3.5.11</spring-boot.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+        <tomcat-embed-core.version>11.0.18</tomcat-embed-core.version>
+        <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
+        <opentelemetry.version>2.25.0</opentelemetry.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
+        <log4j-bom.version>2.25.3</log4j-bom.version>
+        <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <guava.version>33.5.0-jre</guava.version>
+        <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
+        <jackson-bom.version>2.21.1</jackson-bom.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <!-- Source: https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
+        <plexus-utils.version>4.0.2</plexus-utils.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
+        <junit-jupiter.version>6.0.3</junit-jupiter.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
+        <kotlin.version>2.2.21</kotlin.version>
+
+        <!-- Sonar Properties        -->
+        <!--suppress XmlUnresolvedReference -->
         <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+        <!--suppress CheckTagEmptyBody -->
         <sonar.login></sonar.login>
+        <!--suppress CheckTagEmptyBody -->
         <sonar.password></sonar.password>
         <sonar.projectName>confirmation-statement-api</sonar.projectName>
         <sonar.projectKey>uk.gov.companieshouse:confirmation-statement-api</sonar.projectKey>
     </properties>
+
     <profiles>
         <profile>
             <id>sonar-pr-analysis</id>
@@ -49,104 +81,78 @@
             </properties>
         </profile>
     </profiles>
+
     <dependencyManagement>
         <dependencies>
+
             <dependency>
-                <groupId>io.opentelemetry.instrumentation</groupId>
-                <artifactId>opentelemetry-instrumentation-bom</artifactId>
-                <version>${opentelemetry-version}</version>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-bom</artifactId>
+                <version>${opentelemetry.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
-                <version>${apache-log4j.version}</version>
+                <version>${log4j-bom.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>${plexus-utils.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-bom</artifactId>
+                <version>${kotlin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot-starter.version}</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring-context.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-beanutils</groupId>
-                <artifactId>commons-beanutils</artifactId>
-                <version>${commons-beanutils.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>${tomcat-embed-core.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-lang</groupId>
-                        <artifactId>commons-lang</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-websocket</artifactId>
-                <version>${tomcat-embed-core.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-lang</groupId>
-                        <artifactId>commons-lang</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-el</artifactId>
-                <version>${tomcat-embed-core.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-lang</groupId>
-                        <artifactId>commons-lang</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring-web.version}</version>
-            </dependency>
-
-          <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>${plexus-utils.version}</version>
-          </dependency>
-
-          <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-          </dependency>
-
-          <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-          </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
 
         <dependency>
@@ -235,7 +241,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-starter.version}</version>
+                <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>uk.gov.companieshouse.confirmationstatementapi.ConfirmationStatementApiApplication
                     </mainClass>
