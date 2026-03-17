@@ -222,6 +222,7 @@
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-spring-boot-starter</artifactId>
         </dependency>
+
         <dependency>
             <artifactId>structured-logging</artifactId>
             <groupId>uk.gov.companieshouse</groupId>
