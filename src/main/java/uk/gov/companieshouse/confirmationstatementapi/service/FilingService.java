@@ -12,10 +12,14 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIM
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,7 +102,7 @@ public class FilingService {
             if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
                 if (filingType != null) {
                     filing.setKind(filingType);
-                    setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
+                    setLimitedPartnershipFilingData(data, submissionData, madeUpToDate, companyProfile);
                     madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
                 }    
             } else {
@@ -141,13 +145,35 @@ public class FilingService {
 
     }
 
-    private void setLimitedPartnershipFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate) {
+    private void setLimitedPartnershipFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate, CompanyProfileApi companyProfile) {
         data.put("confirmation_statement_date", getMadeUpToDate(submissionData, madeUpToDate) );
 
         if (submissionData.getSicCodeData() != null && submissionData.getSicCodeData().getSicCode() != null) {
             List<SicCodeJson> sicCodeJsonList = submissionData.getSicCodeData().getSicCode();
-            data.put("sic_codes",  sicCodeJsonList.stream().map(SicCodeJson::getCode).toList() );
+            if (isChangeSicCode(sicCodeJsonList, companyProfile.getSicCodes())) {
+                data.put("sic_codes",  sicCodeJsonList.stream().map(SicCodeJson::getCode).toList());
+            }
         }
+    }
+
+    private boolean isChangeSicCode(List<SicCodeJson> sicCodeJsonList, String[] companyProfileSicCodeList) {
+        if (null != sicCodeJsonList) {
+            if (null == companyProfileSicCodeList) {
+                return true;
+            }
+
+            Set<String> sicCodeJsonSet = sicCodeJsonList.stream()
+                    .map(SicCodeJson::getCode)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+
+            Set<String> sicCodeCompanyProfileSet = Arrays.stream(companyProfileSicCodeList)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+
+            return !sicCodeJsonSet.equals(sicCodeCompanyProfileSet);
+        }
+        return false;
     }
 
     private void setDescription(FilingApi filing, LocalDate madeUpToDate) {
