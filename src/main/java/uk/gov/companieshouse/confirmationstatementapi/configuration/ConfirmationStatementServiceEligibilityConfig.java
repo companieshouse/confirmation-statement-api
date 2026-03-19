@@ -1,9 +1,12 @@
 package uk.gov.companieshouse.confirmationstatementapi.configuration;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +29,9 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService
 @Configuration
 public class ConfirmationStatementServiceEligibilityConfig {
 
+    @Autowired
+    public Supplier<LocalDate> localDateNow;
+
     @Value("${ALLOWED_COMPANY_STATUSES}")
     private Set<String> allowedCompanyStatuses;
 
@@ -38,8 +44,14 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${WEB_FILING_COMPANY_TYPES}")
     private Set<String> webFilingCompanyTypes;
 
-    @Value("${FEATURE_FLAG_SHAREHOLDER_COUNT_VALIDATION_09062021:true}")
-    private boolean shareholderCountalidationFeatureFlag;
+    @Value("${CS01_SHAREHOLDER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01ShareholderCountValidationCompanyTypeBaselineSet;
+
+    @Value("${CS01_SHAREHOLDER_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01ShareholderCountValidationCompanyTypeTargetSet;
+
+    @Value("${CS01_SHAREHOLDER_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-09}")
+    private LocalDate cs01ShareholderCountValidationTargetActivationDate;
 
     @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
     private boolean pscValidationFeatureFlag;
@@ -63,7 +75,10 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, multipleOfficerJourneyFeatureFlag);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
-        var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
+        var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
+                cs01ShareholderCountValidationCompanyTypeBaselineSet,
+                cs01ShareholderCountValidationCompanyTypeTargetSet,
+                cs01ShareholderCountValidationTargetActivationDate, localDateNow);
 
         /* Check 1: Company Status */
         listOfRules.add(companyStatusValidation);
