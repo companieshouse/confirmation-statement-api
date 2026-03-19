@@ -14,7 +14,10 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIM
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,6 +88,9 @@ class FilingServiceTest {
 
     @Mock
     private CompanyProfileService companyProfileService;
+
+    @Mock
+    private SicCodeComparisonService sicCodeComparisonService;
 
     private Transaction transaction;
 
@@ -308,33 +314,35 @@ class FilingServiceTest {
 
     @ParameterizedTest
     @CsvSource({
-        "'70229,71122,74909,01120', '70229,71122,74909,01120', ''",
-        "'70229,71122,74909,01120', '01120,74909,71122,70229', ''",
-        "'70229,71122,74909,01120', '70229,01120', '70229,01120'",
-        "'70229,71122,74909,01120', '74909', '74909'",
-        "'', '70229,71122', '70229,71122'",
-        "'01120,70229', '70229,74909', '70229,74909'",
-        "'71122', '71122,70229,74909,01120', '71122,70229,74909,01120'"
+        "'70229,71122,74909,01120', '70229,71122,74909,01120', false, ''",
+        "'70229,71122,74909,01120', '01120,74909,71122,70229', false, ''",
+        "'70229,71122,74909,01120', '70229,01120', true, '70229,01120'",
+        "'70229,71122,74909,01120', '74909', true, '74909'",
+        "'', '70229,71122', true, '70229,71122'",
+        "'01120,70229', '70229,74909', true, '70229,74909'",
+        "'71122', '71122,70229,74909,01120', true, '71122,70229,74909,01120'"
     })
-    void testSicCodeIsChangeOrNot(String companyProfileSicCodes, String submissionSicCodes, String finalExpectedFilingSicCodes) throws SubmissionNotFoundException, ServiceException,
+    void shouldSetCorrectSicCodeDataInFilingData(String companyProfileSicCodes, String submissionSicCodes, boolean expectedHasDifferences, String expectedFilingSicCodes) throws SubmissionNotFoundException, ServiceException,
             URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
         String[] companyProfileSicCodeList = companyProfileSicCodes.isBlank() ? null : companyProfileSicCodes.split(",");
         List<String> submissionSicCodeList = submissionSicCodes.isBlank() ? null : List.of((submissionSicCodes.split(",")));
-        List<String> finalExpectedFilingSicCodeList = finalExpectedFilingSicCodes.isBlank() ? null : List.of((finalExpectedFilingSicCodes.split(",")));
+        SicCodeDataJson sicCodeDataJson = buildSicCodeDataJson(submissionSicCodeList);
+        List<String> expectedFilingSicCodeList = expectedFilingSicCodes.isBlank() ? null : List.of((expectedFilingSicCodes.split(",")));
 
         paymentGetMocks();
         getTransactionPaymentLinkMock();
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson = buildSubmissionJsonForLpJourney();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        confirmationStatementSubmissionJson.getData().setSicCodeData(buildSicCodeDataJson(submissionSicCodeList));
+        confirmationStatementSubmissionJson.getData().setSicCodeData(sicCodeDataJson);
         CompanyProfileApi companyProfile = buildLpCompanyProfile();
         companyProfile.setSicCodes(companyProfileSicCodeList);
 
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
+        when(sicCodeComparisonService.hasDifferences(sicCodeDataJson.getSicCode(), companyProfileSicCodeList)).thenReturn(expectedHasDifferences);
 
         FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
-        assertEquals(finalExpectedFilingSicCodeList, filing.getData().get("sic_codes"));
+        assertEquals(expectedFilingSicCodeList, filing.getData().get("sic_codes"));
     }
 
     @Test 
@@ -543,7 +551,7 @@ class FilingServiceTest {
     }
 
     private static SicCodeDataJson buildSicCodeDataJson() {
-        List<String> sicCodeList = new ArrayList<>(Arrays.asList("70229", "71122", "74909", "01120"));
+        List<String> sicCodeList = List.of("70229", "71122", "74909", "01120");
         return buildSicCodeDataJson(sicCodeList);
     }
 
