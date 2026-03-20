@@ -19,12 +19,17 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIM
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -88,6 +93,9 @@ class FilingServiceTest {
 
     @Mock
     private CompanyProfileService companyProfileService;
+
+    @Mock
+    private SicCodeComparisonService sicCodeComparisonService;
 
     private Transaction transaction;
 
@@ -292,10 +300,7 @@ class FilingServiceTest {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJsonForLpJourney();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
         ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        CompanyProfileApi companyProfileApi = buildLpCompanyProfile();
         confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2025-10-13");
         confirmationStatementSubmissionJson.getData().setSicCodeData(buildSicCodeDataJson());
 
@@ -310,6 +315,39 @@ class FilingServiceTest {
         assertEquals("payment-method", filing.getData().get("payment_method"));
         assertEquals("reference", filing.getData().get("payment_reference"));
         assertEquals("limited-partnership-confirmation-statement", filing.getKind());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "'70229,71122,74909,01120', '70229,71122,74909,01120', false, ''",
+        "'70229,71122,74909,01120', '01120,74909,71122,70229', false, ''",
+        "'70229,71122,74909,01120', '70229,01120', true, '70229,01120'",
+        "'70229,71122,74909,01120', '74909', true, '74909'",
+        "'', '70229,71122', true, '70229,71122'",
+        "'01120,70229', '70229,74909', true, '70229,74909'",
+        "'71122', '71122,70229,74909,01120', true, '71122,70229,74909,01120'"
+    })
+    void shouldSetCorrectSicCodeDataInFilingData(String companyProfileSicCodes, String submissionSicCodes, boolean expectedHasDifferences, String expectedFilingSicCodes) throws SubmissionNotFoundException, ServiceException,
+            URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
+        String[] companyProfileSicCodeList = companyProfileSicCodes.isBlank() ? null : companyProfileSicCodes.split(",");
+        List<String> submissionSicCodeList = submissionSicCodes.isBlank() ? null : List.of((submissionSicCodes.split(",")));
+        SicCodeDataJson sicCodeDataJson = buildSicCodeDataJson(submissionSicCodeList);
+        List<String> expectedFilingSicCodeList = expectedFilingSicCodes.isBlank() ? null : List.of((expectedFilingSicCodes.split(",")));
+
+        paymentGetMocks();
+        getTransactionPaymentLinkMock();
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson = buildSubmissionJsonForLpJourney();
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
+        confirmationStatementSubmissionJson.getData().setSicCodeData(sicCodeDataJson);
+        CompanyProfileApi companyProfile = buildLpCompanyProfile();
+        companyProfile.setSicCodes(companyProfileSicCodeList);
+
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
+        when(sicCodeComparisonService.hasDifferences(sicCodeDataJson.getSicCode(), companyProfileSicCodeList)).thenReturn(expectedHasDifferences);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+        assertEquals(expectedFilingSicCodeList, filing.getData().get("sic_codes"));
     }
 
     @Test 
@@ -451,6 +489,15 @@ class FilingServiceTest {
         assertEquals("34.00", filing.getCost());
     }
 
+    private static CompanyProfileApi buildLpCompanyProfile() {
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
+        companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
+        companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+
+        return companyProfileApi;
+    }
+
     private static ConfirmationStatementSubmissionJson buildSubmissionJsonForLpJourney() {
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson = new ConfirmationStatementSubmissionJson();
         ConfirmationStatementSubmissionDataJson confirmationStatementSubmissionDataJson = new ConfirmationStatementSubmissionDataJson();
@@ -492,9 +539,8 @@ class FilingServiceTest {
         return confirmationStatementSubmissionJson;
     }
 
-    private SicCodeDataJson buildSicCodeDataJson() {
+    private static SicCodeDataJson buildSicCodeDataJson(List<String> sicCodeList) {
         List<SicCodeJson> sicCodeJsonList = new ArrayList<>();
-        List<String> sicCodeList = new ArrayList<>(Arrays.asList("70229", "71122", "74909", "01120"));
         sicCodeList
                 .stream()
                 .forEach(sicCode -> {
@@ -507,6 +553,11 @@ class FilingServiceTest {
         sicCodeDataJson.setSicCode(sicCodeJsonList);
 
         return sicCodeDataJson;
+    }
+
+    private static SicCodeDataJson buildSicCodeDataJson() {
+        List<String> sicCodeList = List.of("70229", "71122", "74909", "01120");
+        return buildSicCodeDataJson(sicCodeList);
     }
 
 

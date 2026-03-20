@@ -52,14 +52,17 @@ public class FilingService {
     private final ConfirmationStatementService confirmationStatementService;
     private final ApiClientService apiClientService;
     private final CompanyProfileService companyProfileService;
+    private final SicCodeComparisonService sicCodeComparisonService;
 
     @Autowired
     public FilingService(ConfirmationStatementService confirmationStatementService,
                          ApiClientService apiClientService,
-                         CompanyProfileService companyProfileService) {
+                         CompanyProfileService companyProfileService,
+                         SicCodeComparisonService sicCodeComparisonService) {
         this.confirmationStatementService = confirmationStatementService;
         this.apiClientService = apiClientService;
         this.companyProfileService = companyProfileService;
+        this.sicCodeComparisonService = sicCodeComparisonService;
     }
 
     public FilingApi generateConfirmationFiling(String confirmationStatementId, Transaction transaction) throws SubmissionNotFoundException, ServiceException, CompanyNotFoundException {
@@ -98,7 +101,7 @@ public class FilingService {
             if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
                 if (filingType != null) {
                     filing.setKind(filingType);
-                    setLimitedPartnershipFilingData(data, submissionData, madeUpToDate);
+                    setLimitedPartnershipFilingData(data, submissionData, madeUpToDate, companyProfile);
                     madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
                 }    
             } else {
@@ -141,12 +144,14 @@ public class FilingService {
 
     }
 
-    private void setLimitedPartnershipFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate) {
+    private void setLimitedPartnershipFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate, CompanyProfileApi companyProfile) {
         data.put("confirmation_statement_date", getMadeUpToDate(submissionData, madeUpToDate) );
 
         if (submissionData.getSicCodeData() != null && submissionData.getSicCodeData().getSicCode() != null) {
             List<SicCodeJson> sicCodeJsonList = submissionData.getSicCodeData().getSicCode();
-            data.put("sic_codes",  sicCodeJsonList.stream().map(SicCodeJson::getCode).toList() );
+            if (sicCodeComparisonService.hasDifferences(sicCodeJsonList, companyProfile.getSicCodes())) {
+                data.put("sic_codes",  sicCodeJsonList.stream().map(SicCodeJson::getCode).toList());
+            }
         }
     }
 
