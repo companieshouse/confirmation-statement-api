@@ -53,8 +53,23 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${CS01_SHAREHOLDER_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-09}")
     private LocalDate cs01ShareholderCountValidationTargetActivationDate;
 
-    @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
-    private boolean pscValidationFeatureFlag;
+    @Value("${CS01_SINGLE_PSC_VALIDATION_COMPANY_TYPES_BASELINE:}")
+    private Set<String> cs01SinglePscValidationCompanyTypesBaseline;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_COMPANY_TYPES_TARGET:}")
+    private Set<String> cs01SinglePscValidationCompanyTypesTarget;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
+    private LocalDate cs01SinglePscValidationTargetActivationDate;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_COMPANY_TYPES_BASELINE:}")
+    private Set<String> cs01MultiplePscValidationCompanyTypesBaseline;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_COMPANY_TYPES_TARGET:}")
+    private Set<String> cs01MultiplePscValidationCompanyTypesTarget;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
+    private LocalDate cs01MultiplePscValidationTargetActivationDate;
 
     @Value("${FEATURE_FLAG_TRADED_STATUS_VALIDATION_150621:true}")
     private boolean tradedStatusFeatureFlag;
@@ -73,7 +88,13 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, multipleOfficerJourneyFeatureFlag);
-        var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
+        var companyPscCountValidation = new CompanyPscCountValidation(pscService,
+                cs01MultiplePscValidationCompanyTypesBaseline,
+                cs01MultiplePscValidationCompanyTypesTarget,
+                cs01MultiplePscValidationTargetActivationDate,
+                localDateNow,
+                true
+        );
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
                 cs01ShareholderCountValidationCompanyTypeBaselineSet,
