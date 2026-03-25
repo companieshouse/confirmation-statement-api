@@ -1,5 +1,9 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,21 +14,16 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Set;
-import java.util.function.Supplier;
-
 @ExtendWith(MockitoExtension.class)
 class CompanyProfileApplicableEligibilityRuleTest {
 
     private static final String TARGET_ACTIVATION_DATE = "2026-01-01";
-    private static final String BEFORE_TARGET_DATE = "2025-07-01";
-    private static final String AFTER_TARGET_DATE = "2026-07-01";
+    private static final String NOW_DATE = "2026-05-01";
+    private static final String MUD_BEFORE_TARGET_DATE = "2025-07-01";
+    private static final String MUD_AFTER_TARGET_DATE = "2026-07-01";
 
-    private String nowDate;
     private final Supplier<LocalDate> supplyNowDate =
-            () -> LocalDate.parse(nowDate);
+            () -> LocalDate.parse(NOW_DATE);
 
     private static final String[] COMPANY_TYPES_BASELINE = {"comp1","comp2","comp3"};
     private static final String[] COMPANY_TYPES_TARGET = {"comp4","comp5","comp6"};
@@ -38,49 +37,63 @@ class CompanyProfileApplicableEligibilityRuleTest {
     }
 
     @Test
-    void testCompanyApplicableForRuleReturnsTrueAfterActivationDateCompanyInTarget() {
-        nowDate = AFTER_TARGET_DATE;
+    void testCompanyApplicableForRuleReturnsTrueMuDAfterActivationDateCompanyInTarget() {
         testRule = initialiseTestRule();
-        Assertions.assertTrue(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp5")));
+        Assertions.assertTrue(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp5"),
+                LocalDate.parse(MUD_AFTER_TARGET_DATE)));
     }
 
     @Test
-    void testCompanyApplicableForRuleReturnsFalseAfterActivationDateCompanyNotInTarget() {
-        nowDate = AFTER_TARGET_DATE;
+    void testCompanyApplicableForRuleReturnsFalseMuDAfterActivationDateCompanyNotInTarget() {
         testRule = initialiseTestRule();
-        Assertions.assertFalse(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp2")));
+        Assertions.assertFalse(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp2"),
+                LocalDate.parse(MUD_AFTER_TARGET_DATE)));
     }
 
     @Test
-    void testCompanyApplicableForRuleReturnsTrueBeforeActivationDateCompanyInBaseline() {
-        nowDate = BEFORE_TARGET_DATE;
+    void testCompanyApplicableForRuleReturnsTrueMuDBeforeActivationDateCompanyInBaseline() {
         testRule = initialiseTestRule();
-        Assertions.assertTrue(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp2")));
+        Assertions.assertTrue(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp2"),
+                LocalDate.parse(MUD_BEFORE_TARGET_DATE)));
     }
 
     @Test
-    void testCompanyApplicableForRuleReturnsFalseBeforeActivationDateCompanyNotInBaseline() {
-        nowDate = BEFORE_TARGET_DATE;
+    void testCompanyApplicableForRuleReturnsFalseMuDBeforeActivationDateCompanyNotInBaseline() {
         testRule = initialiseTestRule();
-        Assertions.assertFalse(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp5")));
+        Assertions.assertFalse(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp5"),
+                LocalDate.parse(MUD_BEFORE_TARGET_DATE)));
     }
 
     @Test
-    void testCompanyApplicableForRuleReturnsFalseCompanyTypesEmpty() {
-        nowDate = BEFORE_TARGET_DATE;
+    void testCompanyApplicableForRuleReturnsFalseMuDCompanyTypesEmpty() {
         testRule = new TestCompanyProfileApplicableEligibilityRule(Collections.emptySet(),
                 Collections.emptySet(), targetActivationDate,
                 supplyNowDate);
-        Assertions.assertFalse(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp5")));
+        Assertions.assertFalse(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp5"),
+                LocalDate.parse(MUD_BEFORE_TARGET_DATE)));
     }
 
     @Test
     void testCompanyApplicableForRuleReturnsFalseCompanyProfileNull() {
-        nowDate = BEFORE_TARGET_DATE;
         testRule = new TestCompanyProfileApplicableEligibilityRule(Collections.emptySet(),
                 Collections.emptySet(), targetActivationDate,
                 supplyNowDate);
-        Assertions.assertFalse(testRule.companyApplicableForRule(null));
+        Assertions.assertFalse(testRule.companyApplicableForRule(null,
+                LocalDate.parse(MUD_BEFORE_TARGET_DATE)));
+    }
+
+    @Test
+    void testCompanyApplicableForRuleReturnsFalseNoMuDCompanyNotInTarget() {
+        testRule = initialiseTestRule();
+        Assertions.assertFalse(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp2"),
+                null));
+    }
+
+    @Test
+    void testCompanyApplicableForRuleReturnsTrueNoMuDCompanyInTarget() {
+        testRule = initialiseTestRule();
+        Assertions.assertTrue(testRule.companyApplicableForRule(createTestCompanyProfileApi("comp5"),
+                null));
     }
 
     private CompanyProfileApplicableEligibilityRule initialiseTestRule() {
@@ -103,7 +116,7 @@ class CompanyProfileApplicableEligibilityRuleTest {
         }
 
         @Override
-        public void validate(CompanyProfileApi input) throws EligibilityException, ServiceException {
+        public void validateAgainstMadeUpDate(CompanyProfileApi input, LocalDate madeUpDate) throws EligibilityException, ServiceException {
             /*
                 Not called within the CompanyProfileApplicableEligibilityRuleTest tests
              */

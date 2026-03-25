@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.function.Supplier;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.CompanyProfileApplicableEligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
@@ -8,10 +11,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.function.Supplier;
-
 public class CompanyShareholderCountValidation extends CompanyProfileApplicableEligibilityRule {
 
     private final ShareholderService shareholderService;
@@ -19,16 +18,15 @@ public class CompanyShareholderCountValidation extends CompanyProfileApplicableE
     public CompanyShareholderCountValidation(ShareholderService shareholderService,
                                              Set<String> baselineCompanyTypes,
                                              Set<String> targetCompanyTypes,
-                                             LocalDate activationDate,
-                                             Supplier<LocalDate> localDateNow) {
+                                             LocalDate activationDate, Supplier<LocalDate> localDateNow) {
         super(baselineCompanyTypes, targetCompanyTypes, activationDate, localDateNow);
 
         this.shareholderService = shareholderService;
     }
 
     @Override
-    public void validate(CompanyProfileApi companyProfile) throws EligibilityException, ServiceException {
-        if (!companyApplicableForRule(companyProfile)) {
+    public void validateAgainstMadeUpDate(CompanyProfileApi companyProfile, LocalDate madeUpDate) throws EligibilityException, ServiceException {
+        if (!companyApplicableForRule(companyProfile, madeUpDate)) {
             ApiLogger.debug("SHAREHOLDER COUNT VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
