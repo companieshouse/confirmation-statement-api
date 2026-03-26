@@ -18,7 +18,7 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTr
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeCS01FilingNotRequiredValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationForWebFiling;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationPaperOnly;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.IdentityVerifiedOfficersValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.DirectorsIdentityVerifiedValidation;
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
@@ -51,8 +51,8 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
 
-    @Value("${FEATURE_FLAG_IDENTITY_VERIFIED_OFFICERS_01042026:true}")
-    private boolean identityVerifiedOfficersJourneyFeatureFlag;
+    @Value("${FEATURE_FLAG_DIRECTORS_IDENTITY_VERIFIED_01042026:true}")
+    private boolean directorsIdentityVerifiedFeatureFlag;
 
     @Bean
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService,
@@ -68,7 +68,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
-        var identityVerifiedOfficesValidation = new IdentityVerifiedOfficersValidation(officerService, identityVerifiedOfficersJourneyFeatureFlag);
+        var identityVerifiedOfficesValidation = new DirectorsIdentityVerifiedValidation(officerService, directorsIdentityVerifiedFeatureFlag);
 
         /* Check 1: Company Status */
         listOfRules.add(companyStatusValidation);
