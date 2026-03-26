@@ -125,7 +125,6 @@ class DirectorsIdentityVerifiedValidationTest {
         validation = new DirectorsIdentityVerifiedValidation(officerService, false);
         CompanyOfficerApi director = createOfficer(OfficerRoleApi.DIRECTOR, false, null);
         officersApi.setItems(List.of(director));
-        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(officersApi);
         assertDoesNotThrow(() -> validation.validate(companyProfileApi));
     }
 }

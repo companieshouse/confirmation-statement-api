@@ -21,26 +21,27 @@ public class DirectorsIdentityVerifiedValidation implements EligibilityRule<Comp
     private final boolean directorsIdentityVerifiedFeatureFlag;
 
     @Autowired
-    public DirectorsIdentityVerifiedValidation(OfficerService officerService, boolean multipleOfficerJourneyFlag) {
+    public DirectorsIdentityVerifiedValidation(OfficerService officerService, boolean directorsIdentityVerifiedFeatureFlag) {
         this.officerService = officerService;
-        this.directorsIdentityVerifiedFeatureFlag = multipleOfficerJourneyFlag;
-        ApiLogger.debug(String.format("IDENTITY VERIFIED DIRECTORS FEATURE FLAG: %s", this.directorsIdentityVerifiedFeatureFlag));
+        this.directorsIdentityVerifiedFeatureFlag = directorsIdentityVerifiedFeatureFlag;
     }
 
     @Override
     public void validate(CompanyProfileApi companyProfileApi) throws EligibilityException, ServiceException {
-        ApiLogger.info(String.format("Validating Directors Identity Verification for: %s", companyProfileApi.getCompanyNumber()));
-        OfficersApi officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
-
-        if (directorsIdentityVerifiedFeatureFlag) {
-            for (CompanyOfficerApi officer : officers.getItems()) {
-                if (!isDirectorVerified(officer)) {
-                    ApiLogger.info(String.format("Directors Identity Verification validation failed for: %s.", companyProfileApi.getCompanyNumber()));
-                    throw new EligibilityException(EligibilityStatusCode.INVALID_DIRECTORS_NOT_ALL_IDENTITY_VERIFIED);
-                }
-            }
-            ApiLogger.info(String.format("Directors Identity Verification validation passed for: %s", companyProfileApi.getCompanyNumber()));
+        if (!directorsIdentityVerifiedFeatureFlag) {
+            ApiLogger.debug("DIRECTORS IDENTITY VERIFIED FEATURE FLAG off skipping validation");
+            return;
         }
+        ApiLogger.info(String.format("Validating Directors Identity Verification for: %s", companyProfileApi.getCompanyNumber()));
+
+        OfficersApi officers = officerService.getOfficers(companyProfileApi.getCompanyNumber());
+        for (CompanyOfficerApi officer : officers.getItems()) {
+            if (!isDirectorVerified(officer)) {
+                ApiLogger.info(String.format("Directors Identity Verification validation failed for: %s.", companyProfileApi.getCompanyNumber()));
+                throw new EligibilityException(EligibilityStatusCode.INVALID_DIRECTORS_NOT_ALL_IDENTITY_VERIFIED);
+            }
+        }
+        ApiLogger.info(String.format("Directors Identity Verification validation passed for: %s", companyProfileApi.getCompanyNumber()));
     }
 
     private boolean isDirectorVerified(CompanyOfficerApi officer) {
