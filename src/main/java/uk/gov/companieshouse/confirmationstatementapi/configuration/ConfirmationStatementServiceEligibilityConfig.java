@@ -88,13 +88,23 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, multipleOfficerJourneyFeatureFlag);
-        var companyPscCountValidation = new CompanyPscCountValidation(pscService,
+        var companyMultiplePscValidation = new CompanyPscCountValidation(
+                pscService,
                 cs01MultiplePscValidationCompanyTypesBaseline,
                 cs01MultiplePscValidationCompanyTypesTarget,
                 cs01MultiplePscValidationTargetActivationDate,
                 localDateNow,
                 true
         );
+        var companySinglePscValidation = new CompanyPscCountValidation(
+                pscService,
+                cs01SinglePscValidationCompanyTypesBaseline,
+                cs01SinglePscValidationCompanyTypesTarget,
+                cs01SinglePscValidationTargetActivationDate,
+                localDateNow,
+                false
+        );
+
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
                 cs01ShareholderCountValidationCompanyTypeBaselineSet,
@@ -112,7 +122,9 @@ public class ConfirmationStatementServiceEligibilityConfig {
         /* Check 3: Officer -> Shareholder -> PSC */
         listOfRules.add(companyOfficerValidation);
         listOfRules.add(companyShareholderValidation);
-        listOfRules.add(companyPscCountValidation);
+
+        listOfRules.add(companyMultiplePscValidation);
+        listOfRules.add(companySinglePscValidation);
 
         /* Check 4: Company traded status */
         listOfRules.add(companyTradedStatusValidation);
