@@ -116,7 +116,9 @@ public class ConfirmationStatementService {
     public ResponseEntity<Object> createConfirmationStatement(Transaction transaction, String passthroughHeader) throws ServiceException {
         String companyNumber = transaction.getCompanyNumber();
         CompanyProfileApi companyProfile = getCompanyProfile(transaction);
-        var companyValidationResponse = eligibilityService.checkCompanyEligibility(companyProfile) ;
+        LocalDate madeUpToDate = getMadeUpToDate(companyNumber, companyProfile);
+
+        var companyValidationResponse = eligibilityService.checkCompanyEligibilityAgainstMadeUpDate(companyProfile, madeUpToDate) ;
 
         if(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != companyValidationResponse.getEligibilityStatusCode()) {
             return ResponseEntity.badRequest().body(companyValidationResponse);
@@ -134,14 +136,6 @@ public class ConfirmationStatementService {
         insertedSubmission.setLinks(Collections.singletonMap("self", createdUri));
 
         var data = new ConfirmationStatementSubmissionDataDao();
-        LocalDate madeUpToDate = getMadeUpToDate(companyNumber, companyProfile);
-
-        var madeUpDateValidationResponse = eligibilityService.checkCompanyEligibilityAgainstMadeUpDate(companyProfile, madeUpToDate);
-
-        if (EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != madeUpDateValidationResponse.getEligibilityStatusCode()) {
-            return ResponseEntity.badRequest().body(madeUpDateValidationResponse);
-        }
-
         data.setMadeUpToDate(madeUpToDate);
         insertedSubmission.setData(data);
 
