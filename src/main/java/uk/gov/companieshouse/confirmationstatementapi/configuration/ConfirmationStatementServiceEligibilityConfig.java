@@ -68,7 +68,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
-        var identityVerifiedOfficesValidation = new DirectorsIdentityVerifiedValidation(officerService, directorsIdentityVerifiedFeatureFlag);
+        var directorsIdentityVerifiedValidation = new DirectorsIdentityVerifiedValidation(officerService, directorsIdentityVerifiedFeatureFlag);
 
         /* Check 1: Company Status */
         listOfRules.add(companyStatusValidation);
@@ -82,7 +82,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         listOfRules.add(companyOfficerValidation);
         listOfRules.add(companyShareholderValidation);
         listOfRules.add(companyPscCountValidation);
-        listOfRules.add(identityVerifiedOfficesValidation);
+        listOfRules.add(directorsIdentityVerifiedValidation);
 
         /* Check 4: Company traded status */
         listOfRules.add(companyTradedStatusValidation);
