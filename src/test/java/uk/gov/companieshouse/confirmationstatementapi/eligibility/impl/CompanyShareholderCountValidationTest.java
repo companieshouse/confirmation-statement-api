@@ -9,12 +9,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.commons.util.CollectionUtils;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Description;
@@ -219,8 +221,8 @@ class CompanyShareholderCountValidationTest {
 
     private CompanyShareholderCountValidation initialiseValidation() {
         return new CompanyShareholderCountValidation(shareholderService,
-                CollectionUtils.toSet(COMPANY_TYPES_BASELINE),
-                CollectionUtils.toSet(COMPANY_TYPES_TARGET),
+                Arrays.stream(COMPANY_TYPES_BASELINE).collect(Collectors.toSet()),
+                Arrays.stream(COMPANY_TYPES_TARGET).collect(Collectors.toSet()),
                 targetActivationDate,
                 supplyNowDate
                 );

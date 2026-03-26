@@ -135,6 +135,13 @@ public class ConfirmationStatementService {
 
         var data = new ConfirmationStatementSubmissionDataDao();
         LocalDate madeUpToDate = getMadeUpToDate(companyNumber, companyProfile);
+
+        var madeUpDateValidationResponse = eligibilityService.checkCompanyEligibilityAgainstMadeUpDate(companyProfile, madeUpToDate);
+
+        if (EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != madeUpDateValidationResponse.getEligibilityStatusCode()) {
+            return ResponseEntity.badRequest().body(madeUpDateValidationResponse);
+        }
+
         data.setMadeUpToDate(madeUpToDate);
         insertedSubmission.setData(data);
 
