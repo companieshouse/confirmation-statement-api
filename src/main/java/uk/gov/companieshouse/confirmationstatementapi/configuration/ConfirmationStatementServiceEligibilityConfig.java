@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyLimitedPartnershipSubTypeValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyPscCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyShareholderCountValidation;
@@ -70,6 +71,15 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
 
+    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01LPSubtypeValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01LPSubtypeValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_LP_SUBTYPES_VALIDATION_TARGET_ACTIVATION_DATE:2099-12-31}")
+    private LocalDate cs01LPSubtypeValidationTargetActivationDate;
+
     @Bean
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService,
             PscService pscService, CorporateBodyService corporateBodyService, ShareholderService shareholderService) {
@@ -90,6 +100,10 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 cs01TradedStatusValidationCompanyTypesBaselineSet, 
                 cs01TradedStatusValidationCompanyTypesTargetSet, 
                 cs01TradedStatusValidationTargetActivationDate, localDateNow);
+        var companyLimitedPartnershipSubTypeValidation = new CompanyLimitedPartnershipSubTypeValidation(
+                cs01LPSubtypeValidationCompanyTypesBaselineSet,
+                cs01LPSubtypeValidationCompanyTypesTargetSet,
+                cs01LPSubtypeValidationTargetActivationDate, localDateNow);
 
         /* Check 1: Company Status */
         listOfRules.add(companyStatusValidation);
@@ -98,6 +112,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         listOfRules.add(companyTypeValidationNoCS01Required);
         listOfRules.add(companyTypeValidationForWebFiling);
         listOfRules.add(companyTypeValidationPaperOnly);
+        listOfRules.add(companyLimitedPartnershipSubTypeValidation);
 
         /* Check 3: Officer -> Shareholder -> PSC */
         listOfRules.add(companyOfficerValidation);
