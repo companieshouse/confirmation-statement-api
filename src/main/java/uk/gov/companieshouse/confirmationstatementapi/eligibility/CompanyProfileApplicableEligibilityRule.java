@@ -10,16 +10,14 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 
 public abstract class CompanyProfileApplicableEligibilityRule implements EligibilityRule<CompanyProfileApi> {
 
-    private final Set<String> baselineCompanyTypes;
-    private final Set<String> targetCompanyTypes;
-    private final LocalDate activationDate;
+    private Set<String> baselineCompanyTypes;
+    private Set<String> targetCompanyTypes;
+    private LocalDate activationDate;
     private final Supplier<LocalDate> localDateNow;
 
     protected CompanyProfileApplicableEligibilityRule(Set<String> baselineCompanyTypes, Set<String> targetCompanyTypes,
                                                    LocalDate activationDate, Supplier<LocalDate> localDateNow) {
-        this.activationDate = activationDate;
-        this.baselineCompanyTypes = baselineCompanyTypes == null ? Collections.emptySet() : baselineCompanyTypes ;
-        this.targetCompanyTypes = targetCompanyTypes == null ? Collections.emptySet() : targetCompanyTypes;
+        setApplicableCompanyTypes(baselineCompanyTypes, targetCompanyTypes, activationDate);
         this.localDateNow = localDateNow;
     }
 
@@ -40,6 +38,14 @@ public abstract class CompanyProfileApplicableEligibilityRule implements Eligibi
     @Override
     public void validate(CompanyProfileApi input) throws EligibilityException, ServiceException {
         validateAgainstMadeUpDate(input, null);
+    }
+
+    protected void setApplicableCompanyTypes(Set<String> baselineCompanyTypes,
+                                             Set<String> targetCompanyTypes,
+                                             LocalDate activationDate) {
+        this.activationDate = activationDate;
+        this.baselineCompanyTypes = baselineCompanyTypes == null ? Collections.emptySet() : baselineCompanyTypes ;
+        this.targetCompanyTypes = targetCompanyTypes == null ? Collections.emptySet() : targetCompanyTypes;
     }
 
 }

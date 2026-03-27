@@ -54,6 +54,24 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${CS01_SHAREHOLDER_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-09}")
     private LocalDate cs01ShareholderCountValidationTargetActivationDate;
 
+    @Value("${CS01_SINGLE_OFFICER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01SingleOfficerValidationCompanyTypeBaselineSet;
+
+    @Value("${CS01_SINGLE_OFFICER_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01SingleOfficerValidationCompanyTypeTargetSet;
+
+    @Value("${CS01_SINGLE_OFFICER_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-01}")
+    private LocalDate cs01SingleOfficerValidationTargetActivationDate;
+
+    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01MultipleOfficerValidationCompanyTypeBaselineSet;
+
+    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01MultipleOfficerValidationCompanyTypeTargetSet;
+
+    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_TARGET_ACTIVATION_DATE:2021-10-21}")
+    private LocalDate cs01MultipleOfficerValidationTargetActivationDate;
+
     @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
     private boolean pscValidationFeatureFlag;
 
@@ -73,7 +91,15 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 companyTypesNotRequiredToFileCS01);
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
-        var companyOfficerValidation = new CompanyOfficerValidation(officerService, multipleOfficerJourneyFeatureFlag);
+        var companyOfficerValidation = new CompanyOfficerValidation(officerService,
+                cs01MultipleOfficerValidationCompanyTypeBaselineSet,
+                cs01MultipleOfficerValidationCompanyTypeTargetSet,
+                cs01MultipleOfficerValidationTargetActivationDate,
+                cs01SingleOfficerValidationCompanyTypeBaselineSet,
+                cs01SingleOfficerValidationCompanyTypeTargetSet,
+                cs01SingleOfficerValidationTargetActivationDate,
+                localDateNow
+        );
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
