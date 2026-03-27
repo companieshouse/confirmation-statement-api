@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +29,11 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService
 public class ConfirmationStatementServiceEligibilityConfig {
 
     private final Supplier<LocalDate> localDateNow;
-
+    
     public ConfirmationStatementServiceEligibilityConfig(@Qualifier("localDateNow")Supplier<LocalDate> localDateNow) {
         this.localDateNow = localDateNow;
     }
-
+    
     @Value("${ALLOWED_COMPANY_STATUSES}")
     private Set<String> allowedCompanyStatuses;
 
@@ -57,8 +58,14 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
     private boolean pscValidationFeatureFlag;
 
-    @Value("${FEATURE_FLAG_TRADED_STATUS_VALIDATION_150621:true}")
-    private boolean tradedStatusFeatureFlag;
+    @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01TradedStatusValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01TradedStatusValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_TRADED_STATUS_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-15}")
+    private LocalDate cs01TradedStatusValidationTargetActivationDate;
 
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
@@ -75,11 +82,14 @@ public class ConfirmationStatementServiceEligibilityConfig {
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
         var companyOfficerValidation = new CompanyOfficerValidation(officerService, multipleOfficerJourneyFeatureFlag);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
-        var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
                 cs01ShareholderCountValidationCompanyTypeBaselineSet,
                 cs01ShareholderCountValidationCompanyTypeTargetSet,
                 cs01ShareholderCountValidationTargetActivationDate, localDateNow);
+        var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, 
+                cs01TradedStatusValidationCompanyTypesBaselineSet, 
+                cs01TradedStatusValidationCompanyTypesTargetSet, 
+                cs01TradedStatusValidationTargetActivationDate, localDateNow);
 
         /* Check 1: Company Status */
         listOfRules.add(companyStatusValidation);
