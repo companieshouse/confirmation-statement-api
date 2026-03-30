@@ -22,7 +22,6 @@ public class CompanyMultipleOfficerValidation extends CompanyProfileApplicableEl
 
     private final OfficerService officerService;
 
-    @Autowired
     public CompanyMultipleOfficerValidation(OfficerService officerService,
                                             Set<String> multipleOfficerBaselineCompanyTypes,
                                             Set<String> multipleOfficerTargetCompanyTypes,

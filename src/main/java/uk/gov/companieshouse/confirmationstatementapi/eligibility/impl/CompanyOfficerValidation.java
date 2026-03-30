@@ -16,7 +16,6 @@ public class CompanyOfficerValidation extends CompanyProfileApplicableEligibilit
     private final CompanyMultipleOfficerValidation companyMultipleOfficerValidation;
     private final CompanySingleOfficerValidation companySingleOfficerValidation;
 
-    @Autowired
     public CompanyOfficerValidation(OfficerService officerService,
                                     CompanyMultipleOfficerValidation companyMultipleOfficerValidation,
                                     CompanySingleOfficerValidation companySingleOfficerValidation) {

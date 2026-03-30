@@ -22,7 +22,6 @@ public class CompanySingleOfficerValidation extends CompanyProfileApplicableElig
 
     private final OfficerService officerService;
 
-    @Autowired
     public CompanySingleOfficerValidation(OfficerService officerService,
                                           Set<String> singleOfficerBaselineCompanyTypes,
                                           Set<String> singleOfficerTargetCompanyTypes,
