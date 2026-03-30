@@ -1,28 +1,23 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.api.model.officers.CompanyOfficerApi;
-import uk.gov.companieshouse.api.model.officers.OfficerRoleApi;
 import uk.gov.companieshouse.api.model.officers.OfficersApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,15 +29,7 @@ class CompanyOfficerValidationTest {
     private final Supplier<LocalDate> supplyNowDate =
             () -> LocalDate.parse(NOW_DATE);
 
-    private static final Set<String> MULTIPLE_COMPANY_TYPES_BASELINE = Set.of("comp1","comp2","comp3");
-    private static final Set<String> MULTIPLE_COMPANY_TYPES_TARGET = Set.of("comp4","comp5","comp6");
-    private static final String MULTIPLE_COMPANY_TYPES_ACTIVATION_DATE = "2026-03-01";
-    private static final Set<String> SINGLE_COMPANY_TYPES_BASELINE = Set.of("comp7","comp8","comp9");
-    private static final Set<String> SINGLE_COMPANY_TYPES_TARGET = Set.of("comp10","comp11","comp12","limitied-partnership");
-    private static final String SINGLE_COMPANY_TYPES_ACTIVATION_DATE = "2026-01-01";
-
     private static final String COMPANY_NUMBER = "12345678";
-    private static final List<CompanyOfficerApi> OFFICER_LIST = new ArrayList<>();
 
     OfficersApi mockOfficers = new OfficersApi();
     CompanyProfileApi companyProfileApi = new CompanyProfileApi();
@@ -55,95 +42,43 @@ class CompanyOfficerValidationTest {
     private CompanySingleOfficerValidation companySingleOfficerValidation;
 
     private CompanyOfficerValidation companyOfficerValidation;
-    private LocalDate multipleTargetActivationDate;
-    private LocalDate singleTargetActivationDate;
     private LocalDate mudAfterActivationDate;
-
 
     @BeforeEach
     void init() {
-        OFFICER_LIST.clear();
-        multipleTargetActivationDate = LocalDate.parse(MULTIPLE_COMPANY_TYPES_ACTIVATION_DATE);
-        singleTargetActivationDate = LocalDate.parse(SINGLE_COMPANY_TYPES_ACTIVATION_DATE);
         mudAfterActivationDate = LocalDate.parse(MUD_AFTER_ACTIVATION_DATE);
-        CompanyOfficerApi mockOfficer = new CompanyOfficerApi();
-        mockOfficer.setOfficerRole(OfficerRoleApi.DIRECTOR);
-        OFFICER_LIST.add(mockOfficer);
+        mockOfficers.setActiveCount(1L);
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
-
-        companyMultipleOfficerValidation = new CompanyMultipleOfficerValidation(officerService,
-                MULTIPLE_COMPANY_TYPES_BASELINE,
-                MULTIPLE_COMPANY_TYPES_TARGET,
-                multipleTargetActivationDate,
-                supplyNowDate);
-
-        companySingleOfficerValidation = new CompanySingleOfficerValidation(officerService,
-                SINGLE_COMPANY_TYPES_BASELINE,
-                SINGLE_COMPANY_TYPES_TARGET,
-                singleTargetActivationDate,
-                supplyNowDate);
 
         companyOfficerValidation = new CompanyOfficerValidation(officerService,
                 companyMultipleOfficerValidation,
                 companySingleOfficerValidation);
     }
 
-    @Test
-    void validateThrowsExceptionOnMoreThanFiveOfficersWhenPerformMultipleOfficerCheck() throws ServiceException {
-        companyProfileApi.setType("comp6");
-        CompanyOfficerApi director = new CompanyOfficerApi();
-        director.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
-        OFFICER_LIST.add(director);
-        mockOfficers.setItems(OFFICER_LIST);
-        mockOfficers.setActiveCount(6L);
-
-        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
-
-        var ex = assertThrows(EligibilityException.class, () -> companyOfficerValidation.validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate));
-
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS,ex.getEligibilityStatusCode() );
+    @AfterEach
+    void afterEach() {
+        verifyNoMoreInteractions(officerService);
     }
 
     @Test
-    void validateDoesNotThrowExceptionOnFiveOrLessOfficersWhenPerformMultipleOfficerCheck() throws ServiceException {
-        companyProfileApi.setType("comp4");
-        CompanyOfficerApi director = new CompanyOfficerApi();
-        director.setOfficerRole(OfficerRoleApi.CORPORATE_DIRECTOR);
-        OFFICER_LIST.add(director);
-        mockOfficers.setItems(OFFICER_LIST);
-        mockOfficers.setActiveCount(5L);
-
+    void shouldPerformMultipleOfficerCheck() throws ServiceException, EligibilityException {
         when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
+        when(companyMultipleOfficerValidation.isEligibleForMultipleOfficerCheck(companyProfileApi, mudAfterActivationDate)).thenReturn(true);
 
-        assertDoesNotThrow(() -> companyOfficerValidation.validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate));
-    }
+        companyOfficerValidation.validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate);
 
-
-    @Test
-    void validateThrowsExceptionOnSingleOfficerCompanyWithSecretaryWhenPerformSingleOfficerCheck() throws ServiceException {
-        OFFICER_LIST.clear();
-        companyProfileApi.setType("limitied-partnership");
-        CompanyOfficerApi mockOfficer = new CompanyOfficerApi();
-        mockOfficer.setOfficerRole(OfficerRoleApi.SECRETARY);
-        OFFICER_LIST.add(mockOfficer);
-        mockOfficers.setItems(OFFICER_LIST);
-        mockOfficers.setActiveCount((long) OFFICER_LIST.size());
-
-        when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
-
-        var ex = assertThrows(EligibilityException.class, () -> companyOfficerValidation.validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate));
-
-        assertEquals(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_INVALID_NUMBER_OF_OFFICERS,ex.getEligibilityStatusCode() );
+        verify(companyMultipleOfficerValidation).validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate);
+        verify(companySingleOfficerValidation, never()).validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate);
     }
 
     @Test
-    void validateDoesNotThrowExceptionOnSingleOfficerCompanyWithDirectorWhenPerformSingleOfficerCheck() throws ServiceException {
-        companyProfileApi.setType("comp10");
-        mockOfficers.setItems(OFFICER_LIST);
-        mockOfficers.setActiveCount((long) OFFICER_LIST.size());
-
+    void shouldPerformSingleOfficerCheck() throws ServiceException, EligibilityException {
         when(officerService.getOfficers(COMPANY_NUMBER)).thenReturn(mockOfficers);
+        when(companyMultipleOfficerValidation.isEligibleForMultipleOfficerCheck(companyProfileApi, mudAfterActivationDate)).thenReturn(false);
 
-        assertDoesNotThrow(() -> companyOfficerValidation.validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate));
+        companyOfficerValidation.validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate);
+
+        verify(companyMultipleOfficerValidation, never()).validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate);
+        verify(companySingleOfficerValidation).validateAgainstMadeUpDate(companyProfileApi, mudAfterActivationDate);
     }
 }
