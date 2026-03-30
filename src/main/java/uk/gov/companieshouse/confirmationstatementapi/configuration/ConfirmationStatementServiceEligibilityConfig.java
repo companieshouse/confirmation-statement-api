@@ -12,9 +12,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyMultipleOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyPscCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyShareholderCountValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanySingleOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTradedStatusValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeCS01FilingNotRequiredValidation;
@@ -98,15 +100,21 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 companyTypesNotRequiredToFileCS01);
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
-        var companyOfficerValidation = new CompanyOfficerValidation(officerService,
+
+        var companyMultipleOfficerValidation = new CompanyMultipleOfficerValidation(officerService,
                 cs01MultipleOfficerValidationCompanyTypeBaselineSet,
                 cs01MultipleOfficerValidationCompanyTypeTargetSet,
                 cs01MultipleOfficerValidationTargetActivationDate,
+                localDateNow);
+        var companySingleOfficerValidation = new CompanySingleOfficerValidation(officerService,
                 cs01SingleOfficerValidationCompanyTypeBaselineSet,
                 cs01SingleOfficerValidationCompanyTypeTargetSet,
                 cs01SingleOfficerValidationTargetActivationDate,
-                localDateNow
-        );
+                localDateNow);
+        var companyOfficerValidation = new CompanyOfficerValidation(officerService,
+                companyMultipleOfficerValidation,
+                companySingleOfficerValidation);
+
         var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
                 cs01ShareholderCountValidationCompanyTypeBaselineSet,
