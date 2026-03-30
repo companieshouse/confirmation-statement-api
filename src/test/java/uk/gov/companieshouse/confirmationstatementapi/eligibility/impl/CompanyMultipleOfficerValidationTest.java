@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,6 +26,7 @@ import java.util.function.Supplier;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,6 +72,11 @@ class CompanyMultipleOfficerValidationTest {
                 MULTIPLE_COMPANY_TYPES_TARGET,
                 multipleTargetActivationDate,
                 supplyNowDate);
+    }
+
+    @AfterEach
+    void afterEach() {
+        verifyNoMoreInteractions(officerService);
     }
 
     @ParameterizedTest
