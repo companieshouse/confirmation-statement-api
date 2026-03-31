@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.officers.CompanyOfficerApi;
 import uk.gov.companieshouse.api.model.officers.OfficerRoleApi;
@@ -14,7 +13,6 @@ import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 

@@ -57,7 +57,7 @@ class CompanyOfficerValidationTest {
 
     @AfterEach
     void afterEach() {
-        verifyNoMoreInteractions(officerService);
+        verifyNoMoreInteractions(officerService, companyMultipleOfficerValidation, companySingleOfficerValidation);
     }
 
     @Test

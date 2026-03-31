@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.CompanyProfileApplicableEligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
