@@ -16,7 +16,7 @@ public abstract class CompanyProfileApplicableEligibilityRule implements Eligibi
     private final Supplier<LocalDate> localDateNow;
 
     protected CompanyProfileApplicableEligibilityRule(Set<String> baselineCompanyTypes, Set<String> targetCompanyTypes,
-                                                   LocalDate activationDate, Supplier<LocalDate> localDateNow) {
+                                                      LocalDate activationDate, Supplier<LocalDate> localDateNow) {
         this.activationDate = activationDate;
         this.baselineCompanyTypes = baselineCompanyTypes == null ? Collections.emptySet() : baselineCompanyTypes ;
         this.targetCompanyTypes = targetCompanyTypes == null ? Collections.emptySet() : targetCompanyTypes;
