@@ -16,19 +16,15 @@ public class CompanyPscCountValidation extends CompanyProfileApplicableEligibili
 
     private final PscService pscService;
 
-    private final boolean multiplePscRuleEnabled;
 
     public CompanyPscCountValidation(PscService pscService,
                                      Set<String> baselineCompanyTypes,
                                      Set<String> targetCompanyTypes,
                                      LocalDate activationDate,
-                                     Supplier<LocalDate> localDateNow,
-                                     boolean multiplePscRuleEnabled) {
+                                     Supplier<LocalDate> localDateNow) {
 
         super(baselineCompanyTypes, targetCompanyTypes, activationDate, localDateNow);
         this.pscService = pscService;
-        this.multiplePscRuleEnabled = multiplePscRuleEnabled;
-        ApiLogger.debug(String.format("MULTIPLE PSC JOURNEY FEATURE FLAG: %s", multiplePscRuleEnabled));
     }
 
     @Override

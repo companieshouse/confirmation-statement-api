@@ -93,17 +93,19 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 cs01MultiplePscValidationCompanyTypesBaseline,
                 cs01MultiplePscValidationCompanyTypesTarget,
                 cs01MultiplePscValidationTargetActivationDate,
-                localDateNow,
-                true
+                localDateNow
         );
         var companySinglePscValidation = new CompanyPscCountValidation(
                 pscService,
                 cs01SinglePscValidationCompanyTypesBaseline,
                 cs01SinglePscValidationCompanyTypesTarget,
                 cs01SinglePscValidationTargetActivationDate,
-                localDateNow,
-                false
+                localDateNow
         );
+
+        var companyPscValidation = new CompanyPscCountValidation(pscService,
+                companyMultiplePscValidation,
+                companySinglePscValidation);
 
         var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
