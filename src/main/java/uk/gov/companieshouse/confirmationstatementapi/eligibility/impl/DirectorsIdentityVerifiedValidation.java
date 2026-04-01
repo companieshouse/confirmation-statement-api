@@ -64,7 +64,7 @@ public class DirectorsIdentityVerifiedValidation implements EligibilityRule<Comp
         }
 
         LocalDate today = LocalDate.now();
-        return startOn.isBefore(today) && endOn.isAfter(today);
+        return startOn.minusDays(1).isBefore(today) && endOn.isAfter(today);
     }
 
 }
