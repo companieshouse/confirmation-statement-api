@@ -4,7 +4,7 @@ import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.DAT
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_CS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_LPCS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_SLPCS;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_LP_TYPE;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_LP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_PFLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SPFLP_SUBTYPE;
@@ -198,7 +198,7 @@ public class FilingService {
         }
 
         switch(companyProfile.getSubtype()) {
-            case LIMITED_PARTNERSHIP_LP_TYPE, LIMITED_PARTNERSHIP_PFLP_SUBTYPE:
+            case LIMITED_PARTNERSHIP_LP_SUBTYPE, LIMITED_PARTNERSHIP_PFLP_SUBTYPE:
                 return FILING_KIND_LPCS;
             case LIMITED_PARTNERSHIP_SLP_SUBTYPE, LIMITED_PARTNERSHIP_SPFLP_SUBTYPE:
                 return FILING_KIND_SLPCS;
