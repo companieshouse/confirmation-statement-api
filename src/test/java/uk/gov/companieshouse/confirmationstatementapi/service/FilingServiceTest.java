@@ -493,7 +493,7 @@ class FilingServiceTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
         companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_LP_TYPE);
 
         return companyProfileApi;
     }
