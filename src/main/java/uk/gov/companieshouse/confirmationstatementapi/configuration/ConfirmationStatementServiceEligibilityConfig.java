@@ -12,17 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyLimitedPartnershipSubTypeValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyMultipleOfficerValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyPscCountValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyShareholderCountValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanySingleOfficerValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTradedStatusValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeCS01FilingNotRequiredValidation;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationForWebFiling;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeValidationPaperOnly;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.*;
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
@@ -76,8 +66,23 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_TARGET_ACTIVATION_DATE:2021-10-21}")
     private LocalDate cs01MultipleOfficerValidationTargetActivationDate;
 
-    @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
-    private boolean pscValidationFeatureFlag;
+    @Value("${CS01_SINGLE_PSC_VALIDATION_COMPANY_TYPES_BASELINE:}")
+    private Set<String> cs01SinglePscValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_COMPANY_TYPES_TARGET:}")
+    private Set<String> cs01SinglePscValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
+    private LocalDate cs01SinglePscValidationTargetActivationDate;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_COMPANY_TYPES_BASELINE:}")
+    private Set<String> cs01MultiplePscValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_COMPANY_TYPES_TARGET:}")
+    private Set<String> cs01MultiplePscValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
+    private LocalDate cs01MultiplePscValidationTargetActivationDate;
 
     @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_BASELINE}")
     private Set<String> cs01TradedStatusValidationCompanyTypesBaselineSet;
@@ -113,7 +118,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
 
         var companyMultipleOfficerValidation = new CompanyMultipleOfficerValidation(officerService,
                 cs01MultipleOfficerValidationCompanyTypeBaselineSet,
-                cs01MultipleOfficerValidationCompanyTypeTargetSet,
+                cs01MultiplePscValidationCompanyTypesTargetSet,
                 cs01MultipleOfficerValidationTargetActivationDate,
                 localDateNow);
         var companySingleOfficerValidation = new CompanySingleOfficerValidation(officerService,
@@ -125,7 +130,20 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 companyMultipleOfficerValidation,
                 companySingleOfficerValidation);
 
-        var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
+        var companyMultiplePscCountValidation = new CompanyMultiplePscCountValidation(pscService,
+                cs01MultiplePscValidationCompanyTypesBaselineSet,
+                cs01MultipleOfficerValidationCompanyTypeTargetSet,
+                cs01MultipleOfficerValidationTargetActivationDate,
+                localDateNow);
+        var companySingePscCountValidation = new CompanySinglePscCountValidation(pscService,
+                cs01SinglePscValidationCompanyTypesBaselineSet,
+                cs01SinglePscValidationCompanyTypesTargetSet,
+                cs01SinglePscValidationTargetActivationDate,
+                localDateNow);
+        var companyPscCountValidation = new CompanyPscCountValidation(pscService,
+                companyMultiplePscCountValidation,
+                companySingePscCountValidation);
+
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
                 cs01ShareholderCountValidationCompanyTypeBaselineSet,
                 cs01ShareholderCountValidationCompanyTypeTargetSet,
