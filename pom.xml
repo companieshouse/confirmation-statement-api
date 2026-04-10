@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.13</version>
+        <version>2.1.14</version>
     </parent>
 
     <artifactId>confirmation-statement-api</artifactId>
@@ -30,25 +30,23 @@
         <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
 
         <!-- Companies House Internal Dependency Versions -->
-        <api-sdk-java.version>6.6.9</api-sdk-java.version>
-        <private-api-sdk-java.version>4.0.477</private-api-sdk-java.version>
-        <api-security-java.version>2.0.24</api-security-java.version>
-        <api-sdk-manager-java-library.version>3.0.16</api-sdk-manager-java-library.version>
-        <structured-logging.version>3.0.51</structured-logging.version>
+        <api-sdk-java.version>6.6.13</api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.492</private-api-sdk-java.version>
+        <api-security-java.version>2.0.25</api-security-java.version>
+        <api-sdk-manager-java-library.version>3.0.18</api-sdk-manager-java-library.version>
+        <structured-logging.version>3.0.52</structured-logging.version>
 
         <!-- Dependency Versions -->
         <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
-        <spring-boot.version>3.5.11</spring-boot.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-        <tomcat-embed-core.version>11.0.18</tomcat-embed-core.version>
+        <spring-boot.version>4.0.5</spring-boot.version>
         <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
-        <opentelemetry.version>2.25.0</opentelemetry.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
-        <log4j-bom.version>2.25.3</log4j-bom.version>
+        <opentelemetry.version>2.26.1</opentelemetry.version>
         <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
         <guava.version>33.5.0-jre</guava.version>
         <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
-        <jackson-bom.version>2.21.1</jackson-bom.version>
+        <jackson-bom.version>2.21.2</jackson-bom.version>
+        <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
+        <jackson3-bom.version>3.1.1</jackson3-bom.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
@@ -56,11 +54,9 @@
         <!-- Source: https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <!-- Source: https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
-        <plexus-utils.version>4.0.2</plexus-utils.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
-        <junit-jupiter.version>6.0.3</junit-jupiter.version>
+        <plexus-utils.version>4.0.3</plexus-utils.version>
         <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
-        <kotlin.version>2.2.21</kotlin.version>
+        <kotlin.version>2.3.20</kotlin.version>
 
         <!-- Sonar Properties        -->
         <!--suppress XmlUnresolvedReference -->
@@ -94,11 +90,10 @@
             </dependency>
 
             <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>${junit-jupiter.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <groupId>tools.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson3-bom.version}</version>
+                <scope>compile</scope>
             </dependency>
 
             <dependency>
@@ -107,14 +102,6 @@
                 <version>${opentelemetry.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-bom</artifactId>
-                <version>${log4j-bom.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
             </dependency>
 
             <dependency>
@@ -165,9 +152,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
         <dependency>
@@ -219,8 +212,16 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-opentelemetry</artifactId>
+        </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-logback-appender-1.0 -->
+        <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
-            <artifactId>opentelemetry-spring-boot-starter</artifactId>
+            <artifactId>opentelemetry-logback-appender-1.0</artifactId>
+            <version>2.26.1-alpha</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -233,6 +234,12 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
