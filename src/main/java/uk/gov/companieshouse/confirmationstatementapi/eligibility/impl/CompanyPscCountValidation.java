@@ -50,7 +50,4 @@ public class CompanyPscCountValidation extends CompanyProfileApplicableEligibili
         ApiLogger.info(String.format("Company PSCs validation passed for: %s", companyNumber));
     }
 
-
-
-
 }
