@@ -44,7 +44,10 @@ public class CompanyMultiplePscCountValidation extends CompanyProfileApplicableE
 
     public void performMultiplePscCheck(String companyNumber, Long activePscsCount) throws EligibilityException {
         if(Objects.isNull(activePscsCount) || activePscsCount == 0 || activePscsCount > 5) {
-            ApiLogger.info(String.format("Company PSC validation failed for: %s. No PSCs found or more than 5 active PSCs, activePscsCount = %s.", companyNumber, activePscsCount));
+            ApiLogger.info(String.format(
+                    "Company PSC validation failed for: %s. No PSCs found or more than 5 active PSCs, activePscsCount = %s.",
+                    companyNumber,
+                    activePscsCount));
             throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSCS);
         }
     }
