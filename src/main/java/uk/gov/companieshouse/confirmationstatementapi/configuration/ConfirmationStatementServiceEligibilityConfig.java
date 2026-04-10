@@ -130,7 +130,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
 
         var companyMultipleOfficerValidation = new CompanyMultipleOfficerValidation(officerService,
                 cs01MultipleOfficerValidationCompanyTypeBaselineSet,
-                cs01MultiplePscValidationCompanyTypesTargetSet,
+                cs01MultipleOfficerValidationCompanyTypeTargetSet,
                 cs01MultipleOfficerValidationTargetActivationDate,
                 localDateNow);
         var companySingleOfficerValidation = new CompanySingleOfficerValidation(officerService,
@@ -144,17 +144,17 @@ public class ConfirmationStatementServiceEligibilityConfig {
 
         var companyMultiplePscCountValidation = new CompanyMultiplePscCountValidation(pscService,
                 cs01MultiplePscValidationCompanyTypesBaselineSet,
-                cs01MultipleOfficerValidationCompanyTypeTargetSet,
-                cs01MultipleOfficerValidationTargetActivationDate,
+                cs01MultiplePscValidationCompanyTypesTargetSet,
+                cs01MultiplePscValidationTargetActivationDate,
                 localDateNow);
-        var companySingePscCountValidation = new CompanySinglePscCountValidation(pscService,
+        var companySinglePscCountValidation = new CompanySinglePscCountValidation(pscService,
                 cs01SinglePscValidationCompanyTypesBaselineSet,
                 cs01SinglePscValidationCompanyTypesTargetSet,
                 cs01SinglePscValidationTargetActivationDate,
                 localDateNow);
         var companyPscCountValidation = new CompanyPscCountValidation(pscService,
                 companyMultiplePscCountValidation,
-                companySingePscCountValidation);
+                companySinglePscCountValidation);
 
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
                 cs01ShareholderCountValidationCompanyTypeBaselineSet,
