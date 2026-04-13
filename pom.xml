@@ -46,7 +46,7 @@
         <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
         <jackson-bom.version>2.21.2</jackson-bom.version>
         <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
-        <jackson3-bom.version>3.1.1</jackson3-bom.version>
+        <jackson3.version>3.1.1</jackson3.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
@@ -92,7 +92,7 @@
             <dependency>
                 <groupId>tools.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>${jackson3-bom.version}</version>
+                <version>${jackson3.version}</version>
                 <scope>compile</scope>
             </dependency>
 
@@ -102,6 +102,21 @@
                 <version>${opentelemetry.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/io.grpc/grpc-context -->
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-context</artifactId>
+                <version>1.80.0</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>11.0.21</version>
             </dependency>
 
             <dependency>
