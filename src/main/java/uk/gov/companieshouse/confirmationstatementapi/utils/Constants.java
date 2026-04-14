@@ -13,7 +13,7 @@ public class Constants {
     public static final String COMPANY_NUMBER = "company-number";
     public static final String DATE_FORMAT_YYYYMD = "yyyy-M-d";
     public static final String LIMITED_PARTNERSHIP_TYPE = "limited-partnership";
-    public static final String LIMITED_PARTNERSHIP_LP_TYPE = "lp";
+    public static final String LIMITED_PARTNERSHIP_LP_SUBTYPE = "lp";
     public static final String LIMITED_PARTNERSHIP_SLP_SUBTYPE = "slp";
     public static final String LIMITED_PARTNERSHIP_PFLP_SUBTYPE = "pflp";
     public static final String LIMITED_PARTNERSHIP_SPFLP_SUBTYPE = "spflp";
