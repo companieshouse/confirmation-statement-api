@@ -16,6 +16,8 @@ import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyLi
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyMultipleOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyPscCountValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyMultiplePscCountValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanySinglePscCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyShareholderCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanySingleOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
@@ -76,8 +78,23 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_TARGET_ACTIVATION_DATE:2021-10-21}")
     private LocalDate cs01MultipleOfficerValidationTargetActivationDate;
 
-    @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
-    private boolean pscValidationFeatureFlag;
+    @Value("${CS01_SINGLE_PSC_VALIDATION_COMPANY_TYPES_BASELINE:}")
+    private Set<String> cs01SinglePscValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_COMPANY_TYPES_TARGET:}")
+    private Set<String> cs01SinglePscValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
+    private LocalDate cs01SinglePscValidationTargetActivationDate;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_COMPANY_TYPES_BASELINE:}")
+    private Set<String> cs01MultiplePscValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_COMPANY_TYPES_TARGET:}")
+    private Set<String> cs01MultiplePscValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
+    private LocalDate cs01MultiplePscValidationTargetActivationDate;
 
     @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_BASELINE}")
     private Set<String> cs01TradedStatusValidationCompanyTypesBaselineSet;
@@ -125,7 +142,20 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 companyMultipleOfficerValidation,
                 companySingleOfficerValidation);
 
-        var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
+        var companyMultiplePscCountValidation = new CompanyMultiplePscCountValidation(pscService,
+                cs01MultiplePscValidationCompanyTypesBaselineSet,
+                cs01MultiplePscValidationCompanyTypesTargetSet,
+                cs01MultiplePscValidationTargetActivationDate,
+                localDateNow);
+        var companySinglePscCountValidation = new CompanySinglePscCountValidation(pscService,
+                cs01SinglePscValidationCompanyTypesBaselineSet,
+                cs01SinglePscValidationCompanyTypesTargetSet,
+                cs01SinglePscValidationTargetActivationDate,
+                localDateNow);
+        var companyPscCountValidation = new CompanyPscCountValidation(pscService,
+                companyMultiplePscCountValidation,
+                companySinglePscCountValidation);
+
         var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
                 cs01ShareholderCountValidationCompanyTypeBaselineSet,
                 cs01ShareholderCountValidationCompanyTypeTargetSet,
