@@ -39,6 +39,8 @@
         <!-- Dependency Versions -->
         <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
         <spring-boot.version>4.0.5</spring-boot.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+        <tomcat.version>11.0.21</tomcat.version>
         <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
         <opentelemetry.version>2.26.1</opentelemetry.version>
         <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
@@ -46,7 +48,7 @@
         <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
         <jackson-bom.version>2.21.2</jackson-bom.version>
         <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
-        <jackson3.version>3.1.1</jackson3.version>
+        <jackson3.version>3.1.2</jackson3.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
@@ -116,7 +118,13 @@
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-core</artifactId>
-                <version>11.0.21</version>
+                <version>${tomcat.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>${tomcat.version}</version>
             </dependency>
 
             <dependency>
