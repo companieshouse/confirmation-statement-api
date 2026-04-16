@@ -1,18 +1,25 @@
 package uk.gov.companieshouse.confirmationstatementapi.configuration;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyLimitedPartnershipSubTypeValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyMultipleOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyPscCountValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyMultiplePscCountValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanySinglePscCountValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyShareholderCountValidation;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanySingleOfficerValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyStatusValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTradedStatusValidation;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.impl.CompanyTypeCS01FilingNotRequiredValidation;
@@ -26,6 +33,12 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService
 @Configuration
 public class ConfirmationStatementServiceEligibilityConfig {
 
+    private final Supplier<LocalDate> localDateNow;
+    
+    public ConfirmationStatementServiceEligibilityConfig(@Qualifier("localDateNow")Supplier<LocalDate> localDateNow) {
+        this.localDateNow = localDateNow;
+    }
+    
     @Value("${ALLOWED_COMPANY_STATUSES}")
     private Set<String> allowedCompanyStatuses;
 
@@ -38,17 +51,71 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${WEB_FILING_COMPANY_TYPES}")
     private Set<String> webFilingCompanyTypes;
 
-    @Value("${FEATURE_FLAG_SHAREHOLDER_COUNT_VALIDATION_09062021:true}")
-    private boolean shareholderCountalidationFeatureFlag;
+    @Value("${CS01_SHAREHOLDER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01ShareholderCountValidationCompanyTypeBaselineSet;
 
-    @Value("${FEATURE_FLAG_PSC_VALIDATION_02062021:true}")
-    private boolean pscValidationFeatureFlag;
+    @Value("${CS01_SHAREHOLDER_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01ShareholderCountValidationCompanyTypeTargetSet;
 
-    @Value("${FEATURE_FLAG_TRADED_STATUS_VALIDATION_150621:true}")
-    private boolean tradedStatusFeatureFlag;
+    @Value("${CS01_SHAREHOLDER_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-09}")
+    private LocalDate cs01ShareholderCountValidationTargetActivationDate;
+
+    @Value("${CS01_SINGLE_OFFICER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01SingleOfficerValidationCompanyTypeBaselineSet;
+
+    @Value("${CS01_SINGLE_OFFICER_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01SingleOfficerValidationCompanyTypeTargetSet;
+
+    @Value("${CS01_SINGLE_OFFICER_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-01}")
+    private LocalDate cs01SingleOfficerValidationTargetActivationDate;
+
+    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01MultipleOfficerValidationCompanyTypeBaselineSet;
+
+    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01MultipleOfficerValidationCompanyTypeTargetSet;
+
+    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_TARGET_ACTIVATION_DATE:2021-10-21}")
+    private LocalDate cs01MultipleOfficerValidationTargetActivationDate;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_COMPANY_TYPES_BASELINE:}")
+    private Set<String> cs01SinglePscValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_COMPANY_TYPES_TARGET:}")
+    private Set<String> cs01SinglePscValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_SINGLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
+    private LocalDate cs01SinglePscValidationTargetActivationDate;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_COMPANY_TYPES_BASELINE:}")
+    private Set<String> cs01MultiplePscValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_COMPANY_TYPES_TARGET:}")
+    private Set<String> cs01MultiplePscValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_MULTIPLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
+    private LocalDate cs01MultiplePscValidationTargetActivationDate;
+
+    @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01TradedStatusValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01TradedStatusValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_TRADED_STATUS_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-15}")
+    private LocalDate cs01TradedStatusValidationTargetActivationDate;
 
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
+
+    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_BASELINE}")
+    private Set<String> cs01LPSubtypeValidationCompanyTypesBaselineSet;
+
+    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_TARGET}")
+    private Set<String> cs01LPSubtypeValidationCompanyTypesTargetSet;
+
+    @Value("${CS01_LP_SUBTYPES_VALIDATION_TARGET_ACTIVATION_DATE:2099-12-31}")
+    private LocalDate cs01LPSubtypeValidationTargetActivationDate;
 
     @Bean
     List<EligibilityRule<CompanyProfileApi>> confirmationStatementEligibilityRules(OfficerService officerService,
@@ -60,10 +127,47 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 companyTypesNotRequiredToFileCS01);
         var companyTypeValidationForWebFiling = new CompanyTypeValidationForWebFiling(webFilingCompanyTypes);
         var companyTypeValidationPaperOnly = new CompanyTypeValidationPaperOnly(paperOnlyCompanyTypes);
-        var companyOfficerValidation = new CompanyOfficerValidation(officerService, multipleOfficerJourneyFeatureFlag);
-        var companyPscCountValidation = new CompanyPscCountValidation(pscService, pscValidationFeatureFlag, multipleOfficerJourneyFeatureFlag);
-        var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, tradedStatusFeatureFlag);
-        var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService, shareholderCountalidationFeatureFlag);
+
+        var companyMultipleOfficerValidation = new CompanyMultipleOfficerValidation(officerService,
+                cs01MultipleOfficerValidationCompanyTypeBaselineSet,
+                cs01MultipleOfficerValidationCompanyTypeTargetSet,
+                cs01MultipleOfficerValidationTargetActivationDate,
+                localDateNow);
+        var companySingleOfficerValidation = new CompanySingleOfficerValidation(officerService,
+                cs01SingleOfficerValidationCompanyTypeBaselineSet,
+                cs01SingleOfficerValidationCompanyTypeTargetSet,
+                cs01SingleOfficerValidationTargetActivationDate,
+                localDateNow);
+        var companyOfficerValidation = new CompanyOfficerValidation(officerService,
+                companyMultipleOfficerValidation,
+                companySingleOfficerValidation);
+
+        var companyMultiplePscCountValidation = new CompanyMultiplePscCountValidation(pscService,
+                cs01MultiplePscValidationCompanyTypesBaselineSet,
+                cs01MultiplePscValidationCompanyTypesTargetSet,
+                cs01MultiplePscValidationTargetActivationDate,
+                localDateNow);
+        var companySinglePscCountValidation = new CompanySinglePscCountValidation(pscService,
+                cs01SinglePscValidationCompanyTypesBaselineSet,
+                cs01SinglePscValidationCompanyTypesTargetSet,
+                cs01SinglePscValidationTargetActivationDate,
+                localDateNow);
+        var companyPscCountValidation = new CompanyPscCountValidation(pscService,
+                companyMultiplePscCountValidation,
+                companySinglePscCountValidation);
+
+        var companyShareholderValidation = new CompanyShareholderCountValidation(shareholderService,
+                cs01ShareholderCountValidationCompanyTypeBaselineSet,
+                cs01ShareholderCountValidationCompanyTypeTargetSet,
+                cs01ShareholderCountValidationTargetActivationDate, localDateNow);
+        var companyTradedStatusValidation = new CompanyTradedStatusValidation(corporateBodyService, 
+                cs01TradedStatusValidationCompanyTypesBaselineSet, 
+                cs01TradedStatusValidationCompanyTypesTargetSet, 
+                cs01TradedStatusValidationTargetActivationDate, localDateNow);
+        var companyLimitedPartnershipSubTypeValidation = new CompanyLimitedPartnershipSubTypeValidation(
+                cs01LPSubtypeValidationCompanyTypesBaselineSet,
+                cs01LPSubtypeValidationCompanyTypesTargetSet,
+                cs01LPSubtypeValidationTargetActivationDate, localDateNow);
 
         /* Check 1: Company Status */
         listOfRules.add(companyStatusValidation);
@@ -72,6 +176,7 @@ public class ConfirmationStatementServiceEligibilityConfig {
         listOfRules.add(companyTypeValidationNoCS01Required);
         listOfRules.add(companyTypeValidationForWebFiling);
         listOfRules.add(companyTypeValidationPaperOnly);
+        listOfRules.add(companyLimitedPartnershipSubTypeValidation);
 
         /* Check 3: Officer -> Shareholder -> PSC */
         listOfRules.add(companyOfficerValidation);
