@@ -55,10 +55,10 @@ public class CompanyLimitedPartnershipSubTypeValidationTest {
     // MuD before Target Date Tests
     @ParameterizedTest
     @CsvSource({
-            "limited-partnership",
-            "scottish-limited-partnership",
-            "private-fund-limited-partnership",
-            "scottish-private-fund-limited-partnership"
+            "lp",
+            "slp",
+            "pflp",
+            "spflp"
     })
     @Description("MadeUpDate Before Target Activation Date, Company Type in Baseline Company Types, " +
             "Should not throw exception on company with valid limited-partnership subtype")
@@ -105,10 +105,10 @@ public class CompanyLimitedPartnershipSubTypeValidationTest {
     // MuD after Target Date Tests
     @ParameterizedTest
     @CsvSource({
-            "limited-partnership",
-            "scottish-limited-partnership",
-            "private-fund-limited-partnership",
-            "scottish-private-fund-limited-partnership"
+            "lp",
+            "slp",
+            "pflp",
+            "spflp"
     })
     @Description("MadeUpDate After Target Activation Date, Company Type in Baseline Company Types, " +
             "Should not throw exception on company with valid limited-partnership subtype")
@@ -155,10 +155,10 @@ public class CompanyLimitedPartnershipSubTypeValidationTest {
     // No MuD, now date after Target Date tests
     @ParameterizedTest
     @CsvSource({
-            "limited-partnership",
-            "scottish-limited-partnership",
-            "private-fund-limited-partnership",
-            "scottish-private-fund-limited-partnership"
+            "lp",
+            "slp",
+            "pflp",
+            "spflp"
     })
     @Description("No Made up Date, now After Target Activation Date, Company Type in Baseline Company Types, " +
             "Should not throw exception on company with valid limited-partnership subtype")
