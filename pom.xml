@@ -30,11 +30,11 @@
         <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
 
         <!-- Companies House Internal Dependency Versions -->
-        <api-sdk-java.version>6.6.13</api-sdk-java.version>
-        <private-api-sdk-java.version>4.0.492</private-api-sdk-java.version>
-        <api-security-java.version>2.0.25</api-security-java.version>
-        <api-sdk-manager-java-library.version>3.0.18</api-sdk-manager-java-library.version>
-        <structured-logging.version>3.0.52</structured-logging.version>
+        <api-sdk-java.version>6.6.15</api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.494</private-api-sdk-java.version>
+        <api-security-java.version>2.0.26</api-security-java.version>
+        <api-sdk-manager-java-library.version>3.0.19</api-sdk-manager-java-library.version>
+        <structured-logging.version>3.0.54</structured-logging.version>
 
         <!-- Dependency Versions -->
         <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
