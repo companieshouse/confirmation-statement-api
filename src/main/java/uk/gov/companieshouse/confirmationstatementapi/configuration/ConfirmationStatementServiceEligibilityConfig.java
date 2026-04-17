@@ -108,10 +108,10 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
 
-    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_BASELINE}")
+    @Value("${CS01_LP_SUBTYPES_VALIDATION_COMPANY_TYPES_BASELINE}")
     private Set<String> cs01LPSubtypeValidationCompanyTypesBaselineSet;
 
-    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_TARGET}")
+    @Value("${CS01_LP_SUBTYPES_VALIDATION_COMPANY_TYPES_TARGET}")
     private Set<String> cs01LPSubtypeValidationCompanyTypesTargetSet;
 
     @Value("${CS01_LP_SUBTYPES_VALIDATION_TARGET_ACTIVATION_DATE:2099-12-31}")
