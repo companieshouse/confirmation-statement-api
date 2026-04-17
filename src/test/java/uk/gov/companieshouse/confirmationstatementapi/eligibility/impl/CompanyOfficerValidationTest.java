@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 class CompanyOfficerValidationTest {
 
     private static final String MUD_AFTER_ACTIVATION_DATE = "2026-07-01";
-    private static final String NOW_DATE = "2026-05-01";
 
     private static final String COMPANY_NUMBER = "12345678";
 
