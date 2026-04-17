@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class CompanyLimitedPartnershipSubTypeValidationTest {
+class CompanyLimitedPartnershipSubTypeValidationTest {
 
     private static final String COMPANY_NUMBER = "12345678";
 

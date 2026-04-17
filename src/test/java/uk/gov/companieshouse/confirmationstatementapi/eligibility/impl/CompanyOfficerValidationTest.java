@@ -13,7 +13,6 @@ import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException
 import uk.gov.companieshouse.confirmationstatementapi.service.OfficerService;
 
 import java.time.LocalDate;
-import java.util.function.Supplier;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -25,9 +24,6 @@ class CompanyOfficerValidationTest {
 
     private static final String MUD_AFTER_ACTIVATION_DATE = "2026-07-01";
     private static final String NOW_DATE = "2026-05-01";
-
-    private final Supplier<LocalDate> supplyNowDate =
-            () -> LocalDate.parse(NOW_DATE);
 
     private static final String COMPANY_NUMBER = "12345678";
 

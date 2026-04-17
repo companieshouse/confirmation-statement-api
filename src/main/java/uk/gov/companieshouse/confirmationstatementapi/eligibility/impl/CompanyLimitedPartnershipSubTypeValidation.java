@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.CompanyProfileApplicableEligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
-import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
 public class CompanyLimitedPartnershipSubTypeValidation extends CompanyProfileApplicableEligibilityRule {
