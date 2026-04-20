@@ -1,48 +1,53 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.CompanyProfileApplicableEligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
 import uk.gov.companieshouse.confirmationstatementapi.service.PscService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-public class CompanyPscCountValidation implements EligibilityRule<CompanyProfileApi> {
+import java.time.LocalDate;
+
+public class CompanyPscCountValidation extends CompanyProfileApplicableEligibilityRule {
 
     private final PscService pscService;
+    private final CompanyMultiplePscCountValidation companyMultiplePscCountValidation;
+    private final CompanySinglePscCountValidation companySinglePscCountValidation;
 
-    private final boolean companyPscCountValidationFeatureFlag;
 
-    private final boolean multiplePscJourneyFlag;
 
-    public CompanyPscCountValidation(PscService pscService, boolean companyPscCountValidationFeatureFlag, boolean multiplePscJourneyFlag) {
+    public CompanyPscCountValidation(PscService pscService,
+                                     CompanyMultiplePscCountValidation companyMultiplePscCountValidation,
+                                     CompanySinglePscCountValidation companySinglePscCountValidation) {
+
+        super(null, null, null, null);
         this.pscService = pscService;
-        this.companyPscCountValidationFeatureFlag = companyPscCountValidationFeatureFlag;
-        this.multiplePscJourneyFlag = multiplePscJourneyFlag;
-        ApiLogger.debug(String.format("MULTIPLE PSC JOURNEY FEATURE FLAG: %s", multiplePscJourneyFlag));
+        this.companyMultiplePscCountValidation = companyMultiplePscCountValidation;
+        this.companySinglePscCountValidation = companySinglePscCountValidation;
     }
 
     @Override
-    public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
-        ApiLogger.info(String.format("Validating Company PSCs for: %s", profileToValidate.getCompanyNumber()));
-        if (!companyPscCountValidationFeatureFlag) {
-            ApiLogger.debug("Company PSC Count FEATURE FLAG off skipping validation");
-            return;
-        }
-        var count = pscService.getPSCsFromCHS(profileToValidate.getCompanyNumber()).getActiveCount();
-        if (!multiplePscJourneyFlag) {
-            if (count != null && count > 1) {
-                ApiLogger.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
-                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_ONE_PSC);
-            }
+    protected boolean companyApplicableForRule(CompanyProfileApi companyProfile, LocalDate madeUpDate) {
+        return true;
+    }
+
+    @Override
+    public void validateAgainstMadeUpDate(CompanyProfileApi companyProfile, LocalDate madeUpDate) throws EligibilityException, ServiceException {
+
+        String companyNumber = companyProfile.getCompanyNumber();
+        ApiLogger.info(String.format("Validating Company PSCs for: %s", companyNumber));
+        var pscs = pscService.getPSCsFromCHS(companyNumber);
+        var activePscsCount = pscs.getActiveCount();
+        ApiLogger.debug(String.format("Company has %s active PSCs", activePscsCount));
+
+        if (companyMultiplePscCountValidation.isEligibleForMultiplePscCheck(companyProfile, madeUpDate)) {
+            companyMultiplePscCountValidation.validateAgainstMadeUpDate(companyProfile, madeUpDate);
         } else {
-            if (count != null && count > 5) {
-                ApiLogger.info(String.format("Company PSCs validation failed for: %s", profileToValidate.getCompanyNumber()));
-                throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_APPOINTMENTS_MORE_THAN_FIVE_PSCS);
-            }
+            companySinglePscCountValidation.validateAgainstMadeUpDate(companyProfile, madeUpDate);
         }
-        ApiLogger.info(String.format("Company PSCs validation passed for: %s", profileToValidate.getCompanyNumber()));
+
+        ApiLogger.info(String.format("Company PSCs validation passed for: %s", companyNumber));
     }
 
 }

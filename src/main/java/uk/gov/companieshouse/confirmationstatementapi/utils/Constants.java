@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.utils;
 
+import java.util.List;
+
 public class Constants {
 
     private Constants() {}
@@ -18,4 +20,7 @@ public class Constants {
     public static final String LIMITED_PARTNERSHIP_PFLP_SUBTYPE = "pflp";
     public static final String LIMITED_PARTNERSHIP_SPFLP_SUBTYPE = "spflp";
 
+    public static final List<String> LIST_LIMITED_PARTNERSHIP_SUBTYPES = List.of(
+            LIMITED_PARTNERSHIP_LP_SUBTYPE, LIMITED_PARTNERSHIP_PFLP_SUBTYPE,
+            LIMITED_PARTNERSHIP_SLP_SUBTYPE, LIMITED_PARTNERSHIP_SPFLP_SUBTYPE);
 }
