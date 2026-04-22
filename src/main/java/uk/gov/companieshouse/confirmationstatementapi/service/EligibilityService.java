@@ -1,13 +1,11 @@
 package uk.gov.companieshouse.confirmationstatementapi.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.CompanyProfileApplicableEligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
@@ -30,25 +28,6 @@ public class EligibilityService {
         try {
             for (EligibilityRule<CompanyProfileApi> eligibilityRule : eligibilityRules) {
                 eligibilityRule.validate(companyProfile);
-            }
-        } catch (EligibilityException e) {
-            ApiLogger.info(String.format("Company %s ineligible to use the service because %s",  companyProfile.getCompanyNumber(), e.getEligibilityStatusCode()));
-            response.setEligibilityStatusCode(e.getEligibilityStatusCode());
-            return response;
-        }
-        response.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
-        return response;
-    }
-
-    public CompanyValidationResponse checkCompanyEligibilityAgainstMadeUpDate(CompanyProfileApi companyProfile, LocalDate madeUpDate) throws ServiceException {
-        var response = new CompanyValidationResponse();
-        try {
-            for (EligibilityRule<CompanyProfileApi> eligibilityRule : eligibilityRules) {
-                if (eligibilityRule instanceof CompanyProfileApplicableEligibilityRule companyProfileApplicableEligibilityRule) {
-                    companyProfileApplicableEligibilityRule.validateAgainstMadeUpDate(companyProfile, madeUpDate);
-                } else {
-                    eligibilityRule.validate(companyProfile);
-                }
             }
         } catch (EligibilityException e) {
             ApiLogger.info(String.format("Company %s ineligible to use the service because %s",  companyProfile.getCompanyNumber(), e.getEligibilityStatusCode()));

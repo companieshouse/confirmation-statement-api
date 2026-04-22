@@ -1,11 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.eligibility.impl;
 
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.function.Supplier;
-
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.confirmationstatementapi.eligibility.CompanyProfileApplicableEligibilityRule;
+import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.confirmationstatementapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.confirmationstatementapi.exception.EligibilityException;
 import uk.gov.companieshouse.confirmationstatementapi.exception.ServiceException;
@@ -13,25 +9,21 @@ import uk.gov.companieshouse.confirmationstatementapi.model.CompanyTradedStatusT
 import uk.gov.companieshouse.confirmationstatementapi.service.CorporateBodyService;
 import uk.gov.companieshouse.confirmationstatementapi.utils.ApiLogger;
 
-public class CompanyTradedStatusValidation extends CompanyProfileApplicableEligibilityRule {
+public class CompanyTradedStatusValidation implements EligibilityRule<CompanyProfileApi> {
 
     private final CorporateBodyService corporateBodyService;
+    private final boolean tradedStatusEligibilityFlag;
 
-    public CompanyTradedStatusValidation(CorporateBodyService corporateBodyService, 
-                                        Set<String> baselineCompanyTypes, 
-                                        Set<String> targetCompanyTypes, 
-                                        LocalDate activationDate,
-                                        Supplier<LocalDate> localDateNow) {
-
-        super(baselineCompanyTypes, targetCompanyTypes, activationDate, localDateNow);
+    public CompanyTradedStatusValidation(CorporateBodyService corporateBodyService, boolean tradedStatusEligibilityFlag) {
         this.corporateBodyService = corporateBodyService;
+        this.tradedStatusEligibilityFlag = tradedStatusEligibilityFlag;
     }
 
     @Override
-    public void validateAgainstMadeUpDate(CompanyProfileApi profileToValidate, LocalDate madeUpDate) throws EligibilityException, ServiceException {
+    public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
         var companyNumber = profileToValidate.getCompanyNumber();
         ApiLogger.info(String.format("Validating Company Traded Status for: %s", companyNumber));
-        if (!companyApplicableForRule(profileToValidate, madeUpDate)) {
+        if (!tradedStatusEligibilityFlag) {
             ApiLogger.debug("TRADED STATUS VALIDATION FEATURE FLAG off skipping validation");
             return;
         }
@@ -44,5 +36,4 @@ public class CompanyTradedStatusValidation extends CompanyProfileApplicableEligi
         }
         ApiLogger.info(String.format("Company traded status validation successful for %s with value %s", companyNumber, companyTradedStatus));
     }
-
 }
