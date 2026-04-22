@@ -125,7 +125,6 @@ class ConfirmationStatementServiceTest {
 
     @Test
     void createConfirmationStatement() throws ServiceException, CompanyNotFoundException {
-        LocalDate today = LocalDate.of(2021, 04, 14);
         ReflectionTestUtils.setField(confirmationStatementService, "isValidationStatusEnabled", true);
         transaction.setId("abc");
         transaction.setCompanyNumber(COMPANY_NUMBER);
@@ -136,10 +135,11 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmission.setId("ID");
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        when(eligibilityService.checkCompanyEligibilityAgainstMadeUpDate(companyProfileApi, today)).thenReturn(eligibilityResponse);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         lenient().when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, "2021-04-14")).thenReturn(true);
+        LocalDate today = LocalDate.of(2021, 04, 14);
         when(localDateSupplier.get()).thenReturn(today);
 
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
@@ -167,7 +167,7 @@ class ConfirmationStatementServiceTest {
         confirmationStatementSubmission.setId("ID");
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        when(eligibilityService.checkCompanyEligibilityAgainstMadeUpDate(companyProfileApi, NEXT_MADE_UP_TO_DATE)).thenReturn(eligibilityResponse);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(oracleQueryClient.isConfirmationStatementPaid(COMPANY_NUMBER, NEXT_MADE_UP_TO_DATE_STRING)).thenReturn(false);
@@ -206,12 +206,11 @@ class ConfirmationStatementServiceTest {
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId("ID");
 
-        LocalDate today = LocalDate.of(2021, 04, 14);
-
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        when(eligibilityService.checkCompanyEligibilityAgainstMadeUpDate(companyProfileApi, today)).thenReturn(eligibilityResponse);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
         when(confirmationStatementSubmissionsRepository.insert(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
         when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class))).thenReturn(confirmationStatementSubmission);
+        LocalDate today = LocalDate.of(2021, 04, 14);
         when(localDateSupplier.get()).thenReturn(today);
 
 // WHEN
@@ -234,7 +233,7 @@ class ConfirmationStatementServiceTest {
 
         CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
         companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.INVALID_COMPANY_STATUS);
-        when(eligibilityService.checkCompanyEligibilityAgainstMadeUpDate(companyProfileApi, null))
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi))
                 .thenReturn(companyValidationResponse);
 
         // WHEN
@@ -249,8 +248,6 @@ class ConfirmationStatementServiceTest {
 
     @Test
     void createConfirmationStatementExistingStatementError() throws ServiceException, CompanyNotFoundException {
-        LocalDate today = LocalDate.of(2021, 04, 14);
-
         // GIVEN
         transaction.setCompanyNumber(COMPANY_NUMBER);
         transaction.setId("abc");
@@ -264,8 +261,7 @@ class ConfirmationStatementServiceTest {
         eligibilityResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
 
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
-        when(eligibilityService.checkCompanyEligibilityAgainstMadeUpDate(companyProfileApi, today)).thenReturn(eligibilityResponse);
-        when(localDateSupplier.get()).thenReturn(today);
+        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(eligibilityResponse);
 
         // WHEN
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
