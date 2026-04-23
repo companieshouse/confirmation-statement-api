@@ -38,7 +38,7 @@
 
         <!-- Dependency Versions -->
         <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
-        <spring-boot.version>3.5.11</spring-boot.version>
+        <spring-boot.version>4.0.5</spring-boot.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
         <tomcat-embed-core.version>11.0.18</tomcat-embed-core.version>
         <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
