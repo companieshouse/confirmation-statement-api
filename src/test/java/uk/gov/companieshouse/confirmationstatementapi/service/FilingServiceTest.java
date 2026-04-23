@@ -11,7 +11,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_LPCS;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.FILING_KIND_SLPCS;
-import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_LP_TYPE;
+import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_LP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_PFLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SLP_SUBTYPE;
 import static uk.gov.companieshouse.confirmationstatementapi.utils.Constants.LIMITED_PARTNERSHIP_SPFLP_SUBTYPE;
@@ -369,7 +369,7 @@ class FilingServiceTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
         companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_LP_TYPE);
+        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_LP_SUBTYPE);
         assertEquals(FILING_KIND_LPCS, filingService.determineFilingType(companyProfileApi));
     }
 
@@ -454,7 +454,7 @@ class FilingServiceTest {
         CompanyProfileApi companyProfile = new CompanyProfileApi();
         companyProfile.setCompanyNumber(COMPANY_NUMBER);
         companyProfile.setType(LIMITED_PARTNERSHIP_TYPE);
-        companyProfile.setSubtype(LIMITED_PARTNERSHIP_LP_TYPE);
+        companyProfile.setSubtype(LIMITED_PARTNERSHIP_LP_SUBTYPE);
 
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
@@ -479,7 +479,7 @@ class FilingServiceTest {
         CompanyProfileApi companyProfile = new CompanyProfileApi();
         companyProfile.setCompanyNumber(COMPANY_NUMBER);
         companyProfile.setType(LIMITED_PARTNERSHIP_TYPE);
-        companyProfile.setSubtype(LIMITED_PARTNERSHIP_LP_TYPE);
+        companyProfile.setSubtype(LIMITED_PARTNERSHIP_LP_SUBTYPE);
 
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
@@ -493,7 +493,7 @@ class FilingServiceTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
         companyProfileApi.setType(LIMITED_PARTNERSHIP_TYPE);
-        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_TYPE);
+        companyProfileApi.setSubtype(LIMITED_PARTNERSHIP_LP_SUBTYPE);
 
         return companyProfileApi;
     }
