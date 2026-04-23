@@ -44,7 +44,7 @@
         <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
         <opentelemetry.version>2.25.0</opentelemetry.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
-        <log4j-bom.version>2.25.3</log4j-bom.version>
+        <log4j-bom.version>2.25.4</log4j-bom.version>
         <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
         <guava.version>33.5.0-jre</guava.version>
         <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
