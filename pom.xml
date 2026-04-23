@@ -48,7 +48,7 @@
         <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
         <guava.version>33.5.0-jre</guava.version>
         <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
-        <jackson-bom.version>2.21.1</jackson-bom.version>
+        <jackson-bom.version>2.21.2</jackson-bom.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
