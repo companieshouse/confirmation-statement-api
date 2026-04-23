@@ -56,7 +56,7 @@
         <!-- Source: https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <!-- Source: https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
-        <plexus-utils.version>4.0.2</plexus-utils.version>
+        <plexus-utils.version>4.0.3</plexus-utils.version>
         <!-- Source: https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
         <junit-jupiter.version>6.0.3</junit-jupiter.version>
         <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
