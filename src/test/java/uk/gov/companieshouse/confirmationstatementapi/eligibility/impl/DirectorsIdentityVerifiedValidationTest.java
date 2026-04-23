@@ -121,7 +121,7 @@ class DirectorsIdentityVerifiedValidationTest {
     }
 
     @Test
-    void validate_FeatureFlagOff_DoesNotCheckVerification() throws ServiceException {
+    void validate_FeatureFlagOff_DoesNotCheckVerification() {
         validation = new DirectorsIdentityVerifiedValidation(officerService, false);
         CompanyOfficerApi director = createOfficer(OfficerRoleApi.DIRECTOR, false, null);
         officersApi.setItems(List.of(director));

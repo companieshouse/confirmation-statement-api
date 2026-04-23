@@ -46,22 +46,14 @@ public class DirectorsIdentityVerifiedValidation implements EligibilityRule<Comp
 
     private boolean isDirectorVerified(CompanyOfficerApi officer) {
         if (officer.getResignedOn() != null) return true;
-
-        var role = officer.getOfficerRole();
-        if (role != OfficerRoleApi.DIRECTOR &&
-            role != OfficerRoleApi.NOMINEE_DIRECTOR &&
-            role != OfficerRoleApi.CORPORATE_DIRECTOR) {
-            return true;
-        }
+        if (officer.getOfficerRole() != OfficerRoleApi.DIRECTOR) return true;
 
         var idvDetails = officer.getIdentityVerificationDetails();
         if (idvDetails == null) return false;
 
         var startOn = idvDetails.getAppointmentVerificationStartOn();
         var endOn = idvDetails.getAppointmentVerificationEndOn();
-        if (startOn == null || endOn == null) {
-            return false;
-        }
+        if (startOn == null || endOn == null) return false;
 
         LocalDate today = LocalDate.now();
         return startOn.minusDays(1).isBefore(today) && endOn.isAfter(today);
