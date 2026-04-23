@@ -213,10 +213,10 @@ class ConfirmationStatementServiceTest {
         LocalDate today = LocalDate.of(2021, 04, 14);
         when(localDateSupplier.get()).thenReturn(today);
 
-// WHEN
+        // WHEN
         var response = this.confirmationStatementService.createConfirmationStatement(transaction, PASS_THROUGH);
 
-// THEN
+        // THEN
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         verify(transactionService, times(1)).updateTransaction(any(), any());
         verify(oracleQueryClient, times(0)).isConfirmationStatementPaid(any(), any());
