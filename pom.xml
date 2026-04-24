@@ -27,7 +27,7 @@
         <!-- Source: https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
         <!-- Source: https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
-        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>5.6.0.6792</sonar-maven-plugin.version>
 
         <!-- Companies House Internal Dependency Versions -->
         <api-sdk-java.version>6.6.9</api-sdk-java.version>
