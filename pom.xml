@@ -13,66 +13,6 @@
     <name>confirmation-statement-api</name>
     <description>API for confirmation statement service</description>
 
-    <properties>
-        <java.version>21</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!-- Plugin Versions -->
-        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
-        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
-        <!-- Source: https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
-        <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
-        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
-
-        <!-- Companies House Internal Dependency Versions -->
-        <api-sdk-java.version>6.6.15</api-sdk-java.version>
-        <private-api-sdk-java.version>4.0.494</private-api-sdk-java.version>
-        <api-security-java.version>2.0.26</api-security-java.version>
-        <api-sdk-manager-java-library.version>3.0.19</api-sdk-manager-java-library.version>
-        <structured-logging.version>3.0.54</structured-logging.version>
-
-        <!-- Dependency Versions -->
-        <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
-        <spring-boot.version>4.0.5</spring-boot.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-framework-bom -->
-        <spring-framework.version>7.0.7</spring-framework.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-        <tomcat.version>11.0.21</tomcat.version>
-        <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
-        <opentelemetry.version>2.27.0</opentelemetry.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
-        <log4j-bom.version>2.25.4</log4j-bom.version>
-        <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <guava.version>33.5.0-jre</guava.version>
-        <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
-        <jackson-bom.version>2.21.2</jackson-bom.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-        <commons-lang3.version>3.20.0</commons-lang3.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
-        <org.mapstruct.version>1.6.3</org.mapstruct.version>
-        <!-- Source: https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
-        <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
-        <plexus-utils.version>4.0.3</plexus-utils.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
-        <kotlin.version>2.3.20</kotlin.version>
-
-        <!-- Sonar Properties        -->
-        <!--suppress XmlUnresolvedReference -->
-        <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
-        <!--suppress CheckTagEmptyBody -->
-        <sonar.login></sonar.login>
-        <!--suppress CheckTagEmptyBody -->
-        <sonar.password></sonar.password>
-        <sonar.projectName>confirmation-statement-api</sonar.projectName>
-        <sonar.projectKey>uk.gov.companieshouse:confirmation-statement-api</sonar.projectKey>
-    </properties>
-
     <profiles>
         <profile>
             <id>sonar-pr-analysis</id>
@@ -106,19 +46,6 @@
                 <artifactId>grpc-context</artifactId>
                 <version>1.80.0</version>
                 <scope>compile</scope>
-            </dependency>
-
-            <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>${tomcat.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-websocket</artifactId>
-                <version>${tomcat.version}</version>
             </dependency>
 
             <dependency>
@@ -155,15 +82,6 @@
                 <scope>compile</scope>
             </dependency>
 
-            <!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-framework-bom -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring-framework.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -173,6 +91,64 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Plugin Versions -->
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
+        <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
+        <sonar-maven-plugin.version>5.6.0.6792</sonar-maven-plugin.version>
+
+        <!-- Companies House Internal Dependency Versions -->
+        <api-sdk-java.version>6.6.19</api-sdk-java.version>
+        <private-api-sdk-java.version>6.0.2</private-api-sdk-java.version>
+        <api-security-java.version>2.0.26</api-security-java.version>
+        <api-sdk-manager-java-library.version>3.0.21</api-sdk-manager-java-library.version>
+        <structured-logging.version>3.0.55</structured-logging.version>
+
+        <!-- Dependency Versions -->
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
+        <spring-boot.version>4.0.6</spring-boot.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+        <tomcat.version>11.0.21</tomcat.version>
+        <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
+        <jackson3.version>3.1.2</jackson3.version>
+        <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
+        <opentelemetry.version>2.27.0</opentelemetry.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
+        <log4j-bom.version>2.25.4</log4j-bom.version>
+        <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <guava.version>33.5.0-jre</guava.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <!-- Source: https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
+        <plexus-utils.version>4.0.3</plexus-utils.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
+        <kotlin.version>2.3.20</kotlin.version>
+
+        <!-- Sonar Properties        -->
+        <!--suppress XmlUnresolvedReference -->
+        <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+        <!--suppress CheckTagEmptyBody -->
+        <sonar.login></sonar.login>
+        <!--suppress CheckTagEmptyBody -->
+        <sonar.password></sonar.password>
+        <sonar.projectName>confirmation-statement-api</sonar.projectName>
+        <sonar.projectKey>uk.gov.companieshouse:confirmation-statement-api</sonar.projectKey>
+    </properties>
 
     <dependencies>
 
@@ -259,7 +235,7 @@
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-logback-appender-1.0</artifactId>
-            <version>2.26.1-alpha</version>
+            <version>2.27.0-alpha</version>
             <scope>compile</scope>
         </dependency>
 
