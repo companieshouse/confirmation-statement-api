@@ -137,7 +137,7 @@
         <!-- Source: https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
         <plexus-utils.version>4.0.3</plexus-utils.version>
         <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
-        <kotlin.version>2.3.20</kotlin.version>
+        <kotlin.version>2.3.21</kotlin.version>
 
         <!-- Sonar Properties        -->
         <!--suppress XmlUnresolvedReference -->
