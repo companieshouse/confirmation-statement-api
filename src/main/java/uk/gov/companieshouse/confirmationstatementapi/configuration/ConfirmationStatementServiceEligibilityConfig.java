@@ -172,7 +172,6 @@ public class ConfirmationStatementServiceEligibilityConfig {
                 cs01LPSubtypeValidationCompanyTypesBaselineSet,
                 cs01LPSubtypeValidationCompanyTypesTargetSet,
                 cs01LPSubtypeValidationTargetActivationDate, localDateNow);
-
         var directorsIdentityVerifiedValidation = new DirectorsIdentityVerifiedValidation(officerService, directorsIdentityVerifiedFeatureFlag);
 
         /* Check 1: Company Status */
