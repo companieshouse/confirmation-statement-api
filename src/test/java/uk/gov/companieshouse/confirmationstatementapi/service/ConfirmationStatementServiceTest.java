@@ -583,21 +583,18 @@ class ConfirmationStatementServiceTest {
     @Test
     void areTasksIncompleteWithREAInitialFiling() throws ServiceException, SubmissionNotFoundException {
         // GIVEN
-
         makeAllMockTasksConfirmed();
         confirmationStatementSubmissionJson.getData().getRegisteredEmailAddressData().setSectionStatus(SectionStatus.INITIAL_FILING);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
         confirmationStatementSubmission.setId(SUBMISSION_ID);
 
         // WHEN
-
         when(confirmationStatementJsonDaoMapper.daoToJson(confirmationStatementSubmission)).thenReturn(confirmationStatementSubmissionJson);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
 
         ValidationStatusResponse validationStatusResponse = confirmationStatementService.isValid(transaction, SUBMISSION_ID);
 
         // THEN
-
         assertFalse(validationStatusResponse.isValid());
         verify(localDateSupplier, times(0)).get(); //check that this isn't the reason validation fails
 
