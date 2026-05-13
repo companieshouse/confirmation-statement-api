@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.confirmationstatementapi.configuration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -34,11 +35,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService
 @Configuration
 public class ConfirmationStatementServiceEligibilityConfig {
 
-    private final Supplier<LocalDate> localDateNow;
-
-    public ConfirmationStatementServiceEligibilityConfig(@Qualifier("localDateNow")Supplier<LocalDate> localDateNow) {
-        this.localDateNow = localDateNow;
-    }
+    private final Supplier<LocalDate> localDateNow = LocalDate::now;
 
     @Value("${ALLOWED_COMPANY_STATUSES}")
     private Set<String> allowedCompanyStatuses;
