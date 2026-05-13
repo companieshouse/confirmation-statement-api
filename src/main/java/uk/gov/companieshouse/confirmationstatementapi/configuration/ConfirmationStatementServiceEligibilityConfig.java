@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,11 +33,7 @@ import uk.gov.companieshouse.confirmationstatementapi.service.ShareholderService
 @Configuration
 public class ConfirmationStatementServiceEligibilityConfig {
 
-    private final Supplier<LocalDate> localDateNow;
-
-    public ConfirmationStatementServiceEligibilityConfig(@Qualifier("localDateNow")Supplier<LocalDate> localDateNow) {
-        this.localDateNow = localDateNow;
-    }
+    private final Supplier<LocalDate> localDateNow = LocalDate::now;
 
     @Value("${ALLOWED_COMPANY_STATUSES}")
     private Set<String> allowedCompanyStatuses;
