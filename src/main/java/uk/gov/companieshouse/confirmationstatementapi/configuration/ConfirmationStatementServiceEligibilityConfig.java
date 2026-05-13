@@ -47,28 +47,28 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${WEB_FILING_COMPANY_TYPES}")
     private Set<String> webFilingCompanyTypes;
 
-    @Value("${CS01_SHAREHOLDER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    @Value("${CS01_SHAREHOLDER_VALIDATION_COMPANY_TYPES_BASELINE:}")
     private Set<String> cs01ShareholderCountValidationCompanyTypeBaselineSet;
 
-    @Value("${CS01_SHAREHOLDER_VALIDATION_COMPANY_TYPES_TARGET}")
+    @Value("${CS01_SHAREHOLDER_VALIDATION_COMPANY_TYPES_TARGET:}")
     private Set<String> cs01ShareholderCountValidationCompanyTypeTargetSet;
 
     @Value("${CS01_SHAREHOLDER_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-09}")
     private LocalDate cs01ShareholderCountValidationTargetActivationDate;
 
-    @Value("${CS01_SINGLE_OFFICER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    @Value("${CS01_SINGLE_OFFICER_VALIDATION_COMPANY_TYPES_BASELINE:}")
     private Set<String> cs01SingleOfficerValidationCompanyTypeBaselineSet;
 
-    @Value("${CS01_SINGLE_OFFICER_VALIDATION_COMPANY_TYPES_TARGET}")
+    @Value("${CS01_SINGLE_OFFICER_VALIDATION_COMPANY_TYPES_TARGET:}")
     private Set<String> cs01SingleOfficerValidationCompanyTypeTargetSet;
 
     @Value("${CS01_SINGLE_OFFICER_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-01}")
     private LocalDate cs01SingleOfficerValidationTargetActivationDate;
 
-    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_COMPANY_TYPES_BASELINE}")
+    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_COMPANY_TYPES_BASELINE:}")
     private Set<String> cs01MultipleOfficerValidationCompanyTypeBaselineSet;
 
-    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_COMPANY_TYPES_TARGET}")
+    @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_COMPANY_TYPES_TARGET:}")
     private Set<String> cs01MultipleOfficerValidationCompanyTypeTargetSet;
 
     @Value("${CS01_MULTIPLE_OFFICER_VALIDATION_TARGET_ACTIVATION_DATE:2021-10-21}")
@@ -92,10 +92,10 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${CS01_MULTIPLE_PSC_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-02}")
     private LocalDate cs01MultiplePscValidationTargetActivationDate;
 
-    @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_BASELINE}")
+    @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_BASELINE:}")
     private Set<String> cs01TradedStatusValidationCompanyTypesBaselineSet;
 
-    @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_TARGET}")
+    @Value("${CS01_TRADED_STATUS_VALIDATION_COMPANY_TYPES_TARGET:}")
     private Set<String> cs01TradedStatusValidationCompanyTypesTargetSet;
 
     @Value("${CS01_TRADED_STATUS_VALIDATION_TARGET_ACTIVATION_DATE:2021-06-15}")
@@ -104,10 +104,10 @@ public class ConfirmationStatementServiceEligibilityConfig {
     @Value("${FEATURE_FLAG_FIVE_OR_LESS_OFFICERS_JOURNEY_21102021:false}")
     private boolean multipleOfficerJourneyFeatureFlag;
 
-    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_BASELINE}")
+    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_BASELINE:}")
     private Set<String> cs01LPSubtypeValidationCompanyTypesBaselineSet;
 
-    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_TARGET}")
+    @Value("${CS01_LP_SUBTYPE_VALIDATION_COMPANY_TYPES_TARGET:}")
     private Set<String> cs01LPSubtypeValidationCompanyTypesTargetSet;
 
     @Value("${CS01_LP_SUBTYPE_VALIDATION_TARGET_ACTIVATION_DATE:2099-12-31}")
