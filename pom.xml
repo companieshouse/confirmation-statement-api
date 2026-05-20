@@ -40,6 +40,22 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+            <!-- Addresses https://www.cve.org/CVERecord?id=CVE-2026-41284 - ToDo - Can probably be removed after 03/06/2026 following Spring Boot 4.0.7 release          -->
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>11.0.22</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>11.0.22</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- END CVE           -->
+
             <!-- Source: https://mvnrepository.com/artifact/io.grpc/grpc-context -->
             <dependency>
                 <groupId>io.grpc</groupId>
