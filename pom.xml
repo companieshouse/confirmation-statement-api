@@ -60,7 +60,7 @@
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-context</artifactId>
-                <version>1.80.0</version>
+                <version>1.81.0</version>
                 <scope>compile</scope>
             </dependency>
 
@@ -118,32 +118,32 @@
         <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
         <!-- Source: https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
         <!-- Source: https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
-        <sonar-maven-plugin.version>5.6.0.6792</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>5.7.0.6970</sonar-maven-plugin.version>
 
         <!-- Companies House Internal Dependency Versions -->
-        <api-sdk-java.version>6.6.19</api-sdk-java.version>
-        <private-api-sdk-java.version>6.0.2</private-api-sdk-java.version>
-        <api-security-java.version>2.0.26</api-security-java.version>
-        <api-sdk-manager-java-library.version>3.0.21</api-sdk-manager-java-library.version>
-        <structured-logging.version>3.0.55</structured-logging.version>
+        <api-sdk-java.version>6.6.23</api-sdk-java.version>
+        <private-api-sdk-java.version>6.0.23</private-api-sdk-java.version>
+        <api-security-java.version>2.0.27</api-security-java.version>
+        <api-sdk-manager-java-library.version>3.0.22</api-sdk-manager-java-library.version>
+        <structured-logging.version>3.0.57</structured-logging.version>
 
         <!-- Dependency Versions -->
         <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
         <spring-boot.version>4.0.6</spring-boot.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-        <tomcat.version>11.0.21</tomcat.version>
+        <tomcat.version>11.0.22</tomcat.version>
         <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
-        <jackson3.version>3.1.2</jackson3.version>
+        <jackson3.version>3.1.4</jackson3.version>
         <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
-        <opentelemetry.version>2.27.0</opentelemetry.version>
+        <opentelemetry.version>2.28.1</opentelemetry.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
-        <log4j-bom.version>2.25.4</log4j-bom.version>
+        <log4j-bom.version>2.26.0</log4j-bom.version>
         <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <guava.version>33.5.0-jre</guava.version>
+        <guava.version>33.6.0-jre</guava.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
@@ -153,7 +153,7 @@
         <!-- Source: https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
         <plexus-utils.version>4.0.3</plexus-utils.version>
         <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
-        <kotlin.version>2.3.20</kotlin.version>
+        <kotlin.version>2.3.21</kotlin.version>
 
         <!-- Sonar Properties        -->
         <!--suppress XmlUnresolvedReference -->
