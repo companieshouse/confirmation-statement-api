@@ -137,7 +137,7 @@
         <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
         <tomcat.version>11.0.22</tomcat.version>
         <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
-        <jackson3.version>3.1.4</jackson3.version>
+        <jackson3.version>3.2.0</jackson3.version>
         <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
         <opentelemetry.version>2.28.1</opentelemetry.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
