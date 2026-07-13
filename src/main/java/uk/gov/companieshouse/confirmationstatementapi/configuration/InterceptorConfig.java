@@ -31,10 +31,12 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private static final String NEXT_MADE_UP_TO_DATE = "/confirmation-statement/**/next-made-up-to-date";
     private static final String ELIGIBILITY = "/confirmation-statement/**/eligibility";
     private static final String COSTS = TRANSACTIONS + "/costs";
+    private static final String CONDENSED_SIC_CODES = "/confirmation-statement/condensed-sic-codes";
 
     static final String[] USER_AUTH_ENDPOINTS = {
         NEXT_MADE_UP_TO_DATE,
-        ELIGIBILITY
+        ELIGIBILITY,
+        CONDENSED_SIC_CODES
     };
     static final String[] INTERNAL_AUTH_ENDPOINTS = {
         PRIVATE,
