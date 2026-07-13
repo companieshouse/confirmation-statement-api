@@ -37,7 +37,7 @@ class CondensedSicCodeControllerTest {
         // Then
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
-        assertEquals(((List<CondensedSicCodeJson>) response.getBody()).size(), 2);
+        assertEquals(2, ((List<CondensedSicCodeJson>) response.getBody()).size());
     }
 
     private List<CondensedSicCodeJson> getMockCondensedSicCodeList() {

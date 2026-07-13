@@ -12,7 +12,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class CondensedSicCodeMappingTest {
+class CondensedSicCodeMappingTest {
 
     @Autowired
     private CondensedSicCodeMapper condensedSicCodeMapper;
@@ -26,15 +26,25 @@ public class CondensedSicCodeMappingTest {
 
     @Test
     void testValidMappingForSicCodes() {
+        CondensedSicCodeDao condensedSicCodeDao1 = new CondensedSicCodeDao();
+        condensedSicCodeDao1.setId(SIC_CODE_ID_13922);
+        condensedSicCodeDao1.setSicCode(SIC_CODE_13922);
+        condensedSicCodeDao1.setSicDescription(SIC_DESCRIPTION_13922);
+
+        CondensedSicCodeDao condensedSicCodeDao2 = new CondensedSicCodeDao();
+        condensedSicCodeDao2.setId(SIC_CODE_ID_13950);
+        condensedSicCodeDao2.setSicCode(SIC_CODE_13950);
+        condensedSicCodeDao2.setSicDescription(SIC_DESCRIPTION_13950);
+
         List<CondensedSicCodeDao> condensedSicCodeDaoList = Arrays.asList(
-                new CondensedSicCodeDao(SIC_CODE_ID_13922, SIC_CODE_13922, SIC_DESCRIPTION_13922),
-                new CondensedSicCodeDao(SIC_CODE_ID_13950, SIC_CODE_13950, SIC_DESCRIPTION_13950));
+                condensedSicCodeDao1,
+                condensedSicCodeDao2);
 
         List<CondensedSicCodeJson> condensedSicCodeJsonList = condensedSicCodeMapper.daoToJson(condensedSicCodeDaoList);
 
         assertNotNull(condensedSicCodeJsonList);
-        assertEquals(condensedSicCodeJsonList.size(), 2);
-        assertEquals(condensedSicCodeJsonList.get(0).getSicDescription(), "manufacture of canvas goods");
+        assertEquals(2, condensedSicCodeJsonList.size());
+        assertEquals("manufacture of canvas goods", condensedSicCodeJsonList.get(0).getSicDescription());
     }
 
     @Test

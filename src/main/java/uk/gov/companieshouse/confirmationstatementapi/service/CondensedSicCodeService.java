@@ -40,6 +40,8 @@ public class CondensedSicCodeService {
 
     @CacheEvict(value = "condensedSicCodeList", allEntries = true)
     @Scheduled(fixedRate = 12, timeUnit = TimeUnit.HOURS)
-    public void cacheEvict() {}
+    public void cacheEvict() {
+        // Cache eviction is handled by @CacheEvic
+    }
 
 }
