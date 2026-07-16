@@ -1119,9 +1119,7 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void shouldAllowDateBeforeNextMadeUpToWhenCompanyIsOnTime()
-            throws Exception {
-
+    void shouldAllowDateBeforeNextMadeUpToWhenCompanyIsOnTime() {
         CompanyProfileApi companyProfile = getTestCompanyProfileApi();
 
         ConfirmationStatementApi cs = companyProfile.getConfirmationStatement();
