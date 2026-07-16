@@ -107,10 +107,9 @@ class FilingServiceTest {
         transaction.setLinks(transactionLinks);
         transaction.setCompanyNumber(COMPANY_NUMBER);
 
-
         ReflectionTestUtils.setField(filingService, "costAmount", "34.00");
         ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
-
+        ReflectionTestUtils.setField(filingService, "filingDescriptionWithUpdates", "Confirmation statement made on {made up date} with updates");
     }
 
     private void getTransactionPaymentLinkMock() throws ApiErrorResponseException, URIValidationException {
@@ -142,7 +141,6 @@ class FilingServiceTest {
         getTransactionPaymentLinkMock();
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null, null);
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
 
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
               FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
@@ -166,7 +164,6 @@ class FilingServiceTest {
         String initialRea = "initial.rea@acme.com";
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(initialRea, null);
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
 
         given(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).willReturn(opt);
 
@@ -198,7 +195,6 @@ class FilingServiceTest {
         String confirmedRea = "confirmed.rea@acme.com";
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null, confirmedRea);
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
 
         given(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).willReturn(opt);
 
@@ -226,7 +222,6 @@ class FilingServiceTest {
         transaction.getLinks().setPayment(null);
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJson(null, null);
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
         FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
         assertEquals("Confirmation statement made on 1 June 2021 with no updates", filing.getDescription());
@@ -281,7 +276,6 @@ class FilingServiceTest {
         getTransactionPaymentLinkMock();
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJsonForLpJourney();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
 
         FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
@@ -294,12 +288,58 @@ class FilingServiceTest {
     }
 
     @Test
-    void testFilingDataForLpJourney() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
+    void testFilingDataForLpJourneyNoUpdatedSicCodes() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
         paymentGetMocks();
         getTransactionPaymentLinkMock();
         ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJsonForLpJourney();
         Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
-        ReflectionTestUtils.setField(filingService, "filingDescription", "Confirmation statement made on {made up date} with no updates");
+        CompanyProfileApi companyProfileApi = buildLpCompanyProfile();
+        confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2025-10-13");
+        confirmationStatementSubmissionJson.getData().setSicCodeData(buildSicCodeDataJson(new ArrayList<>()));
+
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        assertEquals("Confirmation statement made on 13 October 2025 with no updates", filing.getDescription());
+        assertNotEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
+        assertTrue((Boolean) filing.getData().get("accept_lawful_purpose_statement"));
+        assertEquals("payment-method", filing.getData().get("payment_method"));
+        assertEquals("reference", filing.getData().get("payment_reference"));
+        assertEquals("limited-partnership-confirmation-statement", filing.getKind());
+    }
+
+    @Test
+    void testFilingDataForLpJourneyNullSicCodes() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
+        paymentGetMocks();
+        getTransactionPaymentLinkMock();
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJsonForLpJourney();
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
+        CompanyProfileApi companyProfileApi = buildLpCompanyProfile();
+        confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2025-10-13");
+        confirmationStatementSubmissionJson.getData().setSicCodeData(null);
+
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        assertEquals("Confirmation statement made on 13 October 2025 with no updates", filing.getDescription());
+        assertNotEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
+        assertTrue((Boolean) filing.getData().get("accept_lawful_purpose_statement"));
+        assertEquals("payment-method", filing.getData().get("payment_method"));
+        assertEquals("reference", filing.getData().get("payment_reference"));
+        assertEquals("limited-partnership-confirmation-statement", filing.getKind());
+    }
+
+    @Test
+    void testFilingDataForLpJourneyWithUpdatedSicCodes() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
+        paymentGetMocks();
+        getTransactionPaymentLinkMock();
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJsonForLpJourney();
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
+
         CompanyProfileApi companyProfileApi = buildLpCompanyProfile();
         confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2025-10-13");
         confirmationStatementSubmissionJson.getData().setSicCodeData(buildSicCodeDataJson());
@@ -309,7 +349,7 @@ class FilingServiceTest {
 
         FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
 
-        assertEquals("Confirmation statement made on 13 October 2025 with no updates", filing.getDescription());
+        assertEquals("Confirmation statement made on 13 October 2025 with updates", filing.getDescription());
         assertNotEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
         assertTrue((Boolean) filing.getData().get("accept_lawful_purpose_statement"));
         assertEquals("payment-method", filing.getData().get("payment_method"));
