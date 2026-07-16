@@ -366,7 +366,7 @@ public class ConfirmationStatementService {
             throw new NewConfirmationDateInvalidException("A confirmation statement has already been filed for the date you’ve entered");
         }
 
-        if (newCsDateLocalDate.isBefore(lastOrNextMadeUpDate)) {
+        if (newCsDateLocalDate.isBefore(lastOrNextMadeUpDate) && !isDateOnTime(companyProfile)) {
             throw new NewConfirmationDateInvalidException("The date you enter must be after the date of the last confirmation statement");
         }
 
@@ -428,6 +428,24 @@ public class ConfirmationStatementService {
                 throw new SicCodeInvalidException("Can not have duplicate SIC Codes.");
             }
         }
+    }
+
+    boolean isDateOnTime(CompanyProfileApi companyProfileApi) {
+        if (companyProfileApi == null || companyProfileApi.getConfirmationStatement() == null
+                || companyProfileApi.getConfirmationStatement().getNextMadeUpTo() == null
+                || companyProfileApi.getConfirmationStatement().getLastMadeUpTo() == null) {
+            return false;
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate nextDue = companyProfileApi.getConfirmationStatement().getNextDue();
+        LocalDate lastMadeUpToDate = companyProfileApi.getConfirmationStatement().getLastMadeUpTo();
+
+        if (nextDue == null || lastMadeUpToDate == null) {
+            return false;
+        }
+
+        return (today.isAfter(lastMadeUpToDate) && today.isBefore(nextDue));
     }
 
 }
