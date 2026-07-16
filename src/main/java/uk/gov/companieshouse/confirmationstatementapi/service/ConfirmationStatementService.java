@@ -430,7 +430,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    private boolean isDateOnTime(CompanyProfileApi companyProfileApi) {
+    boolean isDateOnTime(CompanyProfileApi companyProfileApi) {
         if (companyProfileApi == null || companyProfileApi.getConfirmationStatement() == null
                 || companyProfileApi.getConfirmationStatement().getNextMadeUpTo() == null
                 || companyProfileApi.getConfirmationStatement().getLastMadeUpTo() == null) {
