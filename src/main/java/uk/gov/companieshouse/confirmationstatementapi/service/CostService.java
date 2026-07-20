@@ -59,14 +59,15 @@ public class CostService {
                 && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())
                 && companyProfile.getSubtype() != null) {
 
-            switch (companyProfile.getSubtype()) {
-                case LIMITED_PARTNERSHIP_LP_SUBTYPE, LIMITED_PARTNERSHIP_PFLP_SUBTYPE:
-                    cost.setProductType("lp-confirmation-statement");
-                    break;
-                case LIMITED_PARTNERSHIP_SLP_SUBTYPE, LIMITED_PARTNERSHIP_SPFLP_SUBTYPE:
-                    cost.setProductType("slp-confirmation-statement");
-                    break;
+            String companySubtype = companyProfile.getSubtype();
+            if (LIMITED_PARTNERSHIP_LP_SUBTYPE.equals(companySubtype)
+                    || LIMITED_PARTNERSHIP_PFLP_SUBTYPE.equals(companySubtype)) {
+                cost.setProductType("lp-confirmation-statement");
+            } else if (LIMITED_PARTNERSHIP_SLP_SUBTYPE.equals(companySubtype)
+                    || LIMITED_PARTNERSHIP_SPFLP_SUBTYPE.equals(companySubtype)) {
+                cost.setProductType("slp-confirmation-statement");
             }
         }
     }
+
 }

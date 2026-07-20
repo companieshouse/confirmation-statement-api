@@ -47,8 +47,8 @@ class CostServiceTest {
         "limited-partnership, spflp, slp-confirmation-statement",
         "limited-partnership, null, confirmation-statement",
     })
-    void testGetCostsWithDifferentProductType(String companyType, String CompanySubtype, String expectedProductType) throws ServiceException, CompanyNotFoundException {
-        CompanyProfileApi nonLimitedPartnershipCompany = getTestCompanyProfileApi(companyType, CompanySubtype);
+    void testGetCostsWithDifferentProductType(String companyType, String companySubtype, String expectedProductType) throws ServiceException, CompanyNotFoundException {
+        CompanyProfileApi nonLimitedPartnershipCompany = getTestCompanyProfileApi(companyType, companySubtype);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(nonLimitedPartnershipCompany);
 
         var result = costService.getCosts(transaction);
