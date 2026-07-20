@@ -44,6 +44,9 @@ public class FilingService {
     @Value("${CONFIRMATION_STATEMENT_DESCRIPTION_NO_UPDATES}")
     private String filingDescription;
 
+    @Value("${CONFIRMATION_STATEMENT_DESCRIPTION_WITH_UPDATES}")
+    private String filingDescriptionWithUpdates;
+
     @Value("${CS01_COST}")
     private String costAmount;
 
@@ -74,57 +77,47 @@ public class FilingService {
 
     private void setFilingApiData(FilingApi filing, String confirmationStatementId, Transaction transaction) throws SubmissionNotFoundException, ServiceException, CompanyNotFoundException {
         Map<String, Object> data = new HashMap<>();
-        var isPayable = null != transaction.getLinks().getPayment();
 
-        if (isPayable) {
-            var paymentReference = getPaymentReferenceFromTransaction(transaction.getLinks().getPayment());
-            var payment = getPayment(paymentReference);
-
-            data.put("payment_reference", paymentReference);
-            data.put("payment_method", payment.getPaymentMethod());
-        }
+        var isPayable = handlePayment(transaction.getLinks().getPayment(), data);
 
         Optional<ConfirmationStatementSubmissionJson> submissionOpt =
                 confirmationStatementService.getConfirmationStatement(confirmationStatementId);
-        ConfirmationStatementSubmissionJson submission = submissionOpt
+
+        var submissionData = submissionOpt
                 .orElseThrow(() ->
                         new SubmissionNotFoundException(
-                                String.format("Empty submission returned when generating filing for %s", confirmationStatementId)));
+                                String.format("Empty submission returned when generating filing for %s", confirmationStatementId))).getData();
 
-        var submissionData = submission.getData();
-        if (submissionData != null) {
-            CompanyProfileApi companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
-
-            LocalDate madeUpToDate = submissionData.getMadeUpToDate();
-            String filingType = determineFilingType(companyProfile);
-
-            if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
-                if (filingType != null) {
-                    filing.setKind(filingType);
-                    setLimitedPartnershipFilingData(data, submissionData, madeUpToDate, companyProfile);
-                    madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
-                }    
-            } else {
-                setNoChangeJourneyFilingData(data, submissionData, madeUpToDate);
-            }
-
-            if (Boolean.TRUE.equals(submissionData.getAcceptLawfulPurposeStatement())) {
-                data.put("accept_lawful_purpose_statement", true);
-            }
-
-            filing.setData(data);
-
-            if (isPayable) {
-                filing.setCost(costAmount);
-            } else {
-                filing.setCost("0");
-            }
-
-            setDescription(filing, madeUpToDate);
-        } else {
+        if (submissionData == null) {
             throw new SubmissionNotFoundException(
                     String.format("Submission contains no data %s", confirmationStatementId));
         }
+
+        CompanyProfileApi companyProfile = companyProfileService.getCompanyProfile(transaction.getCompanyNumber());
+
+        LocalDate madeUpToDate = submissionData.getMadeUpToDate();
+
+        if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
+            String filingType = determineFilingType(companyProfile);
+
+            if (filingType != null) {
+                filing.setKind(filingType);
+                setLimitedPartnershipFilingData(data, submissionData, madeUpToDate, companyProfile);
+                madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
+            }
+        } else {
+            setNoChangeJourneyFilingData(data, submissionData, madeUpToDate);
+        }
+
+        if (Boolean.TRUE.equals(submissionData.getAcceptLawfulPurposeStatement())) {
+            data.put("accept_lawful_purpose_statement", true);
+        }
+
+        filing.setData(data);
+
+        filing.setCost(isPayable? costAmount : "0");
+
+        setDescription(filing, madeUpToDate, submissionData);
     }
 
     private void setNoChangeJourneyFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate) {
@@ -155,10 +148,11 @@ public class FilingService {
         }
     }
 
-    private void setDescription(FilingApi filing, LocalDate madeUpToDate) {
+    private void setDescription(FilingApi filing, LocalDate madeUpToDate, ConfirmationStatementSubmissionDataJson submissionData) {
+        String description = determineFilingDescription(submissionData);
         String madeUpToDateStr = madeUpToDate.format(formatter);
-        filing.setDescriptionIdentifier(filingDescription);
-        filing.setDescription(filingDescription.replace("{made up date}", madeUpToDateStr));
+        filing.setDescriptionIdentifier(description);
+        filing.setDescription(description.replace("{made up date}", madeUpToDateStr));
         Map<String, String> values = new HashMap<>();
         values.put("made up date", madeUpToDateStr);
         filing.setDescriptionValues(values);
@@ -205,5 +199,29 @@ public class FilingService {
             default: 
                 return null;    
         }
+    }
+
+    private boolean includesUpdates(ConfirmationStatementSubmissionDataJson submissionData) {
+        return submissionData.getSicCodeData() != null &&
+                submissionData.getSicCodeData().getSicCode() != null &&
+                !submissionData.getSicCodeData().getSicCode().isEmpty();
+    }
+
+    private String determineFilingDescription(ConfirmationStatementSubmissionDataJson submissionData) {
+        return includesUpdates(submissionData) ? filingDescriptionWithUpdates : filingDescription;
+    }
+
+    private boolean handlePayment(String payment, Map<String, Object> data) throws ServiceException  {
+        boolean isPayable = null != payment;
+
+        if (isPayable) {
+            var paymentReference = getPaymentReferenceFromTransaction(payment);
+            var paymentApi = getPayment(paymentReference);
+
+            data.put("payment_reference", paymentReference);
+            data.put("payment_method", paymentApi.getPaymentMethod());
+        }
+
+        return isPayable;
     }
 }

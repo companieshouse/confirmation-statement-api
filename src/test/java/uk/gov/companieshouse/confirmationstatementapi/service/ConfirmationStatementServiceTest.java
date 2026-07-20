@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,6 +35,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -1113,6 +1116,143 @@ class ConfirmationStatementServiceTest {
 
         var savedDao = (ConfirmationStatementSubmissionDao) response.getBody();
         assertNull(savedDao.getData().getSicCodeData().getSectionStatus());
+    }
+
+    @Test
+    void shouldAllowDateBeforeNextMadeUpToWhenCompanyIsOnTime() {
+        CompanyProfileApi companyProfile = getTestCompanyProfileApi();
+
+        ConfirmationStatementApi cs = companyProfile.getConfirmationStatement();
+        cs.setLastMadeUpTo(LocalDate.of(2022, 3, 15));
+        cs.setNextMadeUpTo(LocalDate.of(2023, 3, 15));
+        cs.setNextDue(LocalDate.of(2022, 6, 30));
+
+        confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2022-03-20");
+        LocalDate today = LocalDate.of(2022, 4, 1);
+
+        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalDate::now).thenReturn(today);
+
+            assertDoesNotThrow(() ->
+                    confirmationStatementService.updateConfirmationStatement(
+                            transaction,
+                            SUBMISSION_ID,
+                            confirmationStatementSubmissionJson));
+        }
+    }
+
+    @Test
+    void isDateOnTimeReturnsFalseWhenCompanyIsNull() {
+        assertFalse(confirmationStatementService.isDateOnTime(null));
+    }
+
+    @Test
+    void isDateOnTimeReturnsFalseWhenConfirmationStatementIsNull() {
+        CompanyProfileApi company = getTestCompanyProfileApi();
+        company.setConfirmationStatement(null);
+
+        assertFalse(confirmationStatementService.isDateOnTime(company));
+    }
+
+    @Test
+    void isDateOnTimeReturnsFalseWhenNextMadeUpToIsNull() {
+        CompanyProfileApi company = getTestCompanyProfileApi();
+
+        company.getConfirmationStatement().setNextMadeUpTo(null);
+        company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
+        company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
+
+        assertFalse(confirmationStatementService.isDateOnTime(company));
+    }
+
+    @Test
+    void isDateOnTimeReturnsFalseWhenLastMadeUpToIsNull() {
+        CompanyProfileApi company = getTestCompanyProfileApi();
+
+        company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 3, 1));
+        company.getConfirmationStatement().setLastMadeUpTo(null);
+        company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
+
+        assertFalse(confirmationStatementService.isDateOnTime(company));
+    }
+
+    @Test
+    void isDateOnTimeReturnsFalseWhenNextDueIsNull() {
+        CompanyProfileApi company = getTestCompanyProfileApi();
+
+        company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 3, 1));
+        company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
+        company.getConfirmationStatement().setNextDue(null);
+
+        assertFalse(confirmationStatementService.isDateOnTime(company));
+    }
+
+    @Test
+    void isDateOnTimeReturnsFalseWhenTodayEqualsLastMadeUpTo() {
+        CompanyProfileApi company = getTestCompanyProfileApi();
+
+        company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 3, 1));
+        company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 15));
+        company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
+
+        LocalDate today = LocalDate.of(2022, 3, 15);
+
+        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalDate::now).thenReturn(today);
+
+            assertFalse(confirmationStatementService.isDateOnTime(company));
+        }
+    }
+
+    @Test
+    void isDateOnTimeReturnsFalseWhenTodayEqualsNextDue() {
+        CompanyProfileApi company = getTestCompanyProfileApi();
+
+        company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 3, 1));
+        company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
+        company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
+
+        LocalDate today = LocalDate.of(2022, 4, 1);
+
+        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalDate::now).thenReturn(today);
+
+            assertFalse(confirmationStatementService.isDateOnTime(company));
+        }
+    }
+
+    @Test
+    void isDateOnTimeReturnsTrueWhenTodayBetweenLastMadeUpToAndNextDue() {
+
+        CompanyProfileApi company = getTestCompanyProfileApi();
+
+        company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
+        company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
+
+        LocalDate today = LocalDate.of(2022, 3, 15);
+        
+        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalDate::now).thenReturn(today);
+
+            assertTrue(confirmationStatementService.isDateOnTime(company));
+        }
+    }
+
+    @Test
+    void isDateOnTimeReturnsFalseWhenTodayAfterNextDue() {
+
+        CompanyProfileApi company = getTestCompanyProfileApi();
+
+        company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
+        company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
+
+        LocalDate today = LocalDate.of(2022, 4, 2);
+
+        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalDate::now).thenReturn(today);
+
+            assertFalse(confirmationStatementService.isDateOnTime(company));
+        }
     }
 
     
