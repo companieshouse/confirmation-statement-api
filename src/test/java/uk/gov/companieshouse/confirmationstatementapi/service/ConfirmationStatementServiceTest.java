@@ -1165,9 +1165,9 @@ class ConfirmationStatementServiceTest {
     void isFilingDateEarlyReturnsFalseWhenNextMadeUpToIsNull() {
         CompanyProfileApi company = getTestCompanyProfileApi();
 
-        company.getConfirmationStatement().setNextMadeUpTo(null);
         company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
         company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
+        company.getConfirmationStatement().setNextMadeUpTo(null);
 
         assertFalse(confirmationStatementService.isFilingDateEarly(company));
     }
