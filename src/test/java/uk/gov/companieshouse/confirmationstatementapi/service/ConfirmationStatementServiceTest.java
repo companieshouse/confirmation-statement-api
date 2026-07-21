@@ -1125,8 +1125,13 @@ class ConfirmationStatementServiceTest {
         assertNull(savedDao.getData().getSicCodeData().getSectionStatus());
     }
 
-    @Test
-    void shouldAllowDateBeforeNextMadeUpToWhenCompanyIsOnTime() {
+    @ParameterizedTest
+    @CsvSource({
+        "2022-03-20",
+        "2023-03-20",
+        "2023-03-15"
+    })
+    void shouldAllowVariousDatesWhenCompanyIsOnTime(String newConfirmationDate) {
         CompanyProfileApi companyProfile = getTestCompanyProfileApi();
 
         ConfirmationStatementApi cs = companyProfile.getConfirmationStatement();
@@ -1134,7 +1139,108 @@ class ConfirmationStatementServiceTest {
         cs.setNextMadeUpTo(LocalDate.of(2023, 3, 15));
         cs.setNextDue(LocalDate.of(2022, 6, 30));
 
-        confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2022-03-20");
+        confirmationStatementSubmissionJson.getData().setNewConfirmationDate(newConfirmationDate);
+        LocalDate today = LocalDate.of(2022, 4, 1);
+
+        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalDate::now).thenReturn(today);
+
+            assertDoesNotThrow(() ->
+                    confirmationStatementService.updateConfirmationStatement(
+                            transaction,
+                            SUBMISSION_ID,
+                            confirmationStatementSubmissionJson));
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2022-03-20",
+            "2022-03-25",
+            "2022-04-01"
+    })
+    void shouldAllowVariousDatesWhenCompanyIsFilingEarly(String newConfirmationDate)
+            throws Exception {
+
+        CompanyProfileApi companyProfile = getTestCompanyProfileApi();
+
+        ConfirmationStatementApi cs = companyProfile.getConfirmationStatement();
+        cs.setLastMadeUpTo(LocalDate.of(2022, 3, 15));
+        cs.setNextMadeUpTo(LocalDate.of(2023, 3, 15));
+        cs.setNextDue(LocalDate.of(2022, 6, 30));
+
+        confirmationStatementSubmissionJson.getData()
+                .setNewConfirmationDate(newConfirmationDate);
+
+        var existingDao = new ConfirmationStatementSubmissionDao();
+        existingDao.setId(SUBMISSION_ID);
+
+        var updatedDao = new ConfirmationStatementSubmissionDao();
+        updatedDao.setId(SUBMISSION_ID);
+
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER))
+                .thenReturn(companyProfile);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID))
+                .thenReturn(Optional.of(existingDao));
+
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson))
+                .thenReturn(updatedDao);
+
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class)))
+                .thenReturn(updatedDao);
+
+        LocalDate today = LocalDate.of(2022, 4, 1);
+
+        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalDate::now).thenReturn(today);
+
+            assertDoesNotThrow(() ->
+                    confirmationStatementService.updateConfirmationStatement(
+                            transaction,
+                            SUBMISSION_ID,
+                            confirmationStatementSubmissionJson));
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2022-03-20",
+            "2022-03-25",
+            "2022-04-01"
+    })
+    void shouldAllowVariousDatesWhenCompanyIsFilingLate(String newConfirmationDate)
+            throws Exception {
+
+        CompanyProfileApi companyProfile = getTestCompanyProfileApi();
+
+        ConfirmationStatementApi cs = companyProfile.getConfirmationStatement();
+        cs.setLastMadeUpTo(LocalDate.of(2022, 3, 15));
+        cs.setNextMadeUpTo(LocalDate.of(2023, 3, 15));
+        cs.setNextDue(LocalDate.of(2022, 3, 31));
+
+        confirmationStatementSubmissionJson.getData()
+                .setNewConfirmationDate(newConfirmationDate);
+
+        var existingDao = new ConfirmationStatementSubmissionDao();
+        existingDao.setId(SUBMISSION_ID);
+
+        var updatedDao = new ConfirmationStatementSubmissionDao();
+        updatedDao.setId(SUBMISSION_ID);
+
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER))
+                .thenReturn(companyProfile);
+
+        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID))
+                .thenReturn(Optional.of(existingDao));
+
+        when(confirmationStatementJsonDaoMapper.jsonToDao(confirmationStatementSubmissionJson))
+                .thenReturn(updatedDao);
+
+        when(confirmationStatementSubmissionsRepository.save(any(ConfirmationStatementSubmissionDao.class)))
+                .thenReturn(updatedDao);
+
+        // After nextDue => filing is late
         LocalDate today = LocalDate.of(2022, 4, 1);
 
         try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
@@ -1259,68 +1365,6 @@ class ConfirmationStatementServiceTest {
             mocked.when(LocalDate::now).thenReturn(today);
 
             assertFalse(confirmationStatementService.isFilingDateEarly(company));
-        }
-    }
-
-    @Test
-    void updateConfirmationStatementThrowsWhenDateEqualsLastMadeUpToButFilingIsNotEarly()
-            throws Exception {
-
-        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
-        companyProfileApi.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2021, 2, 27));
-        companyProfileApi.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 2, 27));
-        companyProfileApi.getConfirmationStatement().setNextDue(LocalDate.of(2022, 3, 1));
-
-        confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2021-2-27");
-
-        var submission = new ConfirmationStatementSubmissionDao();
-
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER))
-                .thenReturn(companyProfileApi);
-        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID))
-                .thenReturn(Optional.of(submission));
-
-        LocalDate today = LocalDate.of(2022, 3, 2);
-
-        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
-            mocked.when(LocalDate::now).thenReturn(today);
-
-            assertThrows(NewConfirmationDateInvalidException.class, () ->
-                    confirmationStatementService.updateConfirmationStatement(
-                            transaction,
-                            SUBMISSION_ID,
-                            confirmationStatementSubmissionJson));
-        }
-    }
-
-    @Test
-    void updateConfirmationStatementThrowsWhenDateBeforeLastMadeUpToButFilingIsNotEarly()
-            throws Exception {
-
-        CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
-        companyProfileApi.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2021, 2, 27));
-        companyProfileApi.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 2, 27));
-        companyProfileApi.getConfirmationStatement().setNextDue(LocalDate.of(2022, 3, 1));
-
-        confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2021-2-13");
-
-        var submission = new ConfirmationStatementSubmissionDao();
-
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER))
-                .thenReturn(companyProfileApi);
-        when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID))
-                .thenReturn(Optional.of(submission));
-
-        LocalDate today = LocalDate.of(2022, 3, 2);
-
-        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
-            mocked.when(LocalDate::now).thenReturn(today);
-
-            assertThrows(NewConfirmationDateInvalidException.class, () ->
-                    confirmationStatementService.updateConfirmationStatement(
-                            transaction,
-                            SUBMISSION_ID,
-                            confirmationStatementSubmissionJson));
         }
     }
 
