@@ -348,22 +348,29 @@ class ConfirmationStatementServiceTest {
             "2025-2-31, Confirmation statement date must be a real date",
             "2099-1-1, Confirmation statement date must be today or in the past",
             "2020-3-13, The date you enter must be after the date of the last confirmation statement",
-            "2022-2-27, A confirmation statement has already been filed for the date you’ve entered",
+            "2021-2-27, A confirmation statement has already been filed for the date you’ve entered",
     })
     void updateConfirmationSubmissionWithNewConfirmationDateInvalidException(String inputNewCsDateString, String errorMessage) throws ServiceException, CompanyNotFoundException {
         // GIVEN
         CompanyProfileApi companyProfileApi = getTestCompanyProfileApi();
         companyProfileApi.getConfirmationStatement().setLastMadeUpTo(LAST_MADE_UP_TO_DATE);
+        companyProfileApi.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 2, 27));
         confirmationStatementSubmissionJson.getData().setNewConfirmationDate(inputNewCsDateString);
         var confirmationStatementSubmission = new ConfirmationStatementSubmissionDao();
 
         // WHEN
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
         when(confirmationStatementSubmissionsRepository.findById(SUBMISSION_ID)).thenReturn(Optional.of(confirmationStatementSubmission));
+        
+        LocalDate today = LocalDate.of(2022, 03, 1);
 
         // THEN
-        NewConfirmationDateInvalidException exception = assertThrows(NewConfirmationDateInvalidException.class, () -> confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson));
-        assertEquals(errorMessage, exception.getMessage());
+        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalDate::now).thenReturn(today);
+
+            NewConfirmationDateInvalidException exception = assertThrows(NewConfirmationDateInvalidException.class, () -> confirmationStatementService.updateConfirmationStatement(transaction, SUBMISSION_ID, confirmationStatementSubmissionJson));
+            assertEquals(errorMessage, exception.getMessage());
+        }
 
     }
 
@@ -1142,53 +1149,53 @@ class ConfirmationStatementServiceTest {
     }
 
     @Test
-    void isDateOnTimeReturnsFalseWhenCompanyIsNull() {
-        assertFalse(confirmationStatementService.isDateOnTime(null));
+    void isFilingDateEarlyReturnsFalseWhenCompanyIsNull() {
+        assertFalse(confirmationStatementService.isFilingDateEarly(null));
     }
 
     @Test
-    void isDateOnTimeReturnsFalseWhenConfirmationStatementIsNull() {
+    void isFilingDateEarlyReturnsFalseWhenConfirmationStatementIsNull() {
         CompanyProfileApi company = getTestCompanyProfileApi();
         company.setConfirmationStatement(null);
 
-        assertFalse(confirmationStatementService.isDateOnTime(company));
+        assertFalse(confirmationStatementService.isFilingDateEarly(company));
     }
 
     @Test
-    void isDateOnTimeReturnsFalseWhenNextMadeUpToIsNull() {
+    void isFilingDateEarlyReturnsFalseWhenNextMadeUpToIsNull() {
         CompanyProfileApi company = getTestCompanyProfileApi();
 
         company.getConfirmationStatement().setNextMadeUpTo(null);
         company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
         company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
 
-        assertFalse(confirmationStatementService.isDateOnTime(company));
+        assertFalse(confirmationStatementService.isFilingDateEarly(company));
     }
 
     @Test
-    void isDateOnTimeReturnsFalseWhenLastMadeUpToIsNull() {
+    void isFilingDateEarlyReturnsFalseWhenLastMadeUpToIsNull() {
         CompanyProfileApi company = getTestCompanyProfileApi();
 
         company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 3, 1));
         company.getConfirmationStatement().setLastMadeUpTo(null);
         company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
 
-        assertFalse(confirmationStatementService.isDateOnTime(company));
+        assertFalse(confirmationStatementService.isFilingDateEarly(company));
     }
 
     @Test
-    void isDateOnTimeReturnsFalseWhenNextDueIsNull() {
+    void isFilingDateEarlyReturnsFalseWhenNextDueIsNull() {
         CompanyProfileApi company = getTestCompanyProfileApi();
 
         company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 3, 1));
         company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
         company.getConfirmationStatement().setNextDue(null);
 
-        assertFalse(confirmationStatementService.isDateOnTime(company));
+        assertFalse(confirmationStatementService.isFilingDateEarly(company));
     }
 
     @Test
-    void isDateOnTimeReturnsFalseWhenTodayEqualsLastMadeUpTo() {
+    void isFilingDateEarlyReturnsTrueWhenTodayEqualsLastMadeUpTo() {
         CompanyProfileApi company = getTestCompanyProfileApi();
 
         company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 3, 1));
@@ -1200,12 +1207,12 @@ class ConfirmationStatementServiceTest {
         try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
             mocked.when(LocalDate::now).thenReturn(today);
 
-            assertFalse(confirmationStatementService.isDateOnTime(company));
+            assertTrue(confirmationStatementService.isFilingDateEarly(company));
         }
     }
 
     @Test
-    void isDateOnTimeReturnsFalseWhenTodayEqualsNextDue() {
+    void isFilingDateEarlyReturnsTrueWhenTodayEqualsNextDue() {
         CompanyProfileApi company = getTestCompanyProfileApi();
 
         company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2023, 3, 1));
@@ -1217,29 +1224,29 @@ class ConfirmationStatementServiceTest {
         try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
             mocked.when(LocalDate::now).thenReturn(today);
 
-            assertFalse(confirmationStatementService.isDateOnTime(company));
+            assertTrue(confirmationStatementService.isFilingDateEarly(company));
         }
     }
 
     @Test
-    void isDateOnTimeReturnsTrueWhenTodayBetweenLastMadeUpToAndNextDue() {
-
+    void isFilingDateEarlyReturnsTrueWhenTodayIsBeforeNextMadeUpTo() {
         CompanyProfileApi company = getTestCompanyProfileApi();
 
         company.getConfirmationStatement().setLastMadeUpTo(LocalDate.of(2022, 3, 1));
+        company.getConfirmationStatement().setNextMadeUpTo(LocalDate.of(2022, 5, 1));
         company.getConfirmationStatement().setNextDue(LocalDate.of(2022, 4, 1));
 
         LocalDate today = LocalDate.of(2022, 3, 15);
-        
+
         try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
             mocked.when(LocalDate::now).thenReturn(today);
 
-            assertTrue(confirmationStatementService.isDateOnTime(company));
+            assertTrue(confirmationStatementService.isFilingDateEarly(company));
         }
     }
 
     @Test
-    void isDateOnTimeReturnsFalseWhenTodayAfterNextDue() {
+    void isFilingDateEarlyReturnsFalseWhenTodayAfterNextDue() {
 
         CompanyProfileApi company = getTestCompanyProfileApi();
 
@@ -1251,7 +1258,7 @@ class ConfirmationStatementServiceTest {
         try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
             mocked.when(LocalDate::now).thenReturn(today);
 
-            assertFalse(confirmationStatementService.isDateOnTime(company));
+            assertFalse(confirmationStatementService.isFilingDateEarly(company));
         }
     }
 
