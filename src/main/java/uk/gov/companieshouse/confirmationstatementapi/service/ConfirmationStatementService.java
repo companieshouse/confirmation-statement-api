@@ -362,11 +362,11 @@ public class ConfirmationStatementService {
                 confirmationStatement.getLastMadeUpTo() :
                 confirmationStatement.getNextMadeUpTo();
 
-        if (newCsDateLocalDate.isEqual(lastOrNextMadeUpDate)) {
+        if (newCsDateLocalDate.isEqual(lastOrNextMadeUpDate) && isFilingDateEarly(companyProfile)) {
             throw new NewConfirmationDateInvalidException("A confirmation statement has already been filed for the date you’ve entered");
         }
 
-        if (newCsDateLocalDate.isBefore(lastOrNextMadeUpDate) && !isDateOnTime(companyProfile)) {
+        if (newCsDateLocalDate.isBefore(lastOrNextMadeUpDate) && isFilingDateEarly(companyProfile)) {
             throw new NewConfirmationDateInvalidException("The date you enter must be after the date of the last confirmation statement");
         }
 
@@ -430,7 +430,7 @@ public class ConfirmationStatementService {
         }
     }
 
-    boolean isDateOnTime(CompanyProfileApi companyProfileApi) {
+    boolean isFilingDateEarly(CompanyProfileApi companyProfileApi) {
         if (companyProfileApi == null || companyProfileApi.getConfirmationStatement() == null
                 || companyProfileApi.getConfirmationStatement().getNextMadeUpTo() == null
                 || companyProfileApi.getConfirmationStatement().getLastMadeUpTo() == null) {
@@ -438,14 +438,13 @@ public class ConfirmationStatementService {
         }
 
         LocalDate today = LocalDate.now();
-        LocalDate nextDue = companyProfileApi.getConfirmationStatement().getNextDue();
-        LocalDate lastMadeUpToDate = companyProfileApi.getConfirmationStatement().getLastMadeUpTo();
+        LocalDate nextMadeUpToDate = companyProfileApi.getConfirmationStatement().getNextMadeUpTo();
 
-        if (nextDue == null || lastMadeUpToDate == null) {
+        if (nextMadeUpToDate == null) {
             return false;
         }
 
-        return (today.isAfter(lastMadeUpToDate) && today.isBefore(nextDue));
+        return (today.isBefore(nextMadeUpToDate));
     }
 
 }
