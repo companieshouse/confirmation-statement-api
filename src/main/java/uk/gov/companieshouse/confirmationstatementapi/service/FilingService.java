@@ -57,6 +57,10 @@ public class FilingService {
     private final CompanyProfileService companyProfileService;
     private final SicCodeComparisonService sicCodeComparisonService;
 
+    private enum Updates {
+        WITH_UPDATES, NO_UPDATES
+    }
+
     @Autowired
     public FilingService(ConfirmationStatementService confirmationStatementService,
                          ApiClientService apiClientService,
@@ -97,12 +101,13 @@ public class FilingService {
 
         LocalDate madeUpToDate = submissionData.getMadeUpToDate();
 
+        Updates updates = Updates.NO_UPDATES;
         if (companyProfile != null && LIMITED_PARTNERSHIP_TYPE.equals(companyProfile.getType())) {
             String filingType = determineFilingType(companyProfile);
 
             if (filingType != null) {
                 filing.setKind(filingType);
-                setLimitedPartnershipFilingData(data, submissionData, madeUpToDate, companyProfile);
+                updates = setLimitedPartnershipFilingData(data, submissionData, madeUpToDate, companyProfile);
                 madeUpToDate = getMadeUpToDate(submissionData, madeUpToDate);
             }
         } else {
@@ -117,7 +122,7 @@ public class FilingService {
 
         filing.setCost(isPayable? costAmount : "0");
 
-        setDescription(filing, madeUpToDate, submissionData);
+        setDescription(filing, madeUpToDate, updates);
     }
 
     private void setNoChangeJourneyFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate) {
@@ -137,19 +142,22 @@ public class FilingService {
 
     }
 
-    private void setLimitedPartnershipFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate, CompanyProfileApi companyProfile) {
+    private Updates setLimitedPartnershipFilingData(Map<String, Object> data, ConfirmationStatementSubmissionDataJson submissionData, LocalDate madeUpToDate, CompanyProfileApi companyProfile) {
+        Updates updates = Updates.NO_UPDATES;
         data.put("confirmation_statement_date", getMadeUpToDate(submissionData, madeUpToDate) );
 
         if (submissionData.getSicCodeData() != null && submissionData.getSicCodeData().getSicCode() != null) {
             List<SicCodeJson> sicCodeJsonList = submissionData.getSicCodeData().getSicCode();
             if (sicCodeComparisonService.hasDifferences(sicCodeJsonList, companyProfile.getSicCodes())) {
                 data.put("sic_codes",  sicCodeJsonList.stream().map(SicCodeJson::getCode).toList());
+                updates = Updates.WITH_UPDATES;
             }
         }
+        return updates;
     }
 
-    private void setDescription(FilingApi filing, LocalDate madeUpToDate, ConfirmationStatementSubmissionDataJson submissionData) {
-        String description = determineFilingDescription(submissionData);
+    private void setDescription(FilingApi filing, LocalDate madeUpToDate, Updates updates) {
+        String description = determineFilingDescription(updates);
         String madeUpToDateStr = madeUpToDate.format(formatter);
         filing.setDescriptionIdentifier(description);
         filing.setDescription(description.replace("{made up date}", madeUpToDateStr));
@@ -191,24 +199,15 @@ public class FilingService {
             return null;
         }
 
-        switch(companyProfile.getSubtype()) {
-            case LIMITED_PARTNERSHIP_LP_SUBTYPE, LIMITED_PARTNERSHIP_PFLP_SUBTYPE:
-                return FILING_KIND_LPCS;
-            case LIMITED_PARTNERSHIP_SLP_SUBTYPE, LIMITED_PARTNERSHIP_SPFLP_SUBTYPE:
-                return FILING_KIND_SLPCS;
-            default: 
-                return null;    
-        }
+        return switch (companyProfile.getSubtype()) {
+            case LIMITED_PARTNERSHIP_LP_SUBTYPE, LIMITED_PARTNERSHIP_PFLP_SUBTYPE -> FILING_KIND_LPCS;
+            case LIMITED_PARTNERSHIP_SLP_SUBTYPE, LIMITED_PARTNERSHIP_SPFLP_SUBTYPE -> FILING_KIND_SLPCS;
+            default -> null;
+        };
     }
 
-    private boolean includesUpdates(ConfirmationStatementSubmissionDataJson submissionData) {
-        return submissionData.getSicCodeData() != null &&
-                submissionData.getSicCodeData().getSicCode() != null &&
-                !submissionData.getSicCodeData().getSicCode().isEmpty();
-    }
-
-    private String determineFilingDescription(ConfirmationStatementSubmissionDataJson submissionData) {
-        return includesUpdates(submissionData) ? filingDescriptionWithUpdates : filingDescription;
+    private String determineFilingDescription(Updates updates) {
+        return updates == Updates.WITH_UPDATES ? filingDescriptionWithUpdates : filingDescription;
     }
 
     private boolean handlePayment(String payment, Map<String, Object> data) throws ServiceException  {
