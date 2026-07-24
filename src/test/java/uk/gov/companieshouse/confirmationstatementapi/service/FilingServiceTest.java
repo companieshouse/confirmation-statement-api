@@ -342,14 +342,43 @@ class FilingServiceTest {
 
         CompanyProfileApi companyProfileApi = buildLpCompanyProfile();
         confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2025-10-13");
+        SicCodeDataJson sicCodeDataJson = buildSicCodeDataJson();
+        confirmationStatementSubmissionJson.getData().setSicCodeData(sicCodeDataJson);
+        String[] companyProfileSicCodeList = new String[]{"70229", "71122", "74908", "01120"};
+        companyProfileApi.setSicCodes(companyProfileSicCodeList);
+
+        when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+        when(sicCodeComparisonService.hasDifferences(sicCodeDataJson.getSicCode(), companyProfileSicCodeList)).thenReturn(true);
+
+        FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
+
+        assertEquals("Confirmation statement made on 13 October 2025 with updates", filing.getDescription());
+        assertNotEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
+        assertTrue((Boolean) filing.getData().get("accept_lawful_purpose_statement"));
+        assertEquals("payment-method", filing.getData().get("payment_method"));
+        assertEquals("reference", filing.getData().get("payment_reference"));
+        assertEquals("limited-partnership-confirmation-statement", filing.getKind());
+    }
+
+    @Test
+    void testFilingDataForLpJourneyWithSameSicCodes() throws SubmissionNotFoundException, ServiceException, URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
+        paymentGetMocks();
+        getTransactionPaymentLinkMock();
+        ConfirmationStatementSubmissionJson confirmationStatementSubmissionJson =  buildSubmissionJsonForLpJourney();
+        Optional<ConfirmationStatementSubmissionJson> opt = Optional.of(confirmationStatementSubmissionJson);
+
+        CompanyProfileApi companyProfileApi = buildLpCompanyProfile();
+        confirmationStatementSubmissionJson.getData().setNewConfirmationDate("2025-10-13");
         confirmationStatementSubmissionJson.getData().setSicCodeData(buildSicCodeDataJson());
+        companyProfileApi.setSicCodes(new String[]{"70229", "71122", "74909", "01120"});
 
         when(csService.getConfirmationStatement(CONFIRMATION_STATEMENT_ID)).thenReturn(opt);
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
 
         FilingApi filing = filingService.generateConfirmationFiling(CONFIRMATION_STATEMENT_ID, transaction);
 
-        assertEquals("Confirmation statement made on 13 October 2025 with updates", filing.getDescription());
+        assertEquals("Confirmation statement made on 13 October 2025 with no updates", filing.getDescription());
         assertNotEquals(confirmationStatementSubmissionJson.getData().getMadeUpToDate(), filing.getData().get("confirmation_statement_date"));
         assertTrue((Boolean) filing.getData().get("accept_lawful_purpose_statement"));
         assertEquals("payment-method", filing.getData().get("payment_method"));
@@ -370,7 +399,7 @@ class FilingServiceTest {
     void shouldSetCorrectSicCodeDataInFilingData(String companyProfileSicCodes, String submissionSicCodes, boolean expectedHasDifferences, String expectedFilingSicCodes) throws SubmissionNotFoundException, ServiceException,
             URIValidationException, ApiErrorResponseException, CompanyNotFoundException {
         String[] companyProfileSicCodeList = companyProfileSicCodes.isBlank() ? null : companyProfileSicCodes.split(",");
-        List<String> submissionSicCodeList = submissionSicCodes.isBlank() ? null : List.of((submissionSicCodes.split(",")));
+        List<String> submissionSicCodeList = List.of((submissionSicCodes.split(",")));
         SicCodeDataJson sicCodeDataJson = buildSicCodeDataJson(submissionSicCodeList);
         List<String> expectedFilingSicCodeList = expectedFilingSicCodes.isBlank() ? null : List.of((expectedFilingSicCodes.split(",")));
 
@@ -582,7 +611,6 @@ class FilingServiceTest {
     private static SicCodeDataJson buildSicCodeDataJson(List<String> sicCodeList) {
         List<SicCodeJson> sicCodeJsonList = new ArrayList<>();
         sicCodeList
-                .stream()
                 .forEach(sicCode -> {
                     SicCodeJson sicCodeJson = new SicCodeJson();
                     sicCodeJson.setCode(sicCode);
@@ -599,6 +627,4 @@ class FilingServiceTest {
         List<String> sicCodeList = List.of("70229", "71122", "74909", "01120");
         return buildSicCodeDataJson(sicCodeList);
     }
-
-
 }
