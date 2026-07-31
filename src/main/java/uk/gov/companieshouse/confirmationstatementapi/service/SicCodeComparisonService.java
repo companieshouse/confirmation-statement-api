@@ -17,8 +17,12 @@ public class SicCodeComparisonService {
             return false; //both null no differences
         }
 
-        if (sicCodeJsonList == null || companyProfileSicCodeList == null) {
-            return true; //one null, one not
+        if (sicCodeJsonList == null) {
+            return companyProfileSicCodeList.length > 0;
+        }
+
+        if (companyProfileSicCodeList == null) {
+            return !sicCodeJsonList.isEmpty();
         }
 
         if (sicCodeJsonList.isEmpty() && companyProfileSicCodeList.length == 0) {

@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.confirmationstatementapi.model.json.siccode.SicCodeJson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,12 +31,18 @@ class SicCodeComparisonServiceTest {
             "'01120,70229', '70229,74909', true",
             "'71122', '71122,70229,74909,01120', true",
             "'', '', false",
-            "'74909,01120', '', true"
+            "'74909,01120', '', true",
+            "null,null, false",
+            "null,'', false",
+            "'',null,false",
+            "null, '70229,71122', true",
+            "'70229,71122', null, true"
     })
     void testSicCodeHasDifferences(String companyProfileSicCodes, String submissionSicCodes, boolean expectedHasDifferences) {
-        String[] companyProfileSicCodeList = companyProfileSicCodes.isBlank() ? null : companyProfileSicCodes.split(",");
-        List<String> submissionSicCodeList = submissionSicCodes.isBlank() ? null : List.of((submissionSicCodes.split(",")));
-
+        String[] companyProfileSicCodeList = "null".equals(companyProfileSicCodes) ? null :
+                companyProfileSicCodes.isBlank() ? new String[] {} : companyProfileSicCodes.split(",");
+        List<String> submissionSicCodeList = "null".equals(submissionSicCodes) ? null :
+                submissionSicCodes.isBlank() ? Collections.emptyList() : List.of((submissionSicCodes.split(",")));
         List<SicCodeJson> sicCodeJsonList = buildSicCodeJsonList(submissionSicCodeList);
 
         boolean actualHasDifferences = sicCodeComparisonService.hasDifferences(sicCodeJsonList, companyProfileSicCodeList);
@@ -58,7 +65,6 @@ class SicCodeComparisonServiceTest {
         if (null != sicCodeList) {
             List<SicCodeJson> sicCodeJsonList = new ArrayList<>();
             sicCodeList
-                    .stream()
                     .forEach(sicCode -> {
                         SicCodeJson sicCodeJson = new SicCodeJson();
                         sicCodeJson.setCode(sicCode);
