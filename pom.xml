@@ -84,8 +84,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- This should be upgraded to 4.36.0 when available, currently at RC1 -->
-            <!-- This will avoid `WARNING: sun.misc.Unsafe::arrayBaseOffset has been called by com.google.protobuf.UnsafeUtil` -->
             <!-- Source: https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
             <dependency>
                 <groupId>com.google.protobuf</groupId>
