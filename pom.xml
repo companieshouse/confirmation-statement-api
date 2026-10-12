@@ -56,6 +56,8 @@
         <bcprov-jdk18on.version>1.84</bcprov-jdk18on.version>
         <!-- Source: https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
         <protobuf-java.version>4.36.2</protobuf-java.version>
+        <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-logback-appender-1.0 -->
+        <opentelemetry-logback.version>2.31.1-alpha</opentelemetry-logback.version>
 
         <!-- Sonar Properties        -->
         <sonar.cpd.exclusions>**/*Dao.java, **/*Dto.java</sonar.cpd.exclusions>
@@ -217,7 +219,7 @@
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-logback-appender-1.0</artifactId>
-            <version>2.27.0-alpha</version>
+            <version>${opentelemetry-logback.version}</version>
             <scope>compile</scope>
         </dependency>
 
