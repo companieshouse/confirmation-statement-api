@@ -31,9 +31,9 @@
 
         <!-- Companies House Internal Dependency Versions -->
         <!-- Source: https://github.com/companieshouse/api-sdk-java/releases -->
-        <api-sdk-java.version>7.2.8</api-sdk-java.version>
+        <api-sdk-java.version>7.2.1</api-sdk-java.version>
         <!-- Source: https://github.com/companieshouse/private-api-sdk-java/releases -->
-        <private-api-sdk-java.version>7.2.34</private-api-sdk-java.version>
+        <private-api-sdk-java.version>7.2.1</private-api-sdk-java.version>
         <!-- Source: https://github.com/companieshouse/api-security-java/releases -->
         <api-security-java.version>2.0.29</api-security-java.version>
         <!-- Source: https://github.com/companieshouse/api-sdk-manager-java-library/releases -->
