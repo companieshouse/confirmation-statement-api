@@ -49,7 +49,8 @@ class SubmissionInterceptorTest {
         Object mockHandler = new Object();
         ConfirmationStatementSubmissionJson dummyConfirmationStatementSubmission = new ConfirmationStatementSubmissionJson();
         dummyConfirmationStatementSubmission.setId(SUBMISSION_ID);
-        dummyConfirmationStatementSubmission.setLinks(Collections.singletonMap("self", TRANSACTION_ID));
+        dummyConfirmationStatementSubmission.setLinks(Collections.singletonMap(
+                "self", "/transactions/" + TRANSACTION_ID + "/confirmation-statement/" + SUBMISSION_ID));
 
         var pathParams = new HashMap<String, String>();
         pathParams.put(TRANSACTION_ID_KEY, TRANSACTION_ID);
@@ -67,7 +68,8 @@ class SubmissionInterceptorTest {
         Object mockHandler = new Object();
         ConfirmationStatementSubmissionJson dummyConfirmationStatementSubmission = new ConfirmationStatementSubmissionJson();
         dummyConfirmationStatementSubmission.setId(SUBMISSION_ID);
-        dummyConfirmationStatementSubmission.setLinks(Collections.singletonMap("self", "9101112"));
+        dummyConfirmationStatementSubmission.setLinks(Collections.singletonMap(
+                "self", "/transactions/" + TRANSACTION_ID + "9/confirmation-statement/" + SUBMISSION_ID));
 
         var pathParams = new HashMap<String, String>();
         pathParams.put(TRANSACTION_ID_KEY, TRANSACTION_ID);
