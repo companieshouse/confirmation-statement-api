@@ -53,9 +53,10 @@ public class SubmissionInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        boolean containsTransaction = submission.get().getLinks().get("self").contains(transactionId);
+        String expectedSelfLink = "/transactions/" + transactionId + "/confirmation-statement/" + submissionId;
+        boolean belongsToTransaction = expectedSelfLink.equals(submission.get().getLinks().get("self"));
 
-        if (containsTransaction) {
+        if (belongsToTransaction) {
             ApiLogger.infoContext(reqId, "Confirmation statement submission found for " + submissionId, logMap);
             request.setAttribute("submission", submission);
             return true;
